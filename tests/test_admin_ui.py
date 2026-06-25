@@ -12,6 +12,7 @@ from main import (
     _ai_qa_feedback_keyboard,
     _edit_filter_keyboard,
     _delete_filter_prompt,
+    _ensure_local_dashboard_running,
     _edit_filter_prompt,
     _location_keyboard,
     _rent_keyboard,
@@ -19,6 +20,7 @@ from main import (
     _rooms_keyboard,
     _settings_keyboard,
     _wbs_keyboard,
+    handle_settings_dashboard,
     handle_location_choice,
     handle_rent_choice,
     handle_rooms_choice,
@@ -311,6 +313,77 @@ class FilterPromptLifecycleTests(unittest.IsolatedAsyncioTestCase):
         save_fixed_preferences.assert_called_once()
         self.assertEqual(state.data, {})
         self.assertIn("Filter saved.", rooms_callback.message.edited[-1][0])
+
+
+class DashboardAdminTests(unittest.IsolatedAsyncioTestCase):
+    async def test_dashboard_callback_autostarts_and_sends_link(self) -> None:
+        callback = _FakeCallback("settings:dashboard")
+
+        with patch("main._is_admin_user", return_value=True), patch(
+            "main._ensure_local_dashboard_running",
+            return_value=True,
+        ), patch("main.get_settings") as get_settings:
+            get_settings.return_value = SimpleNamespace(
+                dashboard_url=None,
+                dashboard_port=8502,
+                dashboard_autostart=True,
+            )
+
+            await handle_settings_dashboard(callback)
+
+        self.assertEqual(callback.answered, [(None, None)])
+        self.assertEqual(callback.message.answered[0][0], "<b>AI QA effectiveness dashboard</b>\n\nDashboard is running locally.")
+        keyboard = callback.message.answered[0][1]
+        self.assertEqual(keyboard.inline_keyboard[0][0].text, "Open dashboard")
+        self.assertEqual(keyboard.inline_keyboard[0][0].url, "http://127.0.0.1:8502")
+
+    async def test_dashboard_callback_reports_autostart_failure(self) -> None:
+        callback = _FakeCallback("settings:dashboard")
+
+        with patch("main._is_admin_user", return_value=True), patch(
+            "main._ensure_local_dashboard_running",
+            return_value=False,
+        ):
+            await handle_settings_dashboard(callback)
+
+        self.assertIn("could not start", callback.message.answered[0][0])
+
+
+class DashboardLaunchTests(unittest.TestCase):
+    def test_ensure_local_dashboard_starts_streamlit_when_port_is_closed(self) -> None:
+        with patch("main.get_settings") as get_settings, patch(
+            "main._is_tcp_port_open",
+            side_effect=(False, True),
+        ) as is_port_open, patch("main.subprocess.Popen") as popen:
+            get_settings.return_value = SimpleNamespace(
+                dashboard_url=None,
+                dashboard_port=8502,
+                dashboard_autostart=True,
+            )
+
+            self.assertTrue(_ensure_local_dashboard_running())
+
+        self.assertEqual(is_port_open.call_count, 2)
+        command = popen.call_args.args[0]
+        self.assertIn("-m", command)
+        self.assertIn("streamlit", command)
+        self.assertIn("--server.port", command)
+        self.assertIn("8502", command)
+
+    def test_ensure_local_dashboard_does_not_start_when_disabled(self) -> None:
+        with patch("main.get_settings") as get_settings, patch(
+            "main._is_tcp_port_open",
+            return_value=False,
+        ), patch("main.subprocess.Popen") as popen:
+            get_settings.return_value = SimpleNamespace(
+                dashboard_url=None,
+                dashboard_port=8502,
+                dashboard_autostart=False,
+            )
+
+            self.assertFalse(_ensure_local_dashboard_running())
+
+        popen.assert_not_called()
 
 
 if __name__ == "__main__":
