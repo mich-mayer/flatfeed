@@ -81,9 +81,9 @@ svg {
   height: 58px;
   place-items: center;
   overflow: hidden;
-  border: 1px solid rgba(7, 20, 31, 0.09);
-  background: #f6f5ef;
-  border-radius: 12px;
+  border: 0;
+  background: var(--bg);
+  border-radius: 0;
 }
 
 .brand-mark img {
