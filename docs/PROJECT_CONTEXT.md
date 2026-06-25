@@ -2,8 +2,10 @@
 
 ## Purpose
 
-FlatFeed is a portfolio prototype for Berlin WBS apartment matching. It
-demonstrates product judgment around reliable parsing, deterministic matching,
+FlatFeed is a portfolio prototype for Berlin WBS apartment collection and
+matching. It demonstrates how a bot can collect listings through source
+adapters, normalize them into one trusted catalog, and match them to user
+filters. The prototype emphasizes reliable parsing, deterministic matching,
 AI-assisted QA, cost controls, and measurable evaluation without scraping or
 redistributing real housing-company listings.
 
@@ -13,12 +15,17 @@ cost control matter more than feature count.
 
 ## Current Product
 
-### Implemented source
+### Source collection
 
 - `FlatFeed Synthetic`: generated local listings from `synthetic/`.
 - No real housing-company source adapters are enabled or present.
 - Synthetic listing URLs use `https://demo.flatfeed.local/listings/<id>` and
   are checked locally by the source adapter. No network request is made.
+- The product positioning should still mention collection from different
+  sources: the codebase has a source-adapter registry, ingestion history,
+  per-source activity checks, and per-source health monitoring. In the demo,
+  those capabilities are exercised through the synthetic adapter rather than
+  live external catalogs.
 
 ### User filter
 

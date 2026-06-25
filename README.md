@@ -1,13 +1,15 @@
 # FlatFeed
 
-FlatFeed is a Telegram bot and Streamlit dashboard prototype for Berlin WBS
-apartment matching. It uses synthetic listings instead of scraping real housing
-companies, then demonstrates deterministic parsing, matching, AI QA, and evals
-in a defensible portfolio setting.
+FlatFeed is a Telegram bot and Streamlit dashboard prototype for collecting
+Berlin WBS apartment listings from source adapters and matching them to user
+filters. The current demo uses synthetic listings instead of scraping real
+housing companies, then demonstrates deterministic parsing, matching, AI QA,
+and evals in a defensible portfolio setting.
 
 ## What It Shows
 
 - Synthetic Berlin apartment catalog with hidden ground truth.
+- Source-adapter architecture for collecting listings from multiple catalogs.
 - Fixed Telegram filter setup: WBS, Bezirk, max Kaltmiete, and room count.
 - Deterministic parsing for WBS, prices, rooms, floor, address, and district.
 - Deterministic matching and one-time Telegram notifications.
@@ -17,7 +19,9 @@ in a defensible portfolio setting.
 - Streamlit dashboard for AI QA coverage, feedback, cost, and parser issues.
 
 No real source scraping, image reuploading, Google Maps, Photon geocoding, or
-server deployment scripts are part of the current product.
+server deployment scripts are part of the current demo product. The collection
+layer is represented by the synthetic source adapter and shared ingestion
+pipeline.
 
 ## Project Structure
 
