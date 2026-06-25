@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import socket
+import subprocess
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from html import escape
@@ -110,6 +113,7 @@ SOURCE_TRIGGER_AI_QA_BACKFILL = "ai_qa_backfill"
 
 _manual_source_refresh_task: Optional[asyncio.Task[Any]] = None
 _manual_ai_qa_task: Optional[asyncio.Task[Any]] = None
+_dashboard_process: Optional[subprocess.Popen[Any]] = None
 
 
 @dataclass(frozen=True)
@@ -397,9 +401,72 @@ def _dashboard_button() -> InlineKeyboardButton:
     url = get_settings().dashboard_url
     if url and url.lower().startswith(("http://", "https://")):
         return InlineKeyboardButton(text=BTN_DASHBOARD, url=url)
-    # No public URL configured: fall back to a callback that explains how to
-    # open the dashboard locally, so the button never renders as a dead link.
     return InlineKeyboardButton(text=BTN_DASHBOARD, callback_data="settings:dashboard")
+
+
+def _local_dashboard_url() -> str:
+    return f"http://127.0.0.1:{get_settings().dashboard_port}"
+
+
+def _dashboard_url() -> str:
+    configured_url = get_settings().dashboard_url
+    if configured_url and configured_url.lower().startswith(("http://", "https://")):
+        return configured_url
+    return _local_dashboard_url()
+
+
+def _is_tcp_port_open(*, host: str, port: int, timeout_seconds: float = 0.3) -> bool:
+    try:
+        with socket.create_connection((host, port), timeout=timeout_seconds):
+            return True
+    except OSError:
+        return False
+
+
+def _ensure_local_dashboard_running() -> bool:
+    global _dashboard_process
+
+    settings = get_settings()
+    port = settings.dashboard_port
+    if _is_tcp_port_open(host="127.0.0.1", port=port):
+        return True
+    if not settings.dashboard_autostart:
+        return False
+
+    env = os.environ.copy()
+    env.setdefault("ENV_FILE", os.getenv("ENV_FILE", ".env.local"))
+    env["HOME"] = str(PROJECT_ROOT)
+    command = [
+        sys.executable,
+        "-m",
+        "streamlit",
+        "run",
+        str(PROJECT_ROOT / "flatfeed" / "dashboard" / "streamlit_app.py"),
+        "--server.address",
+        "127.0.0.1",
+        "--server.port",
+        str(port),
+        "--server.headless",
+        "true",
+        "--browser.gatherUsageStats",
+        "false",
+    ]
+    _dashboard_process = subprocess.Popen(
+        command,
+        cwd=PROJECT_ROOT,
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    return _is_tcp_port_open(host="127.0.0.1", port=port, timeout_seconds=1.5)
+
+
+def _dashboard_link_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Open dashboard", url=_dashboard_url())],
+        ]
+    )
 
 
 def _admin_keyboard() -> InlineKeyboardMarkup:
@@ -2523,14 +2590,17 @@ async def handle_settings_dashboard(callback: CallbackQuery) -> None:
     await callback.answer()
     if callback.message is None:
         return
+    dashboard_ready = await asyncio.to_thread(_ensure_local_dashboard_running)
+    if not dashboard_ready:
+        await callback.message.answer(
+            "<b>AI QA effectiveness dashboard</b>\n\n"
+            "Dashboard autostart is disabled or the local Streamlit server could not start.",
+        )
+        return
     await callback.message.answer(
         "<b>AI QA effectiveness dashboard</b>\n\n"
-        "No public dashboard URL is configured (DASHBOARD_URL is empty), so run it "
-        "locally:\n\n"
-        "<code>ENV_FILE=.env.local streamlit run flatfeed/dashboard/streamlit_app.py</code>\n\n"
-        "It shows AI QA coverage, human-feedback quality, confirmed errors vs false "
-        "positives, field-level patterns, and model cost. Set DASHBOARD_URL to turn "
-        "this button into a one-tap link."
+        "Dashboard is running locally.",
+        reply_markup=_dashboard_link_keyboard(),
     )
 
 

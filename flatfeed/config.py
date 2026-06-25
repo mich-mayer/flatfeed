@@ -59,6 +59,8 @@ class Settings:
     openai_output_price_per_1m: float
     telegram_bot_token: Optional[str]
     dashboard_url: Optional[str]
+    dashboard_port: int
+    dashboard_autostart: bool
     bot_scan_interval_seconds: int
     bot_scan_min_seconds: int
     bot_scan_max_seconds: int
@@ -108,6 +110,8 @@ def get_settings() -> Settings:
         ),
         telegram_bot_token=os.getenv("TELEGRAM_BOT_TOKEN"),
         dashboard_url=(os.getenv("DASHBOARD_URL") or "").strip() or None,
+        dashboard_port=_as_int(os.getenv("DASHBOARD_PORT"), 8502),
+        dashboard_autostart=_as_bool(os.getenv("DASHBOARD_AUTOSTART"), True),
         bot_scan_interval_seconds=bot_scan_interval_seconds,
         bot_scan_min_seconds=bot_scan_min_seconds,
         bot_scan_max_seconds=bot_scan_max_seconds,
