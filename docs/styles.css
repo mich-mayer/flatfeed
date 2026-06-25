@@ -70,20 +70,20 @@ svg {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  font-size: 18px;
+  gap: 14px;
+  font-size: 20px;
   font-weight: 760;
 }
 
 .brand-mark {
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 58px;
+  height: 58px;
   place-items: center;
   overflow: hidden;
   border: 1px solid rgba(7, 20, 31, 0.09);
   background: #f6f5ef;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 .brand-mark img {
