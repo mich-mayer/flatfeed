@@ -49,6 +49,10 @@
               <dt>Prototype type</dt>
               <dd>Telegram bot, Streamlit dashboard, eval harness</dd>
             </div>
+            <div>
+              <dt>Data</dt>
+              <dd>Synthetic Berlin catalog with hidden ground truth</dd>
+            </div>
           </dl>
         </div>
 
@@ -64,22 +68,24 @@
             <div class="message user-message">/matches</div>
             <div class="message bot-message">I found active listings that match your saved WBS filter.</div>
             <article class="listing-card">
-              <img src="assets/berlin-wbs-building.jpg" alt="Berlin residential building used as a demo listing image">
+              <div class="listing-media">
+                <img src="assets/berlin-wbs-building.jpg" alt="Berlin residential building used as a demo listing image">
+                <div class="mini-map" aria-hidden="true">
+                  <span></span>
+                </div>
+              </div>
               <div>
-                <h2>2-room WBS listing</h2>
+                <p class="listing-title"><strong>2-room WBS listing</strong></p>
                 <p>District: Wedding</p>
-                <p>WBS: 100, 140</p>
-                <p>Kalt: 610 EUR</p>
-              </div>
-            </article>
-            <article class="listing-card">
-              <div class="mini-map" aria-hidden="true">
-                <span></span>
-              </div>
-              <div>
-                <h2>Transit context</h2>
+                <p>Address: Demo street 12, 13347 Berlin</p>
+                <p>Floor: 2</p>
+                <p>Rooms: 2</p>
                 <p>S-Bahn: 9 min walk</p>
                 <p>U-Bahn: 7 min walk</p>
+                <p>WBS: 100, 140</p>
+                <p>Source: Synthetic</p>
+                <p>Kalt: 610 EUR</p>
+                <p>Warm: 760 EUR</p>
               </div>
             </article>
           </article>
@@ -101,18 +107,19 @@
                 <span>Golden listings</span>
               </div>
               <div>
-                <strong>100%</strong>
+                <strong>100.0%</strong>
                 <span>Field accuracy</span>
               </div>
               <div>
                 <strong>0</strong>
-                <span>Parser misses</span>
+                <span>Parser misses by tag</span>
               </div>
               <div>
-                <strong>$0</strong>
+                <strong>$0.000000</strong>
                 <span>Mock QA cost</span>
               </div>
             </div>
+            <p class="metric-qualifier">Synthetic golden-set eval: demo metrics, not production numbers.</p>
             <ol class="health-list">
               <li><span></span> Source adapter layer</li>
               <li><span></span> Deterministic parser</li>
@@ -125,8 +132,8 @@
 
       <section class="proof-strip" aria-label="Project proof points">
         <div>
-          <strong>Multi-source ready</strong>
-          <span>Source-adapter architecture with per-source activity checks.</span>
+          <strong>Source-adapter architecture</strong>
+          <span>Registry, per-source activity checks, and health monitoring, exercised through the synthetic adapter in this demo.</span>
         </div>
         <div>
           <strong>AI boundary defined</strong>
@@ -247,7 +254,7 @@
           <div class="case-content">
             <h2>What I Built</h2>
             <p>
-              I built a Telegram bot and Streamlit dashboard prototype. The bot stores a fixed user filter for WBS, Berlin district, maximum Kaltmiete, and rooms, then returns active listings that match. The ingestion layer normalizes source listings into a shared schema, enriches local transit walking-time estimates, tracks source activity, deduplicates sent notifications, and records source health.
+              I built a Telegram bot and Streamlit dashboard prototype. The bot stores a fixed user filter for WBS, Berlin district, maximum Kaltmiete, and rooms, then returns active listings that match. The ingestion layer normalizes source listings into a shared schema, enriches local transit walking-time estimates, tracks source activity, deduplicates sent notifications, and records source health. The AI QA system reviews parser snapshots, logs cost and token usage, flags high-risk issues for an admin, and keeps human feedback separate from automatic matching.
             </p>
           </div>
           <aside class="product-shot" aria-label="Dashboard product preview">
@@ -290,7 +297,7 @@
           <div class="case-content">
             <h2>Results</h2>
             <p>
-              In the current synthetic golden-set eval, FlatFeed parses 15 synthetic listings with 100.0% parser field accuracy and 100.0% exact listing accuracy across WBS, rent, rooms, floor, district, postal code, and special constraints. These are synthetic evaluation metrics, not production user-impact numbers, but they demonstrate a measurable quality loop instead of an anecdotal demo.
+              In the current synthetic golden-set eval, FlatFeed parses 15 synthetic listings with 100.0% parser field accuracy and 100.0% exact listing accuracy across WBS, rent, rooms, floor, district, postal code, and special constraints. The mock AI QA provider produced 0 false alert fields and $0.000000 total QA cost in that demo run. These are synthetic evaluation metrics, not production user-impact numbers, but they demonstrate a measurable quality loop instead of an anecdotal demo.
             </p>
             <div class="result-cards">
               <div>

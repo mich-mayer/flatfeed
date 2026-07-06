@@ -18,6 +18,8 @@ class CaseTemplate:
     truth_rooms: float | None
     truth_floor: str | None
     truth_bezirk: str
+    truth_lat: float
+    truth_lon: float
     truth_seniors_only: bool = False
     truth_exchange_only: bool = False
     truth_family_only: bool = False
@@ -42,6 +44,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="2",
         truth_bezirk="Lichtenberg",
+        truth_lat=52.5108562,
+        truth_lon=13.5051807,
     ),
     CaseTemplate(
         tag="wbs_range_above_140",
@@ -61,6 +65,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=3.0,
         truth_floor="4",
         truth_bezirk="Pankow",
+        truth_lat=52.5662270,
+        truth_lon=13.4093270,
         truth_family_only=True,
     ),
     CaseTemplate(
@@ -81,6 +87,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=1.0,
         truth_floor="1",
         truth_bezirk="Mitte",
+        truth_lat=52.5305108,
+        truth_lon=13.3972047,
     ),
     CaseTemplate(
         tag="wbs_lower_bound",
@@ -100,6 +108,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=3.0,
         truth_floor="3",
         truth_bezirk="Treptow-Köpenick",
+        truth_lat=52.4369063,
+        truth_lon=13.5456474,
     ),
     CaseTemplate(
         tag="wbs_income_range",
@@ -119,6 +129,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="5",
         truth_bezirk="Neukölln",
+        truth_lat=52.4765478,
+        truth_lon=13.4453860,
     ),
     CaseTemplate(
         tag="wbs_generic",
@@ -138,6 +150,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="EG",
         truth_bezirk="Spandau",
+        truth_lat=52.5535245,
+        truth_lon=13.2076444,
     ),
     CaseTemplate(
         tag="wbs_negated",
@@ -157,6 +171,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="2",
         truth_bezirk="Charlottenburg-Wilmersdorf",
+        truth_lat=52.5107882,
+        truth_lon=13.3012792,
     ),
     CaseTemplate(
         tag="wbs_not_mentioned",
@@ -175,6 +191,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="1",
         truth_bezirk="Tempelhof-Schöneberg",
+        truth_lat=52.4831592,
+        truth_lon=13.3818144,
     ),
     CaseTemplate(
         tag="wbs_list",
@@ -194,6 +212,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=3.0,
         truth_floor="8",
         truth_bezirk="Marzahn-Hellersdorf",
+        truth_lat=52.5331138,
+        truth_lon=13.5490681,
     ),
     CaseTemplate(
         tag="price_kalt_missing",
@@ -213,6 +233,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="3",
         truth_bezirk="Reinickendorf",
+        truth_lat=52.5942805,
+        truth_lon=13.3329367,
     ),
     CaseTemplate(
         tag="rooms_household_trap",
@@ -232,6 +254,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="6",
         truth_bezirk="Lichtenberg",
+        truth_lat=52.5117440,
+        truth_lon=13.4886269,
     ),
     CaseTemplate(
         tag="floor_etagenzahl_trap",
@@ -251,6 +275,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="5",
         truth_bezirk="Friedrichshain-Kreuzberg",
+        truth_lat=52.5077276,
+        truth_lon=13.4689396,
     ),
     CaseTemplate(
         tag="seniors_only",
@@ -270,6 +296,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=1.0,
         truth_floor="EG",
         truth_bezirk="Steglitz-Zehlendorf",
+        truth_lat=52.4422282,
+        truth_lon=13.2979742,
         truth_seniors_only=True,
     ),
     CaseTemplate(
@@ -290,6 +318,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="2",
         truth_bezirk="Mitte",
+        truth_lat=52.5295293,
+        truth_lon=13.4020768,
         truth_exchange_only=True,
     ),
     CaseTemplate(
@@ -310,6 +340,8 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=5.0,
         truth_floor="3",
         truth_bezirk="Pankow",
+        truth_lat=52.5322461,
+        truth_lon=13.4280146,
         truth_family_only=True,
     ),
 )
