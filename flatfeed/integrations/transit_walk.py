@@ -7,7 +7,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
-from sqlalchemy import select
+from sqlalchemy import JSON, or_, select
 
 from flatfeed.config import PROJECT_ROOT
 from flatfeed.db.models import Listing
@@ -170,7 +170,12 @@ def enrich_missing_transport_walk(
     with SessionLocal() as session:
         statement = (
             select(Listing)
-            .where(Listing.transport_walk.is_(None))
+            .where(
+                or_(
+                    Listing.transport_walk.is_(None),
+                    Listing.transport_walk == JSON.NULL,
+                )
+            )
             .where(Listing.source_active.is_(True))
             .order_by(Listing.updated_at.desc(), Listing.listing_id.desc())
         )

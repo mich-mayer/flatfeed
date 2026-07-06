@@ -50,6 +50,11 @@ class TransitWalkTests(unittest.TestCase):
             )
             session.commit()
 
+            listing = session.scalar(select(Listing))
+            assert listing is not None
+            listing.transport_walk = None
+            session.commit()
+
         stations = [
             TransitStation("S Test", "s_bahn", 52.5205, 13.405),
             TransitStation("U Test", "u_bahn", 52.52, 13.406),
