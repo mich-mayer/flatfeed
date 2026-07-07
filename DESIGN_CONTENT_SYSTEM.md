@@ -270,7 +270,7 @@ Four fixed steps, always in this order: **1 WBS → 2 District → 3 Max Kaltmie
 Behind `🛠 Admin` (admin IDs only). Actions: `Run QA demo`, `Review flagged issues`, `View QA metrics`, `Refresh catalog`, `Run catalog QA`, `📊 Effectiveness dashboard` (URL button when `DASHBOARD_URL` is set). QA triage on a flagged report offers exactly three labels: `Parser error` / `Parser correct` / `Borderline / unsure` — this vocabulary is load-bearing (it feeds the dashboard's feedback-quality metrics) and MUST NOT drift.
 
 ### 7.5 Failure and timeout messages — ADOPT principle
-Manual refresh and listing actions have timeouts (`MANUAL_REFRESH_TIMEOUT_SECONDS`) and user-facing failure messages. A failure message states what failed and, for admins, where to look next ("Parser check failed. Check the logs."). Renter-facing failures never expose internals; they state the outcome and that the user can retry. Apologies, exclamation marks, and blame are out of register (§17).
+Manual refresh and listing actions have timeouts (`MANUAL_REFRESH_TIMEOUT_SECONDS`) and user-facing failure messages. A failure message states what failed and, for admins, where to look next ("Catalog QA failed. Check the logs."). Renter-facing failures never expose internals; they state the outcome and that the user can retry. Apologies, exclamation marks, and blame are out of register (§17).
 
 ---
 
@@ -431,9 +431,9 @@ Voice is stable; tone flexes by context:
 | Success | Plain confirmation, no celebration | "I found active listings that match your saved WBS filter." |
 | No results | Honest + what the filter was | State that nothing active matches; never pad with near-misses |
 | Destructive confirm | Consequence named, neutral | "Yes, delete everything" / "No, keep my data" |
-| Session loss | Own the cause, restart cleanly | "Your setup session expired (the bot restarted), so I lost the earlier answers. Let us start again." |
+| Session loss | Own the cause, restart cleanly | "Your setup session expired (the bot restarted), so I lost the earlier answers. Let's start again." |
 | Renter-facing failure | Outcome + retry, no internals | "One or more sources may have returned an error or timed out." |
-| Admin failure | What failed + where to look | "Parser check failed. Check the logs." |
+| Admin failure | What failed + where to look | "Catalog QA failed. Check the logs." |
 | Dashboard | Question → answer → definition | "Is AI QA running well now?" + caption |
 | Case-study limitation | Matter-of-fact, unhedged | "These are synthetic evaluation metrics, not production user-impact numbers." |
 
@@ -451,7 +451,7 @@ Voice is stable; tone flexes by context:
 | Card labels | `<b>Label:</b>` fixed vocabulary | 1 word | `District:`, `Kalt:`, `Warm:` | Renaming card fields |
 | Unknowns | Canonical fallback strings | — | `not specified`, `not calculated` | "n/a", "—", "unknown" |
 | Bot statements | First-person, one purpose | 1–2 sentences | "I found active listings that match your saved WBS filter." | Paragraph messages |
-| Failure copy | Cause (admin) / outcome + retry (renter) | 1–2 clauses | "Parser check failed. Check the logs." | Apologies, exclamations, stack traces |
+| Failure copy | Cause (admin) / outcome + retry (renter) | 1–2 clauses | "Catalog QA failed. Check the logs." | Apologies, exclamations, stack traces |
 | Dashboard headings | The admin's question | 1 question | "How much does AI QA cost?" | Vague ("Overview") |
 | Dashboard captions | Provenance + definition | 1–2 sentences | "Current AI QA version: v8." (from the constant) | Hard-coded versions/numbers |
 | Commands | Single lowercase words | 1 word | `/start /filter /matches /help /delete` | Compound commands |
@@ -660,7 +660,6 @@ Exists in the codebase today; MUST NOT be reused in new work; migrate when touch
 
 | Pattern | Current location | Reason | Replacement | Priority |
 |---|---|---|---|---|
-| Admin error message "Error demo failed. Check the logs." | `main.py` (~line 2438) | Garbled register vs the approved "X failed. Check the logs." pattern | "QA demo failed. Check the logs." | Low |
 | Two labels for the same catalog action (`📂 All listings` vs `📂 Browse all listings`) | reply keyboard vs inline card | One action, one name (§19) — inline long form tolerated only until touched | Converge on one form when editing either | Low |
 | Case-page GitHub links hard-coded to `github.com/mich-mayer/flatfeed` | `docs/case-study.html`, footer + hero + nav | Must match the actual public repo location; verify before publishing changes | Confirm canonical public URL, then treat as FACT | Medium |
 
@@ -788,6 +787,14 @@ Update this file in the same change. External references inform; project needs d
 - **Affected surfaces:** `DESIGN_CONTENT_SYSTEM.md` only (§§0, 4, 5.1, 5.2, 27, 31, 34).
 - **Compatibility impact:** future agents should start from §0 and choose checks from the §31 matrix instead of blindly running tests and eval for every text-only edit; Opsqora remains a comparison example, not a source that must be present in this workspace.
 - **Migration consideration:** fixed now in the standard. No code, bot, dashboard, case page, README, or CASE_STUDY.md migration required.
+
+### 2026-07-07 product-copy audit (bot + dashboard)
+
+- **Problem:** a copy audit against GOV.UK/GDS, the Microsoft Writing Style Guide, and ONS metric guidance found (a) one concept with several names across surfaces — the catalog QA run was called "Run catalog QA" / "Parser check", the QA demo was called "QA demo" / "error demo", admin-confirmed errors were "Confirmed errors" / "Real parser errors" / "Real errors", pending triage was "Pending decision" / "Pending review" / "Pending alert feedback", the source column was "Catalog" vs the card's "Source", and single-field edits confirmed with "Done, settings updated." although the object is the *filter*; (b) AI-transparency drift — `risk_score` (0–100) rendered as a percentage, alert header "AI QA: review parser" and section header "Mismatch" reading as facts, "the model believes / AI decided" anthropomorphism, and mock-provider cost shown under an "OpenAI model" label; (c) renter-flow defects — the post-save summary claimed "Checking available listings now" although no immediate check runs, the `Set up filter` entry skipped the `Step 1/4` prefix and WBS hint, "Hi!" violated the no-exclamation rule, and "I no longer save filters from free text" referenced product history new users cannot know; (d) raw enum values (`daily_cost_limit_reached`, enabled: "none") shown in admin messages.
+- **Rationale:** correct meaning → clear action → comprehension → project terminology (§4 copy order). Canonical decisions: the backfill action is **catalog QA** everywhere; the demo is the **QA demo**; a single AI QA pass is a **check**, its stored artifact/coverage state is a **review**; an alerting review is a **flagged report**; admin-confirmed errors are **Confirmed errors**; awaiting triage is **Pending review**; risk renders as **"risk score N of 100"** (never `%`); the provider is named wherever its cost appears; single-field edit confirms with **"Filter updated."**; "Let us" → "Let's" (natural language per Microsoft style).
+- **Affected surfaces:** `main.py` (bot copy), `flatfeed/dashboard/streamlit_app.py`, this file (§§7.5, 17, 18, 29), `PRODUCT_COPY_AUDIT.md` (new). Listing-card contract (§10), canonical button labels (§19), triage vocabulary, and all eval numbers unchanged.
+- **Compatibility impact:** the §29 "Error demo failed." row is resolved and removed; the approved admin-failure example is now "Catalog QA failed. Check the logs." (same "X failed. Check the logs." pattern). No callback data, commands, or behavior changed except that `Set up filter` now shows the same Step 1/4 text as `/filter`.
+- **Migration consideration:** fixed now across bot and dashboard in one change; no README/CASE_STUDY/case-page changes needed (none of the changed strings appear there — verified by targeted search).
 
 ---
 
