@@ -23,6 +23,24 @@ server deployment scripts are part of the current demo product. The collection
 layer is represented by the synthetic source adapter and shared ingestion
 pipeline.
 
+## Working on This Repo
+
+Durable project context lives in the repository so humans, Claude, and Codex use
+the same source of truth:
+
+- `CLAUDE.md`: entry context for Claude and Claude Code.
+- `AGENTS.md`: entry context for Codex and other coding agents.
+- `DESIGN_CONTENT_SYSTEM.md`: the normative design, content, terminology,
+  accessibility, and case-study standard.
+- `docs/PROJECT_CONTEXT.md`: product semantics — filters, listing card, parsing
+  rules, AI QA boundaries, data model, and reliability decisions.
+- `docs/agent-workflow.md`: the single rulebook for humans and AI agents —
+  required response context, guardrails, Phase 1 boundaries, build/verify,
+  working style, and collaboration rules.
+
+`CLAUDE.md` and `AGENTS.md` are thin pointers; the working rules are not
+duplicated across them.
+
 ## Project Structure
 
 ```text
