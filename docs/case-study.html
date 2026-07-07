@@ -4,356 +4,377 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="FlatFeed AI PM case study: Berlin WBS apartment listing collection, matching, deterministic parsing, and AI QA.">
-    <title>FlatFeed AI PM Case Study</title>
+    <title>FlatFeed | AI PM Case Study</title>
     <link rel="icon" href="flatfeed-favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="case-study.html" aria-label="FlatFeed home">
-        <span class="brand-mark" aria-hidden="true">
-          <img src="assets/flatfeed-logo-mark.png" alt="">
-        </span>
-        <span>FlatFeed</span>
-      </a>
-      <nav aria-label="Case study sections">
-        <a href="#problem">Problem</a>
-        <a href="#approach">Approach</a>
-        <a href="#results">Results</a>
-        <a href="https://github.com/mich-mayer/flatfeed">GitHub</a>
-      </nav>
-    </header>
+    <div class="case">
+      <a class="skip-link" href="#case-main">Skip to content</a>
 
-    <main>
-      <section class="hero section-grid">
-        <div class="hero-copy">
-          <p class="section-label">AI PM Case Study</p>
+      <header class="case-top">
+        <a class="brand" href="case-study.html" aria-label="FlatFeed case study">
+          <img class="brand-mark" src="assets/flatfeed-logo-mark.png" alt="">
+          <strong>FlatFeed</strong>
+          <span class="brand-sub">Case study</span>
+        </a>
+        <nav aria-label="Case study sections">
+          <a href="#problem">Problem</a>
+          <a href="#why-ai">Why AI</a>
+          <a href="#approach">Approach</a>
+          <a href="#results">Results</a>
+          <a href="#learned">Learned</a>
+        </nav>
+        <a class="btn btn--primary" href="https://github.com/mich-mayer/flatfeed">
+          View repository
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+        </a>
+      </header>
+
+      <main id="case-main">
+        <section class="case-hero">
+          <p class="kicker">AI product management — case study · 2026</p>
           <h1>I built FlatFeed to turn fragmented Berlin WBS apartment listings into a trusted, measurable matching workflow.</h1>
-          <p class="hero-summary">
-            FlatFeed collects apartment listings through source adapters, normalizes messy listing text into one catalog, matches listings to user filters, and uses AI QA to review parser quality without letting AI mutate user-facing results.
+          <p class="case-lede">
+            FlatFeed collects apartment listings through source adapters, normalizes messy listing
+            text into one catalog, matches listings to user filters, and uses AI QA to review
+            parser quality without letting AI mutate user-facing results.
           </p>
-          <div class="hero-actions" aria-label="Primary links">
-            <a class="button-primary" href="#case-study">Read the case study</a>
-            <a class="button-secondary" href="https://github.com/mich-mayer/flatfeed">View repository</a>
+          <div class="case-actions">
+            <a class="btn btn--primary" href="#problem">
+              Read the case study
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+            <a class="btn btn--ghost" href="https://github.com/mich-mayer/flatfeed">
+              View repository
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v12"></path><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
+            </a>
           </div>
-          <dl class="role-list">
-            <div>
-              <dt>Role</dt>
-              <dd>AI Product Manager and builder</dd>
-            </div>
-            <div>
-              <dt>Domain</dt>
-              <dd>Berlin WBS housing search</dd>
-            </div>
-            <div>
-              <dt>Prototype type</dt>
-              <dd>Telegram bot, Streamlit dashboard, eval harness</dd>
-            </div>
-            <div>
-              <dt>Data</dt>
-              <dd>Synthetic Berlin catalog with hidden ground truth</dd>
-            </div>
+          <dl class="case-meta">
+            <div><dt>Role</dt><dd>AI Product Manager and builder</dd></div>
+            <div><dt>Domain</dt><dd>Berlin WBS housing search</dd></div>
+            <div><dt>Type</dt><dd>Telegram bot, Streamlit dashboard, eval harness</dd></div>
+            <div><dt>Data</dt><dd>Synthetic Berlin catalog with hidden ground truth</dd></div>
+            <div><dt>Year</dt><dd>2026</dd></div>
           </dl>
-        </div>
+        </section>
 
-        <div class="hero-evidence" aria-label="Product evidence preview">
-          <article class="phone-panel">
-            <div class="panel-header">
-              <span>FlatFeed Bot</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M21 21l-4.3-4.3"></path>
-                <circle cx="11" cy="11" r="7"></circle>
-              </svg>
+        <section class="case-demo" id="product" aria-label="Product evidence preview">
+          <figure class="demo-frame">
+            <div class="demo-frame-chrome">
+              <span class="demo-frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <em>flatfeed.local — Telegram bot · QA dashboard</em>
+              <span class="demo-frame-live"><i aria-hidden="true"></i>Demo · synthetic data</span>
             </div>
-            <div class="message user-message">/matches</div>
-            <div class="message bot-message">I found active listings that match your saved WBS filter.</div>
-            <article class="listing-card">
-              <div class="listing-media">
-                <img src="assets/berlin-wbs-building.jpg" alt="Berlin residential building used as a demo listing image">
-                <div class="mini-map" aria-hidden="true">
-                  <span></span>
+            <div class="demo-frame-body">
+              <article class="phone-panel" aria-label="Telegram bot preview">
+                <div class="panel-header">
+                  <span>FlatFeed Bot</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-4.3-4.3"></path><circle cx="11" cy="11" r="7"></circle></svg>
                 </div>
-              </div>
-              <div>
-                <p class="listing-title"><strong>2-room WBS listing</strong></p>
-                <p>District: Wedding</p>
-                <p>Address: Demo street 12, 13347 Berlin</p>
-                <p>Floor: 2</p>
-                <p>Rooms: 2</p>
-                <p>S-Bahn: 9 min walk</p>
-                <p>U-Bahn: 7 min walk</p>
-                <p>WBS: 100, 140</p>
-                <p>Source: Synthetic</p>
-                <p>Kalt: 610 EUR</p>
-                <p>Warm: 760 EUR</p>
-              </div>
-            </article>
-          </article>
+                <div class="message message--user">/matches</div>
+                <div class="message message--bot">I found active listings that match your saved WBS filter.</div>
+                <article class="listing-card">
+                  <img src="assets/berlin-wbs-building.jpg" alt="Berlin residential building used as a demo listing image">
+                  <div class="listing-fields">
+                    <p><strong>District:</strong> Wedding</p>
+                    <p><strong>Address:</strong> Demo street 12, 13347 Berlin</p>
+                    <p><strong>Floor:</strong> 2</p>
+                    <p><strong>Rooms:</strong> 2</p>
+                    <p><strong>S-Bahn:</strong> 9 min walk</p>
+                    <p><strong>U-Bahn:</strong> 7 min walk</p>
+                    <p><strong>WBS:</strong> 100, 140</p>
+                    <p><strong>Source:</strong> FlatFeed Synthetic</p>
+                    <p class="listing-gap"><strong>Kalt:</strong> 610 EUR</p>
+                    <p><strong>Warm:</strong> 760 EUR</p>
+                    <p class="listing-gap listing-link">Open listing</p>
+                  </div>
+                </article>
+              </article>
 
-          <article class="dashboard-panel">
-            <div class="panel-header">
-              <span>QA Dashboard</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 19V5"></path>
-                <path d="M4 19h16"></path>
-                <path d="M8 15v-4"></path>
-                <path d="M12 15V8"></path>
-                <path d="M16 15v-6"></path>
-              </svg>
+              <article class="dashboard-panel" aria-label="QA dashboard preview">
+                <div class="panel-header">
+                  <span>QA Dashboard</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M8 15v-4"></path><path d="M12 15V8"></path><path d="M16 15v-6"></path></svg>
+                </div>
+                <div class="metric-grid">
+                  <div><strong>15</strong><span>Golden listings</span></div>
+                  <div><strong>100.0%</strong><span>Field accuracy</span></div>
+                  <div><strong>0</strong><span>Parser misses by tag</span></div>
+                  <div><strong>$0.000000</strong><span>Mock QA cost</span></div>
+                </div>
+                <p class="metric-qualifier">Synthetic golden-set eval: demo metrics, not production numbers.</p>
+                <ol class="health-list">
+                  <li><i aria-hidden="true"></i> Source adapter layer</li>
+                  <li><i aria-hidden="true"></i> Deterministic parser</li>
+                  <li><i aria-hidden="true"></i> Matching rules</li>
+                  <li><i aria-hidden="true"></i> Admin-only AI QA</li>
+                </ol>
+              </article>
             </div>
-            <div class="metric-grid">
-              <div>
-                <strong>15</strong>
-                <span>Golden listings</span>
-              </div>
-              <div>
-                <strong>100.0%</strong>
-                <span>Field accuracy</span>
-              </div>
-              <div>
-                <strong>0</strong>
-                <span>Parser misses by tag</span>
-              </div>
-              <div>
-                <strong>$0.000000</strong>
-                <span>Mock QA cost</span>
-              </div>
+            <figcaption>
+              Recreated product evidence rendered from the same synthetic demo data: the Telegram
+              match card and the admin QA dashboard. A styled mockup, not screenshots.
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="case-section" id="problem">
+          <header class="case-section-head">
+            <p class="kicker"><span>01</span>The problem</p>
+            <h2>Finding WBS-eligible apartments in Berlin is fragmented and time-sensitive.</h2>
+          </header>
+          <div class="case-prose">
+            <p>
+              Listings appear across different sources, use inconsistent formats, change quickly,
+              and often hide key eligibility details inside unstructured text. The affected user is
+              a renter who must repeatedly check multiple catalogs and manually interpret WBS,
+              district, rent, room count, and availability before they can even decide whether an
+              apartment is worth opening.
+            </p>
+          </div>
+          <ul class="case-figures" aria-label="Prototype scope figures">
+            <li><strong>12</strong><span>Berlin Bezirke in the filter</span></li>
+            <li><strong>4</strong><span>filter fields: WBS, district, rent, rooms</span></li>
+            <li><strong>15</strong><span>golden-set listings with hidden ground truth</span></li>
+            <li><strong>1</strong><span>AI surface — QA review only</span></li>
+          </ul>
+        </section>
+
+        <section class="case-section" id="why-ai">
+          <header class="case-section-head">
+            <p class="kicker"><span>02</span>Why AI?</p>
+            <h2>Eligibility decisions stay deterministic. AI reviews quality.</h2>
+          </header>
+          <div class="case-prose">
+            <p>
+              I did not make AI responsible for matching because eligibility decisions need to be
+              predictable and explainable. I used deterministic parsing and rules for the
+              user-facing flow, then used AI as a controlled QA layer to review parser snapshots,
+              flag ambiguous fields, and improve quality over time. AI is valuable here because
+              listing text has edge cases and wording variation that are expensive to review
+              manually, while the product still keeps AI away from automatic data mutation.
+            </p>
+          </div>
+          <div class="case-points">
+            <div><strong>Rules for matching</strong><span>Every match or no-match is traceable to a deterministic rule.</span></div>
+            <div><strong>AI for review</strong><span>AI QA challenges parser output and flags risky fields.</span></div>
+            <div><strong>Humans decide feedback</strong><span>An admin triages every alerted finding before anything changes.</span></div>
+          </div>
+        </section>
+
+        <section class="case-section" id="role">
+          <header class="case-section-head">
+            <p class="kicker"><span>03</span>My role</p>
+            <h2>Product definition, prototype delivery, evaluation design.</h2>
+          </header>
+          <div class="case-prose">
+            <p>
+              I defined the product scope, shaped the portfolio positioning, designed the
+              source-collection and matching flow, implemented the prototype, created the synthetic
+              evaluation dataset, wrote deterministic parsing rules, added AI QA with budget
+              controls, and built the admin dashboard for review and measurement.
+            </p>
+          </div>
+        </section>
+
+        <section class="case-section" id="approach">
+          <header class="case-section-head">
+            <p class="kicker"><span>04</span>The approach</p>
+            <h2>A trusted catalog, not a generic real-estate search tool.</h2>
+          </header>
+          <div class="case-prose">
+            <p>
+              The data strategy uses synthetic Berlin listings with hidden ground truth so the
+              parser can be evaluated without scraping or redistributing real housing-company
+              listings. I chose deterministic parsing for fields that affect matching, a
+              source-adapter ingestion layer for future multi-source collection, SQLite for a local
+              prototype, and AI QA only as an admin-reviewed control layer.
+            </p>
+          </div>
+          <ol class="case-steps case-steps--five" aria-label="FlatFeed product workflow">
+            <li><span>01</span><h3>Collect</h3><p>Source adapters pull listings into one pipeline.</p></li>
+            <li><span>02</span><h3>Normalize</h3><p>Parser extracts WBS, rent, rooms, floor, address, district.</p></li>
+            <li><span>03</span><h3>Match</h3><p>Deterministic rules compare listings with saved filters.</p></li>
+            <li><span>04</span><h3>Review</h3><p>AI QA flags risky parser snapshots for admin feedback.</p></li>
+            <li><span>05</span><h3>Notify</h3><p>Users receive active matches once, with source context.</p></li>
+          </ol>
+        </section>
+
+        <section class="case-section" id="built">
+          <header class="case-section-head">
+            <p class="kicker"><span>05</span>What I built</p>
+            <h2>A working prototype with a measurable quality loop around it.</h2>
+          </header>
+          <div class="case-built">
+            <div class="case-prose">
+              <p>
+                I built a Telegram bot and Streamlit dashboard prototype. The bot stores a fixed
+                user filter for WBS, Berlin district, maximum Kaltmiete, and rooms, then returns
+                active listings that match. The ingestion layer normalizes source listings into a
+                shared schema, enriches local transit walking-time estimates, tracks source
+                activity, deduplicates sent notifications, and records source health. The AI QA
+                system reviews parser snapshots, logs cost and token usage, flags high-risk issues
+                for an admin, and keeps human feedback separate from automatic matching.
+              </p>
             </div>
-            <p class="metric-qualifier">Synthetic golden-set eval: demo metrics, not production numbers.</p>
-            <ol class="health-list">
-              <li><span></span> Source adapter layer</li>
-              <li><span></span> Deterministic parser</li>
-              <li><span></span> Matching rules</li>
-              <li><span></span> Admin-only AI QA</li>
-            </ol>
-          </article>
-        </div>
-      </section>
-
-      <section class="proof-strip" aria-label="Project proof points">
-        <div>
-          <strong>Source-adapter architecture</strong>
-          <span>Registry, per-source activity checks, and health monitoring, exercised through the synthetic adapter in this demo.</span>
-        </div>
-        <div>
-          <strong>AI boundary defined</strong>
-          <span>AI reviews parser output but never changes listing data automatically.</span>
-        </div>
-        <div>
-          <strong>Measured demo quality</strong>
-          <span>Synthetic golden-set eval with explicit demo-only metrics.</span>
-        </div>
-      </section>
-
-      <section class="case-study" id="case-study" aria-label="7-part AI PM case study framework">
-        <article class="case-row" id="problem">
-          <div class="case-number">01</div>
-          <div class="case-content">
-            <h2>The Problem</h2>
-            <p>
-              Finding WBS-eligible apartments in Berlin is fragmented and time-sensitive: listings appear across different sources, use inconsistent formats, change quickly, and often hide key eligibility details inside unstructured text. The affected user is a renter who must repeatedly check multiple catalogs and manually interpret WBS, district, rent, room count, and availability before they can even decide whether an apartment is worth opening.
-            </p>
+            <aside class="product-shot" aria-label="Dashboard QA review preview">
+              <div class="shot-tabs">
+                <span>Overview</span>
+                <span class="is-active">QA Review</span>
+                <span>Sources</span>
+              </div>
+              <table>
+                <thead>
+                  <tr><th>Field</th><th>Risk</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>WBS</td><td>Low</td><td>Correct</td></tr>
+                  <tr><td>Rooms</td><td>Low</td><td>Correct</td></tr>
+                  <tr><td>Kaltmiete</td><td>Low</td><td>Correct</td></tr>
+                </tbody>
+              </table>
+            </aside>
           </div>
-          <aside class="case-aside">
-            <ul>
-              <li>Multiple listing sources</li>
-              <li>Inconsistent housing text</li>
-              <li>High manual review burden</li>
-            </ul>
-          </aside>
-        </article>
-
-        <article class="case-row">
-          <div class="case-number">02</div>
-          <div class="case-content">
-            <h2>Why AI?</h2>
-            <p>
-              I did not make AI responsible for matching because eligibility decisions need to be predictable and explainable. I used deterministic parsing and rules for the user-facing flow, then used AI as a controlled QA layer to review parser snapshots, flag ambiguous fields, and improve quality over time. AI is valuable here because listing text has edge cases and wording variation that are expensive to review manually, while the product still keeps AI away from automatic data mutation.
-            </p>
-          </div>
-          <aside class="case-aside">
-            <ul>
-              <li>Rules for matching</li>
-              <li>AI for review</li>
-              <li>Humans decide feedback</li>
-            </ul>
-          </aside>
-        </article>
-
-        <article class="case-row">
-          <div class="case-number">03</div>
-          <div class="case-content">
-            <h2>My Role</h2>
-            <p>
-              I defined the product scope, shaped the portfolio positioning, designed the source-collection and matching flow, implemented the prototype, created the synthetic evaluation dataset, wrote deterministic parsing rules, added AI QA with budget controls, and built the admin dashboard for review and measurement.
-            </p>
-          </div>
-          <aside class="case-aside">
-            <ul>
-              <li>Product definition</li>
-              <li>Prototype delivery</li>
-              <li>Evaluation design</li>
-            </ul>
-          </aside>
-        </article>
-
-        <article class="case-row wide-row" id="approach">
-          <div class="case-number">04</div>
-          <div class="case-content">
-            <h2>The Approach</h2>
-            <p>
-              I scoped FlatFeed around a trusted catalog rather than a generic real-estate search tool. The data strategy uses synthetic Berlin listings with hidden ground truth so the parser can be evaluated without scraping or redistributing real housing-company listings. I chose deterministic parsing for fields that affect matching, a source-adapter ingestion layer for future multi-source collection, SQLite for a local prototype, and AI QA only as an admin-reviewed control layer.
-            </p>
-            <div class="workflow" aria-label="FlatFeed product workflow">
-              <div>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M4 6h16M4 12h16M4 18h16"></path>
-                  <path d="M7 4v16M17 4v16"></path>
-                </svg>
-                <strong>Collect</strong>
-                <span>Source adapters pull listings into one pipeline.</span>
-              </div>
-              <div>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M5 5h14v14H5z"></path>
-                  <path d="M5 10h14M10 5v14"></path>
-                </svg>
-                <strong>Normalize</strong>
-                <span>Parser extracts WBS, rent, rooms, floor, address, district.</span>
-              </div>
-              <div>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <circle cx="9" cy="12" r="5"></circle>
-                  <circle cx="15" cy="12" r="5"></circle>
-                </svg>
-                <strong>Match</strong>
-                <span>Deterministic rules compare listings with saved filters.</span>
-              </div>
-              <div>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 4a4 4 0 0 0-4 4v8a4 4 0 0 0 8 0V8a4 4 0 0 0-4-4Z"></path>
-                  <path d="M8 9H5M19 9h-3M8 15H5M19 15h-3"></path>
-                </svg>
-                <strong>Review</strong>
-                <span>AI QA flags risky parser snapshots for admin feedback.</span>
-              </div>
-              <div>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M21 4 10 15"></path>
-                  <path d="m21 4-7 17-4-6-6-4 17-7Z"></path>
-                </svg>
-                <strong>Notify</strong>
-                <span>Users receive active matches once, with source context.</span>
-              </div>
+          <div class="case-scope-columns">
+            <div>
+              <h3>Real in this prototype</h3>
+              <ul class="case-scope-list case-scope-list--real">
+                <li>The full Telegram flow — filter wizard, matching, listing cards, notifications</li>
+                <li>Deterministic parser and matching rules — no LLM in the user-facing path</li>
+                <li>Source-adapter registry with activity checks and per-source health monitoring</li>
+                <li>Golden-set eval harness and an admin QA dashboard with cost tracking</li>
+              </ul>
             </div>
-          </div>
-        </article>
-
-        <article class="case-row">
-          <div class="case-number">05</div>
-          <div class="case-content">
-            <h2>What I Built</h2>
-            <p>
-              I built a Telegram bot and Streamlit dashboard prototype. The bot stores a fixed user filter for WBS, Berlin district, maximum Kaltmiete, and rooms, then returns active listings that match. The ingestion layer normalizes source listings into a shared schema, enriches local transit walking-time estimates, tracks source activity, deduplicates sent notifications, and records source health. The AI QA system reviews parser snapshots, logs cost and token usage, flags high-risk issues for an admin, and keeps human feedback separate from automatic matching.
-            </p>
-          </div>
-          <aside class="product-shot" aria-label="Dashboard product preview">
-            <div class="shot-tabs">
-              <span>Overview</span>
-              <span class="active">QA Review</span>
-              <span>Sources</span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Field</th>
-                  <th>Risk</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>WBS</td>
-                  <td>Low</td>
-                  <td>Correct</td>
-                </tr>
-                <tr>
-                  <td>Rooms</td>
-                  <td>Low</td>
-                  <td>Correct</td>
-                </tr>
-                <tr>
-                  <td>Kaltmiete</td>
-                  <td>Low</td>
-                  <td>Correct</td>
-                </tr>
-              </tbody>
-            </table>
-          </aside>
-        </article>
-
-        <article class="case-row results-row" id="results">
-          <div class="case-number">06</div>
-          <div class="case-content">
-            <h2>Results</h2>
-            <p>
-              In the current synthetic golden-set eval, FlatFeed parses 15 synthetic listings with 100.0% parser field accuracy and 100.0% exact listing accuracy across WBS, rent, rooms, floor, district, postal code, and special constraints. The mock AI QA provider produced 0 false alert fields and $0.000000 total QA cost in that demo run. These are synthetic evaluation metrics, not production user-impact numbers, but they demonstrate a measurable quality loop instead of an anecdotal demo.
-            </p>
-            <div class="result-cards">
-              <div>
-                <strong>15</strong>
-                <span>Golden-set listings</span>
-              </div>
-              <div>
-                <strong>100.0%</strong>
-                <span>Parser field accuracy</span>
-              </div>
-              <div>
-                <strong>100.0%</strong>
-                <span>Exact listing accuracy</span>
-              </div>
-              <div>
-                <strong>0</strong>
-                <span>Parser misses by tag</span>
-              </div>
-              <div>
-                <strong>$0.000000</strong>
-                <span>Mock QA cost</span>
-              </div>
+            <div>
+              <h3>Synthetic on purpose</h3>
+              <ul class="case-scope-list case-scope-list--mocked">
+                <li>Listings — a synthetic Berlin catalog with hidden ground truth, no scraping</li>
+                <li>AI QA provider — a mock provider in the demo, so QA cost is $0</li>
+                <li>Transit minutes — geometric walking-time estimates, not routing data</li>
+                <li>Listing photos — licensed demo assets, not the actual address</li>
+              </ul>
             </div>
           </div>
-        </article>
-
-        <article class="case-row final-row">
-          <div class="case-number">07</div>
-          <div class="case-content">
-            <h2>What I Learned</h2>
-            <p>
-              The biggest lesson is that AI PM work is strongest when the AI boundary is clear. For this product, deterministic rules create trust for user-facing matching, while AI adds value as a review and learning layer. If I continued the project, I would add a small set of live source adapters where terms allow it, expand the golden set, add screenshots from a real demo session, and compare AI QA prompt versions over time with human-reviewed feedback.
-            </p>
-            <div class="learning-grid">
-              <div>
-                <strong>Determinism first</strong>
-                <span>Rules own user-facing eligibility decisions.</span>
-              </div>
-              <div>
-                <strong>AI as a control</strong>
-                <span>AI reviews quality without silently changing data.</span>
-              </div>
-              <div>
-                <strong>Measure honestly</strong>
-                <span>Demo metrics are useful when they are clearly labeled.</span>
-              </div>
-            </div>
+          <div class="case-stack" aria-label="Technology stack">
+            <span>Python</span>
+            <span>aiogram</span>
+            <span>Streamlit</span>
+            <span>SQLite</span>
+            <span>Synthetic eval harness</span>
           </div>
-        </article>
-      </section>
-    </main>
+        </section>
 
-    <footer class="site-footer">
-      <span>FlatFeed AI PM case study</span>
-      <a href="https://github.com/mich-mayer/flatfeed/blob/main/CASE_STUDY.md">Read Markdown version</a>
-      <a href="https://github.com/mich-mayer/flatfeed">GitHub repository</a>
-    </footer>
+        <section class="case-boundary" id="boundary">
+          <p class="kicker">The AI boundary</p>
+          <blockquote>
+            AI QA may challenge the parser, but it cannot replace or mutate parsing rules, listing
+            data, matching, or user-facing cards automatically. Findings are admin-only and require
+            human feedback.
+          </blockquote>
+        </section>
+
+        <section class="case-section" id="results">
+          <header class="case-section-head">
+            <p class="kicker"><span>06</span>Results (demo eval)</p>
+            <h2>A measurable quality loop instead of an anecdotal demo.</h2>
+          </header>
+          <table class="case-results">
+            <caption>All values come from the synthetic golden-set eval — demo metrics, not production user-impact numbers.</caption>
+            <tbody>
+              <tr>
+                <th scope="row">Golden-set listings</th>
+                <td class="case-results-value">15</td>
+                <td class="case-results-detail">Synthetic Berlin listings with hidden ground truth used in the eval run</td>
+              </tr>
+              <tr>
+                <th scope="row">Parser field accuracy</th>
+                <td class="case-results-value">100.0%</td>
+                <td class="case-results-detail">Across WBS, rent, rooms, floor, district, postal code, and special constraints</td>
+              </tr>
+              <tr>
+                <th scope="row">Exact listing accuracy</th>
+                <td class="case-results-value">100.0%</td>
+                <td class="case-results-detail">Share of listings where every evaluated field was parsed correctly</td>
+              </tr>
+              <tr>
+                <th scope="row">Parser misses by tag</th>
+                <td class="case-results-value">0</td>
+                <td class="case-results-detail">No golden-set case tag produced a parser miss in the demo run</td>
+              </tr>
+              <tr>
+                <th scope="row">Mock QA cost</th>
+                <td class="case-results-value">$0.000000</td>
+                <td class="case-results-detail">Total AI QA cost for the demo run on the mock provider</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="case-prose">
+            <p>
+              In the current synthetic golden-set eval, FlatFeed parses 15 synthetic listings with
+              100.0% parser field accuracy and 100.0% exact listing accuracy across WBS, rent,
+              rooms, floor, district, postal code, and special constraints. The mock AI QA provider
+              produced 0 false alert fields and $0.000000 total QA cost in that demo run. These are
+              synthetic evaluation metrics, not production user-impact numbers, but they
+              demonstrate a measurable quality loop instead of an anecdotal demo.
+            </p>
+          </div>
+        </section>
+
+        <section class="case-section" id="learned">
+          <header class="case-section-head">
+            <p class="kicker"><span>07</span>What I learned</p>
+            <h2>AI PM work is strongest when the AI boundary is clear.</h2>
+          </header>
+          <div class="case-prose">
+            <p>
+              For this product, deterministic rules create trust for user-facing matching, while AI
+              adds value as a review and learning layer. If I continued the project, I would add a
+              small set of live source adapters where terms allow it, expand the golden set, add
+              screenshots from a real demo session, and compare AI QA prompt versions over time
+              with human-reviewed feedback.
+            </p>
+          </div>
+          <div class="case-points">
+            <div><strong>Determinism first</strong><span>Rules own user-facing eligibility decisions.</span></div>
+            <div><strong>AI as a control</strong><span>AI reviews quality without silently changing data.</span></div>
+            <div><strong>Measure honestly</strong><span>Demo metrics are useful when they are clearly labeled.</span></div>
+          </div>
+        </section>
+
+        <section class="case-cta">
+          <h2>Explore the measurable quality loop.</h2>
+          <p>
+            Everything here is a prototype on synthetic data — deterministic where it faces users,
+            AI-reviewed where it helps, and measured honestly.
+          </p>
+          <div class="case-actions">
+            <a class="btn btn--accent" href="https://github.com/mich-mayer/flatfeed">
+              View repository
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v12"></path><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
+            </a>
+            <a class="btn btn--inverse" href="https://github.com/mich-mayer/flatfeed/blob/main/CASE_STUDY.md">
+              Read the Markdown version
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="case-foot">
+        <a class="brand" href="case-study.html" aria-label="FlatFeed">
+          <img class="brand-mark" src="assets/flatfeed-logo-mark.png" alt="">
+          <strong>FlatFeed</strong>
+        </a>
+        <span>© 2026 — prototype · synthetic data · demo metrics</span>
+        <nav aria-label="Footer links">
+          <a href="https://github.com/mich-mayer/flatfeed">Repository</a>
+          <a href="https://github.com/mich-mayer/flatfeed/blob/main/CASE_STUDY.md">Markdown case study</a>
+        </nav>
+      </footer>
+    </div>
   </body>
 </html>
