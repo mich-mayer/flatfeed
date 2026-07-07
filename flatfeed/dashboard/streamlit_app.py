@@ -211,10 +211,10 @@ def _render_metric_guide() -> None:
         st.markdown(
             """
             - **Active catalog coverage** shows how much of the current synthetic catalog has been reviewed by the current AI QA version.
-            - **AI risk signals** are cases where the model believes the parser may have made a material mistake worth admin review.
-            - **Useful signal rate** shows how often reviewed AI signals became confirmed parser errors.
-            - **False alarm rate** shows how often AI distracted the admin without a real parser error.
-            - **Cost per confirmed error** shows model cost per human-confirmed parser error.
+            - **AI risk signals** are checks the model flagged as a possible material parser error for admin review. A flag is a prediction, not a confirmed error.
+            - **Useful signal rate** shows how often reviewed AI signals became confirmed parser errors. Higher is better.
+            - **False alarm rate** shows how often AI distracted the admin without a real parser error. Lower is better.
+            - **Cost per confirmed error** shows model cost per admin-confirmed parser error. Lower is better.
             """
         )
 
@@ -265,7 +265,7 @@ def _render_health(coverage_counts: Dict[str, int]) -> None:
     health_rows = pd.DataFrame(
         [
             {
-                "Catalog": source_company,
+                "Source": source_company,
                 "Status": summary.latest_status or "no data",
                 "Latest success": _format_time(summary.last_success_at),
                 "Consecutive failures": summary.consecutive_failures,
@@ -311,7 +311,7 @@ def _render_quality(current_reviews: pd.DataFrame) -> None:
     c2.metric(
         "AI risk signals",
         f"{alerts:,}",
-        help="How often AI decided the parser may have erred enough to show an admin.",
+        help="How many checks AI flagged as a possible parser error and sent to the admin.",
     )
     c3.metric(
         "Human reviewed",
@@ -319,16 +319,16 @@ def _render_quality(current_reviews: pd.DataFrame) -> None:
         help="How many AI reports received admin feedback.",
     )
     c4.metric(
-        "Pending decision",
+        "Pending review",
         f"{pending_alerts:,}",
-        help="How many risky AI reports are still neither confirmed nor rejected.",
+        help="How many flagged AI reports are still neither confirmed nor rejected.",
     )
 
     c5, c6, c7, c8 = st.columns(4)
     c5.metric(
-        "Real parser errors",
+        "Confirmed errors",
         f"{confirmed:,}",
-        help="How many AI alerts the admin confirmed as real parsing errors.",
+        help="How many AI alerts the admin confirmed as real parser errors.",
     )
     c6.metric(
         "False alarms",
@@ -367,10 +367,18 @@ def _render_costs(current_reviews: pd.DataFrame) -> None:
 
     st.subheader("How much does AI QA cost?")
     c0, c1, c2, c3, c4 = st.columns(5)
+    provider = settings.ai_qa_provider
     c0.metric(
-        "OpenAI model",
-        settings.ai_qa_model,
-        help="AI QA model when AI_QA_PROVIDER=openai. In mock mode, actual check cost is zero.",
+        "AI QA provider",
+        (
+            f"openai · {settings.ai_qa_model}"
+            if provider == "openai"
+            else f"{provider} — no API calls"
+        ),
+        help=(
+            "The mock provider is local, deterministic, and free. "
+            "OpenAI runs use the configured model and the prices in the caption below."
+        ),
     )
     c1.metric(
         "Spent on current version",
@@ -462,7 +470,7 @@ def _render_demo_fault_check() -> None:
         "in openai mode this will make one real API call."
     )
 
-    if not st.button("Run demo AI QA"):
+    if not st.button("Run QA demo"):
         return
 
     listing = listing_by_label[selected_label]
@@ -482,9 +490,9 @@ def _render_demo_fault_check() -> None:
         f"(was: {fault['original_value']})."
     )
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("AI risk", f"{int(result.ai_result.get('risk_score') or 0)}%")
+    c1.metric("Risk score", f"{int(result.ai_result.get('risk_score') or 0)} of 100")
     c2.metric("Alert", "yes" if result.ai_result.get("should_alert_admin") else "no")
-    c3.metric("Confidence", f"{float(result.ai_result.get('confidence') or 0.0):.2f}")
+    c3.metric("AI confidence", f"{float(result.ai_result.get('confidence') or 0.0):.2f}")
     c4.metric("Cost", _money(result.total_cost_usd))
 
     issues = _render_demo_issues(result.ai_result)
@@ -504,9 +512,8 @@ def _render_field_quality(current_reviews: pd.DataFrame) -> None:
     field_stats: Dict[str, Dict[str, float]] = defaultdict(
         lambda: {
             "AI risk signals": 0,
-            "Real errors": 0,
+            "Confirmed errors": 0,
             "False alarms": 0,
-            "Average AI risk": 0.0,
             "_risk_total": 0.0,
         }
     )
@@ -519,37 +526,37 @@ def _render_field_quality(current_reviews: pd.DataFrame) -> None:
             stats["AI risk signals"] += 1
             stats["_risk_total"] += float(row.risk_score or 0)
             if row.feedback_status == AI_QA_FEEDBACK_PARSER_ERROR:
-                stats["Real errors"] += 1
+                stats["Confirmed errors"] += 1
             elif row.feedback_status == AI_QA_FEEDBACK_PARSER_CORRECT:
                 stats["False alarms"] += 1
 
     rows = []
     for field, stats in field_stats.items():
         alerts = int(stats["AI risk signals"])
-        confirmed = int(stats["Real errors"])
+        confirmed = int(stats["Confirmed errors"])
         false_alarms = int(stats["False alarms"])
         decisive = confirmed + false_alarms
         rows.append(
             {
                 "Field": field,
                 "AI risk signals": alerts,
-                "Real errors": confirmed,
+                "Confirmed errors": confirmed,
                 "False alarms": false_alarms,
                 "Useful signal rate": _percent(confirmed / decisive) if decisive else _no_data(),
-                "Average AI risk": round(stats["_risk_total"] / alerts, 1) if alerts else 0.0,
+                "Average risk score (0-100)": round(stats["_risk_total"] / alerts, 1) if alerts else 0.0,
             }
         )
 
     st.subheader("Where the parser is most at risk")
     st.caption(
         "This table shows which fields AI most often flags as risky, "
-        "and where a human has already confirmed real errors."
+        "and where the admin has already confirmed errors."
     )
     if not rows:
         st.info("There are no field-level AI alerts yet.")
         return
     frame = pd.DataFrame(rows).sort_values(
-        ["Real errors", "AI risk signals"], ascending=False
+        ["Confirmed errors", "AI risk signals"], ascending=False
     )
     st.dataframe(frame, width="stretch", hide_index=True)
 
@@ -574,7 +581,7 @@ def _render_versions(all_reviews: pd.DataFrame) -> None:
                 "Checks": len(group),
                 "AI risk signals": int(group["should_alert_admin"].sum()),
                 "Human reviewed": len(_reviewed_feedback(group)),
-                "Real errors": confirmed,
+                "Confirmed errors": confirmed,
                 "False alarms": false_alarms,
                 "Useful signal rate": _percent(confirmed / len(decisive)) if len(decisive) else _no_data(),
                 "Cost": _money(float(group["total_cost_usd"].sum())),
@@ -600,18 +607,18 @@ def _review_table(
 
     table = reviews.head(limit).copy()
     table["Fields"] = table["issue_fields"].map(lambda values: ", ".join(values))
-    table["AI risk"] = table["risk_score"].map(lambda value: f"{int(value)}%")
+    table["Risk score (0-100)"] = table["risk_score"].map(lambda value: int(value))
     table["AI confidence"] = table["confidence"].map(lambda value: f"{float(value):.2f}")
     table["Date"] = table["created_at_label"]
     table["Status"] = table["feedback_label"]
-    table["Catalog"] = table["source_company"]
+    table["Source"] = table["source_company"]
     table["Link"] = table["listing_url"]
     table["What AI noticed"] = table["issue_summary"]
     output = table[
         [
             "Date",
-            "Catalog",
-            "AI risk",
+            "Source",
+            "Risk score (0-100)",
             "AI confidence",
             "Fields",
             "Status",

@@ -183,7 +183,7 @@ KALTMIETE_HINT = "<i>Kaltmiete is the base rent without utilities (Nebenkosten).
 
 SETUP_EXPIRED_TEXT = (
     "Your setup session expired (the bot restarted), so I lost the earlier answers. "
-    "Let us start again.\n\n"
+    "Let's start again.\n\n"
 )
 
 
@@ -528,8 +528,8 @@ def _settings_card(preferences: Optional[UserPreferences]) -> str:
         "<b>Your filter</b>\n\n"
         f"<b>WBS:</b> {_display_wbs(preferences.wbs_type)}\n"
         f"<b>District:</b> {_display(preferences.location, fallback='any district')}\n"
-        f"<b>Rooms:</b> {_display_rooms(preferences.rooms)}\n"
-        f"<b>Kaltmiete:</b> {rent}\n\n"
+        f"<b>Kaltmiete:</b> {rent}\n"
+        f"<b>Rooms:</b> {_display_rooms(preferences.rooms)}\n\n"
         "<b>Notifications:</b> ON"
     )
 
@@ -572,8 +572,8 @@ def _filter_summary(preferences: UserPreferences) -> str:
         f"<b>District:</b> {_display(preferences.location, fallback='any district')}\n"
         f"<b>Kaltmiete:</b> {rent}\n"
         f"<b>Rooms:</b> {_display_rooms(preferences.rooms)}\n\n"
-        "Checking available listings now. Any matching apartments will be sent here "
-        "right away. If none are available yet, you’ll be notified when new matches appear."
+        "I will send new matching listings here automatically, each one only once. "
+        "To check the catalog right now, tap Show matches."
     )
 
 
@@ -1365,20 +1365,20 @@ def _ai_qa_demo_feedback_keyboard() -> InlineKeyboardMarkup:
 
 def _format_ai_qa_review(review: AIQAReview, *, alert: bool) -> str:
     header = (
-        "<b>AI QA: review parser</b>"
+        "<b>AI QA alert: possible parser error</b>"
         if alert
         else "<b>AI QA report</b>"
     )
-    risk_percent = int(review.risk_score or 0)
+    risk_score = int(review.risk_score or 0)
     confidence_percent = round(float(review.confidence or 0.0) * 100)
     issues = "\n\n".join(_issue_lines(review))
     return (
         f"{header}\n\n"
         f"Listing:\n{escape(review.listing_url)}\n\n"
-        "<b>Mismatch</b>\n"
+        "<b>Possible mismatch</b>\n"
         f"{issues}\n\n"
         "<b>Summary</b>\n"
-        f"Risk: <b>{_risk_label(risk_percent)}, {risk_percent}%</b>\n"
+        f"Risk score: <b>{risk_score} of 100 ({_risk_label(risk_score)})</b>\n"
         f"AI confidence: {confidence_percent}%\n"
         f"Check cost: ${float(review.total_cost_usd or 0.0):.6f}\n\n"
         "Choose a decision with the buttons below."
@@ -1518,21 +1518,39 @@ def run_ai_qa_backfill() -> AIQARunResult:
     )
 
 
+# Human-readable labels for AIQARunResult stop/skip reason codes.
+AI_QA_REASON_LABELS = {
+    "completed": "completed",
+    "no_urls": "no active listings to check",
+    "disabled": "AI QA is disabled in settings",
+    "missing_openai_api_key": "OpenAI API key is not configured",
+    "daily_cost_limit_reached": "daily cost limit reached",
+    "batch_limit_reached": "batch limit reached",
+    "remaining_unreviewed": "batch finished; unreviewed listings remain",
+}
+
+
+def _ai_qa_reason_label(reason: Optional[str]) -> str:
+    if not reason:
+        return "none"
+    return AI_QA_REASON_LABELS.get(reason, reason)
+
+
 def _format_ai_qa_backfill_result(
     result: AIQARunResult,
     *,
     status: Optional[AIQAStatus] = None,
 ) -> str:
     text = (
-        "<b>Parser check completed.</b>\n\n"
-        f"Check version: <b>{CURRENT_AI_QA_PROMPT_VERSION}</b>\n"
-        f"Unchecked listings before run: {result.total_unreviewed_before}\n"
+        "<b>Catalog QA completed.</b>\n\n"
+        f"AI QA version: <b>{CURRENT_AI_QA_PROMPT_VERSION}</b>\n"
+        f"Unreviewed before this run: {result.total_unreviewed_before}\n"
         f"Listings checked: {result.checked_count}\n"
-        f"Listings still unchecked: {result.remaining_unreviewed_count}\n"
-        f"Potential errors: {len(result.alert_review_ids)}\n"
-        f"Stop reason: {escape(result.stop_reason)}\n"
+        f"Still unreviewed: {result.remaining_unreviewed_count}\n"
+        f"Flagged reports: {len(result.alert_review_ids)}\n"
+        f"Stopped because: {escape(_ai_qa_reason_label(result.stop_reason))}\n"
         f"Cost: ${result.total_cost_usd:.6f}\n"
-        f"Skipped: {escape(result.skipped_reason or 'none')}"
+        f"Skipped: {escape(_ai_qa_reason_label(result.skipped_reason))}"
     )
     if status is None:
         return text
@@ -1540,13 +1558,14 @@ def _format_ai_qa_backfill_result(
         f"{text}\n\n"
         "<b>Current AI QA coverage:</b>\n"
         f"Active listings: {status.active_listings_count}\n"
-        f"Covered by current AI QA: {status.reviewed_active_count}\n"
-        f"Still to check: {status.unreviewed_active_count}"
+        f"Reviewed by current AI QA version: {status.reviewed_active_count}\n"
+        f"Still to review: {status.unreviewed_active_count}"
     )
 
 
 def _format_ai_qa_status(status: AIQAStatus) -> str:
-    enabled_label = "yes" if status.enabled else "none"
+    enabled_label = "yes" if status.enabled else "no"
+    provider = get_settings().ai_qa_provider
     latest_review = _format_berlin_timestamp(status.latest_review_at)
     cost_limit = (
         f"${status.cost_today_usd:.6f}/${status.daily_max_cost_usd:.2f}"
@@ -1554,18 +1573,19 @@ def _format_ai_qa_status(status: AIQAStatus) -> str:
         else f"${status.cost_today_usd:.6f}"
     )
     return (
-        "<b>AI QA status.</b>\n\n"
-        f"Check version: <b>{escape(status.qa_prompt_version)}</b>\n"
+        "<b>AI QA status</b>\n\n"
+        f"AI QA version: <b>{escape(status.qa_prompt_version)}</b>\n"
+        f"Provider: {escape(provider)}\n"
         f"Model: {escape(status.model)}\n"
         f"AI QA enabled: {enabled_label}\n\n"
         f"Active listings: <b>{status.active_listings_count}</b>\n"
-        f"Covered by current AI QA: <b>{status.reviewed_active_count}</b>\n"
-        f"Still to check: <b>{status.unreviewed_active_count}</b>\n\n"
-        f"Total reviews in version: {status.total_reviews_count}\n"
-        f"Pending alert feedback: {status.pending_alerts_count}\n"
+        f"Reviewed by current AI QA version: <b>{status.reviewed_active_count}</b>\n"
+        f"Still to review: <b>{status.unreviewed_active_count}</b>\n\n"
+        f"Reviews in current version: {status.total_reviews_count}\n"
+        f"Flagged reports pending review: {status.pending_alerts_count}\n"
         f"Confirmed errors: {status.parser_error_feedback_count}\n"
         f"False alarms: {status.parser_correct_feedback_count}\n"
-        f"Unsure: {status.unsure_feedback_count}\n\n"
+        f"Borderline / unsure: {status.unsure_feedback_count}\n\n"
         f"Checks today: {status.checks_today}\n"
         f"Cost today: {cost_limit}\n"
         f"Latest review: {latest_review}"
@@ -1659,7 +1679,7 @@ async def _send_ai_qa_backfill_result_when_done(
         try:
             await bot.send_message(
                 chat_id=chat_id,
-                text="Parser check failed. Check the logs.",
+                text="Catalog QA failed. Check the logs.",
             )
         except TelegramAPIError:
             logger.exception("Failed to send background AI QA backfill failure message.")
@@ -1946,7 +1966,7 @@ async def send_active_filtered_matches(message: Message, bot: Bot, *, user_id: i
         return
 
     await message.answer(
-        "Showing up to 10 fresh active listings matching your filter."
+        "Showing up to 10 active listings that match your filter."
     )
     for match in matches:
         await send_match_to_chat(bot, chat_id=message.chat.id, match=match)
@@ -1993,7 +2013,7 @@ async def begin_filter_setup(message: Message, state: FSMContext) -> None:
         answer=message.answer,
         state=state,
         text=(
-            "Let us set up the filter step by step. Choose options with the buttons, "
+            "Let's set up the filter step by step. Choose options with the buttons, "
             "and tap ✖ Cancel any time to stop.\n\n" + _wbs_step_text()
         ),
         reply_markup=_wbs_keyboard(),
@@ -2035,7 +2055,7 @@ async def handle_start(message: Message, state: FSMContext) -> None:
         return
     is_admin = _is_admin_user(message.from_user.id)
     await message.answer(
-        "Hi! This is <b>FlatFeed</b>, a demo assistant for finding WBS apartments in Berlin.\n\n"
+        "This is <b>FlatFeed</b> — a demo assistant for finding WBS apartments in Berlin.\n\n"
         "Start by setting up a filter, or browse the whole demo catalog. "
         "Tap /help any time to learn what WBS and Kaltmiete mean.",
         reply_markup=main_menu_keyboard(is_admin=is_admin),
@@ -2155,7 +2175,7 @@ async def _finish_edit_if_needed(callback: CallbackQuery, state: FSMContext) -> 
     await state.clear()
     if callback.message:
         with suppress(TelegramAPIError):
-            await callback.message.edit_text("Done, settings updated.", reply_markup=None)
+            await callback.message.edit_text("Filter updated.", reply_markup=None)
     await send_settings_card_from_callback(callback)
     return True
 
@@ -2168,7 +2188,7 @@ async def handle_settings_filter(callback: CallbackQuery, state: FSMContext) -> 
     await _edit_filter_prompt(
         callback,
         state,
-        "Which WBS should match?",
+        _wbs_step_text(),
         _wbs_keyboard(),
     )
 
@@ -2285,9 +2305,9 @@ async def handle_settings_admin_refresh(callback: CallbackQuery, bot: Bot) -> No
     )
     await callback.message.answer(
         "<b>Synthetic catalog refreshed.</b>\n\n"
-        f"Active URLs found: {result.listings_found}\n"
+        f"Active listings found: {result.listings_found}\n"
         f"Created: {result.created_count}\n"
-        f"Updated records: {result.updated_count}\n"
+        f"Updated: {result.updated_count}\n"
         f"Marked removed: {result.removed_count}\n"
         f"Transit updated: {result.transport_count}\n\n"
         f"AI QA checked: {result.ai_qa_checked_count}\n"
@@ -2311,7 +2331,7 @@ async def handle_ai_qa_reports(callback: CallbackQuery) -> None:
         reviews = load_flagged_ai_qa_reviews(session, limit=10)
 
     if not reviews:
-        await callback.message.answer("There are no potential-error reports yet.")
+        await callback.message.answer("There are no flagged reports yet.")
         return
 
     await callback.message.answer(f"Flagged reports ready for review: {len(reviews)}.")
@@ -2354,7 +2374,7 @@ async def handle_ai_qa_backfill(callback: CallbackQuery, bot: Bot) -> None:
         if callback.message is not None:
             with suppress(TelegramAPIError):
                 await callback.message.edit_text(
-                    "Run catalog QA may use the OpenAI budget.\n\n"
+                    "Catalog QA uses a paid provider and may spend the daily OpenAI budget.\n\n"
                     f"Provider: {escape(settings.ai_qa_provider)}\n"
                     f"Daily cap: ${settings.ai_qa_daily_max_cost_usd:.2f}\n\n"
                     "Continue?",
@@ -2379,11 +2399,11 @@ async def _run_ai_qa_backfill_flow(callback: CallbackQuery, bot: Bot) -> None:
         return
 
     if _manual_ai_qa_task is not None and not _manual_ai_qa_task.done():
-        await callback.message.answer("Parser check is already running. Wait for the result.")
+        await callback.message.answer("Catalog QA is already running. Wait for the result.")
         return
 
     await callback.message.answer(
-        "Starting parser checks for active listings without a report.\n"
+        "Starting catalog QA for active listings without a review.\n"
         f"Batch size: {get_settings().ai_qa_backfill_batch_size}."
     )
     _manual_ai_qa_task = asyncio.create_task(asyncio.to_thread(run_ai_qa_backfill))
@@ -2402,13 +2422,13 @@ async def _run_ai_qa_backfill_flow(callback: CallbackQuery, bot: Bot) -> None:
             )
         )
         await callback.message.answer(
-            "Parser check is taking longer than usual. I will continue it in the background "
+            "Catalog QA is taking longer than usual. I will continue it in the background "
             "and send the final report here when it finishes."
         )
         return
     except Exception:
         logger.exception("AI QA backfill failed.")
-        await callback.message.answer("Parser check failed. Check the logs.")
+        await callback.message.answer("Catalog QA failed. Check the logs.")
         return
 
     status = await asyncio.to_thread(load_ai_qa_status)
@@ -2427,24 +2447,24 @@ async def handle_ai_qa_demo(callback: CallbackQuery) -> None:
 
     provider = get_settings().ai_qa_provider
     await callback.message.answer(
-        "Starting the error demo: I will take active synthetic listings, "
-        "corrupt one parser field, and check it against the listing.\n"
+        "Starting the QA demo: I will corrupt one parser field in each of up to "
+        "3 active synthetic listings, then let AI QA check them against the listing text.\n"
         f"Provider: {escape(provider)}. Demo responses are not saved to metrics."
     )
     try:
         reviews = await asyncio.to_thread(run_ai_qa_demo_reviews, limit=3)
     except Exception:
         logger.exception("AI QA demo failed.")
-        await callback.message.answer("Error demo failed. Check the logs.")
+        await callback.message.answer("QA demo failed. Check the logs.")
         return
 
     if not reviews:
-        await callback.message.answer("There are no active synthetic listings for the error demo.")
+        await callback.message.answer("There are no active synthetic listings for the QA demo.")
         return
 
     total_cost = sum(float(review.total_cost_usd or 0.0) for review in reviews)
     await callback.message.answer(
-        f"Done. Demo reports: {len(reviews)}. Cost: ${total_cost:.6f}."
+        f"QA demo complete. Reports: {len(reviews)}. Cost: ${total_cost:.6f}."
     )
     for review in reviews:
         await callback.message.answer(
@@ -2759,7 +2779,7 @@ async def handle_rent_choice(callback: CallbackQuery, state: FSMContext) -> None
     )
     if edited:
         with suppress(TelegramAPIError):
-            await callback.message.edit_text("Done, settings updated.", reply_markup=None)
+            await callback.message.edit_text("Filter updated.", reply_markup=None)
         await send_settings_card_from_callback(callback)
     else:
         await _edit_filter_prompt(
@@ -2801,7 +2821,7 @@ async def handle_rent_text(message: Message, state: FSMContext, bot: Bot) -> Non
         user_id=message.from_user.id,
     )
     if edited:
-        await message.answer("Done, settings updated.")
+        await message.answer("Filter updated.")
         await send_settings_card(message, user_id=message.from_user.id)
     else:
         await _send_filter_prompt(
@@ -2853,7 +2873,8 @@ async def handle_rooms_choice(callback: CallbackQuery, state: FSMContext) -> Non
 @router.message(F.text)
 async def handle_plain_text(message: Message) -> None:
     await message.answer(
-        "I no longer save filters from free text, so I do not overwrite them by accident.\n\n"
+        "I only change your filter through the buttons, so free-text messages "
+        "cannot overwrite it by accident.\n\n"
         "Use the buttons below: set up a filter, show matches, or browse the demo catalog."
     )
 

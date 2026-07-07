@@ -567,7 +567,7 @@ class AIQAServiceTests(unittest.TestCase):
         self.assertNotIn("transient demo", text)
         self.assertNotIn("Mock QA re-read", text)
         self.assertNotIn("Parser is likely correct", text)
-        self.assertIn("<b>Mismatch</b>", text)
+        self.assertIn("<b>Possible mismatch</b>", text)
         self.assertIn("In listing: WBS 100-140", text)
         self.assertIn("Parser: No WBS required", text)
         self.assertIn("Why: The text states a different WBS condition.", text)
