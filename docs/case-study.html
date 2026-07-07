@@ -158,6 +158,15 @@
               listing text has edge cases and wording variation that are expensive to review
               manually, while the product still keeps AI away from automatic data mutation.
             </p>
+            <p>
+              On the Build / Buy / Wrapper axis the split is deliberate. Parsing and matching are
+              built in-house and run fully locally — no LLM, no tokens, zero inference cost —
+              because that is the logic that has to stay owned and explainable. The QA layer is a
+              thin wrapper on a small hosted model, since reviewing listing text is a commodity
+              language task with no data moat. It ships behind a mock provider by default, a hard
+              daily cost cap, and a risk threshold that only escalates risk-scored findings above
+              threshold, so AI QA stays optional and bounded.
+            </p>
           </div>
           <div class="case-points">
             <div><strong>Rules for matching</strong><span>Every match or no-match is traceable to a deterministic rule.</span></div>
@@ -193,6 +202,15 @@
               listings. I chose deterministic parsing for fields that affect matching, a
               source-adapter ingestion layer for future multi-source collection, SQLite for a local
               prototype, and AI QA only as an admin-reviewed control layer.
+            </p>
+            <p>
+              That scope is also a compliance posture, not just a demo convenience. The synthetic
+              catalog keeps real personal and housing data out of the prototype entirely. And
+              because AI never decides a person's eligibility — matching is deterministic and AI
+              only reviews parser quality — the prototype is designed to avoid solely automated
+              eligibility decisions of the kind GDPR Art. 22 focuses on. A live rollout would still
+              need formal legal review, especially around housing access, AI Act risk
+              classification, provider terms, and user-facing transparency.
             </p>
           </div>
           <ol class="case-steps case-steps--five" aria-label="FlatFeed product workflow">
