@@ -1,11 +1,22 @@
 # FlatFeed Agent Instructions
 
-## Required Response Context
+This file is the shared entry point for Codex and other coding agents.
 
-After every user request, state which model and which reasoning power should be used for the task.
+## Required Context
 
-## Mandatory Project Context
+Before changing code or docs, read:
 
-Before making any repository change, read `DESIGN_CONTENT_SYSTEM.md` and follow it as the normative design and content standard for FlatFeed.
+- `README.md`
+- `DESIGN_CONTENT_SYSTEM.md` — normative design, content, component,
+  terminology, accessibility, and case-study system
+- `docs/PROJECT_CONTEXT.md` — product semantics (filters, listing card, parsing,
+  AI QA boundaries, data model)
+- `docs/agent-workflow.md` — the single rulebook: guardrails, Phase 1
+  boundaries, build/verify, working style, and collaboration rules
 
-This applies to UI, layout, component styling, copy, terminology, case-study content, public documentation, evidence claims, and verification choices. If a requested change appears to conflict with `DESIGN_CONTENT_SYSTEM.md`, pause and call out the conflict before editing.
+## Rules
+
+All working rules — required response context, project guardrails, Phase 1
+boundaries, build and verification steps, working style, conflict avoidance, and
+the done definition — live in `docs/agent-workflow.md`. Read it before changing
+code or docs; it is the single source of truth and is not duplicated here.
