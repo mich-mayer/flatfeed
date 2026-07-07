@@ -24,6 +24,14 @@ AI is useful here because listing text contains edge cases, wording variation,
 and ambiguity that are expensive to review manually at scale, but the product
 still keeps AI away from automatic data mutation.
 
+On the Build/Buy/Wrapper axis the split is deliberate: parsing and matching are
+built in-house and run fully locally (no LLM, no tokens, zero inference cost)
+because that logic must stay owned and explainable, while the QA layer is a thin
+wrapper on a small hosted model, since reviewing listing text is a commodity
+language task with no data moat. AI QA ships behind a mock provider by default, a
+hard daily cost cap, and a risk threshold that only escalates risk-scored
+findings above threshold, so it stays optional and bounded.
+
 ## 3. My Role
 
 I defined the product scope, shaped the portfolio positioning, designed the
@@ -44,6 +52,14 @@ source collection, SQLite for a local prototype, and AI QA only as an
 admin-reviewed control layer. The main trade-off was deliberately limiting live
 source coverage in order to make the demo privacy-safe, defensible, and
 measurable.
+
+That scope is also a compliance posture, not just a demo convenience: the
+synthetic catalog keeps real personal and housing data out of the prototype, and
+because AI never decides a person's eligibility (matching is deterministic and AI
+only reviews parser quality), the prototype is designed to avoid solely automated
+eligibility decisions of the kind GDPR Art. 22 focuses on. A live rollout would
+still need formal legal review, especially around housing access, AI Act risk
+classification, provider terms, and user-facing transparency.
 
 ## 5. What I Built
 
@@ -74,4 +90,3 @@ matching, while AI adds value as a review and learning layer. If I continued
 the project, I would add a small set of live source adapters where terms allow
 it, expand the golden set, add screenshots from a real demo session, and compare
 AI QA prompt versions over time with human-reviewed feedback.
-
