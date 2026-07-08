@@ -273,11 +273,11 @@ table {
 }
 
 .case-hero {
-  padding: 88px 0 48px;
+  padding: 56px 0 48px;
 }
 
 .case-hero h1 {
-  font: 600 clamp(38px, 6vw, 76px)/1.02 var(--font-display);
+  font: 600 clamp(36px, 4.6vw, 64px)/1.02 var(--font-display);
   letter-spacing: -0.035em;
   margin-top: 24px;
   max-width: 1060px;
@@ -995,7 +995,7 @@ table {
   }
 
   .case-hero {
-    padding: 64px 0 40px;
+    padding: 40px 0 40px;
   }
 
   .demo-frame-body {

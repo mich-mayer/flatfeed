@@ -180,7 +180,7 @@ The page must remain readable and structurally stable if Google Fonts are blocke
 
 | Role | Font / weight | Size | Notes |
 |---|---|---|---|
-| Hero h1 | display 600 | clamp(38px → 76px), lh 1.02, ls −0.035em | first-person outcome statement |
+| Hero h1 | display 600 | clamp(36px → 64px), lh 1.02, ls −0.035em | first-person outcome statement |
 | Section h2 | display 600 | clamp(28px → 48px), lh 1.06 | takeaway statements |
 | Boundary quote | display 500 | clamp(24px → 42px), lh 1.18 | the AI-boundary sentence |
 | Hero lede | ui 400 | clamp(16px → 20px) / 1.6 | `--ink-2` |
