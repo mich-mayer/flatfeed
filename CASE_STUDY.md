@@ -24,20 +24,14 @@ AI is useful here because listing text contains edge cases, wording variation,
 and ambiguity that are expensive to review manually at scale, but the product
 still keeps AI away from automatic data mutation.
 
-On the Build/Buy/Wrapper axis the split is deliberate: parsing and matching are
-built in-house and run fully locally (no LLM, no tokens, zero inference cost)
-because that logic must stay owned and explainable, while the QA layer is a thin
-wrapper on a small hosted model, since reviewing listing text is a commodity
-language task with no data moat. AI QA ships behind a mock provider by default, a
-hard daily cost cap, and a risk threshold that only escalates risk-scored
-findings above threshold, so it stays optional and bounded.
-
 ## 3. My Role
 
-I defined the product scope, shaped the portfolio positioning, designed the
-source-collection and matching flow, implemented the prototype, created the
-synthetic evaluation dataset, wrote deterministic parsing rules, added AI QA
-with budget controls, and built the admin dashboard for review and measurement.
+I defined the product scope, shaped the portfolio positioning, and designed the
+source-collection and matching flow, the deterministic parsing rules, the
+synthetic evaluation dataset, and the AI QA budget controls. Solo project: all
+product decisions, scope boundaries, and rules are mine. Implementation — the
+bot, the dashboard, and the eval harness — was built with AI coding agents
+(Claude Code and Codex) under a documented collaboration workflow in the repo.
 I treated the project as an end-to-end AI PM case: problem framing, trade-off
 definition, prototype delivery, evaluation, and honest documentation.
 
@@ -52,6 +46,17 @@ source collection, SQLite for a local prototype, and AI QA only as an
 admin-reviewed control layer. The main trade-off was deliberately limiting live
 source coverage in order to make the demo privacy-safe, defensible, and
 measurable.
+
+On the Build/Buy/Wrapper axis the split is deliberate: parsing and matching are
+built in-house and run fully locally (no LLM, no tokens, zero inference cost)
+because that logic must stay owned and explainable, while the QA layer is a thin
+wrapper on a small hosted model, since reviewing listing text is a commodity
+language task with no data moat. AI QA ships behind a mock provider by default, a
+hard daily cost cap, and a risk threshold that only escalates risk-scored
+findings above threshold, so it stays optional and bounded. Evaluation is
+designed in from the start: a 15-listing synthetic golden set with hidden ground
+truth, scored by a runnable harness for parser field accuracy and exact-listing
+accuracy.
 
 That scope is also a compliance posture, not just a demo convenience: the
 synthetic catalog keeps real personal and housing data out of the prototype, and
@@ -82,11 +87,18 @@ demo run. These are synthetic evaluation metrics, not production user-impact
 numbers, but they demonstrate that the prototype has a measurable quality loop
 instead of relying on anecdotal demos.
 
+100% on a 15-listing synthetic golden set means the parser covers every case I
+designed for it — not that parsing is solved. The harness exists so the number
+can drop, visibly, when live sources land.
+
 ## 7. What I Learned
 
 The biggest lesson is that AI PM work is strongest when the AI boundary is
 clear. For this product, deterministic rules create trust for user-facing
-matching, while AI adds value as a review and learning layer. If I continued
-the project, I would add a small set of live source adapters where terms allow
-it, expand the golden set, add screenshots from a real demo session, and compare
-AI QA prompt versions over time with human-reviewed feedback.
+matching, while AI adds value as a review and learning layer. What I would do
+differently: run one real AI QA pass on a small hosted model earlier — the mock
+provider made the loop safe to build, but a single real run would have priced
+the prompt trade-offs sooner. If I continued the project, I would add a small
+set of live source adapters where terms allow it, expand the golden set, add
+screenshots from a real demo session, and compare AI QA prompt versions over
+time with human-reviewed feedback.
