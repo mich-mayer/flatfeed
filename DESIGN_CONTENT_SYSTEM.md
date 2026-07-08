@@ -661,7 +661,7 @@ Exists in the codebase today; MUST NOT be reused in new work; migrate when touch
 | Pattern | Current location | Reason | Replacement | Priority |
 |---|---|---|---|---|
 | Two labels for the same catalog action (`📂 All listings` vs `📂 Browse all listings`) | reply keyboard vs inline card | One action, one name (§19) — inline long form tolerated only until touched | Converge on one form when editing either | Low |
-| Case-page GitHub links hard-coded to `github.com/mich-mayer/flatfeed` | `docs/case-study.html`, footer + hero + nav | Must match the actual public repo location; verify before publishing changes | Confirm canonical public URL, then treat as FACT | Medium |
+| Case-page GitHub links hard-coded to `github.com/mich-mayer/flatfeed` (×6) | `docs/case-study.html` — top-bar + hero + CTA + footer | Static page, no build step: a URL can't be single-sourced in markup without JS-only links (breaks no-JS on the page's key "view my code" CTA) or introducing a build/template; the 6 real hrefs are the correct static pattern | VERIFIED 2026-07-08 against `git origin` — canonical = `mich-mayer/flatfeed`, treat as FACT. A canonical-URL comment at `<body>` top is the documented source of truth; keep the 6 links in sync on any repo move/rename | Resolved-verified |
 
 ---
 
