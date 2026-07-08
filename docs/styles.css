@@ -51,6 +51,12 @@
   box-sizing: border-box;
 }
 
+html {
+  /* Offset anchor landings by the sticky .case-top height (64px) + breathing room
+     so nav links open at the true start of each section, not under the header. */
+  scroll-padding-top: 80px;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -968,6 +974,11 @@ table {
 }
 
 @media (max-width: 920px) {
+  html {
+    /* header wraps to two rows here (brand + full-width nav), so it is taller */
+    scroll-padding-top: 112px;
+  }
+
   .case-top {
     flex-wrap: wrap;
     height: auto;
