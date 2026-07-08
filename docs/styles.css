@@ -885,6 +885,17 @@ table {
   vertical-align: middle;
 }
 
+/* group label row states the evidence status of the table at scan level,
+   mirroring the sibling Opsqora results table */
+.case-results .case-results-group th {
+  width: auto;
+  font: 500 11.5px/1.4 var(--font-mono);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink);
+  padding: 26px 0 8px;
+}
+
 /* ---------- final CTA + footer ---------- */
 
 .case-cta {
@@ -908,6 +919,39 @@ table {
 
 .case-cta .case-actions {
   margin-top: 30px;
+}
+
+.case-sibling {
+  padding: 40px 0 16px;
+}
+
+.case-sibling p:not(.kicker) {
+  margin-top: 14px;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 700px;
+}
+
+.case-sibling p strong {
+  color: var(--ink);
+}
+
+.case-sibling a {
+  font-weight: 600;
+  color: var(--accent-deep);
+  white-space: nowrap;
+}
+
+.case-sibling a svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -2px;
 }
 
 .case-foot {

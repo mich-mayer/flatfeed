@@ -32,7 +32,9 @@
         <nav aria-label="Case study sections">
           <a href="#problem">Problem</a>
           <a href="#why-ai">Why AI</a>
+          <a href="#role">Role</a>
           <a href="#approach">Approach</a>
+          <a href="#built">Built</a>
           <a href="#results">Results</a>
           <a href="#learned">Learned</a>
         </nav>
@@ -45,7 +47,7 @@
       <main id="case-main">
         <section class="case-hero">
           <p class="kicker">AI product management — case study · 2026</p>
-          <h1>I built FlatFeed to turn fragmented Berlin WBS apartment listings into a trusted, measurable matching workflow.</h1>
+          <h1>I built FlatFeed to give Berlin WBS renters one reliable feed of eligible apartments — without letting AI decide eligibility.</h1>
           <p class="case-lede">
             FlatFeed collects apartment listings through source adapters, normalizes messy listing
             text into one catalog, matches listings to user filters, and uses AI QA to review
@@ -166,15 +168,6 @@
               listing text has edge cases and wording variation that are expensive to review
               manually, while the product still keeps AI away from automatic data mutation.
             </p>
-            <p>
-              On the Build / Buy / Wrapper axis the split is deliberate. Parsing and matching are
-              built in-house and run fully locally — no LLM, no tokens, zero inference cost —
-              because that is the logic that has to stay owned and explainable. The QA layer is a
-              thin wrapper on a small hosted model, since reviewing listing text is a commodity
-              language task with no data moat. It ships behind a mock provider by default, a hard
-              daily cost cap, and a risk threshold that only escalates risk-scored findings above
-              threshold, so AI QA stays optional and bounded.
-            </p>
           </div>
           <div class="case-points">
             <div><strong>Rules for matching</strong><span>Every match or no-match is traceable to a deterministic rule.</span></div>
@@ -190,10 +183,12 @@
           </header>
           <div class="case-prose">
             <p>
-              I defined the product scope, shaped the portfolio positioning, designed the
-              source-collection and matching flow, implemented the prototype, created the synthetic
-              evaluation dataset, wrote deterministic parsing rules, added AI QA with budget
-              controls, and built the admin dashboard for review and measurement.
+              I defined the product scope, shaped the portfolio positioning, and designed the
+              source-collection and matching flow, the deterministic parsing rules, the synthetic
+              evaluation dataset, and the AI QA budget controls. Solo project: all product
+              decisions, scope boundaries, and rules are mine. Implementation — the bot, the
+              dashboard, and the eval harness — was built with AI coding agents (Claude Code and
+              Codex) under a documented collaboration workflow in the repo.
             </p>
           </div>
         </section>
@@ -210,6 +205,17 @@
               listings. I chose deterministic parsing for fields that affect matching, a
               source-adapter ingestion layer for future multi-source collection, SQLite for a local
               prototype, and AI QA only as an admin-reviewed control layer.
+            </p>
+            <p>
+              On the Build / Buy / Wrapper axis the split is deliberate. Parsing and matching are
+              built in-house and run fully locally — no LLM, no tokens, zero inference cost —
+              because that is the logic that has to stay owned and explainable. The QA layer is a
+              thin wrapper on a small hosted model, since reviewing listing text is a commodity
+              language task with no data moat. It ships behind a mock provider by default, a hard
+              daily cost cap, and a risk threshold that only escalates risk-scored findings above
+              threshold, so AI QA stays optional and bounded. Evaluation is designed in from the
+              start: a 15-listing synthetic golden set with hidden ground truth, scored by a
+              runnable harness for parser field accuracy and exact-listing accuracy.
             </p>
             <p>
               That scope is also a compliance posture, not just a demo convenience. The synthetic
@@ -305,12 +311,13 @@
 
         <section class="case-section" id="results">
           <header class="case-section-head">
-            <p class="kicker"><span>06</span>Results (demo eval)</p>
-            <h2>A measurable quality loop instead of an anecdotal demo.</h2>
+            <p class="kicker"><span>06</span>Results</p>
+            <h2>A measurable quality loop, scored on a synthetic golden set.</h2>
           </header>
           <table class="case-results">
             <caption>All values come from the synthetic golden-set eval — demo metrics, not production user-impact numbers.</caption>
             <tbody>
+              <tr class="case-results-group"><th colspan="3" scope="colgroup">Measured — synthetic golden-set eval</th></tr>
               <tr>
                 <th scope="row">Golden-set listings</th>
                 <td class="case-results-value">15</td>
@@ -347,6 +354,11 @@
               synthetic evaluation metrics, not production user-impact numbers, but they
               demonstrate a measurable quality loop instead of an anecdotal demo.
             </p>
+            <p>
+              100% on a 15-listing synthetic golden set means the parser covers every case I
+              designed for it — not that parsing is solved. The harness exists so the number can
+              drop, visibly, when live sources land.
+            </p>
           </div>
         </section>
 
@@ -358,10 +370,12 @@
           <div class="case-prose">
             <p>
               For this product, deterministic rules create trust for user-facing matching, while AI
-              adds value as a review and learning layer. If I continued the project, I would add a
-              small set of live source adapters where terms allow it, expand the golden set, add
-              screenshots from a real demo session, and compare AI QA prompt versions over time
-              with human-reviewed feedback.
+              adds value as a review and learning layer. What I would do differently: run one real
+              AI QA pass on a small hosted model earlier — the mock provider made the loop safe to
+              build, but a single real run would have priced the prompt trade-offs sooner. If I
+              continued the project, I would add a small set of live source adapters where terms
+              allow it, expand the golden set, add screenshots from a real demo session, and
+              compare AI QA prompt versions over time with human-reviewed feedback.
             </p>
           </div>
           <div class="case-points">
@@ -387,6 +401,17 @@
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
             </a>
           </div>
+        </section>
+
+        <section class="case-sibling" aria-label="Second case study">
+          <p class="kicker">More from this portfolio</p>
+          <p>
+            <strong>Opsqora</strong> — the same design system, the opposite AI boundary: AI owns
+            the semantic clustering of support feedback, and humans gate every product decision.
+            <a href="https://mich-mayer.github.io/opsqora/case-study.html">Read the Opsqora case study
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg>
+            </a>
+          </p>
         </section>
       </main>
 

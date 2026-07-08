@@ -238,8 +238,8 @@ Rules:
 `/start` and `/filter` show the user's filter card (`<b>Your filter</b>` + current values) with contextual inline actions: `Set up filter` (empty filter) or `Show matches` / `Edit filter` / `Reset filter` / `🗑 Delete my data` (saved filter). The privacy action stays on the card — discoverable, not buried in `/help`.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → sticky top bar (logo mark + "FlatFeed" + mono "Case study" sub-label; nav: Problem · Why AI · Approach · Results · Learned; `View repository` button) → hero (kicker "AI product management — case study · 2026", first-person H1, lede, CTAs `Read the case study` / `View repository`, 5-column meta `dl`: Role / Domain / Type / Data / Year) → **demo frame** (browser-chrome figure labeled "Demo · synthetic data" holding the phone panel + dashboard panel mockups, with a figcaption stating they are mockups, not screenshots) → the numbered **7-part case framework**: 01 The Problem (+ 4-up scope figures) · 02 Why AI? (+ 3-up points) · 03 My Role · 04 The Approach (+ 5-step workflow band) · 05 What I Built (+ dashboard product-shot, real-vs-synthetic scope columns, stack chips) → *unnumbered* AI-boundary pull quote → 06 Results (+ results table) · 07 What I Learned (+ 3-up points) → dark CTA block (`View repository` / `Read the Markdown version`) → footer (wordmark, provenance line, Repository + Markdown links).
-The 7-part structure mirrors `CASE_STUDY.md` section-for-section — keep them in sync (§27); the boundary pull quote is deliberately outside the numbering. ≤920px the header wraps; the nav MUST stay reachable (horizontal scroll row), never `display:none` without replacement.
+Skip link → sticky top bar (logo mark + "FlatFeed" + mono "Case study" sub-label; 7-item nav mirroring the numbered sections: Problem · Why AI · Role · Approach · Built · Results · Learned; `View repository` button) → hero (kicker "AI product management — case study · 2026", first-person H1, lede, CTAs `Read the case study` / `View repository`, 5-column meta `dl`: Role / Domain / Type / Data / Year) → **demo frame** (browser-chrome figure labeled "Demo · synthetic data" holding the phone panel + dashboard panel mockups, with a figcaption stating they are mockups, not screenshots) → the numbered **7-part case framework**: 01 The Problem (+ 4-up scope figures) · 02 Why AI? (+ 3-up points; the negative decision leads, Build/Buy/Wrapper lives in 04) · 03 My Role (judgment verbs + disclosed agent-assisted implementation) · 04 The Approach (+ Build/Buy/Wrapper split, eval-strategy sentence, compliance posture, 5-step workflow band) · 05 What I Built (+ dashboard product-shot, real-vs-synthetic scope columns, stack chips) → *unnumbered* AI-boundary pull quote → 06 Results (+ results table opened by a "Measured — synthetic golden-set eval" group-label row; the H2 carries the synthetic qualifier) · 07 What I Learned (+ what-I'd-do-differently line, 3-up points) → dark CTA block (`View repository` / `Read the Markdown version`) → sibling case-study cross-link (Opsqora) → footer (wordmark, provenance line, Repository + Markdown links).
+The 7-part structure mirrors `CASE_STUDY.md` section-for-section and the sibling Opsqora landing (same section names, order, and 7-item nav) — keep them in sync (§27); the boundary pull quote is deliberately outside the numbering. ≤920px the header wraps; the nav MUST stay reachable (horizontal scroll row), never `display:none` without replacement.
 
 ### 6.4 Dashboard composition — ADOPT
 Order in `streamlit_app.py`: title `FlatFeed parser AI QA` + provenance caption → **Is AI QA running well now?** (coverage, current prompt-version caption) → **How useful is AI QA?** (feedback quality, false positives vs confirmed errors) → **How much does AI QA cost?** (tokens, dollars, budgets) → **Demo: parser made a mistake, AI checked it** (parser snapshot + raw listing text side by side) → **Where the parser is most at risk** (field-level patterns) → **How AI QA quality changed by version**.
@@ -531,10 +531,10 @@ Audience adaptation is allowed (gloss depth, sentence length) — mechanical wor
 The page serves three reading depths; every depth must independently answer its questions.
 
 **10-second scan** (kicker + H1 + lede + meta grid + demo frame) must answer: What is this? What domain? What did the candidate do? Why AI-PM-relevant?
-Mechanics: kicker names the genre ("AI product management — case study · 2026"); H1 is a first-person outcome statement ("I built FlatFeed to turn fragmented Berlin WBS apartment listings into a trusted, measurable matching workflow."); the lede names collection, normalization, matching, and the AI boundary in one breath; the demo frame's phone/dashboard panels prove the product's shape and its chrome label says "Demo · synthetic data".
+Mechanics: kicker names the genre ("AI product management — case study · 2026"); H1 is a first-person outcome statement ("I built FlatFeed to give Berlin WBS renters one reliable feed of eligible apartments — without letting AI decide eligibility."); the lede names collection, normalization, matching, and the AI boundary in one breath; the demo frame's phone/dashboard panels prove the product's shape and its chrome label says "Demo · synthetic data".
 
 **30-second scan** (+ section headings, workflow band, boundary pull quote, results table) must answer: why AI is bounded, what was built, whether results are honest.
-Mechanics: section H2s state takeaways, not topics; the boundary pull quote is the mechanism statement ("AI QA may challenge the parser, but it cannot replace or mutate … automatically."); the scope columns separate "Real in this prototype" from "Synthetic on purpose"; the Results table caption and prose carry the synthetic qualifier at the same depth as the numbers.
+Mechanics: section H2s state takeaways, not topics; the boundary pull quote is the mechanism statement ("AI QA may challenge the parser, but it cannot replace or mutate … automatically."); the scope columns separate "Real in this prototype" from "Synthetic on purpose"; the Results H2 ("A measurable quality loop, scored on a synthetic golden set."), the table's "Measured — synthetic golden-set eval" group-label row, and the caption and prose all carry the synthetic qualifier at the same depth as the numbers.
 
 **Deep read** must answer: decisions, trade-offs, ownership, limitations, next steps — the 7-part framework (§6.3) covers exactly these; keep the parts and their order.
 
@@ -544,8 +544,8 @@ Element rules:
 - **Workflow band:** exactly the pipeline the code implements (Collect → Normalize → Match → Review → Notify); if the pipeline changes, the band changes with it.
 - **Boundary pull quote:** the canonical AI-boundary sentence (§2), rendered as the page's only blockquote, outside the 7-part numbering. It restates the boundary, never a softened paraphrase.
 - **Scope columns:** "Real in this prototype" vs "Synthetic on purpose" — every line must be a FACT or MOCK/SYNTHETIC claim per §23; this is where the honesty inventory lives.
-- **Results:** numbers come from a real `python -m eval.run_eval` run; the qualifier "synthetic evaluation metrics, not production user-impact numbers" sits in the same paragraph; the amber table values restate the same numbers, nothing more, with the qualifier repeated in the table caption.
-- **Limitations and next steps** live in section 07, stated unhedged ("If I continued the project, I would…").
+- **Results:** numbers come from a real `python -m eval.run_eval` run; the qualifier "synthetic evaluation metrics, not production user-impact numbers" sits in the same paragraph; the amber table values restate the same numbers, nothing more, with the qualifier repeated in the table caption and in the "Measured — synthetic golden-set eval" group-label row. The closing paragraph states what 100% on a synthetic golden set does and does not mean — keep it next to the numbers it qualifies.
+- **Limitations and next steps** live in section 07, stated unhedged ("If I continued the project, I would…"), together with one what-I'd-do-differently reflection ("What I would do differently: …").
 - Mockup panels (phone/dashboard) depict only states the real product produces and stay inside the labeled demo frame; a listing card mockup MUST follow the §10 field vocabulary; the figcaption MUST keep stating they are mockups, not screenshots.
 
 ---
@@ -578,9 +578,9 @@ Hard constraints (non-negotiable):
 
 ## 24. Candidate Ownership Language
 
-- The canonical ownership statement lives in CASE_STUDY.md §3 / case-study.html section 03 ("I defined the product scope, shaped the portfolio positioning, designed the source-collection and matching flow, implemented the prototype, created the synthetic evaluation dataset, wrote deterministic parsing rules, added AI QA with budget controls, and built the admin dashboard…"). Keep the HTML and Markdown versions in sync in *meaning*.
+- The canonical ownership statement lives in CASE_STUDY.md §3 / case-study.html section 03 ("I defined the product scope, shaped the portfolio positioning, and designed the source-collection and matching flow, the deterministic parsing rules, the synthetic evaluation dataset, and the AI QA budget controls. Solo project: all product decisions, scope boundaries, and rules are mine. Implementation — the bot, the dashboard, and the eval harness — was built with AI coding agents (Claude Code and Codex) under a documented collaboration workflow in the repo."). Keep the HTML and Markdown versions in sync in *meaning*.
 - Verb discipline: **defined/designed/scoped/chose** = candidate judgment; **implemented/built/wrote** = delivery; **the bot/the parser/the eval does X** = system behavior; **demo/mock/synthetic** = illustrative outcome. Do not swap categories.
-- If AI coding agents contributed to implementation and the author wants that disclosed, the disclosure is added by the author — an agent MUST NOT add or remove ownership or collaboration claims on its own.
+- If AI coding agents contributed to implementation and the author wants that disclosed, the disclosure is added by the author — an agent MUST NOT add or remove ownership or collaboration claims on its own. The author approved the unified agent disclosure on 2026-07-08 (same wording as the sibling Opsqora landing); it now lives in section 03 and CASE_STUDY.md §3 and MUST NOT be removed or softened without the author.
 - First person ("I", "my") is correct on the case study and in CASE_STUDY.md. In the bot, "I" is the *bot* speaking about bot actions (§17) — never the candidate. The dashboard and README use no first person for ownership except CASE_STUDY-quoted material.
 
 ---
@@ -593,7 +593,7 @@ Hard constraints (non-negotiable):
 - *production-ready / enterprise-grade*: MUST NOT appear — the demo explicitly is neither.
 - *end-to-end*: acceptable only in the literal sense already used ("an end-to-end AI PM case: problem framing, trade-off definition, prototype delivery, evaluation, and honest documentation") — a scoped list, not a boast.
 - *scalable*: only about a specific mechanism with its limit stated (e.g. "SQLite is appropriate for this local portfolio prototype" is the model — a fitness claim, not a scale claim).
-- Self-praise adjectives about our own output ("reliable", "trusted", "honest" as feature labels) are acceptable only where the artifact proving them is shown or named at the same spot (e.g. "trusted, measurable matching workflow" is anchored by the eval and boundary sections).
+- Self-praise adjectives about our own output ("reliable", "trusted", "honest" as feature labels) are acceptable only where the artifact proving them is shown or named at the same spot (e.g. the hero's "one reliable feed … without letting AI decide eligibility" is anchored by the boundary pull quote and the golden-set-scored Results section).
 
 ---
 
@@ -763,6 +763,14 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-08 cross-portfolio 7-part unification
+
+- **Problem:** the FlatFeed and Opsqora landings shared a visual system but not a structural one: different nav sets (5 vs 6 items, different labels) and section placements meant the two-project portfolio did not read as one deliberate case framework, and neither page carried the guide-required what-I'd-do-differently reflection; the H1's "trusted, measurable matching workflow" was also the page's most abstract line.
+- **Rationale:** both landings now follow the canonical 7-part AI PM case framework with an identical 7-item nav mirroring the numbered sections; Build/Buy/Wrapper moved from 02 (Why AI?) to 04 (The Approach) because it is model-strategy reasoning, leaving 02 to the negative-decision judgment signal (kept per §22); the Results H2 and a "Measured — synthetic golden-set eval" group-label row lift the synthetic qualifier to scan level; the author approved the first-person H1 rewrite and the unified AI-agent disclosure in section 03 on 2026-07-08 (§24). A quiet sibling cross-link after the CTA frames the two projects as opposite AI-boundary placements.
+- **Affected surfaces:** case page and docs: `docs/case-study.html`, `docs/styles.css` (`.case-results-group`, `.case-sibling`), `CASE_STUDY.md`, this file (§§6.3, 22, 24, 25).
+- **Compatibility impact:** §6.3's previous 5-item nav snapshot and §22's previous H1 example are superseded; eval numbers, mockup panels, the boundary quote, and the workflow band are unchanged.
+- **Migration consideration:** fixed now across page, CASE_STUDY.md, and this standard in one change; bot, dashboard, README, and eval numbers untouched.
 
 ### 2026-07-06 case-page token and evidence-depth migration
 
