@@ -771,6 +771,14 @@ Any change to this system (new rule, changed rule, new component/message class, 
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
 
+### 2026-07-09 demo-frame chrome label + overflow fix
+
+- **Problem:** the browser-chrome URL label in both demo frames carried a descriptive suffix (`flatfeed.local — Telegram bot · QA dashboard`, `mich-mayer.github.io/flatfeed — AI QA dashboard`) that added no reader value over the plain host, and `.demo-frame-chrome em` had no `min-width`/overflow handling, so at mid-range viewports the long string wrapped and pushed `.demo-frame-live` ("Demo · synthetic data") past the frame's right border — a visible layout break, not a copy nuance.
+- **Rationale:** the chrome label's job is to look like an address bar, not to caption the mockup (the figcaption already does that); a bare host reads cleaner and never overflows regardless of content length. Structurally, flex children need `min-width: 0` to shrink below content size — adding that plus `overflow: hidden; white-space: nowrap; text-overflow: ellipsis` on the label and `flex: none` on the dots/live-label makes the frame overflow-proof for any future URL length, not just the current one.
+- **Affected surfaces:** `docs/case-study.html` (both `<em>` labels), `docs/styles.css` (`.demo-frame-chrome em`, `.demo-frame-dots`, `.demo-frame-live`), this file (§34). Sibling Opsqora received the identical CSS fix and an equivalent label simplification (`${LIVE_URL_LABEL} — AI eval` → `LIVE_URL_LABEL`) in its own `src/case-study.tsx` and `src/styles.css`.
+- **Compatibility impact:** none — the provenance marker (`Demo · synthetic data`) is unchanged and still carries the synthetic qualifier; only the address-bar text and its container's overflow behavior changed. The existing mobile rule hiding `em` entirely (`max-width: 38.75em`) is unchanged and still applies below that width.
+- **Migration consideration:** fixed now on both demo-frame instances; bot, dashboard app, README, CASE_STUDY.md, and eval numbers untouched.
+
 ### 2026-07-09 converge catalog-browse button wording
 
 - **Problem:** §29 carried a known, low-priority duplication: the reply-keyboard button and help text both said "📂 All listings" (`main.py:98`, `:2042`) while the inline no-matches-found button said "📂 Browse all listings" (`main.py:379`) — one action, two wordings, tolerated only until either was next touched (§19/§29).
