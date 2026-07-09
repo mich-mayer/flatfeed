@@ -666,6 +666,10 @@ table {
   gap: 36px;
 }
 
+.case-prose + .case-steps {
+  margin-top: 32px;
+}
+
 .case-steps--five {
   grid-template-columns: repeat(5, 1fr);
 }
@@ -996,6 +1000,10 @@ table {
   .case-steps--five {
     grid-template-columns: repeat(2, 1fr);
     gap: 28px;
+  }
+
+  .case-prose + .case-steps {
+    margin-top: 28px;
   }
 
   .case-meta {
