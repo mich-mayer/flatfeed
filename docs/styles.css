@@ -154,6 +154,12 @@ table {
   font-weight: 600;
 }
 
+.case-section .kicker span {
+  font-size: 1.125rem;
+  letter-spacing: 0.02em;
+  margin-right: 0.75rem;
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -1011,6 +1017,12 @@ table {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--ink-3);
+}
+
+.case-foot-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
 }
 
 .case-foot nav {
