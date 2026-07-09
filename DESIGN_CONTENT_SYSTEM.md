@@ -139,7 +139,7 @@ Never choose "more impressive" over "more accurate".
 
 These tokens apply to `docs/case-study.html` / `docs/styles.css` only. The bot has no visual tokens (§7) and the dashboard uses stock Streamlit (§8).
 
-The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, numbered sections, a browser-chrome demo frame, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine. When one landing's system evolves, consider whether the other should receive the same pattern, but preserve the accent split and product-specific evidence.
+The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, numbered sections, a browser-chrome demo frame with macOS-style traffic-light dots, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine. When one landing's system evolves, consider whether the other should receive the same pattern, but preserve the accent split and product-specific evidence.
 
 ### 5.1 Color — ADOPT
 
@@ -206,7 +206,7 @@ Rules:
 
 ### 5.3 Borders, Radius, Elevation — ADOPT
 
-- **Square corners everywhere: border-radius 0.** No exceptions — dots and squares (7–8px reference, authored as 0.4375rem/0.5rem, fluid with the root per §5.2) are literal squares. Do not reintroduce radii.
+- **Square corners everywhere: border-radius 0.** The sanctioned exception is the macOS-style traffic-light dots in `.demo-frame-dots` because they are browser-window chrome, not content cards or controls. Other dots and squares (7–8px reference, authored as 0.4375rem/0.5rem, fluid with the root per §5.2) are literal squares. Do not reintroduce radii elsewhere.
 - 1px `--line` hairlines divide and border; **2px `--rule` top rules** open every numbered section, the hero meta grid, and panel/table headers — this rule-line motif is the page's structure signal. These stay fixed px (§5.2) so the hairline motif stays crisp at every root size.
 - Elevation: one shadow only — `--demo-shadow` on `.demo-frame`. Everything else is flat; `product-shot` inside the narrative is deliberately shadowless. The shadow's px offsets stay fixed (§5.2 effects exception).
 - No gradients anywhere. The sticky header uses `color-mix` transparency + `backdrop-filter: blur(10px)`, not a gradient; the blur radius stays fixed px.
@@ -222,7 +222,7 @@ Rules:
 
 - Icons are inline hand-written SVG strokes, stroke `currentColor`, width 2: 14px inside buttons (arrows, git-branch), 16px in panel headers. No icon library at runtime, no emoji on the page.
 - Brand: `assets/flatfeed-logo-mark.png` at 26px in the header/footer wordmark, `alt=""` (decorative next to the visible name).
-- Imagery: `assets/berlin-wbs-building.jpg` (demo listing photo) inside the listing-card mockup. The decorative CSS mini-map was removed in the 2026-07-07 redesign — do not resurrect it. Product "screenshots" are HTML mockups (`phone-panel`, `dashboard-panel`, `product-shot`) presented inside the labeled demo frame — CURRENT. If real screenshots are ever added (a stated next step in CASE_STUDY.md §7), they replace mockups only with captions stating they come from a real demo session.
+- Imagery: `assets/berlin-wbs-building.jpg` (demo listing photo) inside the listing-card mockup. The decorative CSS mini-map was removed in the 2026-07-07 redesign — do not resurrect it. Product "screenshots" are HTML mockups (`phone-panel`, `dashboard-panel`, `product-shot`) presented inside labeled browser-chrome demo frames with macOS-style traffic-light dots — CURRENT. If real screenshots are ever added (a stated next step in CASE_STUDY.md §7), they replace mockups only with captions stating they come from a real demo session.
 - Any photo of a building MUST keep alt text disclosing it is a demo image, and licensing stays documented in `assets/listing_photos/LICENSES.md`.
 
 ---
@@ -246,7 +246,7 @@ Rules:
 `/start` and `/filter` show the user's filter card (`<b>Your filter</b>` + current values) with contextual inline actions: `Set up filter` (empty filter) or `Show matches` / `Edit filter` / `Reset filter` / `🗑 Delete my data` (saved filter). The privacy action stays on the card — discoverable, not buried in `/help`.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → sticky top bar (logo mark + "FlatFeed" + mono "Case study" sub-label; 7-item nav mirroring the numbered sections: Problem · Why AI · Role · Approach · Built · Results · Learned; `View repository` button) → hero (kicker "AI product management — case study · 2026", first-person H1, lede, CTAs `Read the case study` / `View repository`, 5-column meta `dl`: Role / Domain / Type / Data / Year) → **demo frame** (browser-chrome figure labeled "Demo · synthetic data" holding the phone panel + dashboard panel mockups, with a figcaption stating they are mockups, not screenshots) → the numbered **7-part case framework**: 01 The Problem (+ 4-up scope figures) · 02 Why AI? (+ 3-up points; the negative decision leads, Build/Buy/Wrapper lives in 04) · 03 My Role (judgment verbs + disclosed agent-assisted implementation) · 04 The Approach (+ Build/Buy/Wrapper split, eval-strategy sentence, compliance posture, 5-step workflow band) · 05 What I Built (+ dashboard product-shot, real-vs-synthetic scope columns, stack chips) → *unnumbered* AI-boundary pull quote → 06 Results (+ results table opened by a "Measured — synthetic golden-set eval" group-label row; the H2 carries the synthetic qualifier) · 07 What I Learned (+ what-I'd-do-differently line, 3-up points) → dark CTA block (`View repository` / `Read the Markdown version`) → sibling case-study cross-link (Opsqora) → footer (wordmark, provenance line, Repository + Markdown links).
+Skip link → sticky top bar (logo mark + "FlatFeed" + mono "Case study" sub-label; 7-item nav mirroring the numbered sections: Problem · Why AI · Role · Approach · Built · Results · Learned; `View repository` button) → hero (kicker "AI product management — case study · 2026", first-person H1, lede, CTAs `Read the case study` / `View repository`, 5-column meta `dl`: Role / Domain / Type / Data / Year) → **demo frame** (browser-chrome figure labeled "Demo · synthetic data" holding the phone panel + dashboard panel mockups, with a figcaption stating they are mockups, not screenshots) → the numbered **7-part case framework**: 01 The Problem (+ 4-up scope figures) · 02 Why AI? (+ 3-up points; the negative decision leads, Build/Buy/Wrapper lives in 04) · 03 My Role (judgment verbs + disclosed agent-assisted implementation) · 04 The Approach (+ Build/Buy/Wrapper split, eval-strategy sentence, compliance posture, 5-step workflow band) · 05 What I Built (+ dashboard product-shot inside a compact browser-chrome frame, real-vs-synthetic scope columns, stack chips) → *unnumbered* AI-boundary pull quote → 06 Results (+ results table opened by a "Measured — synthetic golden-set eval" group-label row; the H2 carries the synthetic qualifier) · 07 What I Learned (+ what-I'd-do-differently line, 3-up points) → dark CTA block (`View repository` / `Read the Markdown version`) → sibling case-study cross-link (Opsqora) → footer (wordmark, provenance line, Repository + Markdown links).
 The 7-part structure mirrors `CASE_STUDY.md` section-for-section and the sibling Opsqora landing (same section names, order, and 7-item nav) — keep them in sync (§27); the boundary pull quote is deliberately outside the numbering. ≤920px the header wraps; the nav MUST stay reachable (horizontal scroll row), never `display:none` without replacement.
 
 ### 6.4 Dashboard composition — ADOPT
@@ -478,7 +478,7 @@ Capitalization: sentence case everywhere; card labels and proper/domain nouns (W
 | Change one field | **Edit filter** → `WBS` / `District` / `Rent` / `Rooms` | "Modify", "Update settings" | Filter card |
 | Clear the filter | **Reset filter** (+ confirm pair) | "Clear", "Delete filter" | Filter card |
 | Remove personal data | **🗑 Delete my data** / `/delete` (+ confirm pair) | "Unsubscribe", "Forget me" | Filter card, command |
-| Browse without filter | **📂 All listings** (keyboard) / **📂 Browse all listings** (inline) | Implying it respects the filter | Reply keyboard / no-filter card |
+| Browse without filter | **📂 All listings** (reply keyboard and inline — converged 2026-07-09, §29/§34) | Implying it respects the filter; "Browse all listings" as a second inline-only form | Reply keyboard / no-filter card |
 | Wizard navigation | **⬅ Back** / **✖ Cancel** | "Previous", "Abort" | Every wizard step |
 | Admin: demo QA run | **Run QA demo** | "Test AI" | Admin panel |
 | Admin: full backfill | **Run catalog QA** (+ confirm: `Yes, run catalog QA` / `Cancel`) | — | Admin panel |
@@ -622,8 +622,7 @@ Hard constraints (non-negotiable):
 - The meaning of listing, filter, WBS tiers, Kaltmiete-only matching, district/Bezirk, golden set, risk score, triage labels (§20).
 - The AI boundary sentence pattern: parsing/matching deterministic; AI QA admin-only, budgeted, never mutating (§2, §12).
 - **Eval result numbers.** They currently appear in: `CASE_STUDY.md` §6, `docs/case-study.html` (demo-frame dashboard panel + Results table + Results prose), and any README mention. When an eval run changes them, update every occurrence in the same change — a stale number on one surface is a factual error.
-- **Eval sync search.** When touching eval numbers or adjacent prose, run a targeted text search before editing and before final review:
-  `rg -n "golden-set|field accuracy|exact listing accuracy|Parser misses by tag|false alert fields|\\$0\\.000000|100\\.0%" CASE_STUDY.md README.md docs/case-study.html`.
+- **Eval sync check (automated, 2026-07-09 — see §34).** `scripts/check_eval_numbers.py` re-runs `eval.run_eval --json` and diffs every quoted number in `CASE_STUDY.md` and `docs/case-study.html` against it, rather than only locating occurrences: `PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m scripts.check_eval_numbers`. Run it after any eval-affecting change and before final review; a stale number fails the check instead of relying on a human re-reading a grep. If a required anchor phrase is no longer found, the prose changed enough that the check itself needs updating — treat that as a hard failure, not a silent pass.
 - The 7-part case structure between `CASE_STUDY.md` and `docs/case-study.html`.
 - WBS semantics: `flatfeed/wbs_rules.py` is the single source; documents give examples, the module defines truth.
 - The card field contract (§10) between `flatfeed/matching.py`, README's card sketch, PROJECT_CONTEXT's card sketch, and any case-page mockup.
@@ -668,7 +667,7 @@ Exists in the codebase today; MUST NOT be reused in new work; migrate when touch
 
 | Pattern | Current location | Reason | Replacement | Priority |
 |---|---|---|---|---|
-| Two labels for the same catalog action (`📂 All listings` vs `📂 Browse all listings`) | reply keyboard vs inline card | One action, one name (§19) — inline long form tolerated only until touched | Converge on one form when editing either | Low |
+| ~~Two labels for the same catalog action (`📂 All listings` vs `📂 Browse all listings`)~~ | (resolved — `main.py`) | One action, one name (§19) — inline long form tolerated only until touched | Converged on **📂 All listings** everywhere (`main.py` inline no-matches button now matches the reply keyboard and help text); no test asserted the old string (§34, 2026-07-09) | Done — don't reintroduce a second wording |
 | Case-page GitHub links hard-coded to `github.com/mich-mayer/flatfeed` (×6) | `docs/case-study.html` — top-bar + hero + CTA + footer | Static page, no build step: a URL can't be single-sourced in markup without JS-only links (breaks no-JS on the page's key "view my code" CTA) or introducing a build/template; the 6 real hrefs are the correct static pattern | VERIFIED 2026-07-08 against `git origin` — canonical = `mich-mayer/flatfeed`, treat as FACT. A canonical-URL comment at `<body>` top is the documented source of truth; keep the 6 links in sync on any repo move/rename | Resolved-verified |
 
 ---
@@ -684,7 +683,7 @@ Insufficient evidence for a rule — do not invent one; use the temporary defaul
 | Localization (German or Russian bot copy) | Product is English-facing by decision (PROJECT_CONTEXT Known Constraints) | An explicit product decision to localize | English only; keep German domain terms glossed |
 | Live source adapters | Legal/terms review pending; demo is synthetic-only | Author's go-ahead + terms-compatible sources | Synthetic adapter only; describe others as PLANNED |
 | Renter-facing "why did this match?" explanations | Match reasons exist internally (`MatchDecision.reasons`) but aren't user-facing | A decision that renters need explanation UI | Keep reasons internal; don't expose ad hoc |
-| Eval-metrics automation into docs | Numbers are updated by hand across three surfaces | A decision to generate result blocks from `run_eval --json` | Manual sync per §27, all occurrences in one change |
+| Eval-metrics *generation* into docs (vs. verification) | Numbers are still written by hand; only checked automatically now (§27, `scripts/check_eval_numbers.py`, 2026-07-09) | A decision to template/generate the result blocks from `run_eval --json` instead of hand-editing them | Hand-edit numbers, then run the §27 sync check before handoff; do not build a generator without this decision |
 
 ---
 
@@ -771,6 +770,30 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-09 converge catalog-browse button wording
+
+- **Problem:** §29 carried a known, low-priority duplication: the reply-keyboard button and help text both said "📂 All listings" (`main.py:98`, `:2042`) while the inline no-matches-found button said "📂 Browse all listings" (`main.py:379`) — one action, two wordings, tolerated only until either was next touched (§19/§29).
+- **Rationale:** §19's copy order (correct meaning → clear action → comprehension → project terminology) favors one name per action; the short form was the majority form (two call sites) and matches the persistent keyboard, so it was cheaper and lower-risk to converge the single inline call site to it rather than lengthen the two existing ones.
+- **Affected surfaces:** `main.py:379` (inline `_no_matches_keyboard`); this file (§§19, 29, 34). No test asserted the old string (verified by search).
+- **Compatibility impact:** none — same `callback_data="settings:catalog"`, same destination; only the button's visible text changed.
+- **Migration consideration:** fixed now, one line; bot tests, dashboard, README, CASE_STUDY.md, and eval numbers untouched.
+
+### 2026-07-09 automated eval-number sync check
+
+- **Problem:** §27 already required every eval result number (golden-set size, parser field/exact accuracy, misses by tag, false alert fields, QA cost) to stay identical across `CASE_STUDY.md` and `docs/case-study.html`, but the only enforcement was a documented `rg` search a human had to run and eyeball — nothing failed loudly if a number drifted after a real eval run, and §30 carried this as an open "numbers updated by hand" risk.
+- **Rationale:** for a portfolio piece whose central claim is measured-not-claimed evidence (§23), a silently stale metric is a factual-integrity defect, not a cosmetic one (§4 conflict order: factual integrity outranks convenience). A verification script closes the enforcement gap without taking on the larger, still-undecided commitment of generating the prose from JSON (§30) — it only checks what's already hand-written.
+- **Affected surfaces:** new `scripts/check_eval_numbers.py`; `README.md` (Eval section + Development Checks), `docs/agent-workflow.md` (Build and Verification), this file (§§27, 30).
+- **Compatibility impact:** none — no case-page or CASE_STUDY.md prose changed; the script currently passes against the live eval run (15 listings, 100.0%/100.0% accuracy, 0 misses, 0 false alerts, $0.000000). Verified it also fails correctly: a deliberately introduced mismatch (97.3% vs 100.0%) was caught and reported with file-level detail before being reverted.
+- **Migration consideration:** fixed now; run the script (baseline command in README/agent-workflow) any time eval numbers or their surrounding prose change, before handoff.
+
+### 2026-07-09 browser-window chrome parity with Opsqora
+
+- **Problem:** FlatFeed had the shared browser-window pattern in the hero, but the `What I built` dashboard preview remained a bare `product-shot`; the hero dots were square outlines while Opsqora used recognizable macOS-style traffic lights. That made the two case-study landings feel less like one portfolio system and made FlatFeed's second product proof read as a static table rather than an intentional product window.
+- **Rationale:** the browser-window chrome is an evidence wrapper, not decoration: it labels provenance ("Demo · synthetic data"), scopes mockups as product evidence, and matches the sibling Opsqora case-study pattern while preserving FlatFeed's teal accent and product-specific content. The traffic-light dot radius is now the one sanctioned radius exception because it belongs to window chrome, not cards, buttons, or content panels.
+- **Affected surfaces:** `docs/case-study.html` (dashboard preview wrapped in `demo-frame demo-frame--product`), `docs/styles.css` (`.demo-frame-dots`, `.demo-frame--product`, `.product-shot` border), this file (§§5, 6.3, 34).
+- **Compatibility impact:** the previous square-dot chrome and bare built-section product shot are superseded; square corners remain mandatory everywhere except `.demo-frame-dots`.
+- **Migration consideration:** fixed now for both demo-frame instances on the case-study page; bot, dashboard app, README, CASE_STUDY.md, and eval numbers untouched.
 
 ### 2026-07-09 fluid rem scale (sync with Opsqora)
 

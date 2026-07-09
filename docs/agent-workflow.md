@@ -71,6 +71,18 @@ git diff --check
 
 If you skip a heavier check that the matrix would run, say why in your handoff.
 
+**Any change that touches eval numbers or their surrounding prose** (parser
+accuracy, misses, QA cost/false-alerts) MUST also pass the automated §27 sync
+check before handoff:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m scripts.check_eval_numbers
+```
+
+It re-runs the eval and diffs every quoted number in `CASE_STUDY.md` and
+`docs/case-study.html` against that run — a stale number fails the check
+instead of shipping silently.
+
 ## Working Style
 
 - Make focused, reviewable changes; avoid broad refactors when a focused change

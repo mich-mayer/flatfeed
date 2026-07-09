@@ -156,6 +156,14 @@ Use `--provider openai` only for optional AI QA experiments with an API key and
 explicit budget settings. The default OpenAI QA model is `gpt-5.4-mini`, with
 pricing configured as `$0.75 / 1M` input tokens and `$4.50 / 1M` output tokens.
 
+Eval result numbers are quoted by hand in `CASE_STUDY.md` and
+`docs/case-study.html`. After any eval run that changes them, check every
+quoted occurrence stayed in sync:
+
+```bash
+PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m scripts.check_eval_numbers
+```
+
 ## Environment Variables
 
 See `.env.example` for the full list. The main product-specific settings are:
@@ -188,6 +196,7 @@ OPENAI_OUTPUT_PRICE_PER_1M=4.50
 ```bash
 PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m unittest discover -s tests
 PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m eval.run_eval
+PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m scripts.check_eval_numbers
 git diff --check
 ```
 

@@ -368,13 +368,25 @@ table {
 
 .demo-frame-dots {
   display: inline-flex;
-  gap: 0.3125rem;
+  gap: 0.5rem;
 }
 
 .demo-frame-dots i {
-  width: 0.4375rem;
-  height: 0.4375rem;
-  border: 1px solid var(--ink-3);
+  width: 0.6875rem;
+  height: 0.6875rem;
+  border-radius: 50%;
+}
+
+.demo-frame-dots i:nth-child(1) {
+  background: #ff5f57;
+}
+
+.demo-frame-dots i:nth-child(2) {
+  background: #febc2e;
+}
+
+.demo-frame-dots i:nth-child(3) {
+  background: #28c840;
 }
 
 .demo-frame-chrome em {
@@ -419,6 +431,15 @@ table {
   gap: 1.5rem;
   padding: 1.5rem;
   background: var(--wash);
+}
+
+.demo-frame--product {
+  box-shadow: none;
+}
+
+.demo-frame--product .demo-frame-body {
+  display: block;
+  padding: 1.25rem;
 }
 
 .demo-frame figcaption {
@@ -711,7 +732,7 @@ table {
 }
 
 .product-shot {
-  border: 1px solid var(--ink);
+  border: 1px solid var(--line);
   background: var(--surface);
 }
 
@@ -1073,6 +1094,10 @@ table {
 
   .demo-frame-body {
     grid-template-columns: 1fr;
+  }
+
+  .demo-frame--product .demo-frame-body {
+    display: block;
   }
 
   .case-built {

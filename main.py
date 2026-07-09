@@ -376,7 +376,7 @@ def _no_matches_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="Edit filter", callback_data="settings:edit_menu")],
-            [InlineKeyboardButton(text="📂 Browse all listings", callback_data="settings:catalog")],
+            [InlineKeyboardButton(text="📂 All listings", callback_data="settings:catalog")],
         ]
     )
 
