@@ -169,7 +169,13 @@ Rules:
 - The page has no error/warning/success status colors — it is editorial, not operational. Do not import status palettes from the bot, the dashboard, or Opsqora's status set (`--ok`/`--warn`/`--bad` were deliberately not ported).
 - The dark CTA and footer use `--ink` as ground with `--inverted` / `--inverted-muted` / `--inverted-line` — the only inverted zone on the page, except for dark buttons and the Telegram user-message mockup.
 
-### 5.2 Typography — ADOPT roles
+### 5.2 Typography — ADOPT roles (fluid rem scale)
+
+**Scale engine (2026-07-09, resolves rem/px consistency with Opsqora; see §34).** Type, spacing, box sizes, and container widths are authored in `rem` on a single fluid root: `html { font-size: clamp(1rem, 0.925rem + 0.2vw, 1.125rem) }` in `docs/styles.css`. The root scales 16px (viewport ≤600px) → 18px (≥1600px), so the whole system grows together on large displays and stays dense on small ones. Authoring convention: **1rem == 16px**, so every px value below renders identically at the 16px root (zero regression at the reference size). The clamp is rem-relative (not raw `vw`), so browser zoom and OS/browser font-size preferences keep working (WCAG 1.4.4/1.4.10). Hairlines and strokes ≤2px (`--line`/`--rule` borders, `:focus-visible` outline) plus effects (`--demo-shadow`, `backdrop-filter: blur()`) stay in **px** for crispness — everything else, including the 7–8px dot squares in §5.3, is rem.
+
+- New type/spacing MUST be authored in rem; px is reserved for the ≤2px strokes and effects above.
+- MUST NOT reintroduce fixed-px font sizes for document-flow text.
+- This scale is shared with the sibling Opsqora landing (`fix(design): adopt fluid rem scale`) — the two systems now use identical rem math, differing only in the teal/ultramarine accent.
 
 Three families, loaded via Google Fonts from the HTML head (this webfont import is a deliberate 2026-07-07 change; see §34):
 - `--font-ui` **Inter** — body, buttons, nav, meta values.
@@ -177,6 +183,8 @@ Three families, loaded via Google Fonts from the HTML head (this webfont import 
 - `--font-mono` **IBM Plex Mono** (500–600, uppercase + letter-spacing) — kickers, labels, captions, table headers, chips, listing-card fields.
 
 The page must remain readable and structurally stable if Google Fonts are blocked or slow. Keep system-font fallbacks in every font token, do not make layout correctness depend on exact webfont metrics, and update §34 if fonts are removed, self-hosted, or changed. The rationale for external fonts is portfolio presentation consistency, not product functionality.
+
+Sizes below list the **reference px at a 16px root**; each is authored in `styles.css` as its rem equivalent (px ÷ 16) and scales with the fluid root:
 
 | Role | Font / weight | Size | Notes |
 |---|---|---|---|
@@ -192,20 +200,20 @@ The page must remain readable and structurally stable if Google Fonts are blocke
 | Listing-card fields | mono 400 | 12px / 1.7 | mockup only |
 
 Rules:
-- Base body is 15px/1.5 `--font-ui`; long-form prose measure stays ≤680px.
+- Base body is 15px/1.5 `--font-ui`; long-form prose measure stays ≤680px (reference px at the 16px root; authored as 0.9375rem/42.5rem).
 - Display sizes use `clamp()` — do not add per-breakpoint font overrides.
 - New text styles SHOULD reuse a role above rather than introduce a new size; do not add weights above 700.
 
 ### 5.3 Borders, Radius, Elevation — ADOPT
 
-- **Square corners everywhere: border-radius 0.** No exceptions — dots and squares (7–8px `<i>` elements) are literal squares. Do not reintroduce radii.
-- 1px `--line` hairlines divide and border; **2px `--rule` top rules** open every numbered section, the hero meta grid, and panel/table headers — this rule-line motif is the page's structure signal.
-- Elevation: one shadow only — `--demo-shadow` on `.demo-frame`. Everything else is flat; `product-shot` inside the narrative is deliberately shadowless.
-- No gradients anywhere. The sticky header uses `color-mix` transparency + `backdrop-filter: blur(10px)`, not a gradient.
+- **Square corners everywhere: border-radius 0.** No exceptions — dots and squares (7–8px reference, authored as 0.4375rem/0.5rem, fluid with the root per §5.2) are literal squares. Do not reintroduce radii.
+- 1px `--line` hairlines divide and border; **2px `--rule` top rules** open every numbered section, the hero meta grid, and panel/table headers — this rule-line motif is the page's structure signal. These stay fixed px (§5.2) so the hairline motif stays crisp at every root size.
+- Elevation: one shadow only — `--demo-shadow` on `.demo-frame`. Everything else is flat; `product-shot` inside the narrative is deliberately shadowless. The shadow's px offsets stay fixed (§5.2 effects exception).
+- No gradients anywhere. The sticky header uses `color-mix` transparency + `backdrop-filter: blur(10px)`, not a gradient; the blur radius stays fixed px.
 
 ### 5.4 Grid and Width — ADOPT
 
-- One centered column: `.case` max-width **1140px** + 24px side padding.
+- One centered column: `.case` max-width **71.25rem** (= 1140px at the 16px root; grows to ~1282px at the 18px root on wide displays, so large screens are used rather than left as margin) + **1.5rem** (24px) side padding.
 - Sections are single-column: kicker + H2 head, then content blocks. The numbered mono kicker (`01`–`07`) is the page's navigation motif — keep it.
 - Tiled bands are bordered grids with internal 1px `--line` dividers (no gaps): `case-figures` 4-up, `case-meta` 5-up. Open grids with gaps: `case-steps--five` 5-up (workflow), `case-points` 3-up, `case-scope-columns` 2-up, `case-built` prose+shot 2-up, `demo-frame-body` 2-up. All collapse per §14.
 - The demo frame is full-width under the hero; the dark CTA is a full-width `--ink` block.
@@ -384,7 +392,7 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 
 ## 14. Responsive System (case-study page)
 
-Breakpoints in use: **1080** (hero meta → 3-up, workflow steps → 2-up), **920** (header wraps and nav becomes a horizontal scroll row, demo-frame panels and the built/scope/points grids stack to one column, scope figures → 2-up, the Results detail column hides — the caption and prose keep the qualifier visible), **620** (meta → 2-up, steps → 1-up, brand sub-label and demo-frame URL hide).
+Breakpoints are authored in `em` so reflow is zoom-aware (identical to px at the default font size, and unaffected by the fluid root, which media queries ignore — §5.2): **1080px = 67.5em** (hero meta → 3-up, workflow steps → 2-up), **920px = 57.5em** (header wraps and nav becomes a horizontal scroll row, demo-frame panels and the built/scope/points grids stack to one column, scope figures → 2-up, the Results detail column hides — the caption and prose keep the qualifier visible), **620px = 38.75em** (meta → 2-up, steps → 1-up, brand sub-label and demo-frame URL hide).
 
 - Desktop is the primary reading surface; mobile is a supported viewing mode, not a separately designed product.
 - Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, CTAs, meta grid, at least one evidence panel; the synthetic qualifier for the Results numbers must survive every width (it lives in the table caption and the adjacent prose, not only in the hidden detail column).
@@ -763,6 +771,14 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-09 fluid rem scale (sync with Opsqora)
+
+- **Problem:** the sibling Opsqora landing migrated its type/spacing system to a fluid rem scale (`fix(design): adopt fluid rem scale`, 2026-07-07) for accessibility (user font-size preferences, browser zoom) and to use wide-viewport space instead of leaving it as margin; FlatFeed still authored all 227 size/spacing declarations in fixed px with no root `font-size`, so the two "one shared system" landings had diverged on a foundational mechanism, not just the accent split §4 already permits.
+- **Rationale:** consistency across the portfolio outranks either page's prior implementation detail (§4 conflict order); rem sizing also directly serves §15's WCAG 2.2 AA target (1.4.4/1.4.10) in a way fixed px cannot. Adopted the identical mechanism Opsqora already validated (one root `clamp()`, 1rem==16px authoring convention, hairlines/effects ≤2px stay px, breakpoints in em) rather than inventing a second approach.
+- **Affected surfaces:** `docs/styles.css` (full file — every font-size, padding, margin, gap, width/height, and max-width converted px→rem except 1–2px hairlines/outline and the `--demo-shadow`/`backdrop-filter` effect values; the three responsive breakpoints converted px→em), this file (§§5.2, 5.3, 5.4, 14).
+- **Compatibility impact:** none visually — every value converts via px÷16 so the page renders pixel-identical at the default 16px root; the only *behavior* change is that the root now scales to 18px above a 1600px viewport (previously fixed) and the whole system now responds to browser zoom/user font-size settings, which it did not before.
+- **Migration consideration:** fixed now, whole file in one pass; bot, dashboard, README, and CASE_STUDY.md untouched (no px/rem usage there).
 
 ### 2026-07-08 cross-portfolio 7-part unification
 
