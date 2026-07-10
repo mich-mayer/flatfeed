@@ -113,16 +113,25 @@ ENV_FILE=.env.local streamlit run flatfeed/dashboard/streamlit_app.py
 
 ## Demo Script
 
-1. Send `/start`. The bot greets you and shows your (empty) filter card with a
-   `Set up filter` button — it no longer forces the wizard on you.
-2. Set the filter step by step: WBS, district, Kaltmiete, and rooms. Each step
-   shows `Step N/4` and offers `⬅ Back` / `✖ Cancel`; the WBS and Kaltmiete
-   steps include a short plain-language explainer.
-3. Tap `🔎 Show matches` to receive active synthetic listings that match the
-   saved filter.
-4. As an admin, tap `🛠 Admin` -> `Run QA demo`.
-5. Review the flagged parser report and triage it as `Parser error`,
-   `Parser correct`, or `Borderline / unsure`.
+New visitors (hiring managers, first-time testers) get a 5-screen guided
+tour instead of the raw filter wizard:
+
+1. Send `/start`, or open `https://t.me/FlatFeedBot?start=tour` directly.
+   Both lead to the same intro with `Start the tour` / `Skip the tour`.
+2. The tour pre-fills a realistic filter, shows the resulting listing card,
+   explains the deterministic parser behind it, injects a live WBS fault,
+   shows the resulting AI QA alert with the same triage buttons a real admin
+   sees, and closes with the AI QA history funnel.
+3. Nothing tapped during the tour is written to `ai_qa_reviews` — the fault
+   injection and triage are display-only, so ten visitors never skew the
+   metrics. See `docs/PROJECT_CONTEXT.md` for the full guarantee.
+4. `🛠 Admin` is visible to every visitor as a demo view (including
+   `Replay the tour`); actions that change catalog data or spend budget stay
+   restricted to `ADMIN_TELEGRAM_USER_IDS` and say so if tapped without
+   admin rights.
+5. As an admin, `🛠 Admin` -> `Run QA demo` runs the same ephemeral
+   fault-injection flow over a few catalog listings; `Review flagged issues`
+   and `Run catalog QA` are the real, persisting admin paths.
 6. Tap `📊 Effectiveness dashboard` in the admin panel (or open the dashboard
    directly) to inspect AI QA coverage, cost, feedback, and parser issue
    patterns.
@@ -132,6 +141,7 @@ The persistent chat keyboard keeps the main story visible:
 ```text
 🔎 Show matches
 ⚙ Filter    📂 All listings
+🛠 Admin
 ```
 
 The Telegram command menu publishes `/start`, `/filter`, `/matches`, `/help`,

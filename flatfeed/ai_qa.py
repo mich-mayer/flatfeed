@@ -39,10 +39,28 @@ AI_QA_FEEDBACK_UNSURE = "unsure"
 AI_QA_TRIGGER_INITIAL_BACKFILL = "initial_backfill"
 AI_QA_TRIGGER_NEW_LISTING = "new_listing"
 AI_QA_TRIGGER_DEMO_FAULT = "demo_fault_injection"
+AI_QA_TRIGGER_TOUR_FAULT = "tour_fault_injection"
 
 AI_QA_ENDPOINT_TYPE = "ai_qa"
 CURRENT_AI_QA_PROMPT_VERSION = "v8"
 AI_QA_DEMO_FAULT_TYPES = ("wbs", "rooms", "rent_kalt", "rent_warm")
+
+# The bot's tour and the dashboard both cite the same curated AI QA history
+# (current prompt version only, never live visitor taps) and must agree on
+# whether it came from a real model run. Flip this to True after running
+# scripts/build_qa_history.py against a real provider, in the same change
+# that flips AI_QA_HISTORY_SOURCE_CAPTION below.
+AI_QA_HISTORY_IS_REAL_MODEL_RUN = False
+AI_QA_HISTORY_SOURCE_CAPTION = (
+    "This history comes from the deterministic mock QA provider — the "
+    "structure is real, model cost is zero. A real GPT-5.4-mini run over "
+    "the full catalog is the next step."
+    if not AI_QA_HISTORY_IS_REAL_MODEL_RUN
+    else (
+        "This history comes from a real GPT-5.4-mini run over the "
+        "synthetic catalog, with human triage of flagged reviews."
+    )
+)
 
 AI_QA_SYSTEM_MESSAGE = (
     "You are an AI QA validator for a Berlin rental listing parser. "
