@@ -271,6 +271,18 @@ table {
   gap: 1.25rem;
   height: 4rem;
   border-bottom: 1px solid var(--line);
+  /* Keep the sticky element itself visually inert: Safari 26 (iOS Liquid Glass)
+     reads background/backdrop-filter off sticky elements near the viewport edge
+     and mis-renders them (header detaches from the top with a content gap).
+     The translucent glass layer lives on the absolute ::before instead. */
+  background: transparent;
+}
+
+.case-top::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px);
 }

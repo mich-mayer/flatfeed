@@ -37,6 +37,7 @@ from aiogram.types import (
 from sqlalchemy import delete, select
 
 from flatfeed.ai_qa import (
+    AIQADemoResult,
     AIQARunResult,
     AIQAStatus,
     AI_QA_DEMO_FAULT_TYPES,
@@ -44,9 +45,14 @@ from flatfeed.ai_qa import (
     AI_QA_FEEDBACK_PARSER_CORRECT,
     AI_QA_FEEDBACK_PARSER_ERROR,
     AI_QA_FEEDBACK_UNSURE,
+    AI_QA_HISTORY_SOURCE_CAPTION,
+    AI_QA_TRIGGER_DEMO_FAULT,
     AI_QA_TRIGGER_INITIAL_BACKFILL,
+    AI_QA_TRIGGER_TOUR_FAULT,
     AI_QA_TRIGGER_NEW_LISTING,
     CURRENT_AI_QA_PROMPT_VERSION,
+    build_demo_fault_parser_snapshot,
+    build_parser_snapshot,
     get_ai_qa_status,
     load_flagged_ai_qa_reviews,
     load_ai_qa_reviews_for_alert,
@@ -72,6 +78,7 @@ from flatfeed.matching import (
     display_wbs_value,
     display_wbs_options_for_listing_text,
     effective_required_wbs,
+    effective_wbs_requirement,
     extract_rent_display,
     find_matches_for_user,
     find_pending_matches,
@@ -98,6 +105,8 @@ BTN_MATCHES = "🔎 Show matches"
 BTN_CATALOG = "📂 All listings"
 BTN_ADMIN = "🛠 Admin"
 BTN_DASHBOARD = "📊 Effectiveness dashboard"
+
+CASE_STUDY_URL = "https://mich-mayer.github.io/flatfeed/case-study.html"
 
 CURRENT_LISTINGS_LIMIT = 10
 ACTIVE_LISTING_CANDIDATE_LIMIT = 120
@@ -206,13 +215,14 @@ class FilterSetup(StatesGroup):
     choosing_rooms = State()
 
 
-def main_menu_keyboard(*, is_admin: bool = False) -> ReplyKeyboardMarkup:
+def main_menu_keyboard() -> ReplyKeyboardMarkup:
+    # The admin panel is visible to every visitor as a demo view (individual
+    # admin actions inside stay gated by _is_admin_user); see DESIGN_CONTENT_SYSTEM.md §34.
     keyboard = [
         [KeyboardButton(text=BTN_MATCHES)],
         [KeyboardButton(text=BTN_SETTINGS), KeyboardButton(text=BTN_CATALOG)],
+        [KeyboardButton(text=BTN_ADMIN)],
     ]
-    if is_admin:
-        keyboard.append([KeyboardButton(text=BTN_ADMIN)])
     return ReplyKeyboardMarkup(
         keyboard=keyboard,
         resize_keyboard=True,
@@ -472,6 +482,7 @@ def _dashboard_link_keyboard() -> InlineKeyboardMarkup:
 def _admin_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
+            [InlineKeyboardButton(text="Replay the tour", callback_data="tour:replay")],
             [InlineKeyboardButton(text="Run QA demo", callback_data="settings:ai_qa_demo")],
             [
                 InlineKeyboardButton(text="Review flagged issues", callback_data="settings:ai_qa_reports"),
@@ -1622,6 +1633,41 @@ def load_ai_qa_status() -> AIQAStatus:
     )
 
 
+def _ephemeral_ai_qa_review_from_result(
+    listing: Listing,
+    result: AIQADemoResult,
+    *,
+    trigger_type: str,
+) -> AIQAReview:
+    """Build an AIQAReview-shaped object for display only.
+
+    This object is never added to a session or committed — reusing the
+    review_id=0 in-memory object lets demo/tour call sites render findings
+    with the exact same formatter (_format_ai_qa_review) a real admin alert
+    uses, without writing anything to ai_qa_reviews.
+    """
+    return AIQAReview(
+        review_id=0,
+        listing_id=listing.listing_id,
+        listing_url=listing.url,
+        source_company=listing.source_company,
+        trigger_type=trigger_type,
+        qa_prompt_version=f"{CURRENT_AI_QA_PROMPT_VERSION}-demo",
+        raw_text_hash="demo",
+        parser_snapshot_hash="demo",
+        parser_snapshot=result.parser_snapshot,
+        ai_result=result.ai_result,
+        risk_score=int(result.ai_result["risk_score"]),
+        confidence=float(result.ai_result["confidence"]),
+        parser_result_correct=bool(result.ai_result["parser_result_correct"]),
+        should_alert_admin=bool(result.ai_result["should_alert_admin"]),
+        feedback_status=AI_QA_FEEDBACK_PENDING,
+        prompt_tokens=result.prompt_tokens,
+        completion_tokens=result.completion_tokens,
+        total_cost_usd=result.total_cost_usd,
+    )
+
+
 def run_ai_qa_demo_reviews(*, limit: int = 3) -> List[AIQAReview]:
     with SessionLocal() as session:
         listings = list(
@@ -1642,27 +1688,13 @@ def run_ai_qa_demo_reviews(*, limit: int = 3) -> List[AIQAReview]:
             listing,
             fault_type=fault_type,
         )
-        review = AIQAReview(
-            review_id=0,
-            listing_id=listing.listing_id,
-            listing_url=listing.url,
-            source_company=listing.source_company,
-            trigger_type="demo_fault_injection",
-            qa_prompt_version=f"{CURRENT_AI_QA_PROMPT_VERSION}-demo",
-            raw_text_hash="demo",
-            parser_snapshot_hash="demo",
-            parser_snapshot=result.parser_snapshot,
-            ai_result=result.ai_result,
-            risk_score=int(result.ai_result["risk_score"]),
-            confidence=float(result.ai_result["confidence"]),
-            parser_result_correct=bool(result.ai_result["parser_result_correct"]),
-            should_alert_admin=bool(result.ai_result["should_alert_admin"]),
-            feedback_status=AI_QA_FEEDBACK_PENDING,
-            prompt_tokens=result.prompt_tokens,
-            completion_tokens=result.completion_tokens,
-            total_cost_usd=result.total_cost_usd,
+        reviews.append(
+            _ephemeral_ai_qa_review_from_result(
+                listing,
+                result,
+                trigger_type=AI_QA_TRIGGER_DEMO_FAULT,
+            )
         )
-        reviews.append(review)
     return reviews
 
 
@@ -1869,7 +1901,13 @@ def _local_listing_photo_path(image_url: Optional[str]) -> Optional[Path]:
     return candidate
 
 
-async def send_match_to_chat(bot: Bot, *, chat_id: int, match: ListingMatch) -> None:
+async def send_match_to_chat(
+    bot: Bot,
+    *,
+    chat_id: int,
+    match: ListingMatch,
+    reply_markup: Optional[InlineKeyboardMarkup] = None,
+) -> None:
     text = format_match_message(match)
     photo_path = _local_listing_photo_path(match.image_url)
     if photo_path is not None:
@@ -1879,6 +1917,7 @@ async def send_match_to_chat(bot: Bot, *, chat_id: int, match: ListingMatch) -> 
                     chat_id=chat_id,
                     photo=FSInputFile(photo_path),
                     caption=text,
+                    reply_markup=reply_markup,
                 )
             else:
                 await bot.send_photo(chat_id=chat_id, photo=FSInputFile(photo_path))
@@ -1886,6 +1925,7 @@ async def send_match_to_chat(bot: Bot, *, chat_id: int, match: ListingMatch) -> 
                     chat_id=chat_id,
                     text=text,
                     disable_web_page_preview=True,
+                    reply_markup=reply_markup,
                 )
             return
         except TelegramAPIError:
@@ -1895,6 +1935,7 @@ async def send_match_to_chat(bot: Bot, *, chat_id: int, match: ListingMatch) -> 
         chat_id=chat_id,
         text=text,
         disable_web_page_preview=True,
+        reply_markup=reply_markup,
     )
 
 
@@ -1973,14 +2014,21 @@ async def send_active_filtered_matches(message: Message, bot: Bot, *, user_id: i
 
 
 async def send_admin_panel(message: Message) -> None:
-    if message.from_user is None or not _is_admin_user(message.from_user.id):
-        await message.answer("The admin panel is only available to admins.")
+    if message.from_user is None:
         return
-    await message.answer(
+    is_admin = _is_admin_user(message.from_user.id)
+    intro = (
         "<b>FlatFeed admin panel</b>\n\n"
-        "Demo flow: run a QA demo, review flagged parser issues, then check the metrics.",
-        reply_markup=_admin_keyboard(),
+        "Demo flow: run a QA demo, review flagged parser issues, then check the metrics."
     )
+    if not is_admin:
+        intro = (
+            "<b>FlatFeed admin panel</b> — demo view\n\n"
+            "In production this panel is restricted to configured admins. You can open it "
+            "here to see how it works; buttons that change catalog data or spend budget "
+            "stay admin-only and will say so."
+        )
+    await message.answer(intro, reply_markup=_admin_keyboard())
 
 
 async def send_settings_card(message: Message, *, user_id: int) -> None:
@@ -2027,6 +2075,450 @@ async def _clear_markup(callback: CallbackQuery) -> None:
         await callback.message.edit_reply_markup(reply_markup=None)
 
 
+# ---------------------------------------------------------------------------
+# Guided tour
+#
+# A 5-screen, button-only walkthrough for a first-time visitor with no
+# context: (1) a pre-filled match, (2) how the deterministic parser produced
+# it, (3) a live fault injection reviewed by AI QA, (4) the human triage
+# decision, (5) the curated AI QA history. Every dynamic value (listing,
+# district, prices, WBS phrasing) is read from the tour listing at runtime.
+#
+# Tour fault-injection results and triage taps are never persisted — no
+# AIQAReview is added to a session or committed anywhere in this section.
+# The dashboard's and screen 5's history stay a curated evaluation run,
+# never live visitor input.
+# ---------------------------------------------------------------------------
+
+
+def _select_tour_listing() -> Optional[Listing]:
+    """Deterministically pick one listing for the tour: 2 rooms, a WBS
+    requirement that includes 140, a WBS phrase in the raw text, and transit
+    data, so every screen has something concrete to show."""
+    with SessionLocal() as session:
+        candidates = list(
+            session.scalars(
+                select(Listing)
+                .where(Listing.source_company.in_(ACTIVE_SOURCE_COMPANIES))
+                .where(Listing.source_active.is_(True))
+                .where(Listing.status != REMOVED_STATUS)
+                .order_by(Listing.first_seen_at.asc(), Listing.listing_id.asc())
+            )
+        )
+
+    for listing in candidates:
+        if listing.rooms != 2:
+            continue
+        if "wbs" not in (listing.raw_text or "").lower():
+            continue
+        transport_walk = listing.transport_walk or {}
+        if (
+            transport_walk.get("s_bahn_minutes") is None
+            and transport_walk.get("u_bahn_minutes") is None
+        ):
+            continue
+        requirement = effective_wbs_requirement(
+            parsed_required_wbs=_listing_constraints_for_display(listing).required_wbs,
+            listing_title=listing.title,
+            listing_text=listing.raw_text,
+        )
+        if 140 in (requirement.allowed_percentages or ()):
+            return listing
+    return None
+
+
+def _tour_wbs_percent(allowed_percentages: tuple[int, ...]) -> int:
+    return 140 if 140 in allowed_percentages else allowed_percentages[0]
+
+
+def _tour_max_rent(rent_kalt_eur: Optional[int]) -> int:
+    if rent_kalt_eur is None:
+        return RENT_PRESETS[0]
+    for preset in RENT_PRESETS:
+        if preset >= rent_kalt_eur:
+            return preset
+    return (int(rent_kalt_eur) // 100 + 1) * 100
+
+
+def _tour_filter_summary(listing: Listing) -> tuple[UserPreferences, int]:
+    requirement = effective_wbs_requirement(
+        parsed_required_wbs=_listing_constraints_for_display(listing).required_wbs,
+        listing_title=listing.title,
+        listing_text=listing.raw_text,
+    )
+    wbs_percent = _tour_wbs_percent(requirement.allowed_percentages or (140,))
+    preferences = UserPreferences(
+        location=[listing.district] if listing.district else None,
+        wbs_type=f"WBS {wbs_percent}",
+        max_rent=_tour_max_rent(listing.rent_kalt),
+        rooms=float(listing.rooms) if listing.rooms is not None else None,
+    )
+    return preferences, wbs_percent
+
+
+def _tour_next_keyboard(label: str, callback_data: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton(text=label, callback_data=callback_data)]]
+    )
+
+
+def _tour_intro_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Start the tour", callback_data="tour:1")],
+            [InlineKeyboardButton(text="Skip the tour", callback_data="tour:skip")],
+        ]
+    )
+
+
+def _tour_start_keyboard() -> InlineKeyboardMarkup:
+    return _tour_next_keyboard("Start the tour", "tour:1")
+
+
+def _tour_triage_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Parser error",
+                    callback_data=f"tour_fb:{AI_QA_FEEDBACK_PARSER_ERROR}",
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text="Parser correct",
+                    callback_data=f"tour_fb:{AI_QA_FEEDBACK_PARSER_CORRECT}",
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    text="Borderline / unsure",
+                    callback_data=f"tour_fb:{AI_QA_FEEDBACK_UNSURE}",
+                ),
+            ],
+        ]
+    )
+
+
+def _tour_result_keyboard() -> InlineKeyboardMarkup:
+    rows: List[List[InlineKeyboardButton]] = []
+    dashboard_url = get_settings().dashboard_url
+    if dashboard_url and dashboard_url.lower().startswith(("http://", "https://")):
+        rows.append([InlineKeyboardButton(text=BTN_DASHBOARD, url=dashboard_url)])
+    rows.append([InlineKeyboardButton(text="Read the case study", url=CASE_STUDY_URL)])
+    return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+async def _send_tour_screen_0(message: Message) -> None:
+    await message.answer(
+        "This is <b>FlatFeed</b> — a demo assistant for finding WBS apartments in Berlin.\n\n"
+        "All listings are synthetic. Your data can be deleted at any time with /delete.",
+        reply_markup=main_menu_keyboard(),
+    )
+    await message.answer(
+        "<b>Take a 2-minute tour?</b>\n\n"
+        "I will walk through how a match gets found, how listing data is parsed without "
+        "an LLM, and how an AI layer audits that parsing while a human keeps the final say.",
+        reply_markup=_tour_intro_keyboard(),
+    )
+
+
+async def _send_tour_screen_1(callback: CallbackQuery, bot: Bot) -> None:
+    if callback.message is None or callback.from_user is None:
+        return
+    listing = await asyncio.to_thread(_select_tour_listing)
+    if listing is None:
+        await callback.message.answer(
+            "The tour needs at least one active synthetic listing with a WBS 140 "
+            "requirement, and none is available right now. Try /matches or 📂 All "
+            "listings instead."
+        )
+        return
+
+    preferences, wbs_percent = _tour_filter_summary(listing)
+    await asyncio.to_thread(
+        save_fixed_preferences,
+        user_id=callback.from_user.id,
+        preferences=preferences,
+    )
+
+    rent_label = (
+        f"{preferences.max_rent} EUR" if preferences.max_rent is not None else "no limit"
+    )
+    district_label = listing.district or "any district"
+    rooms_label = _display_rooms(listing.rooms)
+    await callback.message.answer(
+        "<b>Step 1/5</b>\n\n"
+        f"Say you want a {escape(rooms_label)}-room listing in {escape(district_label)}, "
+        f"WBS {wbs_percent}, with a maximum Kaltmiete of {rent_label}. I saved that as "
+        "your filter.\n\n"
+        "Here is what FlatFeed found — every field below came from the listing's raw "
+        "text, not from an LLM:"
+    )
+
+    match = _listing_match_from_model(listing)
+    await send_match_to_chat(
+        bot,
+        chat_id=callback.message.chat.id,
+        match=match,
+        reply_markup=_tour_next_keyboard("See how it's parsed", "tour:2"),
+    )
+
+
+async def _send_tour_screen_2(callback: CallbackQuery) -> None:
+    if callback.message is None:
+        return
+    listing = await asyncio.to_thread(_select_tour_listing)
+    if listing is None:
+        return
+
+    snapshot = build_parser_snapshot(listing)
+    raw_lines = (listing.raw_text or "").strip().splitlines()
+    raw_text = "\n".join(raw_lines[:12])
+    if len(raw_lines) > 12:
+        raw_text += "\n…"
+
+    wbs_label = escape(_format_parser_snapshot_value(snapshot.get("display_wbs")))
+    rooms_label = escape(_format_parser_snapshot_value(snapshot.get("rooms")))
+    floor_label = escape(_format_parser_snapshot_value(snapshot.get("floor")))
+    kalt_label = escape(_format_parser_snapshot_value(snapshot.get("rent_kalt")))
+    await callback.message.answer(
+        "<b>Step 2/5</b>\n\n"
+        "Every listing arrives as free-form text. The <b>parser</b> is the code that "
+        "reads that text and turns it into structured fields — rent, rooms, WBS, and "
+        "more. Here is the raw text behind the listing you just saw:\n\n"
+        + escape(raw_text)
+        + "\n\nAnd here is what the parser extracted from it:\n\n"
+        f"<b>WBS:</b> {wbs_label}\n"
+        f"<b>Rooms:</b> {rooms_label} · <b>Floor:</b> {floor_label}\n"
+        f"<b>Kalt:</b> {kalt_label}\n\n"
+        "Parsing is deterministic code, not an LLM: the same text always produces the "
+        "same fields, it costs nothing to run, and it is fully testable. Unknown values "
+        "fail closed — the bot never guesses your rent.\n\n"
+        "A deterministic parser still has one weakness: it breaks silently when a "
+        "listing's text format changes. That is what the next AI layer is for.",
+        reply_markup=_tour_next_keyboard("Try breaking the parser", "tour:3"),
+    )
+
+
+async def _send_tour_screen_3(callback: CallbackQuery) -> None:
+    if callback.message is None:
+        return
+    await callback.message.answer(
+        "<b>Step 3/5</b>\n\n"
+        "In production, this panel is admin-only. For this tour, you get the same seat.\n\n"
+        "Let's simulate a real failure. The button below corrupts the WBS field in the "
+        "parser's output for this listing, as if the source text had changed. The AI "
+        "reviewer only sees the raw listing text and that corrupted snapshot — it is "
+        "never told a fault was injected.",
+        reply_markup=_tour_next_keyboard("Corrupt the WBS field", "tour:inject"),
+    )
+
+
+async def _send_tour_inject(callback: CallbackQuery) -> None:
+    if callback.message is None:
+        return
+    listing = await asyncio.to_thread(_select_tour_listing)
+    if listing is None:
+        return
+
+    result = await asyncio.to_thread(
+        run_ai_qa_demo_check_for_listing,
+        listing,
+        fault_type="wbs",
+    )
+    fault = result.fault
+    original_label = escape(str(fault.get("original_value") or "not specified"))
+    injected_label = escape(str(fault.get("injected_value") or "not specified"))
+    fault_note = (
+        "<b>Fault injected</b>\n\n"
+        f"WBS changed from “{original_label}” to “{injected_label}” in the parser "
+        "snapshot only. The saved listing and the real parser output are untouched.\n\n"
+    )
+
+    review = _ephemeral_ai_qa_review_from_result(
+        listing,
+        result,
+        trigger_type=AI_QA_TRIGGER_TOUR_FAULT,
+    )
+    await callback.message.answer(
+        fault_note + _format_ai_qa_review(review, alert=True),
+        reply_markup=_tour_triage_keyboard(),
+        disable_web_page_preview=False,
+    )
+
+
+async def _send_tour_feedback_response(callback: CallbackQuery, feedback_status: str) -> None:
+    if callback.message is None:
+        return
+
+    listing = await asyncio.to_thread(_select_tour_listing)
+    if listing is not None:
+        _, fault = await asyncio.to_thread(
+            lambda: build_demo_fault_parser_snapshot(listing, fault_type="wbs")
+        )
+        original_label = escape(str(fault.get("original_value") or "not specified"))
+        fault_fact = f"the listing text names WBS {original_label} explicitly"
+    else:
+        fault_fact = "the listing text named a different WBS requirement"
+
+    if feedback_status == AI_QA_FEEDBACK_PARSER_ERROR:
+        await callback.answer("Recorded: parser error.")
+        opening = (
+            "Correct — this was a real parser error.\n\n"
+            "In production, your label would be recorded as feedback and would feed "
+            "the quality metrics you're about to see. In this tour nothing you tap is "
+            "stored — the numbers next reflect only a separate, curated evaluation run."
+        )
+    else:
+        label = _feedback_decision_label(feedback_status)
+        await callback.answer(f"Recorded: {label}.")
+        opening = (
+            "Noted. In this tour nothing you tap is stored, so there is no record to "
+            "correct.\n\n"
+            f"For transparency: {fault_fact}, so the parser value was wrong here. In "
+            "production your label would still stand as the decision of record — the "
+            "system always trusts the human's final call, and a disagreement between "
+            "AI and admin is exactly the kind of case the feedback loop exists to "
+            "surface."
+        )
+
+    await _clear_markup(callback)
+    await callback.message.answer(
+        f"{opening}\n\n"
+        "WBS is one of the messiest fields in Berlin listings — sources write it a "
+        "dozen different ways, so it is exactly where a parser is most likely to break "
+        "silently. Left uncaught, a fault like this would have hidden this listing from "
+        "a WBS-140 renter, or let a renter without WBS apply in vain.\n\n"
+        "That is the whole safety model in one sentence: <b>deterministic code decides "
+        "what renters see, AI supervises the code, and a human supervises the AI.</b>",
+        reply_markup=_tour_next_keyboard("See the numbers", "tour:5"),
+    )
+
+
+def _load_tour_funnel() -> Dict[str, int]:
+    with SessionLocal() as session:
+        reviews = list(
+            session.scalars(
+                select(AIQAReview).where(
+                    AIQAReview.qa_prompt_version == CURRENT_AI_QA_PROMPT_VERSION
+                )
+            )
+        )
+    flagged = [review for review in reviews if review.should_alert_admin]
+    reviewed = [
+        review
+        for review in flagged
+        if review.feedback_status
+        in {AI_QA_FEEDBACK_PARSER_ERROR, AI_QA_FEEDBACK_PARSER_CORRECT, AI_QA_FEEDBACK_UNSURE}
+    ]
+    confirmed = [
+        review for review in flagged if review.feedback_status == AI_QA_FEEDBACK_PARSER_ERROR
+    ]
+    return {
+        "checked": len(reviews),
+        "flagged": len(flagged),
+        "reviewed": len(reviewed),
+        "confirmed": len(confirmed),
+    }
+
+
+def _tour_rate_line(*, confirmed: int, reviewed: int) -> str:
+    if reviewed == 0:
+        return "No flagged reports have been reviewed yet."
+    if reviewed >= 20:
+        return (
+            f"Useful-signal rate: {confirmed / reviewed:.1%} of reviewed flags were "
+            "confirmed parser errors."
+        )
+    return (
+        f"Useful-signal rate: {confirmed} of {reviewed} reviewed flags were confirmed "
+        "parser errors."
+    )
+
+
+async def _send_tour_screen_5(callback: CallbackQuery) -> None:
+    if callback.message is None:
+        return
+    await _clear_markup(callback)
+    funnel = await asyncio.to_thread(_load_tour_funnel)
+    rate_line = _tour_rate_line(confirmed=funnel["confirmed"], reviewed=funnel["reviewed"])
+
+    await callback.message.answer(
+        "<b>Step 5/5</b>\n\n"
+        "Here is the AI QA history for the current catalog:\n\n"
+        f"<b>Checked by AI:</b> {funnel['checked']}\n"
+        f"<b>Flagged as risky:</b> {funnel['flagged']}\n"
+        f"<b>Reviewed by a human:</b> {funnel['reviewed']}\n"
+        f"<b>Confirmed parser errors:</b> {funnel['confirmed']}\n\n"
+        f"{rate_line}\n\n"
+        "The deterministic parser passes its full synthetic golden-set evaluation on "
+        "its own. The AI layer exists to catch the day that stops being true.\n\n"
+        f"{AI_QA_HISTORY_SOURCE_CAPTION}\n\n"
+        "Your filter from step 1 is already saved — tap 🔎 Show matches any time, or "
+        "set a new one with ⚙ Filter.",
+        reply_markup=_tour_result_keyboard(),
+    )
+
+
+@router.callback_query(F.data == "tour:1")
+async def handle_tour_screen_1(callback: CallbackQuery, bot: Bot) -> None:
+    await callback.answer()
+    await _send_tour_screen_1(callback, bot)
+
+
+@router.callback_query(F.data == "tour:2")
+async def handle_tour_screen_2(callback: CallbackQuery) -> None:
+    await callback.answer()
+    await _send_tour_screen_2(callback)
+
+
+@router.callback_query(F.data == "tour:3")
+async def handle_tour_screen_3(callback: CallbackQuery) -> None:
+    await callback.answer()
+    await _send_tour_screen_3(callback)
+
+
+@router.callback_query(F.data == "tour:inject")
+async def handle_tour_inject(callback: CallbackQuery) -> None:
+    await callback.answer()
+    await _send_tour_inject(callback)
+
+
+@router.callback_query(F.data.startswith("tour_fb:"))
+async def handle_tour_feedback(callback: CallbackQuery) -> None:
+    parts = (callback.data or "").split(":")
+    feedback_status = parts[1] if len(parts) == 2 else ""
+    if feedback_status not in {
+        AI_QA_FEEDBACK_PARSER_ERROR,
+        AI_QA_FEEDBACK_PARSER_CORRECT,
+        AI_QA_FEEDBACK_UNSURE,
+    }:
+        await callback.answer("Invalid button.", show_alert=True)
+        return
+    await _send_tour_feedback_response(callback, feedback_status)
+
+
+@router.callback_query(F.data == "tour:5")
+async def handle_tour_screen_5(callback: CallbackQuery) -> None:
+    await callback.answer()
+    await _send_tour_screen_5(callback)
+
+
+@router.callback_query(F.data == "tour:skip")
+async def handle_tour_skip(callback: CallbackQuery) -> None:
+    await callback.answer()
+    await _clear_markup(callback)
+    await send_settings_card_from_callback(callback)
+
+
+@router.callback_query(F.data == "tour:replay")
+async def handle_tour_replay(callback: CallbackQuery) -> None:
+    await callback.answer()
+    if callback.message is not None:
+        await _send_tour_screen_0(callback.message)
+
+
 def _help_text() -> str:
     return (
         "<b>How FlatFeed works</b>\n\n"
@@ -2053,19 +2545,12 @@ async def handle_start(message: Message, state: FSMContext) -> None:
     await state.clear()
     if message.from_user is None:
         return
-    is_admin = _is_admin_user(message.from_user.id)
-    await message.answer(
-        "This is <b>FlatFeed</b> — a demo assistant for finding WBS apartments in Berlin.\n\n"
-        "Start by setting up a filter, or browse the whole demo catalog. "
-        "Tap /help any time to learn what WBS and Kaltmiete mean.",
-        reply_markup=main_menu_keyboard(is_admin=is_admin),
-    )
-    await send_settings_card(message, user_id=message.from_user.id)
+    await _send_tour_screen_0(message)
 
 
 @router.message(Command("help"))
 async def handle_help_command(message: Message) -> None:
-    await message.answer(_help_text())
+    await message.answer(_help_text(), reply_markup=_tour_start_keyboard())
 
 
 @router.message(Command("settings"))
@@ -2100,12 +2585,12 @@ async def handle_reset_command(message: Message, state: FSMContext) -> None:
     if removed:
         await message.answer(
             "Filter reset. Send /filter to set it up again.",
-            reply_markup=main_menu_keyboard(is_admin=_is_admin_user(message.from_user.id)),
+            reply_markup=main_menu_keyboard(),
         )
     else:
         await message.answer(
             "The filter was not set up yet. Send /filter to set it up.",
-            reply_markup=main_menu_keyboard(is_admin=_is_admin_user(message.from_user.id)),
+            reply_markup=main_menu_keyboard(),
         )
 
 
@@ -2561,7 +3046,7 @@ async def handle_settings_reset_confirm(callback: CallbackQuery, state: FSMConte
     if callback.message:
         await callback.message.answer(
             "Filter reset.",
-            reply_markup=main_menu_keyboard(is_admin=_is_admin_user(callback.from_user.id)),
+            reply_markup=main_menu_keyboard(),
         )
     await send_settings_card_from_callback(callback)
 
@@ -2590,7 +3075,7 @@ async def handle_settings_delete_confirm(callback: CallbackQuery, state: FSMCont
             "I deleted your saved filter and sent-notification history."
             if deleted
             else "I had no saved data for your Telegram ID.",
-            reply_markup=main_menu_keyboard(is_admin=_is_admin_user(callback.from_user.id)),
+            reply_markup=main_menu_keyboard(),
         )
 
 
@@ -2866,7 +3351,7 @@ async def handle_rooms_choice(callback: CallbackQuery, state: FSMContext) -> Non
             return
         await callback.message.answer(
             _filter_summary(preferences),
-            reply_markup=main_menu_keyboard(is_admin=_is_admin_user(callback.from_user.id)),
+            reply_markup=main_menu_keyboard(),
         )
 
 

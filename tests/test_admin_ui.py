@@ -95,20 +95,17 @@ class AdminUITests(unittest.TestCase):
             for button in row
         ]
 
-    def test_admin_menu_contains_admin_button(self) -> None:
-        keyboard = main_menu_keyboard(is_admin=True)
+    def test_main_menu_always_shows_admin_button(self) -> None:
+        # The admin panel is a demo view visible to every visitor; individual
+        # admin actions inside stay gated by _is_admin_user (see
+        # DESIGN_CONTENT_SYSTEM.md §34, guided-tour change).
+        keyboard = main_menu_keyboard()
 
-        self.assertIn(BTN_ADMIN, self._button_texts(keyboard))
-        self.assertEqual(len(keyboard.keyboard), 3)
-
-    def test_regular_menu_does_not_contain_admin_button(self) -> None:
-        keyboard = main_menu_keyboard(is_admin=False)
-
-        self.assertNotIn(BTN_ADMIN, self._button_texts(keyboard))
         self.assertEqual(
             self._button_texts(keyboard),
-            [BTN_MATCHES, "⚙ Filter", BTN_CATALOG],
+            [BTN_MATCHES, "⚙ Filter", BTN_CATALOG, BTN_ADMIN],
         )
+        self.assertEqual(len(keyboard.keyboard), 3)
 
     def _inline_button_texts(self, keyboard) -> list[str]:
         return [
@@ -154,6 +151,7 @@ class AdminUITests(unittest.TestCase):
         self.assertEqual(
             inline_texts,
             [
+                "Replay the tour",
                 "Run QA demo",
                 "Review flagged issues",
                 "View QA metrics",

@@ -94,6 +94,43 @@ polling/scanning unless explicitly requested.
 SQLite accelerates selection and preserves history. The synthetic catalog is the
 demo source of truth.
 
+### Guided tour
+
+`/start` (plain or via the `https://t.me/FlatFeedBot?start=tour` deep link)
+leads every visitor into a 5-screen, button-only tour before the regular
+filter/matches flow: a pre-filled match, the deterministic parser behind it,
+a live WBS fault injected into that one listing, the resulting AI QA alert
+with the real admin triage buttons attached, and the AI QA history funnel.
+The tour listing is selected deterministically from the active catalog (2
+rooms, a WBS requirement including 140, a WBS phrase in the raw text, and
+transit data) — see `_select_tour_listing` in `main.py`. `Skip the tour` and
+`🛠 Admin` -> `Replay the tour` are always available.
+
+Two rules keep the tour safe to run in front of any visitor:
+
+- **Ephemeral fault injection and triage.** The tour's fault injection
+  (`_send_tour_inject`) and its triage responses (`_send_tour_feedback_response`)
+  never add or commit an `AIQAReview` row. They reuse the same demo
+  fault-injection primitives as the admin panel's `Run QA demo` button
+  (`run_ai_qa_demo_check_for_listing`, which never persists) so a visitor sees
+  the exact message format and triage buttons a real admin alert uses,
+  without ever writing to the table the dashboard and screen 5 read from.
+  Screen 5's own funnel query (and the dashboard) only count reviews whose
+  `qa_prompt_version` exactly equals `CURRENT_AI_QA_PROMPT_VERSION` — as
+  defense in depth, even a future `-demo`-suffixed or stale-version row would
+  be excluded automatically.
+- **Demo admin view.** `🛠 Admin` is visible to every visitor
+  (`main_menu_keyboard` no longer gates it), with a caption stating this is a
+  demo view for non-admins. Every individual admin action inside keeps its
+  existing `_is_admin_user` gate unchanged — a non-admin tapping `Run QA
+  demo`, `Refresh catalog`, `Run catalog QA`, `Review flagged issues` (which
+  writes real feedback), `View QA metrics`, or the dashboard auto-start
+  button gets the existing "only available to admins" response. Only opening
+  the panel itself and `Replay the tour` are open to everyone — the tour's
+  own fault-injection walkthrough (screen 3 of the guided tour) is the
+  actual open-to-all ephemeral demo entry point, not the admin panel's `Run
+  QA demo` button.
+
 ## Parsing Semantics
 
 ### WBS
