@@ -422,7 +422,15 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
     async def test_screen_1_is_ephemeral_and_shows_the_filter_as_text(self) -> None:
         callback = _FakeCallback("tour:1")
 
-        with patch("main.SessionLocal", self.test_session):
+        # _send_tour_screen_1 also calls enrich_missing_transport_walk, which
+        # imports its own SessionLocal binding in flatfeed.integrations.
+        # transit_walk — patching main.SessionLocal alone does not redirect
+        # it, so without this second patch the call silently falls through
+        # to the real on-disk DB (works locally if data/flatfeed.db happens
+        # to exist, fails everywhere else, e.g. a clean CI checkout).
+        with patch("main.SessionLocal", self.test_session), patch(
+            "flatfeed.integrations.transit_walk.SessionLocal", self.test_session
+        ):
             self.assertEqual(self._user_count(), 0)
             await M._send_tour_screen_1(callback)
             # Ephemeral filter: showing step 1 must not write to `users`.
