@@ -16,11 +16,10 @@ from flatfeed.ingestion.base import (
 )
 from flatfeed.ingestion.registry import register_source_adapter
 from flatfeed.parser import parse_listing_from_text
-from synthetic.generator import SyntheticListing, generate_synthetic_listings
+from synthetic.generator import SYNTHETIC_BASE_URL, SyntheticListing, generate_synthetic_listings
 
 
 SYNTHETIC_SOURCE_COMPANY = "FlatFeed Synthetic"
-SYNTHETIC_BASE_URL = "https://demo.flatfeed.local"
 
 
 def synthetic_to_source_listing(listing: SyntheticListing) -> SourceListing:
@@ -103,7 +102,7 @@ def sync_synthetic_listings(
 
 
 def check_synthetic_listing_active(url: str) -> Optional[bool]:
-    return url.startswith(f"{SYNTHETIC_BASE_URL}/listings/")
+    return url.startswith(f"{SYNTHETIC_BASE_URL}?id=")
 
 
 class SyntheticSourceAdapter:
