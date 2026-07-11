@@ -19,8 +19,14 @@ cost control matter more than feature count.
 
 - `FlatFeed Synthetic`: generated local listings from `synthetic/`.
 - No real housing-company source adapters are enabled or present.
-- Synthetic listing URLs use `https://demo.flatfeed.local/listings/<id>` and
-  are checked locally by the source adapter. No network request is made.
+- Synthetic listing URLs point at the static explainer page
+  `docs/demo-listing.html` (published on GitHub Pages as
+  `https://mich-mayer.github.io/flatfeed/demo-listing.html?id=<id>`) so the
+  card's `Open listing` link resolves to something real for an external
+  viewer. Activity is still checked locally by the source adapter via a
+  string-prefix match on the URL; no network request is made for the check
+  itself, and the demo page is a static, honest disclosure, not a per-listing
+  detail page.
 - The product positioning should still mention collection from different
   sources: the codebase has a source-adapter registry, ingestion history,
   per-source activity checks, and per-source health monitoring. In the demo,
@@ -97,28 +103,52 @@ demo source of truth.
 ### Guided tour
 
 `/start` (plain or via the `https://t.me/FlatFeedBot?start=tour` deep link)
-leads every visitor into a 5-screen, button-only tour before the regular
-filter/matches flow: a pre-filled match, the deterministic parser behind it,
-a live WBS fault injected into that one listing, the resulting AI QA alert
-with the real admin triage buttons attached, and the AI QA history funnel.
+leads every visitor into a 5-screen, button-only, product-first tour before
+the regular filter/matches flow:
+
+1. **One renter job** — shows the demo filter as plain text (WBS, district,
+   Kaltmiete, rooms). Held ephemeral: nothing is written to `users` yet.
+2. **The result** — runs the real matching predicate (`is_listing_match`)
+   over the live catalog with that filter, then the real source-activity
+   check (`_verified_active_matches`), and shows the tour listing's card as
+   "1 of N active matches" plus why it matched. This is a genuine result of
+   the production matching path, not a pre-selected listing formatted
+   directly.
+3. **Rules make the decision** — explains the product pipeline (Collect →
+   Normalize → Verify → Match → Deliver) and the privacy facts. No AI in
+   this path.
+4. **AI checks a narrow risk** — the one AI step: a live WBS fault injected
+   into the deterministically-selected tour listing, with the real admin
+   alert format and triage keyboard attached to one message.
+5. **What this prototype proves** — evidence, not a funnel: `Working now` /
+   `Measured on synthetic data` (a live golden-set count) / `Not yet
+   proven`, plus `Use this demo filter` (saves the filter only now, on
+   explicit request), `Set up my own filter`, and `Read the case study`.
+
 The tour listing is selected deterministically from the active catalog (2
 rooms, a WBS requirement including 140, a WBS phrase in the raw text, and
 transit data) — see `_select_tour_listing` in `main.py`. `Skip the tour` and
 `🛠 Admin` -> `Replay the tour` are always available.
 
-Two rules keep the tour safe to run in front of any visitor:
+Rules that keep the tour safe and honest to run in front of any visitor:
 
+- **Ephemeral filter.** The demo filter is derived from the tour listing on
+  every screen and is never persisted until the visitor explicitly taps
+  `Use this demo filter` on step 5 (`tour:save_filter` ->
+  `save_fixed_preferences`).
 - **Ephemeral fault injection and triage.** The tour's fault injection
   (`_send_tour_inject`) and its triage responses (`_send_tour_feedback_response`)
-  never add or commit an `AIQAReview` row. They reuse the same demo
-  fault-injection primitives as the admin panel's `Run QA demo` button
-  (`run_ai_qa_demo_check_for_listing`, which never persists) so a visitor sees
-  the exact message format and triage buttons a real admin alert uses,
-  without ever writing to the table the dashboard and screen 5 read from.
-  Screen 5's own funnel query (and the dashboard) only count reviews whose
-  `qa_prompt_version` exactly equals `CURRENT_AI_QA_PROMPT_VERSION` — as
-  defense in depth, even a future `-demo`-suffixed or stale-version row would
-  be excluded automatically.
+  never add or commit an `AIQAReview` row. They reuse the real admin alert
+  formatter (`_format_ai_qa_review`, with `include_cost=False` and
+  `include_confidence=False` for the tour) and the real triage keyboard, so
+  a visitor sees the same message format and buttons a real admin alert
+  uses, without ever writing to the table the dashboard reads from. Every
+  triage label gets the same neutral response — the tour states the fact
+  (what the text says) without grading the visitor's choice. The dashboard's
+  AI QA queries only count reviews whose `qa_prompt_version` exactly equals
+  `CURRENT_AI_QA_PROMPT_VERSION` and additionally exclude any
+  `-demo`-suffixed version as defense in depth, even though nothing writes
+  rows shaped that way.
 - **Demo admin view.** `🛠 Admin` is visible to every visitor
   (`main_menu_keyboard` no longer gates it), with a caption stating this is a
   demo view for non-admins. Every individual admin action inside keeps its
@@ -127,9 +157,8 @@ Two rules keep the tour safe to run in front of any visitor:
   writes real feedback), `View QA metrics`, or the dashboard auto-start
   button gets the existing "only available to admins" response. Only opening
   the panel itself and `Replay the tour` are open to everyone — the tour's
-  own fault-injection walkthrough (screen 3 of the guided tour) is the
-  actual open-to-all ephemeral demo entry point, not the admin panel's `Run
-  QA demo` button.
+  own step 4 is the actual open-to-all ephemeral demo entry point, not the
+  admin panel's `Run QA demo` button.
 
 ## Parsing Semantics
 
@@ -224,9 +253,12 @@ makes no LLM calls.
 - AI output never alters listing data, matching, or user-facing cards
   automatically.
 
-The Streamlit dashboard is focused on AI QA coverage, reviewed scale, human
-feedback quality, false positives/confirmed errors, field-level patterns,
-prompt version comparison, and model cost.
+The Streamlit dashboard ("FlatFeed product operations") leads with the
+product pipeline and deterministic-parsing accuracy — AI QA is one section
+among five, not the whole page. See `DESIGN_CONTENT_SYSTEM.md` §8 for the
+exact section order and rules (live `eval.run_eval` numbers, the `-demo`
+exclusion, the small-number `fmt_share` rule, and the mock-confidence
+label).
 
 ## Data Model
 

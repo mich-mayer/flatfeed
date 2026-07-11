@@ -16,7 +16,8 @@ and evals in a defensible portfolio setting.
 - Local S-Bahn/U-Bahn walking-time estimates from bundled station coordinates.
 - Optional admin-only AI QA for parser review; AI never mutates listings.
 - Eval runner that compares parser output with synthetic golden truth.
-- Streamlit dashboard for AI QA coverage, feedback, cost, and parser issues.
+- Streamlit "product operations" dashboard: pipeline readiness, source trust,
+  live parsing accuracy, AI QA usefulness/cost, and proven/unproven evidence.
 
 No real source scraping, image reuploading, Google Maps, Photon geocoding, or
 server deployment scripts are part of the current demo product. The collection
@@ -113,28 +114,40 @@ ENV_FILE=.env.local streamlit run flatfeed/dashboard/streamlit_app.py
 
 ## Demo Script
 
-New visitors (hiring managers, first-time testers) get a 5-screen guided
-tour instead of the raw filter wizard:
+New visitors (hiring managers, first-time testers) get a 5-screen,
+product-first guided tour instead of the raw filter wizard:
 
 1. Send `/start`, or open `https://t.me/FlatFeedBot?start=tour` directly.
    Both lead to the same intro with `Start the tour` / `Skip the tour`.
-2. The tour pre-fills a realistic filter, shows the resulting listing card,
-   explains the deterministic parser behind it, injects a live WBS fault,
-   shows the resulting AI QA alert with the same triage buttons a real admin
-   sees, and closes with the AI QA history funnel.
-3. Nothing tapped during the tour is written to `ai_qa_reviews` — the fault
-   injection and triage are display-only, so ten visitors never skew the
-   metrics. See `docs/PROJECT_CONTEXT.md` for the full guarantee.
-4. `🛠 Admin` is visible to every visitor as a demo view (including
+2. **Step 1 — One renter job:** shows a realistic filter as plain text.
+   Held ephemeral — nothing is saved yet.
+3. **Step 2 — The result:** runs the real matching predicate and the real
+   source-activity check over the live catalog, then shows the resulting
+   listing card as "1 of N active matches" plus why it matched.
+4. **Step 3 — Rules make the decision:** the product pipeline (Collect →
+   Normalize → Verify → Match → Deliver) and the privacy facts. No AI here.
+5. **Step 4 — AI checks a narrow risk:** the one AI step. Injects a live WBS
+   fault and shows the resulting AI QA alert with the same triage buttons a
+   real admin sees, attached to the same message.
+6. **Step 5 — What this prototype proves:** `Working now` / `Measured on
+   synthetic data` (a live golden-set count) / `Not yet proven`, plus
+   `Use this demo filter` (saves it only now, on request), `Set up my own
+   filter`, and `Read the case study`.
+7. Nothing tapped during the tour is written to `ai_qa_reviews` or `users`
+   before that explicit final choice — the fault injection and triage are
+   display-only, so ten visitors never skew the metrics or each other's
+   filters. See `docs/PROJECT_CONTEXT.md` for the full guarantee.
+8. `🛠 Admin` is visible to every visitor as a demo view (including
    `Replay the tour`); actions that change catalog data or spend budget stay
    restricted to `ADMIN_TELEGRAM_USER_IDS` and say so if tapped without
    admin rights.
-5. As an admin, `🛠 Admin` -> `Run QA demo` runs the same ephemeral
+9. As an admin, `🛠 Admin` -> `Run QA demo` runs the same ephemeral
    fault-injection flow over a few catalog listings; `Review flagged issues`
    and `Run catalog QA` are the real, persisting admin paths.
-6. Tap `📊 Effectiveness dashboard` in the admin panel (or open the dashboard
-   directly) to inspect AI QA coverage, cost, feedback, and parser issue
-   patterns.
+10. Tap `📊 Effectiveness dashboard` in the admin panel (or open the
+    dashboard directly) to inspect the product-operations view: pipeline
+    readiness, source trust, live parsing accuracy, AI QA usefulness/cost,
+    and proven/unproven evidence.
 
 The persistent chat keyboard keeps the main story visible:
 
@@ -219,3 +232,7 @@ git diff --check
 - User-facing listing cards are formatted in `flatfeed/matching.py`.
 - Listing photos are third-party Wikimedia Commons demo assets with separate
   attribution and license details in `assets/listing_photos/LICENSES.md`.
+- Synthetic listing URLs (the card's `Open listing` link) point at
+  `docs/demo-listing.html`, a static GitHub Pages explainer — not a live
+  housing site. See `docs/PROJECT_CONTEXT.md` for the activity-check
+  mechanics.

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="FlatFeed synthetic demo listing — a placeholder page for the guided-tour bot's demo catalog, not a real housing listing.">
+    <title>FlatFeed | Synthetic demo listing</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="flatfeed-favicon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+      .demo-listing-page {
+        max-width: 42.5rem;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 4rem;
+      }
+
+      .demo-listing-page .brand {
+        margin-bottom: 2.5rem;
+      }
+
+      .demo-listing-page h1 {
+        font: 700 1.75rem/1.25 var(--font-display);
+        letter-spacing: -0.01em;
+        margin: 0 0 1.25rem;
+      }
+
+      .demo-listing-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-listing-page">
+      <a class="brand" href="case-study.html" aria-label="FlatFeed case study">
+        <img class="brand-mark" src="assets/flatfeed-logo-mark.png" alt="">
+        <strong>FlatFeed</strong>
+        <span class="brand-sub">Synthetic demo listing</span>
+      </a>
+
+      <h1>This listing exists only in FlatFeed's demo catalog.</h1>
+
+      <div class="case-prose">
+        <p>
+          You followed an <strong>Open listing</strong> link from a FlatFeed Telegram
+          card. FlatFeed is a portfolio prototype: every listing it shows — including
+          this one — comes from a local synthetic catalog, not a live housing company.
+          There is no real apartment, address, or landlord behind this page.
+        </p>
+        <p>
+          This page exists so the card's link resolves to something real instead of a
+          dead domain. In the demo, FlatFeed's source adapter checks a listing's
+          activity locally against its own catalog; it does not fetch this page or any
+          other network resource to do so.
+        </p>
+        <p>
+          To see how the parsing, matching, and AI QA behind that card actually work,
+          read the case study or try the guided tour in the bot.
+        </p>
+      </div>
+
+      <div class="demo-listing-actions">
+        <a class="btn btn--primary" href="case-study.html">
+          Read the case study
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+        <a class="btn btn--ghost" href="https://t.me/FlatFeedBot?start=tour">
+          Try the guided tour
+        </a>
+      </div>
+    </div>
+  </body>
+</html>

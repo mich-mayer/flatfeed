@@ -45,14 +45,12 @@ from flatfeed.ai_qa import (
     AI_QA_FEEDBACK_PARSER_CORRECT,
     AI_QA_FEEDBACK_PARSER_ERROR,
     AI_QA_FEEDBACK_UNSURE,
-    AI_QA_HISTORY_SOURCE_CAPTION,
     AI_QA_TRIGGER_DEMO_FAULT,
     AI_QA_TRIGGER_INITIAL_BACKFILL,
     AI_QA_TRIGGER_TOUR_FAULT,
     AI_QA_TRIGGER_NEW_LISTING,
     CURRENT_AI_QA_PROMPT_VERSION,
     build_demo_fault_parser_snapshot,
-    build_parser_snapshot,
     get_ai_qa_status,
     load_flagged_ai_qa_reviews,
     load_ai_qa_reviews_for_alert,
@@ -74,6 +72,7 @@ from flatfeed.matching import (
     KALT_RENT_LABELS,
     ListingMatch,
     NO_WBS_VALUE,
+    PARSED_LISTING_STATUS,
     WARM_RENT_LABELS,
     display_wbs_value,
     display_wbs_options_for_listing_text,
@@ -83,6 +82,7 @@ from flatfeed.matching import (
     find_matches_for_user,
     find_pending_matches,
     format_match_message,
+    is_listing_match,
     mark_match_sent,
 )
 from flatfeed.monitoring import (
@@ -95,6 +95,7 @@ from flatfeed.monitoring import (
     record_ingestion_success,
 )
 from flatfeed.schemas import ListingConstraints, UserPreferences
+from synthetic.golden_set import load_golden_set
 
 
 logger = logging.getLogger(__name__)
@@ -1374,7 +1375,13 @@ def _ai_qa_demo_feedback_keyboard() -> InlineKeyboardMarkup:
     )
 
 
-def _format_ai_qa_review(review: AIQAReview, *, alert: bool, include_cost: bool = True) -> str:
+def _format_ai_qa_review(
+    review: AIQAReview,
+    *,
+    alert: bool,
+    include_cost: bool = True,
+    include_confidence: bool = True,
+) -> str:
     header = (
         "<b>AI QA alert: possible parser error</b>"
         if alert
@@ -1383,6 +1390,7 @@ def _format_ai_qa_review(review: AIQAReview, *, alert: bool, include_cost: bool 
     risk_score = int(review.risk_score or 0)
     confidence_percent = round(float(review.confidence or 0.0) * 100)
     issues = "\n\n".join(_issue_lines(review))
+    confidence_line = f"AI confidence: {confidence_percent}%\n" if include_confidence else ""
     cost_line = (
         f"Check cost: ${float(review.total_cost_usd or 0.0):.6f}\n" if include_cost else ""
     )
@@ -1393,7 +1401,7 @@ def _format_ai_qa_review(review: AIQAReview, *, alert: bool, include_cost: bool 
         f"{issues}\n\n"
         "<b>Summary</b>\n"
         f"Risk score: <b>{risk_score} of 100 ({_risk_label(risk_score)})</b>\n"
-        f"AI confidence: {confidence_percent}%\n"
+        f"{confidence_line}"
         f"{cost_line}\n"
         "Choose a decision with the buttons below."
     )
@@ -2086,15 +2094,19 @@ async def _clear_markup(callback: CallbackQuery) -> None:
 # Guided tour
 #
 # A 5-screen, button-only walkthrough for a first-time visitor with no
-# context: (1) a pre-filled match, (2) how the deterministic parser produced
-# it, (3) a live fault injection reviewed by AI QA, (4) the human triage
-# decision, (5) the curated AI QA history. Every dynamic value (listing,
-# district, prices, WBS phrasing) is read from the tour listing at runtime.
+# context: (1) the renter's filter, (2) a real matched result, (3) the
+# product pipeline and reliability decisions, (4) a live fault injection
+# reviewed by AI QA as one bounded control, (5) evidence and limitations.
+# Every dynamic value (listing, district, prices, WBS phrasing, match count)
+# is read from the tour listing and the live catalog at runtime.
+#
+# The demo filter stays ephemeral (never written to `users`) until the
+# visitor explicitly taps "Use this demo filter" on step 5. Step 2 runs the
+# real matching predicate (is_listing_match) and the real source-activity
+# check over the live catalog — it is not a hand-picked result.
 #
 # Tour fault-injection results and triage taps are never persisted — no
 # AIQAReview is added to a session or committed anywhere in this section.
-# The dashboard's and screen 5's history stay a curated evaluation run,
-# never live visitor input.
 # ---------------------------------------------------------------------------
 
 
@@ -2163,6 +2175,31 @@ def _tour_filter_summary(listing: Listing) -> tuple[UserPreferences, int]:
     return preferences, wbs_percent
 
 
+def _tour_candidate_matches(preferences: UserPreferences) -> List[ListingMatch]:
+    """Every active, parsed listing that satisfies the ephemeral tour filter,
+    using the same is_listing_match predicate production matching uses —
+    proves the real rule set instead of a hand-picked result."""
+    with SessionLocal() as session:
+        listings = list(
+            session.scalars(
+                select(Listing)
+                .where(Listing.source_company.in_(ACTIVE_SOURCE_COMPANIES))
+                .where(Listing.source_active.is_(True))
+                .where(Listing.status == PARSED_LISTING_STATUS)
+            )
+        )
+    matches: List[ListingMatch] = []
+    for listing in listings:
+        decision = is_listing_match(
+            preferences=preferences,
+            constraints=_listing_constraints_for_display(listing),
+            listing=listing,
+        )
+        if decision.is_match:
+            matches.append(_listing_match_from_model(listing, reasons=decision.reasons))
+    return matches
+
+
 def _tour_next_keyboard(label: str, callback_data: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[[InlineKeyboardButton(text=label, callback_data=callback_data)]]
@@ -2208,7 +2245,10 @@ def _tour_triage_keyboard() -> InlineKeyboardMarkup:
 
 
 def _tour_result_keyboard() -> InlineKeyboardMarkup:
-    rows: List[List[InlineKeyboardButton]] = []
+    rows: List[List[InlineKeyboardButton]] = [
+        [InlineKeyboardButton(text="Use this demo filter", callback_data="tour:save_filter")],
+        [InlineKeyboardButton(text="Set up my own filter", callback_data="settings:filter")],
+    ]
     dashboard_url = get_settings().dashboard_url
     if dashboard_url and dashboard_url.lower().startswith(("http://", "https://")):
         rows.append([InlineKeyboardButton(text=BTN_DASHBOARD, url=dashboard_url)])
@@ -2229,16 +2269,24 @@ async def _send_tour_screen_0(message: Message) -> None:
     )
     await message.answer(
         "<b>Take a 2-minute tour?</b>\n\n"
-        "Five short steps, one button per step, no typing: how a match gets found, how "
-        "listing data is parsed without an LLM, and how an AI layer audits that parsing "
-        "while a human keeps the final say.",
+        "Berlin's subsidized (WBS) flats vanish within hours, and eligibility rules "
+        "cost renters missed flats and wasted applications. FlatFeed keeps one filter "
+        "and turns new listings into a single reliable feed.\n\n"
+        "Five taps, no typing: the renter flow, the reliability choices, and the "
+        "deliberately limited role of AI.",
         reply_markup=_tour_intro_keyboard(),
     )
 
 
-async def _send_tour_screen_1(callback: CallbackQuery, bot: Bot) -> None:
-    if callback.message is None or callback.from_user is None:
+async def _send_tour_screen_1(callback: CallbackQuery) -> None:
+    if callback.message is None:
         return
+    # _select_tour_listing() requires transit data; a freshly ingested
+    # catalog (e.g. right after scripts/ingest_synthetic.py) has none yet,
+    # since enrichment normally happens lazily on the first matches/listings
+    # command. The tour is often that first interaction, so it must trigger
+    # enrichment itself instead of assuming it already ran.
+    await asyncio.to_thread(enrich_missing_transport_walk, limit=None)
     listing = await asyncio.to_thread(_select_tour_listing)
     if listing is None:
         await callback.message.answer(
@@ -2249,68 +2297,68 @@ async def _send_tour_screen_1(callback: CallbackQuery, bot: Bot) -> None:
         return
 
     preferences, wbs_percent = _tour_filter_summary(listing)
-    await asyncio.to_thread(
-        save_fixed_preferences,
-        user_id=callback.from_user.id,
-        preferences=preferences,
-    )
-
     rent_label = (
         f"{preferences.max_rent} EUR" if preferences.max_rent is not None else "no limit"
     )
     district_label = listing.district or "any district"
     rooms_label = _display_rooms(listing.rooms)
-    step_text = (
-        "<b>Step 1/5</b>\n\n"
-        f"Say you want a {escape(rooms_label)}-room listing in {escape(district_label)}, "
-        f"WBS {wbs_percent}, with a maximum Kaltmiete of {rent_label}. I saved that as "
-        "your filter — and this is what FlatFeed found. Every field below came from the "
-        "listing's raw text, not from an LLM.\n\n"
+    await callback.message.answer(
+        "<b>Step 1/5 · One renter job</b>\n\n"
+        f"Say you hold a WBS-{wbs_percent} certificate — Berlin's housing-eligibility "
+        f"document — and need a {escape(rooms_label)}-room flat in "
+        f"{escape(district_label)} under {rent_label} Kaltmiete (base rent before "
+        "utilities).\n\n"
+        f"<b>WBS:</b> {wbs_percent}\n"
+        f"<b>District:</b> {escape(district_label)}\n"
+        f"<b>Kaltmiete:</b> up to {rent_label}\n"
+        f"<b>Rooms:</b> {escape(rooms_label)}\n\n"
+        "This demo filter is temporary — nothing is saved unless you choose so at "
+        "the end.",
+        reply_markup=_tour_next_keyboard("Find matches", "tour:2"),
     )
 
-    match = _listing_match_from_model(listing)
-    await send_match_to_chat(
-        bot,
-        chat_id=callback.message.chat.id,
-        match=match,
-        reply_markup=_tour_next_keyboard("See how it's parsed", "tour:2"),
-        text_prefix=step_text,
-    )
 
-
-async def _send_tour_screen_2(callback: CallbackQuery) -> None:
+async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
     if callback.message is None:
         return
     listing = await asyncio.to_thread(_select_tour_listing)
     if listing is None:
         return
 
-    snapshot = build_parser_snapshot(listing)
-    raw_lines = (listing.raw_text or "").strip().splitlines()
-    raw_text = "\n".join(raw_lines[:12])
-    if len(raw_lines) > 12:
-        raw_text += "\n…"
+    preferences, _ = _tour_filter_summary(listing)
+    candidate_matches = await asyncio.to_thread(_tour_candidate_matches, preferences)
+    verified_matches = await _verified_active_matches(
+        candidate_matches,
+        target_limit=len(candidate_matches) or 1,
+    )
+    tour_match = next(
+        (match for match in verified_matches if match.listing_id == listing.listing_id),
+        None,
+    )
+    match_count = len(verified_matches)
+    if tour_match is None:
+        # The synthetic adapter's activity check is deterministic, so this
+        # should not happen — fail visibly rather than fabricate a card.
+        tour_match = _listing_match_from_model(listing)
+        match_count = max(match_count, 1)
 
-    wbs_label = escape(_format_parser_snapshot_value(snapshot.get("display_wbs")))
-    rooms_label = escape(_format_parser_snapshot_value(snapshot.get("rooms")))
-    floor_label = escape(_format_parser_snapshot_value(snapshot.get("floor")))
-    kalt_label = escape(_format_parser_snapshot_value(snapshot.get("rent_kalt")))
-    await callback.message.answer(
-        "<b>Step 2/5</b>\n\n"
-        "Every listing arrives as free-form text. The <b>parser</b> is the code that "
-        "reads that text and turns it into structured fields — rent, rooms, WBS, and "
-        "more. Here is the raw text behind the listing you just saw:\n\n"
-        + escape(raw_text)
-        + "\n\nAnd here is what the parser extracted from it:\n\n"
-        f"<b>WBS:</b> {wbs_label}\n"
-        f"<b>Rooms:</b> {rooms_label} · <b>Floor:</b> {floor_label}\n"
-        f"<b>Kalt:</b> {kalt_label}\n\n"
-        "Parsing is deterministic code, not an LLM: the same text always produces the "
-        "same fields, it costs nothing to run, and it is fully testable. Unknown values "
-        "fail closed — the bot never guesses your rent.\n\n"
-        "A deterministic parser still has one weakness: it breaks silently when a "
-        "listing's text format changes. That is what the next AI layer is for.",
-        reply_markup=_tour_next_keyboard("Try breaking the parser", "tour:3"),
+    reasons_label = " · ".join(tour_match.reasons) if tour_match.reasons else "filters match"
+    plural = "es" if match_count != 1 else ""
+    step_text = (
+        "<b>Step 2/5 · The result</b>\n\n"
+        "FlatFeed ran your filter through its real matching rules and re-checked the "
+        f"source — this card is 1 of {match_count} active match{plural}. Why it "
+        f"matched: {reasons_label}.\n\n"
+        "In production you don't search daily: each new match is delivered once, as "
+        "a notification.\n\n"
+    )
+
+    await send_match_to_chat(
+        bot,
+        chat_id=callback.message.chat.id,
+        match=tour_match,
+        reply_markup=_tour_next_keyboard("How does it work?", "tour:3"),
+        text_prefix=step_text,
     )
 
 
@@ -2318,17 +2366,36 @@ async def _send_tour_screen_3(callback: CallbackQuery) -> None:
     if callback.message is None:
         return
     await callback.message.answer(
-        "<b>Step 3/5</b>\n\n"
-        "When AI QA suspects a parser mistake, it sends an alert that in production "
-        "only the admin sees — and only the admin decides what happens next. For this "
-        "tour, the next alert comes to you, and the decision is yours.\n\n"
-        "Let's simulate a real failure. The button below corrupts the WBS field in the "
-        "parser's output for this listing, as if the source text had changed. The QA "
-        "check then gets the same input it gets in production — the raw listing text "
-        "and that corrupted snapshot, with no marker of what was corrupted — so the "
-        "demo is not rigged to pass. This demo runs the free deterministic mock "
-        "checker; the optional OpenAI model receives the identical input.",
-        reply_markup=_tour_next_keyboard("Corrupt the WBS field", "tour:inject"),
+        "<b>Step 3/5 · Rules make the decision</b>\n\n"
+        "<b>Collect:</b> source adapters pull listings into one catalog.\n"
+        "<b>Normalize:</b> fixed parsing rules turn free-form text into the fields "
+        "you saw on the card.\n"
+        "<b>Verify:</b> the source is re-checked, so dead listings are never sent.\n"
+        "<b>Match:</b> fixed rules compare WBS, district, Kaltmiete and rooms — "
+        "unknown values never match.\n"
+        "<b>Deliver:</b> every match is sent once.\n\n"
+        "This is a deliberate choice: eligibility decisions must be explainable, "
+        "predictable and free at scale, so no AI sits in this path. If you save a "
+        "filter, FlatFeed stores only your Telegram ID, the filter and sent-listing "
+        "history; /delete removes them.",
+        reply_markup=_tour_next_keyboard("Where AI helps", "tour:4"),
+    )
+
+
+async def _send_tour_screen_4(callback: CallbackQuery) -> None:
+    if callback.message is None:
+        return
+    await callback.message.answer(
+        "<b>Step 4/5 · AI checks a narrow risk</b>\n\n"
+        "Source formats change over time, and fixed rules then break silently. An AI "
+        "layer re-reads listings against the parser's output and flags mismatches to "
+        "the admin. It cannot change listings, matches or cards — a human always "
+        "decides.\n\n"
+        "Try it: the button below corrupts the WBS field in a copy of the parser's "
+        "output. The check gets no hint of what we broke. <i>Demo uses the free "
+        "deterministic mock checker; the optional OpenAI model gets identical input. "
+        "Your taps are not stored.</i>",
+        reply_markup=_tour_next_keyboard("Simulate a parser fault", "tour:inject"),
     )
 
 
@@ -2348,7 +2415,7 @@ async def _send_tour_inject(callback: CallbackQuery) -> None:
     original_label = escape(str(fault.get("original_value") or "not specified"))
     injected_label = escape(str(fault.get("injected_value") or "not specified"))
     fault_note = (
-        "<b>Fault injected</b>\n\n"
+        "<b>Simulated parser fault</b>\n\n"
         f"WBS changed from “{original_label}” to “{injected_label}” in the parser "
         "snapshot only. The saved listing and the real parser output are untouched.\n\n"
     )
@@ -2359,7 +2426,10 @@ async def _send_tour_inject(callback: CallbackQuery) -> None:
         trigger_type=AI_QA_TRIGGER_TOUR_FAULT,
     )
     await callback.message.answer(
-        fault_note + _format_ai_qa_review(review, alert=True, include_cost=False),
+        fault_note
+        + _format_ai_qa_review(
+            review, alert=True, include_cost=False, include_confidence=False
+        ),
         reply_markup=_tour_triage_keyboard(),
         disable_web_page_preview=False,
     )
@@ -2375,82 +2445,29 @@ async def _send_tour_feedback_response(callback: CallbackQuery, feedback_status:
             lambda: build_demo_fault_parser_snapshot(listing, fault_type="wbs")
         )
         original_label = escape(str(fault.get("original_value") or "not specified"))
-        fault_fact = f"the listing text names WBS {original_label} explicitly"
+        fault_fact = (
+            f"the corrupted snapshot did contradict the listing text (WBS "
+            f"{original_label})"
+        )
     else:
-        fault_fact = "the listing text named a different WBS requirement"
+        fault_fact = "the corrupted snapshot did contradict the listing text"
 
-    if feedback_status == AI_QA_FEEDBACK_PARSER_ERROR:
-        await callback.answer("Recorded: parser error.")
-        opening = (
-            "Correct — this was a real parser error.\n\n"
-            "In production, your label would be recorded as feedback and would feed "
-            "the quality metrics you're about to see. In this tour nothing you tap is "
-            "stored — the numbers next reflect only a separate, curated evaluation run."
-        )
-    else:
-        label = _feedback_decision_label(feedback_status)
-        await callback.answer(f"Recorded: {label}.")
-        opening = (
-            "Noted. In this tour nothing you tap is stored, so there is no record to "
-            "correct.\n\n"
-            f"For transparency: {fault_fact}, so the parser value was wrong here. In "
-            "production your label would still stand as the decision of record — the "
-            "system always trusts the human's final call, and a disagreement between "
-            "AI and admin is exactly the kind of case the feedback loop exists to "
-            "surface."
-        )
+    label = _feedback_decision_label(feedback_status)
+    await callback.answer(f"Recorded for this demo only: {label}.")
 
     await _clear_markup(callback)
     await callback.message.answer(
-        f"{opening}\n\n"
-        "WBS is one of the messiest fields in Berlin listings — sources write it a "
-        "dozen different ways, so it is exactly where a parser is most likely to break "
-        "silently. Left uncaught, a fault like this would have hidden this listing from "
-        "a WBS-140 renter, or let a renter without WBS apply in vain.\n\n"
-        "That is the whole safety model in one sentence: <b>deterministic code decides "
-        "what renters see, AI supervises the code, and a human supervises the AI.</b>",
-        reply_markup=_tour_next_keyboard("See the numbers", "tour:5"),
-    )
-
-
-def _load_tour_funnel() -> Dict[str, int]:
-    with SessionLocal() as session:
-        reviews = list(
-            session.scalars(
-                select(AIQAReview).where(
-                    AIQAReview.qa_prompt_version == CURRENT_AI_QA_PROMPT_VERSION
-                )
-            )
-        )
-    flagged = [review for review in reviews if review.should_alert_admin]
-    reviewed = [
-        review
-        for review in flagged
-        if review.feedback_status
-        in {AI_QA_FEEDBACK_PARSER_ERROR, AI_QA_FEEDBACK_PARSER_CORRECT, AI_QA_FEEDBACK_UNSURE}
-    ]
-    confirmed = [
-        review for review in flagged if review.feedback_status == AI_QA_FEEDBACK_PARSER_ERROR
-    ]
-    return {
-        "checked": len(reviews),
-        "flagged": len(flagged),
-        "reviewed": len(reviewed),
-        "confirmed": len(confirmed),
-    }
-
-
-def _tour_rate_line(*, confirmed: int, reviewed: int) -> str:
-    if reviewed == 0:
-        return "No flagged reports have been reviewed yet."
-    if reviewed >= 20:
-        return (
-            f"Useful-signal rate: {confirmed / reviewed:.1%} of reviewed flags were "
-            "confirmed parser errors."
-        )
-    return (
-        f"Useful-signal rate: {confirmed} of {reviewed} reviewed flags were confirmed "
-        "parser errors."
+        "Recorded for this demo only — nothing you tap is stored.\n\n"
+        f"For transparency: {fault_fact}, so <b>Parser error</b> is the label an "
+        "admin would confirm here. In production your label is the decision of "
+        "record — the system trusts the human call, and confirmed errors become "
+        "the parser's fix backlog.\n\n"
+        "If a drift like this went uncaught in the real parser, matching and the "
+        "card would misread WBS together — hiding flats from eligible renters or "
+        "inviting futile applications. That is the whole model: <b>fixed rules "
+        "decide what renters see, AI supervises the rules, and a human supervises "
+        "the AI.</b>",
+        reply_markup=_tour_next_keyboard("See the evidence", "tour:5"),
     )
 
 
@@ -2458,43 +2475,46 @@ async def _send_tour_screen_5(callback: CallbackQuery) -> None:
     if callback.message is None:
         return
     await _clear_markup(callback)
-    funnel = await asyncio.to_thread(_load_tour_funnel)
-    rate_line = _tour_rate_line(confirmed=funnel["confirmed"], reviewed=funnel["reviewed"])
+    golden_set_size = len(load_golden_set())
 
     await callback.message.answer(
-        "<b>Step 5/5</b>\n\n"
-        "Here is the AI QA history for the current catalog:\n\n"
-        f"<b>Checked by AI:</b> {funnel['checked']}\n"
-        f"<b>Flagged as risky:</b> {funnel['flagged']}\n"
-        f"<b>Reviewed by a human:</b> {funnel['reviewed']}\n"
-        f"<b>Confirmed parser errors:</b> {funnel['confirmed']}\n\n"
-        f"{rate_line}\n\n"
-        "The deterministic parser passes its full synthetic golden-set evaluation on "
-        "its own. The AI layer exists to catch the day that stops being true.\n\n"
-        f"{AI_QA_HISTORY_SOURCE_CAPTION}\n\n"
-        "Your filter from step 1 is already saved — tap 🔎 Show matches any time, or "
-        "set a new one with ⚙ Filter. The real admin panel is open as a demo view "
-        "behind 🛠 Admin.",
+        "<b>Step 5/5 · What this prototype proves</b>\n\n"
+        "<b>Working now:</b> end-to-end filter → match → verified one-time delivery "
+        "· source-health monitoring · data deletion via /delete.\n\n"
+        "<b>Measured on synthetic data:</b> the deterministic parser passes its full "
+        f"golden-set regression eval ({golden_set_size} listings, re-checked on "
+        "every change).\n\n"
+        "<b>Not yet proven:</b> live-source coverage · real renter outcomes · "
+        "real-model AI QA usefulness and cost.\n\n"
+        "The case study covers the decisions behind this: why Telegram, why four "
+        "filter fields, why AI only reviews. Keep the demo filter? The admin panel "
+        "is open as a demo view behind 🛠 Admin.",
         reply_markup=_tour_result_keyboard(),
     )
 
 
 @router.callback_query(F.data == "tour:1")
-async def handle_tour_screen_1(callback: CallbackQuery, bot: Bot) -> None:
+async def handle_tour_screen_1(callback: CallbackQuery) -> None:
     await callback.answer()
-    await _send_tour_screen_1(callback, bot)
+    await _send_tour_screen_1(callback)
 
 
 @router.callback_query(F.data == "tour:2")
-async def handle_tour_screen_2(callback: CallbackQuery) -> None:
+async def handle_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
     await callback.answer()
-    await _send_tour_screen_2(callback)
+    await _send_tour_screen_2(callback, bot)
 
 
 @router.callback_query(F.data == "tour:3")
 async def handle_tour_screen_3(callback: CallbackQuery) -> None:
     await callback.answer()
     await _send_tour_screen_3(callback)
+
+
+@router.callback_query(F.data == "tour:4")
+async def handle_tour_screen_4(callback: CallbackQuery) -> None:
+    await callback.answer()
+    await _send_tour_screen_4(callback)
 
 
 @router.callback_query(F.data == "tour:inject")
@@ -2521,6 +2541,31 @@ async def handle_tour_feedback(callback: CallbackQuery) -> None:
 async def handle_tour_screen_5(callback: CallbackQuery) -> None:
     await callback.answer()
     await _send_tour_screen_5(callback)
+
+
+@router.callback_query(F.data == "tour:save_filter")
+async def handle_tour_save_filter(callback: CallbackQuery) -> None:
+    await callback.answer()
+    if callback.message is None or callback.from_user is None:
+        return
+    listing = await asyncio.to_thread(_select_tour_listing)
+    if listing is None:
+        await callback.message.answer(
+            "The tour listing is no longer available. Use ⚙ Filter to set up your "
+            "own filter instead."
+        )
+        return
+    preferences, _ = _tour_filter_summary(listing)
+    await asyncio.to_thread(
+        save_fixed_preferences,
+        user_id=callback.from_user.id,
+        preferences=preferences,
+    )
+    await _clear_markup(callback)
+    await callback.message.answer(
+        "Saved. Tap 🔎 Show matches any time to see this filter's matches, or "
+        "/delete to remove it."
+    )
 
 
 @router.callback_query(F.data == "tour:skip")

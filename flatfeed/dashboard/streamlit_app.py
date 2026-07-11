@@ -8,30 +8,35 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 import streamlit as st
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from eval.run_eval import run_eval  # noqa: E402
 from flatfeed.ai_qa import (  # noqa: E402
     AI_QA_FEEDBACK_PARSER_CORRECT,
     AI_QA_FEEDBACK_PARSER_ERROR,
     AI_QA_FEEDBACK_PENDING,
     AI_QA_FEEDBACK_UNSURE,
     AI_QA_DEMO_FAULT_TYPES,
+    AI_QA_HISTORY_SOURCE_CAPTION,
     CURRENT_AI_QA_PROMPT_VERSION,
+    build_parser_snapshot,
     get_ai_qa_status,
     run_ai_qa_demo_check_for_listing,
 )
 from flatfeed.config import get_settings  # noqa: E402
-from flatfeed.db.models import AIQAReview, Listing  # noqa: E402
+from flatfeed.db.models import AIQAReview, Listing, SentListingNotification  # noqa: E402
 from flatfeed.db.session import SessionLocal, init_db  # noqa: E402
 from flatfeed.ingestion import ENABLED_SOURCE_COMPANIES, REMOVED_STATUS  # noqa: E402
+from flatfeed.matching import effective_wbs_requirement  # noqa: E402
 from flatfeed.monitoring import (  # noqa: E402
     INGESTION_STATUS_PARTIAL_SUCCESS,
     load_ingestion_health_summary,
 )
+from flatfeed.schemas import ListingConstraints  # noqa: E402
 
 
 FIELD_LABELS = {
@@ -57,17 +62,36 @@ FEEDBACK_LABELS = {
     AI_QA_FEEDBACK_UNSURE: "Borderline / unsure",
 }
 
+# Reviews written under a "<version>-demo" prompt version are ephemeral,
+# non-persisted-in-spirit demo artifacts (see main.py's guided tour, Variant
+# B). Nothing in the product currently writes rows shaped this way, but every
+# query here excludes them anyway as defense in depth: the dashboard must
+# only ever report a curated evaluation history, never something a visitor
+# could influence by tapping a demo button.
+_DEMO_VERSION_SUFFIX = "-demo"
+
+
+def fmt_share(numerator: int, denominator: int) -> str:
+    """Percent once the sample is large enough to mean something (>= 20),
+    otherwise the raw count — a 2-of-3 stated as "66.7%" reads as more
+    precise than it is."""
+    if denominator <= 0:
+        return "no data"
+    if denominator >= 20:
+        return f"{numerator / denominator:.1%}"
+    return f"{numerator} of {denominator}"
+
 
 def _money(value: Optional[float]) -> str:
     return f"${float(value or 0):,.4f}"
 
 
 def _price_per_1m(value: Optional[float]) -> str:
-    return f"${float(value or 0):,.2f} / 1M"
-
-
-def _percent(value: float) -> str:
-    return f"{value * 100:.1f}%"
+    # Escaped: two unescaped "$...$" amounts in one st.caption/markdown
+    # string make Streamlit render the text between them as LaTeX math
+    # instead of plain text (pre-existing bug, fixed here since this
+    # helper's only caption call site combines two of these).
+    return f"\\${float(value or 0):,.2f} / 1M"
 
 
 def _format_time(value: object) -> str:
@@ -146,7 +170,11 @@ def _load_review_rows() -> pd.DataFrame:
                 AIQAReview.feedback_status,
                 AIQAReview.total_cost_usd,
                 AIQAReview.ai_result,
-            ).order_by(AIQAReview.created_at.desc(), AIQAReview.review_id.desc())
+            )
+            # Defense in depth (see _DEMO_VERSION_SUFFIX above): even a
+            # future non-persisting-in-spirit demo path must not surface here.
+            .where(~AIQAReview.qa_prompt_version.like(f"%{_DEMO_VERSION_SUFFIX}"))
+            .order_by(AIQAReview.created_at.desc(), AIQAReview.review_id.desc())
         ).all()
 
     frame = pd.DataFrame(
@@ -212,24 +240,77 @@ def _render_metric_guide() -> None:
             """
             - **Active catalog coverage** shows how much of the current synthetic catalog has been reviewed by the current AI QA version.
             - **AI risk signals** are checks the model flagged as a possible material parser error for admin review. A flag is a prediction, not a confirmed error.
-            - **Useful signal rate** shows how often reviewed AI signals became confirmed parser errors. Higher is better.
+            - **Useful signal rate** shows how often reviewed AI signals became confirmed parser errors. Higher is better. Shown as a share only once at least 20 decisive reviews exist; below that, a raw "N of D" count is more honest than a precise-looking percentage.
             - **False alarm rate** shows how often AI distracted the admin without a real parser error. Lower is better.
             - **Cost per confirmed error** shows model cost per admin-confirmed parser error. Lower is better.
             """
         )
 
 
-def _render_health(coverage_counts: Dict[str, int]) -> None:
+# ---------------------------------------------------------------------------
+# Section 1 — pipeline readiness
+# ---------------------------------------------------------------------------
+
+
+def _load_delivery_count() -> int:
+    with SessionLocal() as session:
+        return session.scalar(select(func.count(SentListingNotification.notification_id))) or 0
+
+
+def _render_pipeline_readiness(coverage_counts: Dict[str, int]) -> None:
+    st.subheader("Is the demo pipeline ready to deliver trusted matches?")
+    st.caption(
+        "Collect → Normalize → Verify → Match → Notify. Every listing goes through all "
+        "five steps before a renter ever sees it; AI QA is a separate check on step 2, "
+        "described in its own section below."
+    )
+
+    active_count = coverage_counts["active"]
+    reviewed_active_count = coverage_counts["reviewed_active"]
+    delivery_count = _load_delivery_count()
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric(
+        "Active listings",
+        f"{active_count:,}",
+        help="How many listings are currently active in the bot database.",
+    )
+    c2.metric(
+        "AI QA coverage",
+        fmt_share(reviewed_active_count, active_count),
+        help="Share of active listings reviewed by the current AI QA version.",
+    )
+    c3.metric(
+        "One-time deliveries recorded",
+        f"{delivery_count:,}",
+        help="Notification records — proves each match is sent to a renter at most once, ever.",
+    )
+    c4.metric(
+        "Golden-set listings",
+        f"{_golden_set_size():,}",
+        help="Size of the fixed synthetic evaluation set the parser is regression-tested against.",
+    )
+    st.caption(f"Current AI QA version: {CURRENT_AI_QA_PROMPT_VERSION}.")
+
+
+def _golden_set_size() -> int:
+    from synthetic.golden_set import load_golden_set
+
+    return len(load_golden_set())
+
+
+# ---------------------------------------------------------------------------
+# Section 2 — source trust
+# ---------------------------------------------------------------------------
+
+
+def _render_source_trust() -> None:
+    st.subheader("Can FlatFeed trust and deliver what it collected?")
     summaries = {
         source_company: load_ingestion_health_summary(source_company=source_company)
         for source_company in ENABLED_SOURCE_COMPANIES
     }
-    active_count = coverage_counts["active"]
-    reviewed_active_count = coverage_counts["reviewed_active"]
-    coverage = reviewed_active_count / active_count if active_count else 0.0
-    unreviewed = coverage_counts["unreviewed_active"]
 
-    st.subheader("Is AI QA running well now?")
     statuses = [summary.latest_status for summary in summaries.values()]
     if statuses and all(status == "success" for status in statuses):
         st.success("The synthetic catalog is refreshing successfully.")
@@ -239,28 +320,6 @@ def _render_health(coverage_counts: Dict[str, int]) -> None:
         st.info("The synthetic catalog has not been refreshed yet.")
     else:
         st.info("The synthetic catalog still has incomplete refresh history.")
-
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric(
-        "Active listings",
-        f"{active_count:,}",
-        help="How many listings are currently active in the bot database.",
-    )
-    c2.metric(
-        "AI reviewed",
-        f"{reviewed_active_count:,} of {active_count:,}",
-        help="How many active listings have been reviewed by the current AI QA version.",
-    )
-    c3.metric(
-        "Active catalog coverage",
-        _percent(coverage),
-        help="Share of active listings with an AI QA report from the current version.",
-    )
-    c4.metric(
-        "Still to review",
-        f"{unreviewed:,}",
-        help="Active listings without a report from the current AI QA version.",
-    )
 
     health_rows = pd.DataFrame(
         [
@@ -274,10 +333,120 @@ def _render_health(coverage_counts: Dict[str, int]) -> None:
         ]
     )
     st.dataframe(health_rows, width="stretch", hide_index=True)
-    st.caption(f"Current AI QA version: {CURRENT_AI_QA_PROMPT_VERSION}.")
+    st.caption(
+        "Only `FlatFeed Synthetic` is implemented today. The source-adapter registry, "
+        "activity re-checks, and this health table are built to hold more sources; live "
+        "collection from real housing sites is explicitly out of scope for this demo "
+        "(no scraping, no terms-of-service review has been done)."
+    )
 
 
-def _render_quality(current_reviews: pd.DataFrame) -> None:
+# ---------------------------------------------------------------------------
+# Section 3 — parsing accuracy
+# ---------------------------------------------------------------------------
+
+
+@st.cache_data(show_spinner=False)
+def _load_golden_set_eval() -> Dict[str, Any]:
+    return run_eval(provider="mock")
+
+
+def _select_example_listing() -> Optional[Listing]:
+    """The same selection heuristic as the bot's guided tour (main.py
+    _select_tour_listing): 2 rooms, a WBS requirement including 140, a WBS
+    phrase in the raw text, and transit data — so a visitor who did the tour
+    sees the identical worked example here, not a different cherry-pick."""
+    with SessionLocal() as session:
+        candidates = list(
+            session.scalars(
+                select(Listing)
+                .where(Listing.source_company.in_(ENABLED_SOURCE_COMPANIES))
+                .where(Listing.source_active.is_(True))
+                .where(Listing.status != REMOVED_STATUS)
+                .order_by(Listing.first_seen_at.asc(), Listing.listing_id.asc())
+            )
+        )
+    for listing in candidates:
+        if listing.rooms != 2:
+            continue
+        if "wbs" not in (listing.raw_text or "").lower():
+            continue
+        transport_walk = listing.transport_walk or {}
+        if (
+            transport_walk.get("s_bahn_minutes") is None
+            and transport_walk.get("u_bahn_minutes") is None
+        ):
+            continue
+        constraints = (
+            ListingConstraints.model_validate(listing.parsed_constraints)
+            if listing.parsed_constraints
+            else ListingConstraints()
+        )
+        requirement = effective_wbs_requirement(
+            parsed_required_wbs=constraints.required_wbs,
+            listing_title=listing.title,
+            listing_text=listing.raw_text,
+        )
+        if 140 in (requirement.allowed_percentages or ()):
+            return listing
+    return candidates[0] if candidates else None
+
+
+def _render_parsing_accuracy() -> None:
+    st.subheader("How accurate is deterministic parsing?")
+    result = _load_golden_set_eval()
+    parser = result["parser"]
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric(
+        "Field accuracy",
+        f"{parser['field_accuracy']:.1%}",
+        help="Correct fields / total fields across the golden set, computed live from eval.run_eval.",
+    )
+    c2.metric(
+        "Exact listing accuracy",
+        f"{parser['exact_listing_accuracy']:.1%}",
+        help="Share of listings where every field matched the hidden ground truth.",
+    )
+    c3.metric(
+        "Golden-set size",
+        f"{result['listing_count']:,}",
+        help="Fixed synthetic cases with hidden ground truth (synthetic/golden_set.py).",
+    )
+    st.caption(
+        "These numbers are not hand-typed — this page runs the same "
+        "`eval.run_eval` harness used in CI and the README on every load."
+    )
+
+    example = _select_example_listing()
+    if example is not None:
+        snapshot = build_parser_snapshot(example)
+        with st.expander("Worked example: raw text → parsed fields", expanded=False):
+            st.markdown("Raw listing text:")
+            st.code(example.raw_text or "", language="text")
+            st.markdown("Parser output:")
+            st.json(
+                {
+                    "WBS": snapshot.get("display_wbs"),
+                    "Rooms": snapshot.get("rooms"),
+                    "Floor": snapshot.get("floor"),
+                    "District": snapshot.get("district"),
+                    "Kalt": snapshot.get("rent_kalt"),
+                    "Warm": snapshot.get("rent_warm"),
+                }
+            )
+    st.caption(
+        "Fail-closed rule: an unknown Kaltmiete or room count never matches a "
+        "specific filter value — the bot never guesses on a renter's behalf."
+    )
+
+
+# ---------------------------------------------------------------------------
+# Section 4 — AI QA usefulness
+# ---------------------------------------------------------------------------
+
+
+def _render_ai_qa_quality(current_reviews: pd.DataFrame) -> None:
     total_checks = len(current_reviews)
     alerts = int(current_reviews["should_alert_admin"].sum()) if not current_reviews.empty else 0
     reviewed = _reviewed_feedback(current_reviews)
@@ -288,72 +457,35 @@ def _render_quality(current_reviews: pd.DataFrame) -> None:
     false_alarms = int(
         (current_reviews["feedback_status"] == AI_QA_FEEDBACK_PARSER_CORRECT).sum()
     ) if not current_reviews.empty else 0
-    unsure = int(
-        (current_reviews["feedback_status"] == AI_QA_FEEDBACK_UNSURE).sum()
-    ) if not current_reviews.empty else 0
     pending_alerts = int(
         (
             current_reviews["should_alert_admin"]
             & (current_reviews["feedback_status"] == AI_QA_FEEDBACK_PENDING)
         ).sum()
     ) if not current_reviews.empty else 0
-    precision = confirmed / len(decisive) if len(decisive) else 0.0
-    false_alarm_rate = false_alarms / len(decisive) if len(decisive) else 0.0
-    useful_finding_rate = confirmed / total_checks if total_checks else 0.0
 
-    st.subheader("How useful is AI QA?")
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric(
-        "Total AI checks",
-        f"{total_checks:,}",
-        help="How many listings were checked by the current AI QA version.",
-    )
-    c2.metric(
-        "AI risk signals",
-        f"{alerts:,}",
-        help="How many checks AI flagged as a possible parser error and sent to the admin.",
-    )
-    c3.metric(
-        "Human reviewed",
-        f"{len(reviewed):,}",
-        help="How many AI reports received admin feedback.",
-    )
-    c4.metric(
-        "Pending review",
-        f"{pending_alerts:,}",
-        help="How many flagged AI reports are still neither confirmed nor rejected.",
-    )
+    c1.metric("Total AI checks", f"{total_checks:,}", help="Listings checked by the current AI QA version.")
+    c2.metric("AI risk signals", f"{alerts:,}", help="Checks AI flagged as a possible parser error and sent to the admin.")
+    c3.metric("Human reviewed", f"{len(reviewed):,}", help="AI reports that received admin feedback.")
+    c4.metric("Pending review", f"{pending_alerts:,}", help="Flagged reports still neither confirmed nor rejected.")
 
     c5, c6, c7, c8 = st.columns(4)
-    c5.metric(
-        "Confirmed errors",
-        f"{confirmed:,}",
-        help="How many AI alerts the admin confirmed as real parser errors.",
-    )
-    c6.metric(
-        "False alarms",
-        f"{false_alarms:,}",
-        help="How many AI alerts the admin marked as correct parser behavior.",
-    )
+    c5.metric("Confirmed errors", f"{confirmed:,}", help="AI alerts the admin confirmed as real parser errors.")
+    c6.metric("False alarms", f"{false_alarms:,}", help="AI alerts the admin marked as correct parser behavior.")
     c7.metric(
         "Useful signal rate",
-        _percent(precision) if len(decisive) else _no_data(),
-        help="Share of confirmed errors among reports where the admin gave a clear parser-error or false-alarm decision.",
+        fmt_share(confirmed, len(decisive)),
+        help="Confirmed errors among reports where the admin gave a clear decision.",
     )
     c8.metric(
         "False alarm rate",
-        _percent(false_alarm_rate) if len(decisive) else _no_data(),
-        help="Share of false alarms among reports where the admin gave a clear decision.",
-    )
-
-    st.caption(
-        "A useful finding is an AI report that the admin confirmed as a real parser error. "
-        f"Current useful findings: {confirmed:,} out of {total_checks:,} checks "
-        f"({_percent(useful_finding_rate)})."
+        fmt_share(false_alarms, len(decisive)),
+        help="False alarms among reports where the admin gave a clear decision.",
     )
 
 
-def _render_costs(current_reviews: pd.DataFrame) -> None:
+def _render_ai_qa_cost(current_reviews: pd.DataFrame) -> None:
     total_checks = len(current_reviews)
     total_cost = float(current_reviews["total_cost_usd"].sum()) if not current_reviews.empty else 0.0
     alerts = int(current_reviews["should_alert_admin"].sum()) if not current_reviews.empty else 0
@@ -365,7 +497,6 @@ def _render_costs(current_reviews: pd.DataFrame) -> None:
     cost_per_confirmed = total_cost / confirmed if confirmed else None
     settings = get_settings()
 
-    st.subheader("How much does AI QA cost?")
     c0, c1, c2, c3, c4 = st.columns(5)
     provider = settings.ai_qa_provider
     c0.metric(
@@ -375,26 +506,11 @@ def _render_costs(current_reviews: pd.DataFrame) -> None:
             if provider == "openai"
             else f"{provider} — no API calls"
         ),
-        help=(
-            "The mock provider is local, deterministic, and free. "
-            "OpenAI runs use the configured model and the prices in the caption below."
-        ),
+        help="The mock provider is local, deterministic, and free. OpenAI runs use the configured model and prices.",
     )
-    c1.metric(
-        "Spent on current version",
-        _money(total_cost),
-        help="Total OpenAI cost for AI QA reviews in the current version.",
-    )
-    c2.metric(
-        "Cost per check",
-        _money(cost_per_check),
-        help="Average cost to check one listing.",
-    )
-    c3.metric(
-        "Cost per alert",
-        _money(cost_per_alert),
-        help="Average cost per case where AI sent a report to the admin.",
-    )
+    c1.metric("Spent on current version", _money(total_cost), help="Total OpenAI cost for AI QA reviews in the current version.")
+    c2.metric("Cost per check", _money(cost_per_check), help="Average cost to check one listing.")
+    c3.metric("Cost per alert", _money(cost_per_alert), help="Average cost per case where AI sent a report to the admin.")
     c4.metric(
         "Cost per confirmed error",
         _money(cost_per_confirmed) if cost_per_confirmed is not None else _no_data(),
@@ -404,7 +520,7 @@ def _render_costs(current_reviews: pd.DataFrame) -> None:
         "OpenAI cost calculation uses configured prices: "
         f"input {_price_per_1m(settings.openai_input_price_per_1m)}, "
         f"output {_price_per_1m(settings.openai_output_price_per_1m)}. "
-        "Default updated for GPT-5.4 mini OpenAI API pricing, verified 2026-06-23."
+        f"{AI_QA_HISTORY_SOURCE_CAPTION}"
     )
 
 
@@ -440,7 +556,7 @@ def _render_demo_issues(ai_result: Dict[str, Any]) -> pd.DataFrame:
 
 
 def _render_demo_fault_check() -> None:
-    st.subheader("Demo: parser made a mistake, AI checked it")
+    st.markdown("#### Try it yourself: inject a parser fault")
     st.caption(
         "This block intentionally corrupts one parser snapshot and sends AI only raw text + "
         "the corrupted snapshot. Ground truth and the injection flag are not sent to the model prompt. "
@@ -492,7 +608,10 @@ def _render_demo_fault_check() -> None:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Risk score", f"{int(result.ai_result.get('risk_score') or 0)} of 100")
     c2.metric("Alert", "yes" if result.ai_result.get("should_alert_admin") else "no")
-    c3.metric("AI confidence", f"{float(result.ai_result.get('confidence') or 0.0):.2f}")
+    c3.metric(
+        "AI confidence" if provider != "mock" else "AI confidence (illustrative mock score)",
+        f"{float(result.ai_result.get('confidence') or 0.0):.2f}",
+    )
     c4.metric("Cost", _money(result.total_cost_usd))
 
     issues = _render_demo_issues(result.ai_result)
@@ -542,15 +661,15 @@ def _render_field_quality(current_reviews: pd.DataFrame) -> None:
                 "AI risk signals": alerts,
                 "Confirmed errors": confirmed,
                 "False alarms": false_alarms,
-                "Useful signal rate": _percent(confirmed / decisive) if decisive else _no_data(),
+                "Useful signal rate": fmt_share(confirmed, decisive),
                 "Average risk score (0-100)": round(stats["_risk_total"] / alerts, 1) if alerts else 0.0,
             }
         )
 
-    st.subheader("Where the parser is most at risk")
+    st.markdown("#### Where the parser is most at risk")
     st.caption(
-        "This table shows which fields AI most often flags as risky, "
-        "and where the admin has already confirmed errors."
+        "Which fields AI most often flags as risky, and where the admin has already "
+        "confirmed errors."
     )
     if not rows:
         st.info("There are no field-level AI alerts yet.")
@@ -562,7 +681,7 @@ def _render_field_quality(current_reviews: pd.DataFrame) -> None:
 
 
 def _render_versions(all_reviews: pd.DataFrame) -> None:
-    st.subheader("How AI QA quality changed by version")
+    st.markdown("#### How AI QA quality changed by version")
     st.caption(
         "Versions show whether a new prompt or guardrails reduced noise or improved quality."
     )
@@ -583,7 +702,7 @@ def _render_versions(all_reviews: pd.DataFrame) -> None:
                 "Human reviewed": len(_reviewed_feedback(group)),
                 "Confirmed errors": confirmed,
                 "False alarms": false_alarms,
-                "Useful signal rate": _percent(confirmed / len(decisive)) if len(decisive) else _no_data(),
+                "Useful signal rate": fmt_share(confirmed, len(decisive)),
                 "Cost": _money(float(group["total_cost_usd"].sum())),
             }
         )
@@ -599,7 +718,7 @@ def _review_table(
     empty_text: str,
     limit: int = 25,
 ) -> None:
-    st.subheader(title)
+    st.markdown(f"#### {title}")
     st.caption(description)
     if reviews.empty:
         st.info(empty_text)
@@ -677,18 +796,78 @@ def _render_pending_and_confirmed(current_reviews: pd.DataFrame) -> None:
     )
 
 
+def _render_ai_qa_section(all_reviews: pd.DataFrame, current_reviews: pd.DataFrame) -> None:
+    st.subheader("Is AI QA useful enough to keep operating?")
+    st.caption(
+        "AI QA is one bounded control inside the product: it reviews the parser's output "
+        "and flags likely mistakes to an admin. It cannot parse listings, decide matches, "
+        "or change what a renter sees — that stays deterministic (see the section above)."
+    )
+    _render_ai_qa_quality(current_reviews)
+    st.markdown("---")
+    _render_ai_qa_cost(current_reviews)
+    st.markdown("---")
+    _render_demo_fault_check()
+    st.markdown("---")
+    _render_field_quality(current_reviews)
+    st.markdown("---")
+    _render_versions(all_reviews)
+    st.markdown("---")
+    _render_pending_and_confirmed(current_reviews)
+
+
+# ---------------------------------------------------------------------------
+# Section 5 — evidence and gaps
+# ---------------------------------------------------------------------------
+
+
+def _render_evidence_and_gaps() -> None:
+    st.subheader("What is proven and what remains unproven?")
+
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.markdown("**Working now**")
+        st.markdown(
+            "- End-to-end filter → match → verified one-time delivery\n"
+            "- Source-health monitoring with alert cooldown\n"
+            "- Deterministic parsing, regression-tested on every change\n"
+            "- AI QA instrumentation, budgets, and a non-mutation boundary\n"
+            "- User-data deletion via `/delete`"
+        )
+    with col_b:
+        st.markdown("**Not yet proven**")
+        st.markdown(
+            "- Live-source coverage and freshness (synthetic catalog only)\n"
+            "- Real renter outcomes (time saved, application success)\n"
+            "- Real-model AI QA usefulness, false-alarm rate, and cost\n"
+            "- Usability with real users outside this demo"
+        )
+
+    st.markdown(
+        "**Data stored:** Telegram user ID, the saved filter, and sent-listing history "
+        "for deduplication — nothing else. No names, no message archive. `/delete` "
+        "removes all of it after explicit confirmation, both from the bot and here."
+    )
+    st.caption(
+        "This is a synthetic, local, single-operator prototype: no real scraping, no "
+        "network geocoding, no production hosting. Read the case study for the product "
+        "decisions and the next validation steps this would need before a real launch."
+    )
+
+
 def render_dashboard() -> None:
     st.set_page_config(
-        page_title="FlatFeed · AI QA",
+        page_title="FlatFeed · Product Operations",
         page_icon="",
         layout="wide",
     )
     init_db()
 
-    st.title("FlatFeed parser AI QA")
+    st.title("FlatFeed product operations")
     st.caption(
-        "The dashboard shows how much AI QA helps find real parser errors, "
-        "how much of the active catalog it covers, and how much model usage costs."
+        "Current state of the synthetic demo pipeline, from source refresh to verified "
+        "delivery. AI QA is one control inside the product; it does not parse listings "
+        "or decide matches."
     )
 
     coverage_counts = _load_active_ai_qa_coverage()
@@ -696,19 +875,20 @@ def render_dashboard() -> None:
     current_reviews = _current_version(all_reviews)
 
     _render_metric_guide()
-    _render_health(coverage_counts)
+    _render_pipeline_readiness(coverage_counts)
     st.divider()
-    _render_quality(current_reviews)
+    _render_source_trust()
     st.divider()
-    _render_costs(current_reviews)
+    _render_parsing_accuracy()
     st.divider()
-    _render_demo_fault_check()
+    _render_ai_qa_section(all_reviews, current_reviews)
     st.divider()
-    _render_field_quality(current_reviews)
-    st.divider()
-    _render_versions(all_reviews)
-    st.divider()
-    _render_pending_and_confirmed(current_reviews)
+    _render_evidence_and_gaps()
 
 
-render_dashboard()
+if __name__ == "__main__":
+    # `streamlit run` executes this file with __name__ == "__main__", so this
+    # guard changes nothing for the app itself — it only makes the pure
+    # helpers (fmt_share, etc.) safely importable from tests without
+    # triggering a full Streamlit page render at import time.
+    render_dashboard()

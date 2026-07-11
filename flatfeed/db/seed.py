@@ -9,7 +9,7 @@ from flatfeed.db.models import SourceCompany
 SOURCE_COMPANIES = (
     {
         "name": "FlatFeed Synthetic",
-        "base_url": "https://demo.flatfeed.local",
+        "base_url": "https://mich-mayer.github.io/flatfeed",
         "parser_status": "implemented",
     },
 )

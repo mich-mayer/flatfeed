@@ -46,12 +46,12 @@
 
       <main id="case-main">
         <section class="case-hero">
-          <p class="kicker">AI product management — case study · 2026</p>
+          <p class="kicker">Product case study · working prototype · synthetic data · 2026</p>
           <h1>I built FlatFeed to give Berlin WBS renters one reliable feed of eligible apartments — without letting AI decide eligibility.</h1>
           <p class="case-lede">
-            I designed the pipeline to pull listings through source adapters, normalize messy
-            listing text into one catalog, and match them against user filters — then added AI QA
-            to review parser quality, without letting it mutate user-facing results.
+            I scoped FlatFeed around one renter job: save a filter once, then receive every
+            active WBS match once. Reliability rules — not AI — decide what a renter sees; AI QA
+            only reviews parser quality behind the scenes, without ever mutating a result.
           </p>
           <div class="case-actions">
             <a class="btn btn--primary" href="#problem">
@@ -90,16 +90,16 @@
                 <article class="listing-card">
                   <img src="assets/berlin-wbs-building.jpg" alt="Berlin residential building used as a demo listing image">
                   <div class="listing-fields">
-                    <p><strong>District:</strong> Wedding</p>
-                    <p><strong>Address:</strong> Demo street 12, 13347 Berlin</p>
+                    <p><strong>District:</strong> Lichtenberg</p>
+                    <p><strong>Address:</strong> Rosenfelder Str. 12, 10315 Berlin</p>
                     <p><strong>Floor:</strong> 2</p>
                     <p><strong>Rooms:</strong> 2</p>
-                    <p><strong>S-Bahn:</strong> 9 min walk</p>
-                    <p><strong>U-Bahn:</strong> 7 min walk</p>
+                    <p><strong>S-Bahn:</strong> 8 min walk</p>
+                    <p><strong>U-Bahn:</strong> 8 min walk</p>
                     <p><strong>WBS:</strong> 100, 140</p>
                     <p><strong>Source:</strong> FlatFeed Synthetic</p>
-                    <p class="listing-gap"><strong>Kalt:</strong> 610 EUR</p>
-                    <p><strong>Warm:</strong> 760 EUR</p>
+                    <p class="listing-gap"><strong>Kalt:</strong> 512,40 EUR</p>
+                    <p><strong>Warm:</strong> 690,20 EUR</p>
                     <p class="listing-gap listing-link">Open listing</p>
                   </div>
                 </article>
@@ -126,8 +126,10 @@
               </article>
             </div>
             <figcaption>
-              Recreated product evidence rendered from the same synthetic demo data: the Telegram
-              match card and the admin QA dashboard. A styled mockup, not screenshots.
+              Recreated product evidence rendered from the current synthetic demo catalog and a
+              live <code>eval.run_eval</code> run: the Telegram match card and the admin QA
+              dashboard. A styled mockup, not screenshots — try the real thing in
+              <a href="https://t.me/FlatFeedBot?start=tour">the guided tour</a>.
             </figcaption>
           </figure>
         </section>
@@ -261,23 +263,22 @@
               </div>
               <div class="demo-frame-body">
                 <div class="product-shot">
-                  <div class="shot-tabs">
-                    <span>Overview</span>
-                    <span class="is-active">QA Review</span>
-                    <span>Sources</span>
-                  </div>
                   <table>
                     <thead>
-                      <tr><th>Field</th><th>Risk</th><th>Status</th></tr>
+                      <tr><th>Field</th><th>AI risk signals</th><th>Confirmed errors</th></tr>
                     </thead>
                     <tbody>
-                      <tr><td>WBS</td><td>Low</td><td>Correct</td></tr>
-                      <tr><td>Rooms</td><td>Low</td><td>Correct</td></tr>
-                      <tr><td>Kaltmiete</td><td>Low</td><td>Correct</td></tr>
+                      <tr><td>WBS</td><td>Low</td><td>0</td></tr>
+                      <tr><td>Rooms</td><td>Low</td><td>0</td></tr>
+                      <tr><td>Kaltmiete</td><td>Low</td><td>0</td></tr>
                     </tbody>
                   </table>
                 </div>
               </div>
+              <figcaption>
+                Stylized illustration of the "Where the parser is most at risk" table — the real
+                dashboard is a single question-led scroll, not tabbed navigation.
+              </figcaption>
             </figure>
           </div>
           <div class="case-scope-columns">

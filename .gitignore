@@ -12,6 +12,7 @@ __pycache__/
 .streamlit/secrets.toml
 LOCAL_CONTEXT.md
 LOCAL_PLAN_DEMO_TOUR.md
+LOCAL_PLAN_DEMO_V2.md
 data/*.db
 data/*.db-*
 logs/

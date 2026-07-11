@@ -1,21 +1,20 @@
 import unittest
 from datetime import datetime, timedelta
-from itertools import count
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from flatfeed.ai_qa import (
     AI_QA_FEEDBACK_PARSER_CORRECT,
     AI_QA_FEEDBACK_PARSER_ERROR,
-    AI_QA_FEEDBACK_PENDING,
     AI_QA_FEEDBACK_UNSURE,
-    CURRENT_AI_QA_PROMPT_VERSION,
 )
-from flatfeed.db.models import AIQAReview, Base, Listing
+from flatfeed.db.models import AIQAReview, Base, Listing, User
+from synthetic.generator import SYNTHETIC_BASE_URL
+from synthetic.golden_set import load_golden_set
 
 import main as M
 
@@ -35,7 +34,7 @@ def _make_listing(
 ) -> Listing:
     return Listing(
         source_company=TEST_SOURCE_COMPANY,
-        url=f"https://demo.flatfeed.local/listings/{suffix}",
+        url=f"{SYNTHETIC_BASE_URL}?id={suffix}",
         title=f"Listing {suffix}",
         raw_text=raw_text,
         district=district,
@@ -99,6 +98,17 @@ class _FakeCallback:
 class _FakeState:
     async def clear(self) -> None:
         return None
+
+
+def _in_memory_engine():
+    """A StaticPool engine so asyncio.to_thread(...) calls (which run on a
+    different thread) see the same in-memory database as the test."""
+    return create_engine(
+        "sqlite+pysqlite:///:memory:",
+        future=True,
+        poolclass=StaticPool,
+        connect_args={"check_same_thread": False},
+    )
 
 
 class TourListingSelectionTests(unittest.TestCase):
@@ -184,7 +194,7 @@ class TourListingSelectionTests(unittest.TestCase):
             listing = M._select_tour_listing()
 
         self.assertIsNotNone(listing)
-        self.assertEqual(listing.url, "https://demo.flatfeed.local/listings/valid-1")
+        self.assertEqual(listing.url, f"{SYNTHETIC_BASE_URL}?id=valid-1")
 
     def test_returns_none_when_no_listing_qualifies(self) -> None:
         with self.test_session() as session:
@@ -244,82 +254,69 @@ class TourFilterSummaryTests(unittest.TestCase):
         self.assertEqual(M._tour_max_rent(None), M.RENT_PRESETS[0])
 
 
-class TourRateLineTests(unittest.TestCase):
-    def test_zero_reviewed_reports_no_data(self) -> None:
-        self.assertEqual(
-            M._tour_rate_line(confirmed=0, reviewed=0),
-            "No flagged reports have been reviewed yet.",
-        )
+class TourCandidateMatchesTests(unittest.TestCase):
+    """_tour_candidate_matches must reuse the real is_listing_match
+    predicate — this is what proves screen 2 shows a genuine result instead
+    of a hand-picked one."""
 
-    def test_small_denominator_shows_count_not_percent(self) -> None:
-        line = M._tour_rate_line(confirmed=7, reviewed=11)
-        self.assertIn("7 of 11", line)
-        self.assertNotIn("%", line)
-
-    def test_large_denominator_shows_percent(self) -> None:
-        line = M._tour_rate_line(confirmed=26, reviewed=41)
-        self.assertIn("63.4%", line)
-
-
-class TourFunnelTests(unittest.TestCase):
     def setUp(self) -> None:
         engine = create_engine("sqlite+pysqlite:///:memory:", future=True)
         Base.metadata.create_all(engine)
         self.test_session = sessionmaker(bind=engine, expire_on_commit=False, future=True)
         self.addCleanup(engine.dispose)
-        self._listing_ids = count(1)
 
-    def _review(self, **overrides) -> AIQAReview:
-        # listing_id + qa_prompt_version is a real unique constraint on this
-        # table; give each fixture its own listing_id unless a test needs a
-        # specific one, so unrelated fixtures never collide.
-        listing_id = overrides.pop("listing_id", None)
-        if listing_id is None:
-            listing_id = next(self._listing_ids)
-        defaults = dict(
-            listing_id=listing_id,
-            listing_url=f"https://demo.flatfeed.local/listings/{listing_id}",
-            source_company=TEST_SOURCE_COMPANY,
-            trigger_type="new_listing",
-            qa_prompt_version=CURRENT_AI_QA_PROMPT_VERSION,
-            raw_text_hash="hash",
-            parser_snapshot_hash="hash",
-            parser_snapshot={},
-            ai_result={},
-            risk_score=85,
-            confidence=0.7,
-            parser_result_correct=False,
-            should_alert_admin=True,
-            feedback_status=AI_QA_FEEDBACK_PENDING,
+    def test_only_listings_satisfying_the_real_predicate_are_returned(self) -> None:
+        base_time = datetime(2026, 1, 1)
+        with self.test_session() as session:
+            session.add(
+                _make_listing(
+                    suffix="matches",
+                    rooms=2,
+                    district="Lichtenberg",
+                    raw_text="WBS 100-140 erforderlich.",
+                    rent_kalt=512,
+                    first_seen_at=base_time,
+                )
+            )
+            # Wrong district: must not match a Lichtenberg-only filter.
+            session.add(
+                _make_listing(
+                    suffix="wrong-district",
+                    rooms=2,
+                    district="Mitte",
+                    raw_text="WBS 100-140 erforderlich.",
+                    rent_kalt=512,
+                    first_seen_at=base_time + timedelta(minutes=1),
+                )
+            )
+            # Over budget: must not match a 600 EUR max.
+            session.add(
+                _make_listing(
+                    suffix="too-expensive",
+                    rooms=2,
+                    district="Lichtenberg",
+                    raw_text="WBS 100-140 erforderlich.",
+                    rent_kalt=900,
+                    first_seen_at=base_time + timedelta(minutes=2),
+                )
+            )
+            session.commit()
+
+        listing = _make_listing(
+            suffix="matches",
+            rooms=2,
+            district="Lichtenberg",
+            raw_text="WBS 100-140 erforderlich.",
+            rent_kalt=512,
+            first_seen_at=base_time,
         )
-        defaults.update(overrides)
-        return AIQAReview(**defaults)
-
-    def test_funnel_counts_checked_flagged_reviewed_confirmed(self) -> None:
-        with self.test_session() as session:
-            session.add(self._review(should_alert_admin=False, risk_score=10))  # checked only
-            session.add(self._review())  # flagged, still pending
-            session.add(self._review(feedback_status=AI_QA_FEEDBACK_PARSER_ERROR))  # confirmed
-            session.add(self._review(feedback_status=AI_QA_FEEDBACK_PARSER_CORRECT))  # false alarm
-            session.commit()
+        preferences, _ = M._tour_filter_summary(listing)
 
         with patch("main.SessionLocal", self.test_session):
-            funnel = M._load_tour_funnel()
+            matches = M._tour_candidate_matches(preferences)
 
-        self.assertEqual(funnel, {"checked": 4, "flagged": 3, "reviewed": 2, "confirmed": 1})
-
-    def test_funnel_excludes_non_current_prompt_versions(self) -> None:
-        # Defense in depth: even if a -demo or stale-version review ever
-        # existed in the table, screen 5 (and the dashboard) must ignore it.
-        with self.test_session() as session:
-            session.add(self._review(qa_prompt_version=f"{CURRENT_AI_QA_PROMPT_VERSION}-demo"))
-            session.add(self._review(qa_prompt_version="v1"))
-            session.commit()
-
-        with patch("main.SessionLocal", self.test_session):
-            funnel = M._load_tour_funnel()
-
-        self.assertEqual(funnel, {"checked": 0, "flagged": 0, "reviewed": 0, "confirmed": 0})
+        self.assertEqual([m.url for m in matches], [f"{SYNTHETIC_BASE_URL}?id=matches"])
+        self.assertTrue(matches[0].reasons)
 
 
 class TourEphemeralTriageTests(unittest.IsolatedAsyncioTestCase):
@@ -330,12 +327,7 @@ class TourEphemeralTriageTests(unittest.IsolatedAsyncioTestCase):
         # query on a different thread. A plain sqlite:///:memory: engine
         # hands that thread a brand-new, empty database, so this needs
         # StaticPool (one shared connection) + check_same_thread=False.
-        engine = create_engine(
-            "sqlite+pysqlite:///:memory:",
-            future=True,
-            poolclass=StaticPool,
-            connect_args={"check_same_thread": False},
-        )
+        engine = _in_memory_engine()
         Base.metadata.create_all(engine)
         self.test_session = sessionmaker(bind=engine, expire_on_commit=False, future=True)
         self.addCleanup(engine.dispose)
@@ -370,8 +362,12 @@ class TourEphemeralTriageTests(unittest.IsolatedAsyncioTestCase):
             # single new message (no scroll-away avalanche in the client).
             self.assertEqual(len(inject_callback.message.answered), 1)
             alert_text, alert_markup = inject_callback.message.answered[-1]
-            self.assertIn("Fault injected", alert_text)
+            self.assertIn("Simulated parser fault", alert_text)
             self.assertIn("AI QA alert", alert_text)
+            # Cost and confidence read as production/model-calibrated
+            # numbers; the tour must not imply either.
+            self.assertNotIn("Check cost", alert_text)
+            self.assertNotIn("AI confidence", alert_text)
             triage_labels = [
                 button.text for row in alert_markup.inline_keyboard for button in row
             ]
@@ -385,22 +381,23 @@ class TourEphemeralTriageTests(unittest.IsolatedAsyncioTestCase):
                 feedback_callback = _FakeCallback(f"tour_fb:{status}")
                 await M._send_tour_feedback_response(feedback_callback, status)
                 self.assertEqual(self._review_count(), 0)
+                # The tour must not grade the visitor's choice — every label
+                # gets the same neutral, fact-revealing response.
                 response_text = feedback_callback.message.answered[-1][0]
+                self.assertIn("Recorded for this demo only", response_text)
                 self.assertIn("nothing you tap is stored", response_text)
+                self.assertIn("<b>Parser error</b> is the label an admin would confirm", response_text)
+                self.assertNotIn("Correct —", response_text)
+                self.assertNotIn("Noted.", response_text)
 
 
-class TourMessageCountTests(unittest.IsolatedAsyncioTestCase):
+class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
     """Each tour step should land as one new message, not several — a burst
     of messages pushes the Telegram client's scroll position to the bottom
     of the chat on every single one, forcing the reader to scroll back up."""
 
     def setUp(self) -> None:
-        engine = create_engine(
-            "sqlite+pysqlite:///:memory:",
-            future=True,
-            poolclass=StaticPool,
-            connect_args={"check_same_thread": False},
-        )
+        engine = _in_memory_engine()
         Base.metadata.create_all(engine)
         self.test_session = sessionmaker(bind=engine, expire_on_commit=False, future=True)
         self.addCleanup(engine.dispose)
@@ -408,7 +405,7 @@ class TourMessageCountTests(unittest.IsolatedAsyncioTestCase):
         with self.test_session() as session:
             session.add(
                 _make_listing(
-                    suffix="screen-one-fixture",
+                    suffix="screen-fixture",
                     rooms=2,
                     district="Lichtenberg",
                     raw_text="WBS 100-140 erforderlich. Kaltmiete: 512,40 Euro.",
@@ -418,36 +415,136 @@ class TourMessageCountTests(unittest.IsolatedAsyncioTestCase):
             )
             session.commit()
 
-    async def test_screen_1_is_a_single_card_message_with_step_framing(self) -> None:
+    def _user_count(self) -> int:
+        with self.test_session() as session:
+            return session.scalar(select(func.count(User.user_id))) or 0
+
+    async def test_screen_1_is_ephemeral_and_shows_the_filter_as_text(self) -> None:
         callback = _FakeCallback("tour:1")
-        bot = _FakeBot()
 
         with patch("main.SessionLocal", self.test_session):
-            await M._send_tour_screen_1(callback, bot)
-
-        # One tap = one message: the step framing rides in the card's own
-        # caption, the Next button hangs on the same message, and nothing is
-        # sent on the callback's message thread separately.
-        self.assertEqual(len(callback.message.answered), 0)
-        self.assertEqual(len(bot.sent_messages), 1)
-        card_message = bot.sent_messages[0]
-        self.assertIn("Step 1/5", card_message["text"])
-        self.assertIn("District:", card_message["text"])
-        self.assertIsNotNone(card_message["reply_markup"])
-        next_button = card_message["reply_markup"].inline_keyboard[0][0]
-        self.assertEqual(next_button.text, "See how it's parsed")
-        self.assertEqual(next_button.callback_data, "tour:2")
-
-    async def test_screen_2_sends_a_single_message(self) -> None:
-        callback = _FakeCallback("tour:2")
-
-        with patch("main.SessionLocal", self.test_session):
-            await M._send_tour_screen_2(callback)
+            self.assertEqual(self._user_count(), 0)
+            await M._send_tour_screen_1(callback)
+            # Ephemeral filter: showing step 1 must not write to `users`.
+            self.assertEqual(self._user_count(), 0)
 
         self.assertEqual(len(callback.message.answered), 1)
         text, markup = callback.message.answered[0]
-        self.assertIn("Kaltmiete", text)
-        self.assertEqual(markup.inline_keyboard[0][0].callback_data, "tour:3")
+        self.assertIn("Step 1/5", text)
+        self.assertIn("<b>WBS:</b> 140", text)
+        self.assertIn("<b>District:</b> Lichtenberg", text)
+        self.assertIn("temporary", text)
+        next_button = markup.inline_keyboard[0][0]
+        self.assertEqual(next_button.text, "Find matches")
+        self.assertEqual(next_button.callback_data, "tour:2")
+
+    async def test_screen_2_uses_real_matching_and_sends_one_card(self) -> None:
+        callback = _FakeCallback("tour:2")
+        bot = _FakeBot()
+
+        with patch("main.SessionLocal", self.test_session):
+            await M._send_tour_screen_2(callback, bot)
+
+        # One tap = one message: the step framing, the "1 of N" result, and
+        # the Next button all ride in the card's own caption.
+        self.assertEqual(len(callback.message.answered), 0)
+        self.assertEqual(len(bot.sent_messages), 1)
+        card_message = bot.sent_messages[0]
+        self.assertIn("Step 2/5", card_message["text"])
+        self.assertIn("1 of 1 active match", card_message["text"])
+        self.assertIn("Why it matched", card_message["text"])
+        self.assertIn("District:", card_message["text"])
+        next_button = card_message["reply_markup"].inline_keyboard[0][0]
+        self.assertEqual(next_button.text, "How does it work?")
+        self.assertEqual(next_button.callback_data, "tour:3")
+
+    async def test_screen_3_explains_the_pipeline_and_privacy(self) -> None:
+        callback = _FakeCallback("tour:3")
+
+        await M._send_tour_screen_3(callback)
+
+        self.assertEqual(len(callback.message.answered), 1)
+        text, markup = callback.message.answered[0]
+        self.assertIn("Step 3/5", text)
+        for word in ("Collect:", "Normalize:", "Verify:", "Match:", "Deliver:"):
+            self.assertIn(word, text)
+        self.assertIn("/delete", text)
+        next_button = markup.inline_keyboard[0][0]
+        self.assertEqual(next_button.text, "Where AI helps")
+        self.assertEqual(next_button.callback_data, "tour:4")
+
+    async def test_screen_4_introduces_the_ai_layer(self) -> None:
+        callback = _FakeCallback("tour:4")
+
+        await M._send_tour_screen_4(callback)
+
+        self.assertEqual(len(callback.message.answered), 1)
+        text, markup = callback.message.answered[0]
+        self.assertIn("Step 4/5", text)
+        self.assertIn("cannot change listings, matches or cards", text)
+        next_button = markup.inline_keyboard[0][0]
+        self.assertEqual(next_button.text, "Simulate a parser fault")
+        self.assertEqual(next_button.callback_data, "tour:inject")
+
+    async def test_screen_5_shows_evidence_not_a_funnel(self) -> None:
+        callback = _FakeCallback("tour:5")
+
+        await M._send_tour_screen_5(callback)
+
+        self.assertEqual(len(callback.message.answered), 1)
+        text, markup = callback.message.answered[0]
+        self.assertIn("Step 5/5", text)
+        self.assertIn("Working now", text)
+        self.assertIn("Measured on synthetic data", text)
+        self.assertIn("Not yet proven", text)
+        self.assertIn(f"{len(load_golden_set())} listings", text)
+        self.assertNotIn("Checked by AI", text)
+        self.assertNotIn("Flagged as risky", text)
+
+        button_texts = [b.text for row in markup.inline_keyboard for b in row]
+        self.assertIn("Use this demo filter", button_texts)
+        self.assertIn("Set up my own filter", button_texts)
+        self.assertIn("Read the case study", button_texts)
+
+
+class TourSaveFilterTests(unittest.IsolatedAsyncioTestCase):
+    def setUp(self) -> None:
+        engine = _in_memory_engine()
+        Base.metadata.create_all(engine)
+        self.test_session = sessionmaker(bind=engine, expire_on_commit=False, future=True)
+        self.addCleanup(engine.dispose)
+
+        with self.test_session() as session:
+            session.add(
+                _make_listing(
+                    suffix="save-fixture",
+                    rooms=2,
+                    district="Lichtenberg",
+                    raw_text="WBS 100-140 erforderlich. Kaltmiete: 512,40 Euro.",
+                    rent_kalt=512,
+                    first_seen_at=datetime(2026, 1, 1),
+                )
+            )
+            session.commit()
+
+    async def test_save_filter_writes_the_derived_preferences_once(self) -> None:
+        callback = _FakeCallback("tour:save_filter")
+
+        with patch("main.SessionLocal", self.test_session):
+            with self.test_session() as session:
+                self.assertIsNone(session.get(User, 999))
+
+            await M.handle_tour_save_filter(callback)
+
+            with self.test_session() as session:
+                user = session.get(User, 999)
+                self.assertIsNotNone(user)
+                self.assertEqual(user.parsed_preferences["wbs_type"], "WBS 140")
+                self.assertEqual(user.parsed_preferences["location"], ["Lichtenberg"])
+                self.assertEqual(user.parsed_preferences["max_rent"], 600)
+
+        confirmation_text = callback.message.answered[-1][0]
+        self.assertIn("Saved", confirmation_text)
 
 
 class TourEntryPointTests(unittest.IsolatedAsyncioTestCase):

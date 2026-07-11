@@ -6,6 +6,15 @@ from synthetic.case_catalog import CASE_TEMPLATES, CaseTemplate
 from synthetic.listing_photos import listing_photo_for_index
 
 
+# Single source of truth for synthetic listing URLs. Points at a static demo
+# page on GitHub Pages (docs/demo-listing.html) so the card's "Open listing"
+# link resolves to something real for an external portfolio viewer, rather
+# than a domain that never existed publicly. flatfeed/ingestion/synthetic.py
+# imports this same constant for its local (no-network) activity check, so
+# both stay in sync by construction.
+SYNTHETIC_BASE_URL = "https://mich-mayer.github.io/flatfeed/demo-listing.html"
+
+
 @dataclass(frozen=True)
 class SyntheticListing:
     truth_wbs_display: str
@@ -34,7 +43,7 @@ def _listing_from_template(
     *,
     index: int,
 ) -> SyntheticListing:
-    url = f"https://demo.flatfeed.local/listings/{index:04d}"
+    url = f"{SYNTHETIC_BASE_URL}?id={index:04d}"
     return SyntheticListing(
         truth_wbs_display=template.truth_wbs_display,
         truth_wbs_allowed=template.truth_wbs_allowed,
