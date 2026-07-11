@@ -418,19 +418,21 @@ class TourMessageCountTests(unittest.IsolatedAsyncioTestCase):
             )
             session.commit()
 
-    async def test_screen_1_sends_intro_then_one_card_with_the_next_button(self) -> None:
+    async def test_screen_1_is_a_single_card_message_with_step_framing(self) -> None:
         callback = _FakeCallback("tour:1")
         bot = _FakeBot()
 
         with patch("main.SessionLocal", self.test_session):
             await M._send_tour_screen_1(callback, bot)
 
-        # One text message on the callback's own message thread, one card
-        # (with the Next button attached) sent via the bot — two messages
-        # total, not three.
-        self.assertEqual(len(callback.message.answered), 1)
+        # One tap = one message: the step framing rides in the card's own
+        # caption, the Next button hangs on the same message, and nothing is
+        # sent on the callback's message thread separately.
+        self.assertEqual(len(callback.message.answered), 0)
         self.assertEqual(len(bot.sent_messages), 1)
         card_message = bot.sent_messages[0]
+        self.assertIn("Step 1/5", card_message["text"])
+        self.assertIn("District:", card_message["text"])
         self.assertIsNotNone(card_message["reply_markup"])
         next_button = card_message["reply_markup"].inline_keyboard[0][0]
         self.assertEqual(next_button.text, "See how it's parsed")
