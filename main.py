@@ -1374,7 +1374,7 @@ def _ai_qa_demo_feedback_keyboard() -> InlineKeyboardMarkup:
     )
 
 
-def _format_ai_qa_review(review: AIQAReview, *, alert: bool) -> str:
+def _format_ai_qa_review(review: AIQAReview, *, alert: bool, include_cost: bool = True) -> str:
     header = (
         "<b>AI QA alert: possible parser error</b>"
         if alert
@@ -1383,6 +1383,9 @@ def _format_ai_qa_review(review: AIQAReview, *, alert: bool) -> str:
     risk_score = int(review.risk_score or 0)
     confidence_percent = round(float(review.confidence or 0.0) * 100)
     issues = "\n\n".join(_issue_lines(review))
+    cost_line = (
+        f"Check cost: ${float(review.total_cost_usd or 0.0):.6f}\n" if include_cost else ""
+    )
     return (
         f"{header}\n\n"
         f"Listing:\n{escape(review.listing_url)}\n\n"
@@ -1391,7 +1394,7 @@ def _format_ai_qa_review(review: AIQAReview, *, alert: bool) -> str:
         "<b>Summary</b>\n"
         f"Risk score: <b>{risk_score} of 100 ({_risk_label(risk_score)})</b>\n"
         f"AI confidence: {confidence_percent}%\n"
-        f"Check cost: ${float(review.total_cost_usd or 0.0):.6f}\n\n"
+        f"{cost_line}\n"
         "Choose a decision with the buttons below."
     )
 
@@ -1907,8 +1910,12 @@ async def send_match_to_chat(
     chat_id: int,
     match: ListingMatch,
     reply_markup: Optional[InlineKeyboardMarkup] = None,
+    text_prefix: str = "",
 ) -> None:
-    text = format_match_message(match)
+    # text_prefix lets the tour frame the card inside the same message (one
+    # tap = one message); the card contract itself (field order, labels,
+    # grouping) stays byte-identical below the prefix.
+    text = text_prefix + format_match_message(match)
     photo_path = _local_listing_photo_path(match.image_url)
     if photo_path is not None:
         try:
@@ -2210,15 +2217,21 @@ def _tour_result_keyboard() -> InlineKeyboardMarkup:
 
 
 async def _send_tour_screen_0(message: Message) -> None:
+    # Two messages by platform constraint, not by choice: a Telegram message
+    # carries exactly one keyboard, and the persistent reply keyboard must be
+    # attached to some message or the user has no menu after the tour. Both
+    # arrive together before the user starts reading, so nothing scrolls away
+    # mid-step; every actual tour step is a single message.
     await message.answer(
-        "This is <b>FlatFeed</b> — a demo assistant for finding WBS apartments in Berlin.\n\n"
-        "All listings are synthetic. Your data can be deleted at any time with /delete.",
+        "This is <b>FlatFeed</b> — a demo assistant for finding WBS apartments in Berlin. "
+        "All listings are synthetic, and /delete wipes your data at any time.",
         reply_markup=main_menu_keyboard(),
     )
     await message.answer(
         "<b>Take a 2-minute tour?</b>\n\n"
-        "I will walk through how a match gets found, how listing data is parsed without "
-        "an LLM, and how an AI layer audits that parsing while a human keeps the final say.",
+        "Five short steps, one button per step, no typing: how a match gets found, how "
+        "listing data is parsed without an LLM, and how an AI layer audits that parsing "
+        "while a human keeps the final say.",
         reply_markup=_tour_intro_keyboard(),
     )
 
@@ -2247,13 +2260,12 @@ async def _send_tour_screen_1(callback: CallbackQuery, bot: Bot) -> None:
     )
     district_label = listing.district or "any district"
     rooms_label = _display_rooms(listing.rooms)
-    await callback.message.answer(
+    step_text = (
         "<b>Step 1/5</b>\n\n"
         f"Say you want a {escape(rooms_label)}-room listing in {escape(district_label)}, "
         f"WBS {wbs_percent}, with a maximum Kaltmiete of {rent_label}. I saved that as "
-        "your filter.\n\n"
-        "Here is what FlatFeed found — every field below came from the listing's raw "
-        "text, not from an LLM:"
+        "your filter — and this is what FlatFeed found. Every field below came from the "
+        "listing's raw text, not from an LLM.\n\n"
     )
 
     match = _listing_match_from_model(listing)
@@ -2262,6 +2274,7 @@ async def _send_tour_screen_1(callback: CallbackQuery, bot: Bot) -> None:
         chat_id=callback.message.chat.id,
         match=match,
         reply_markup=_tour_next_keyboard("See how it's parsed", "tour:2"),
+        text_prefix=step_text,
     )
 
 
@@ -2306,11 +2319,15 @@ async def _send_tour_screen_3(callback: CallbackQuery) -> None:
         return
     await callback.message.answer(
         "<b>Step 3/5</b>\n\n"
-        "In production, this panel is admin-only. For this tour, you get the same seat.\n\n"
+        "When AI QA suspects a parser mistake, it sends an alert that in production "
+        "only the admin sees — and only the admin decides what happens next. For this "
+        "tour, the next alert comes to you, and the decision is yours.\n\n"
         "Let's simulate a real failure. The button below corrupts the WBS field in the "
-        "parser's output for this listing, as if the source text had changed. The AI "
-        "reviewer only sees the raw listing text and that corrupted snapshot — it is "
-        "never told a fault was injected.",
+        "parser's output for this listing, as if the source text had changed. The QA "
+        "check then gets the same input it gets in production — the raw listing text "
+        "and that corrupted snapshot, with no marker of what was corrupted — so the "
+        "demo is not rigged to pass. This demo runs the free deterministic mock "
+        "checker; the optional OpenAI model receives the identical input.",
         reply_markup=_tour_next_keyboard("Corrupt the WBS field", "tour:inject"),
     )
 
@@ -2342,7 +2359,7 @@ async def _send_tour_inject(callback: CallbackQuery) -> None:
         trigger_type=AI_QA_TRIGGER_TOUR_FAULT,
     )
     await callback.message.answer(
-        fault_note + _format_ai_qa_review(review, alert=True),
+        fault_note + _format_ai_qa_review(review, alert=True, include_cost=False),
         reply_markup=_tour_triage_keyboard(),
         disable_web_page_preview=False,
     )
@@ -2456,7 +2473,8 @@ async def _send_tour_screen_5(callback: CallbackQuery) -> None:
         "its own. The AI layer exists to catch the day that stops being true.\n\n"
         f"{AI_QA_HISTORY_SOURCE_CAPTION}\n\n"
         "Your filter from step 1 is already saved — tap 🔎 Show matches any time, or "
-        "set a new one with ⚙ Filter.",
+        "set a new one with ⚙ Filter. The real admin panel is open as a demo view "
+        "behind 🛠 Admin.",
         reply_markup=_tour_result_keyboard(),
     )
 
