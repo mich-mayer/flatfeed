@@ -386,7 +386,10 @@ class TourEphemeralTriageTests(unittest.IsolatedAsyncioTestCase):
                 response_text = feedback_callback.message.answered[-1][0]
                 self.assertIn("Recorded for this demo only", response_text)
                 self.assertIn("nothing you tap is stored", response_text)
-                self.assertIn("<b>Parser error</b> is the label an admin would confirm", response_text)
+                self.assertIn(
+                    "<b>Parser error</b> is the expected label for this constructed example",
+                    response_text,
+                )
                 self.assertNotIn("Correct —", response_text)
                 self.assertNotIn("Noted.", response_text)
 
@@ -438,7 +441,7 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(len(callback.message.answered), 1)
         text, markup = callback.message.answered[0]
-        self.assertIn("Step 1/5", text)
+        self.assertIn("Step 1/3", text)
         self.assertIn("<b>WBS:</b> 140", text)
         self.assertIn("<b>District:</b> Lichtenberg", text)
         self.assertIn("temporary", text)
@@ -458,13 +461,13 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(callback.message.answered), 0)
         self.assertEqual(len(bot.sent_messages), 1)
         card_message = bot.sent_messages[0]
-        self.assertIn("Step 2/5", card_message["text"])
-        self.assertIn("1 of 1 active match", card_message["text"])
+        self.assertIn("Step 2/3", card_message["text"])
+        self.assertIn("1 of 1 matching listing", card_message["text"])
         self.assertIn("Why it matched", card_message["text"])
         self.assertIn("District:", card_message["text"])
         next_button = card_message["reply_markup"].inline_keyboard[0][0]
-        self.assertEqual(next_button.text, "How does it work?")
-        self.assertEqual(next_button.callback_data, "tour:3")
+        self.assertEqual(next_button.text, "See what is proven")
+        self.assertEqual(next_button.callback_data, "tour:5")
 
     async def test_screen_3_explains_the_pipeline_and_privacy(self) -> None:
         callback = _FakeCallback("tour:3")
@@ -473,13 +476,13 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(len(callback.message.answered), 1)
         text, markup = callback.message.answered[0]
-        self.assertIn("Step 3/5", text)
-        for word in ("Collect:", "Normalize:", "Verify:", "Match:", "Deliver:"):
+        self.assertIn("How the matching path works", text)
+        for word in ("Collect:", "Normalize:", "Check:", "Match:", "Deliver:"):
             self.assertIn(word, text)
         self.assertIn("/delete", text)
         next_button = markup.inline_keyboard[0][0]
-        self.assertEqual(next_button.text, "Where AI helps")
-        self.assertEqual(next_button.callback_data, "tour:4")
+        self.assertEqual(next_button.text, "Back to the summary")
+        self.assertEqual(next_button.callback_data, "tour:5")
 
     async def test_screen_4_introduces_the_ai_layer(self) -> None:
         callback = _FakeCallback("tour:4")
@@ -488,8 +491,8 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(len(callback.message.answered), 1)
         text, markup = callback.message.answered[0]
-        self.assertIn("Step 4/5", text)
-        self.assertIn("cannot change listings, matches or cards", text)
+        self.assertIn("Optional · QA control", text)
+        self.assertIn("cannot change a listing, matching rule or renter-facing card", text)
         next_button = markup.inline_keyboard[0][0]
         self.assertEqual(next_button.text, "Simulate a parser fault")
         self.assertEqual(next_button.callback_data, "tour:inject")
@@ -501,17 +504,18 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(len(callback.message.answered), 1)
         text, markup = callback.message.answered[0]
-        self.assertIn("Step 5/5", text)
-        self.assertIn("Working now", text)
+        self.assertIn("Step 3/3", text)
+        self.assertIn("Implemented", text)
         self.assertIn("Measured on synthetic data", text)
-        self.assertIn("Not yet proven", text)
-        self.assertIn(f"{len(load_golden_set())} listings", text)
+        self.assertIn("Not validated", text)
+        self.assertIn(f"{len(load_golden_set())} authored regression cases", text)
         self.assertNotIn("Checked by AI", text)
         self.assertNotIn("Flagged as risky", text)
 
         button_texts = [b.text for row in markup.inline_keyboard for b in row]
         self.assertIn("Use this demo filter", button_texts)
         self.assertIn("Set up my own filter", button_texts)
+        self.assertIn("Optional: see the QA control", button_texts)
         self.assertIn("Read the case study", button_texts)
 
 

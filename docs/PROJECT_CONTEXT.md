@@ -80,7 +80,7 @@ Synthetic catalog generation
   -> local transit enrichment from embedded coordinates
   -> optional AI QA for newly discovered listings
   -> match new listings against saved filters
-  -> notify eligible users once
+  -> optional background notification with delivery-history deduplication
 ```
 
 `BOT_BACKGROUND_ENABLED` defaults to `false` so local demo runs do not start
@@ -103,27 +103,23 @@ demo source of truth.
 ### Guided tour
 
 `/start` (plain or via the `https://t.me/FlatFeedBot?start=tour` deep link)
-leads every visitor into a 5-screen, button-only, product-first tour before
-the regular filter/matches flow:
+leads every visitor into a 3-step, button-only tour before the regular
+filter/matches flow:
 
 1. **One renter job** — shows the demo filter as plain text (WBS, district,
    Kaltmiete, rooms). Held ephemeral: nothing is written to `users` yet.
-2. **The result** — runs the real matching predicate (`is_listing_match`)
-   over the live catalog with that filter, then the real source-activity
-   check (`_verified_active_matches`), and shows the tour listing's card as
-   "1 of N active matches" plus why it matched. This is a genuine result of
-   the production matching path, not a pre-selected listing formatted
-   directly.
-3. **Rules make the decision** — explains the product pipeline (Collect →
-   Normalize → Verify → Match → Deliver) and the privacy facts. No AI in
-   this path.
-4. **AI checks a narrow risk** — the one AI step: a live WBS fault injected
-   into the deterministically-selected tour listing, with the real admin
-   alert format and triage keyboard attached to one message.
-5. **What this prototype proves** — evidence, not a funnel: `Working now` /
-   `Measured on synthetic data` (a live golden-set count) / `Not yet
-   proven`, plus `Use this demo filter` (saves the filter only now, on
-   explicit request), `Set up my own filter`, and `Read the case study`.
+2. **One matcher result** — runs the same matching predicate as the main
+   product path (`is_listing_match`) over the synthetic catalog, then the
+   synthetic adapter's local activity check (`_verified_active_matches`). It
+   shows one standardized card plus field-level match reasons.
+3. **Evidence and limits** — separates implemented behavior and the live
+   golden-set count from unvalidated renter demand, live-source coverage, and
+   hosted-model QA usefulness. `Use this demo filter` saves the filter only
+   now, on explicit request.
+
+The parser-fault and triage simulation is an optional branch after step 3. It
+is not part of the renter flow and the public demo uses a deterministic mock
+provider, not a hosted model.
 
 The tour listing is selected deterministically from the active catalog (2
 rooms, a WBS requirement including 140, a WBS phrase in the raw text, and
@@ -134,7 +130,7 @@ Rules that keep the tour safe and honest to run in front of any visitor:
 
 - **Ephemeral filter.** The demo filter is derived from the tour listing on
   every screen and is never persisted until the visitor explicitly taps
-  `Use this demo filter` on step 5 (`tour:save_filter` ->
+  `Use this demo filter` on step 3 (`tour:save_filter` ->
   `save_fixed_preferences`).
 - **Ephemeral fault injection and triage.** The tour's fault injection
   (`_send_tour_inject`) and its triage responses (`_send_tour_feedback_response`)

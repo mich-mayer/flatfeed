@@ -360,7 +360,7 @@ def _reset_confirm_keyboard() -> InlineKeyboardMarkup:
 def _delete_confirm_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Yes, delete everything", callback_data="settings:delete_confirm")],
+            [InlineKeyboardButton(text="Yes, delete saved data", callback_data="settings:delete_confirm")],
             [InlineKeyboardButton(text="No, keep my data", callback_data="settings:back")],
         ]
     )
@@ -2093,17 +2093,18 @@ async def _clear_markup(callback: CallbackQuery) -> None:
 # ---------------------------------------------------------------------------
 # Guided tour
 #
-# A 5-screen, button-only walkthrough for a first-time visitor with no
-# context: (1) the renter's filter, (2) a real matched result, (3) the
-# product pipeline and reliability decisions, (4) a live fault injection
-# reviewed by AI QA as one bounded control, (5) evidence and limitations.
+# A 3-step, button-only walkthrough for a first-time visitor with no
+# context: (1) a temporary four-field filter, (2) a result from the real
+# matching predicate over the synthetic catalog, (3) evidence and limitations.
+# The AI QA fault simulation remains available as an optional branch after
+# the core product story; it is not part of the renter path.
 # Every dynamic value (listing, district, prices, WBS phrasing, match count)
-# is read from the tour listing and the live catalog at runtime.
+# is read from the tour listing and the demo catalog at runtime.
 #
 # The demo filter stays ephemeral (never written to `users`) until the
-# visitor explicitly taps "Use this demo filter" on step 5. Step 2 runs the
-# real matching predicate (is_listing_match) and the real source-activity
-# check over the live catalog — it is not a hand-picked result.
+# visitor explicitly taps "Use this demo filter" on step 3. Step 2 runs the
+# real matching predicate (is_listing_match) and the synthetic adapter's local
+# activity check over the demo catalog.
 #
 # Tour fault-injection results and triage taps are never persisted — no
 # AIQAReview is added to a session or committed anywhere in this section.
@@ -2177,8 +2178,7 @@ def _tour_filter_summary(listing: Listing) -> tuple[UserPreferences, int]:
 
 def _tour_candidate_matches(preferences: UserPreferences) -> List[ListingMatch]:
     """Every active, parsed listing that satisfies the ephemeral tour filter,
-    using the same is_listing_match predicate production matching uses —
-    proves the real rule set instead of a hand-picked result."""
+    using the same is_listing_match predicate the main matching path uses."""
     with SessionLocal() as session:
         listings = list(
             session.scalars(
@@ -2248,6 +2248,7 @@ def _tour_result_keyboard() -> InlineKeyboardMarkup:
     rows: List[List[InlineKeyboardButton]] = [
         [InlineKeyboardButton(text="Use this demo filter", callback_data="tour:save_filter")],
         [InlineKeyboardButton(text="Set up my own filter", callback_data="settings:filter")],
+        [InlineKeyboardButton(text="Optional: see the QA control", callback_data="tour:4")],
     ]
     dashboard_url = get_settings().dashboard_url
     if dashboard_url and dashboard_url.lower().startswith(("http://", "https://")):
@@ -2263,17 +2264,17 @@ async def _send_tour_screen_0(message: Message) -> None:
     # arrive together before the user starts reading, so nothing scrolls away
     # mid-step; every actual tour step is a single message.
     await message.answer(
-        "This is <b>FlatFeed</b> — a demo assistant for finding WBS apartments in Berlin. "
-        "All listings are synthetic, and /delete wipes your data at any time.",
+        "This is <b>FlatFeed</b> — a Telegram product prototype for matching Berlin "
+        "WBS listings against four saved criteria. The catalog is synthetic. /delete "
+        "removes your saved filter and notification history from FlatFeed's database.",
         reply_markup=main_menu_keyboard(),
     )
     await message.answer(
-        "<b>Take a 2-minute tour?</b>\n\n"
-        "Berlin's subsidized (WBS) flats vanish within hours, and eligibility rules "
-        "cost renters missed flats and wasted applications. FlatFeed keeps one filter "
-        "and turns new listings into a single reliable feed.\n\n"
-        "Five taps, no typing: the renter flow, the reliability choices, and the "
-        "deliberately limited role of AI.",
+        "<b>Take a short guided tour?</b>\n\n"
+        "FlatFeed tests a narrow product hypothesis: one reusable filter can make "
+        "fragmented WBS listing formats easier to inspect.\n\n"
+        "Three steps, no typing: a temporary filter, one matcher result, then the "
+        "evidence and open questions.",
         reply_markup=_tour_intro_keyboard(),
     )
 
@@ -2303,7 +2304,7 @@ async def _send_tour_screen_1(callback: CallbackQuery) -> None:
     district_label = listing.district or "any district"
     rooms_label = _display_rooms(listing.rooms)
     await callback.message.answer(
-        "<b>Step 1/5 · One renter job</b>\n\n"
+        "<b>Step 1/3 · One renter job</b>\n\n"
         f"Say you hold a WBS-{wbs_percent} certificate — Berlin's housing-eligibility "
         f"document — and need a {escape(rooms_label)}-room flat in "
         f"{escape(district_label)} under {rent_label} Kaltmiete (base rent before "
@@ -2337,27 +2338,29 @@ async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
     )
     match_count = len(verified_matches)
     if tour_match is None:
-        # The synthetic adapter's activity check is deterministic, so this
-        # should not happen — fail visibly rather than fabricate a card.
-        tour_match = _listing_match_from_model(listing)
-        match_count = max(match_count, 1)
+        await callback.message.answer(
+            "The selected synthetic listing did not pass the adapter activity check, "
+            "so the tour will not present it as a verified match. Please try again."
+        )
+        return
 
     reasons_label = " · ".join(tour_match.reasons) if tour_match.reasons else "filters match"
     plural = "es" if match_count != 1 else ""
     step_text = (
-        "<b>Step 2/5 · The result</b>\n\n"
-        "FlatFeed ran your filter through its real matching rules and re-checked the "
-        f"source — this card is 1 of {match_count} active match{plural}. Why it "
-        f"matched: {reasons_label}.\n\n"
-        "In production you don't search daily: each new match is delivered once, as "
-        "a notification.\n\n"
+        "<b>Step 2/3 · One matcher result</b>\n\n"
+        "FlatFeed applied four fixed matching rules to its synthetic catalog. This "
+        f"card is 1 of {match_count} matching listing{plural}. Why it matched: "
+        f"{reasons_label}.\n\n"
+        "The synthetic adapter marks it active in the local demo catalog. Optional "
+        "background delivery can notify on newly seen matches and deduplicate them "
+        "against stored delivery history.\n\n"
     )
 
     await send_match_to_chat(
         bot,
         chat_id=callback.message.chat.id,
         match=tour_match,
-        reply_markup=_tour_next_keyboard("How does it work?", "tour:3"),
+        reply_markup=_tour_next_keyboard("See what is proven", "tour:5"),
         text_prefix=step_text,
     )
 
@@ -2366,19 +2369,20 @@ async def _send_tour_screen_3(callback: CallbackQuery) -> None:
     if callback.message is None:
         return
     await callback.message.answer(
-        "<b>Step 3/5 · Rules make the decision</b>\n\n"
-        "<b>Collect:</b> source adapters pull listings into one catalog.\n"
+        "<b>How the matching path works</b>\n\n"
+        "<b>Collect:</b> one synthetic adapter loads the demo catalog.\n"
         "<b>Normalize:</b> fixed parsing rules turn free-form text into the fields "
         "you saw on the card.\n"
-        "<b>Verify:</b> the source is re-checked, so dead listings are never sent.\n"
+        "<b>Check:</b> the synthetic adapter confirms the listing remains active in "
+        "its local catalog.\n"
         "<b>Match:</b> fixed rules compare WBS, district, Kaltmiete and rooms — "
         "unknown values never match.\n"
-        "<b>Deliver:</b> every match is sent once.\n\n"
-        "This is a deliberate choice: eligibility decisions must be explainable, "
-        "predictable and free at scale, so no AI sits in this path. If you save a "
-        "filter, FlatFeed stores only your Telegram ID, the filter and sent-listing "
-        "history; /delete removes them.",
-        reply_markup=_tour_next_keyboard("Where AI helps", "tour:4"),
+        "<b>Deliver:</b> optional background notifications deduplicate newly seen "
+        "matches against stored delivery history.\n\n"
+        "No AI sits in this matching path. If you save a filter, FlatFeed stores your "
+        "Telegram ID, filter and notification history; /delete removes those records "
+        "from FlatFeed's database.",
+        reply_markup=_tour_next_keyboard("Back to the summary", "tour:5"),
     )
 
 
@@ -2386,15 +2390,13 @@ async def _send_tour_screen_4(callback: CallbackQuery) -> None:
     if callback.message is None:
         return
     await callback.message.answer(
-        "<b>Step 4/5 · AI checks a narrow risk</b>\n\n"
-        "Source formats change over time, and fixed rules then break silently. An AI "
-        "layer re-reads listings against the parser's output and flags mismatches to "
-        "the admin. It cannot change listings, matches or cards — a human always "
-        "decides.\n\n"
-        "Try it: the button below corrupts the WBS field in a copy of the parser's "
-        "output. The check gets no hint of what we broke. <i>Demo uses the free "
-        "deterministic mock checker; the optional OpenAI model gets identical input. "
-        "Your taps are not stored.</i>",
+        "<b>Optional · QA control</b>\n\n"
+        "Fixed parsing rules can drift when a source format changes. The repository "
+        "includes a separate admin-review workflow that can flag a mismatch, but it "
+        "cannot change a listing, matching rule or renter-facing card.\n\n"
+        "This simulation changes the WBS field only in an ephemeral parser snapshot. "
+        "The public demo uses a deterministic mock checker — no hosted model is "
+        "called, and your taps are not stored.",
         reply_markup=_tour_next_keyboard("Simulate a parser fault", "tour:inject"),
     )
 
@@ -2458,16 +2460,11 @@ async def _send_tour_feedback_response(callback: CallbackQuery, feedback_status:
     await _clear_markup(callback)
     await callback.message.answer(
         "Recorded for this demo only — nothing you tap is stored.\n\n"
-        f"For transparency: {fault_fact}, so <b>Parser error</b> is the label an "
-        "admin would confirm here. In production your label is the decision of "
-        "record — the system trusts the human call, and confirmed errors become "
-        "the parser's fix backlog.\n\n"
-        "If a drift like this went uncaught in the real parser, matching and the "
-        "card would misread WBS together — hiding flats from eligible renters or "
-        "inviting futile applications. That is the whole model: <b>fixed rules "
-        "decide what renters see, AI supervises the rules, and a human supervises "
-        "the AI.</b>",
-        reply_markup=_tour_next_keyboard("See the evidence", "tour:5"),
+        f"For transparency: {fault_fact}, so <b>Parser error</b> is the expected label "
+        "for this constructed example. In the persistent admin workflow the label is "
+        "stored for review; parsing code and matching rules do not change "
+        "automatically.",
+        reply_markup=_tour_next_keyboard("Back to the summary", "tour:5"),
     )
 
 
@@ -2478,17 +2475,18 @@ async def _send_tour_screen_5(callback: CallbackQuery) -> None:
     golden_set_size = len(load_golden_set())
 
     await callback.message.answer(
-        "<b>Step 5/5 · What this prototype proves</b>\n\n"
-        "<b>Working now:</b> end-to-end filter → match → verified one-time delivery "
-        "· source-health monitoring · data deletion via /delete.\n\n"
-        "<b>Measured on synthetic data:</b> the deterministic parser passes its full "
-        f"golden-set regression eval ({golden_set_size} listings, re-checked on "
-        "every change).\n\n"
-        "<b>Not yet proven:</b> live-source coverage · real renter outcomes · "
-        "real-model AI QA usefulness and cost.\n\n"
-        "The case study covers the decisions behind this: why Telegram, why four "
-        "filter fields, why AI only reviews. Keep the demo filter? The admin panel "
-        "is open as a demo view behind 🛠 Admin.",
+        "<b>Step 3/3 · Evidence and limits</b>\n\n"
+        "<b>Implemented:</b> four-field filter → deterministic match → standardized "
+        "Telegram card · synthetic-adapter activity check · optional background "
+        "notification deduplication · deletion of the saved filter and delivery "
+        "history via /delete.\n\n"
+        "<b>Measured on synthetic data:</b> all "
+        f"{golden_set_size} authored regression cases currently parse as expected. "
+        "That checks covered cases; it is not production accuracy.\n\n"
+        "<b>Not validated:</b> real renter demand or outcomes · permitted live-source "
+        "coverage and freshness · hosted-model QA usefulness and false-alarm rate.\n\n"
+        "You can keep the temporary demo filter, set up your own, or inspect the "
+        "optional QA control separately.",
         reply_markup=_tour_result_keyboard(),
     )
 
@@ -3121,8 +3119,8 @@ async def handle_settings_delete(callback: CallbackQuery) -> None:
         return
     with suppress(TelegramAPIError):
         await callback.message.edit_text(
-            "Delete <b>all</b> your data? This removes your saved filter and your "
-            "sent-notification history. This cannot be undone.",
+            "Delete your saved FlatFeed data? This removes your filter and your "
+            "sent-notification history from the FlatFeed database. This cannot be undone.",
             reply_markup=_delete_confirm_keyboard(),
         )
 

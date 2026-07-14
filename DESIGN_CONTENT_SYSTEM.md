@@ -1,8 +1,8 @@
 # FlatFeed — Design & Content System
 
 **Status:** Normative. Single source of truth for UI, layout, components, copy, terminology, and case-study content.
-**Date:** 2026-07-07 (landing sections updated for the "Swiss International" redesign; see §34).
-**Basis:** source code inspection (`main.py`, `flatfeed/`, `synthetic/`, `eval/`), the rendered case-study page (`docs/case-study.html` + `docs/styles.css`), and the project docs (`README.md`, `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`). No formal UX/content audits have been run yet; rules marked CURRENT describe today's implementation and were confirmed by reading the code, not by audit findings.
+**Date:** 2026-07-14 (public prototype narrative, evidence scope, and guided tour updated; see §34 history for earlier decisions).
+**Basis:** source code inspection (`main.py`, `flatfeed/`, `synthetic/`, `eval/`), an evidence/claim audit, desktop and mobile browser renders of the case-study page, and the project docs (`README.md`, `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`). No renter research or usability study has been run; product-value statements remain hypotheses.
 
 **Rule keywords.** MUST = mandatory project rule. SHOULD = default; deviate only for a stated reason. MAY = permitted option. MUST NOT = prohibited. Rules without a keyword are descriptive context.
 
@@ -22,7 +22,7 @@ Before making a change, identify the touched surface and read the relevant route
 | Bot UI or renter/admin copy | §§7, 10, 17–20, 31 | One message = one purpose; sanctioned emoji only; listing-card field order unchanged; destructive/costly actions confirm with consequence-named buttons |
 | Parser, matching, WBS, transit, or eval | §§2–3, 10–13, 20, 23, 27, 31 | Deterministic matching owns user-facing decisions; fail closed; WBS semantics live in `flatfeed/wbs_rules.py`; eval numbers update everywhere together |
 | AI QA | §§2–3, 11–12, 21, 23, 31 | Admin-only, budgeted, versioned, non-mutating; ground truth and case tags never enter prompts |
-| Case-study landing page | §§4–6, 13–15, 22–27, 32–34 | Synthetic/mock qualifiers stay at reading depth; ownership language preserved; 7-part structure and mockup honesty preserved |
+| Case-study landing page | §§4–6, 13–15, 22–27, 32–34 | Synthetic/mock qualifiers stay at reading depth; ownership language preserved; four-question structure and preview honesty preserved |
 | Public docs | §§16–27, 31, 33 | Evidence labels, terminology, and ownership stay meaning-identical across surfaces |
 | Deployment or public URL claims | README + §§23, 27, 29, 35 | Verify before stating as FACT; do not guess canonical GitHub/Page URLs |
 
@@ -55,13 +55,13 @@ This document answers: *exactly how should interface elements and texts in this 
 
 Confirmed by `README.md`, `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`:
 
-- **Category:** Telegram bot + admin dashboard prototype for collecting Berlin WBS apartment listings through source adapters and matching them to saved user filters. The current demo uses a synthetic catalog with hidden ground truth instead of scraping real housing companies.
+- **Category:** Telegram prototype for matching Berlin WBS apartment listings against a saved four-field filter. One synthetic source adapter is implemented; the admin dashboard and QA path are supporting repository surfaces, not the primary product story.
 - **Primary users:** (a) a renter setting a filter and receiving matching listings in Telegram; (b) an admin reviewing AI QA findings and the dashboard; (c) case-study readers — recruiters, hiring managers, AI PMs. The target portfolio role is **AI Product Manager in a corporate environment**: reliability, explainability, privacy, defensibility, measurable AI quality, and cost control matter more than feature count.
-- **Unit of work:** the *listing*. It flows through: source adapter → deterministic parsing → local transit enrichment → optional AI QA → deterministic matching → one-time notification.
+- **Unit of work:** the *listing*. It flows through: source adapter → deterministic parsing → local transit enrichment → deterministic matching; optional QA and optional background notification are separate branches.
 - **Role of AI:** AI QA is the **only** AI surface. Listing parsing and matching are fully deterministic and make no LLM calls. Canonical boundary (from `docs/PROJECT_CONTEXT.md` and `README.md`): *AI QA may challenge the parser but cannot replace or mutate parsing rules, listing data, matching, or user-facing cards automatically. Findings are admin-only and require human feedback.*
 - **Role of the human:** the admin triages every alerted finding as `Parser error` / `Parser correct` / `Borderline / unsure`; parser improvements are made by a human editing `flatfeed/parser.py` / `flatfeed/wbs_rules.py`.
 - **Honesty constraint (product-level):** everything measurable is a *synthetic/demo* result unless a real production measurement exists. Demo metrics MUST be visibly labeled as synthetic evaluation metrics, never as production user-impact numbers.
-- **Privacy constraint:** the bot stores only the Telegram ID, the saved filter, and notification-dedupe history; `/delete` and the `🗑 Delete my data` button remove them after an explicit confirmation. No real listings are scraped or redistributed; listing photos are licensed Wikimedia Commons demo assets (`assets/listing_photos/LICENSES.md`).
+- **Privacy constraint:** the renter path stores a Telegram ID, saved filter, and notification-dedupe history. `/delete` removes those FlatFeed database records after confirmation; it does not delete Telegram chat history or unrelated admin-review records. No real listings are scraped or redistributed; listing photos are licensed demo assets (`assets/listing_photos/LICENSES.md`).
 
 ---
 
@@ -70,7 +70,7 @@ Confirmed by `README.md`, `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`:
 Derived from the product's actual behavior — not imported from external systems.
 
 **P1 — Determinism owns the user-facing decision.**
-*Why:* eligibility (WBS, rent, rooms) must be predictable and explainable to be trusted.
+*Why:* four-field matching must be predictable and explainable.
 *Implications:* parsing and matching stay rule-based; every match/no-match is traceable to a rule; unknown values fail closed (unknown Kaltmiete or rooms never match a specific filter).
 *Anti-pattern:* letting an LLM decide, adjust, or "fix" any field that affects matching or cards.
 
@@ -79,10 +79,10 @@ Derived from the product's actual behavior — not imported from external system
 *Implications:* AI QA output lands in `ai_qa_reviews` and admin alerts only; risk at/above the configured threshold (default 75) alerts the admin; the admin's triage label is the decision of record.
 *Anti-pattern:* auto-applying `suggested_values`; letting QA output touch `listings`, matching, or cards.
 
-**P3 — Every number carries its provenance.**
-*Why:* the portfolio credibility rests on never implying live systems or production impact.
-*Implications:* eval metrics are labeled "synthetic golden-set eval"; QA cost shows the provider (mock = $0); transit minutes are geometric estimates with the `not calculated` fallback; demo photos are disclosed as not depicting the actual address.
-*Anti-pattern:* quoting "100% accuracy" anywhere without "synthetic" at the same reading depth.
+**P3 — Public evidence stays proportional to what was tested.**
+*Why:* portfolio credibility rests on never implying live systems or production impact.
+*Implications:* the public case quotes only the authored synthetic regression-case count and explains that it covers designed cases. Detailed parser/QA diagnostics remain in the runnable eval report; transit minutes are geometric estimates; demo photos are disclosed as illustrative.
+*Anti-pattern:* turning 100% on authored cases, zero mock cost, or zero false alerts into a product result.
 
 **P4 — Ground truth is eval-only.**
 *Why:* the eval is only meaningful if the parser and AI QA cannot see the answers.
@@ -90,8 +90,8 @@ Derived from the product's actual behavior — not imported from external system
 *Anti-pattern:* "helpfully" enriching a prompt with golden-set metadata.
 
 **P5 — The user's cost of a wrong send is high; fail quiet, fail closed.**
-*Why:* a notification about a dead or mismatched listing burns trust in one message.
-*Implications:* activity is re-checked through the source adapter before delivery; failed checks mark the listing inactive and exclude it; notifications are deduplicated (`sent_listing_notifications`); at most 10 cards per action; partial collection never mass-marks unseen listings removed.
+*Why:* a notification about a stale or mismatched listing burns trust in one message.
+*Implications:* candidates pass the current adapter's activity check before card delivery; the implemented synthetic adapter checks local catalog state, not a live network source. Optional background notifications are deduplicated (`sent_listing_notifications`); manual `/matches` may be requested repeatedly; at most 10 cards per action.
 *Anti-pattern:* sending unverified candidates to hit a count.
 
 **P6 — Domain terms are kept, glossed, never translated away.**
@@ -101,7 +101,7 @@ Derived from the product's actual behavior — not imported from external system
 
 **P7 — Destructive actions confirm; everything else flows.**
 *Why:* the bot holds personal filter data; deletion is a privacy feature and must be both discoverable and safe.
-*Implications:* `Reset filter` and `🗑 Delete my data` always ask an explicit Yes/No with unambiguous labels ("Yes, delete everything" / "No, keep my data"); the wizard always offers `⬅ Back` / `✖ Cancel`; the wizard is never forced on the user (`/start` shows the filter card with a `Set up filter` button instead).
+*Implications:* `Reset filter` and `🗑 Delete my data` always ask an explicit Yes/No with unambiguous labels ("Yes, delete saved data" / "No, keep my data"); the wizard always offers `⬅ Back` / `✖ Cancel`.
 *Anti-pattern:* one-tap destructive actions; trapping the user in a setup flow.
 
 **P8 — Two audiences, two panels: user surface vs admin surface.**
@@ -121,7 +121,7 @@ References inform rules; they are never templates. Deviation from a reference is
 | Wizard flows | GOV.UK "one thing per page" | 4 fixed steps, `Step N/4` prefix, Back/Cancel on every step, hint at the point of the question (§7.3) |
 | Listing card | Project (`flatfeed/matching.py`) | Fixed field order, bold HTML labels, canonical fallback strings (§10) |
 | Dashboard | Streamlit defaults; question-driven headings | Title + question subheaders + caption provenance; no custom theming (§8) |
-| Case-study page | Repo-local "Swiss International" rules in §5; the sibling Opsqora landing is a comparison example when available, not a required dependency | Hand-written HTML/CSS, token palette in `docs/styles.css`, 7-part case framework (§6.3, §22); accent split: FlatFeed teal, Opsqora ultramarine |
+| Case-study page | Repo-local "Swiss International" rules in §5; the sibling Opsqora landing is a comparison example when available, not a required dependency | Hand-written HTML/CSS, token palette in `docs/styles.css`, four-question case framework (§6.3, §22); accent split: FlatFeed teal, Opsqora ultramarine |
 | Product copy | GOV.UK/GDS principles | §§16–19 |
 | AI language | Project boundary (§2) + Microsoft AI wording guidance | §21 |
 | Evidence integrity | AI PM portfolio evidence standards | Measured-on-synthetic beats claimed; label everything (§23) |
@@ -139,7 +139,7 @@ Never choose "more impressive" over "more accurate".
 
 These tokens apply to `docs/case-study.html` / `docs/styles.css` only. The bot has no visual tokens (§7) and the dashboard uses stock Streamlit (§8).
 
-The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, numbered sections, a browser-chrome demo frame with macOS-style traffic-light dots, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine. When one landing's system evolves, consider whether the other should receive the same pattern, but preserve the accent split and product-specific evidence.
+The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, four numbered sections, one code-native product preview, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine.
 
 ### 5.1 Color — ADOPT
 
@@ -147,35 +147,29 @@ All colors come from `:root` in `docs/styles.css`. New page styles MUST use thes
 
 | Token | Value | Role | Allowed usage | Prohibited usage |
 |---|---|---|---|---|
-| `--bg` | `#fbfcfb` | Page ground | Body background, sticky header backdrop (via `color-mix`) | — |
+| `--bg` | `#f8faf9` | Page ground | Body background, sticky header backdrop (via `color-mix`) | — |
 | `--surface` | `#ffffff` | Panels, cards | Panels, evidence cards, buttons, table backgrounds | — |
-| `--wash` | `#f2f5f4` | Quiet plane | Demo-frame body, figcaption strip, quiet fills | Text |
-| `--ink` | `#121a1b` | Primary | Headings, body, solid buttons, dark CTA background, `--rule` | — |
-| `--ink-2` | `#4e5c5e` | Secondary text | Ledes, prose paragraphs, nav links | — |
-| `--ink-3` | `#657473` | Tertiary text | Mono kickers, captions, labels, table headers | Long body text blocks |
-| `--line` | `#e1e7e5` | Hairlines | 1px dividers, card borders, grid rules | Text |
-| `--rule` | `#121a1b` | Structural rule | 2px section top rules, panel header underlines, table head rules | — |
-| `--accent` | `#02776f` | Single accent — FlatFeed teal | Kicker numbers, step numbers, live-demo dot, health-list dots, "real" scope bullet, button hovers, selection, focus rings | Results values (amber's slot); long text |
-| `--accent-deep` | `#045953` | Accent text/links | Link hovers, demo-live label, product-shot status column | — |
-| `--accent-wash` | `#e7f4f1` | Accent wash | Quiet accent fills | Text backgrounds needing contrast |
-| `--amber` | `#c86b05` | Measured/provenance emphasis | **Only** the Results table values (`.case-results-value`) and the "Synthetic on purpose" scope bullet | Anywhere else; small text |
-| `--inverted` | `#ffffff` | Inverted text/surface | Text and hover fills inside the dark CTA, dark buttons, dark user-message bubble, selection text | New light panels; use `--surface` there |
-| `--inverted-muted` | `rgba(255,255,255,0.62)` | Muted inverted text | Dark CTA body copy | Anything outside inverted zones |
-| `--inverted-line` | `rgba(255,255,255,0.45)` | Inverted hairline | Secondary button border inside the dark CTA | Anything outside inverted zones |
-| `--demo-shadow` | `0 36px 72px -48px rgba(18,26,27,0.45)` | Single elevation token | `.demo-frame` only | Any other shadow |
+| `--wash` | `#eef3f1` | Quiet plane | Product-preview body and quiet fills | Text |
+| `--ink` | `#101819` | Primary | Headings, body, solid buttons, dark CTA background | — |
+| `--ink-2` | `#445254` | Secondary text | Ledes, prose paragraphs, nav links | — |
+| `--ink-3` | `#687576` | Tertiary text | Mono kickers, captions, labels | Long body text blocks |
+| `--line` | `#dce4e1` | Hairlines | 1px dividers, card borders, grid rules | Text |
+| `--accent` | `#08766e` | Single accent — FlatFeed teal | Kicker numbers, state dots, button hovers, selection, focus rings | Long text |
+| `--accent-deep` | `#055d57` | Accent text/links | Link hovers and demo-state label | — |
+| `--accent-wash` | `#e3f2ee` | Accent wash | Role note and quiet accent fills | Text backgrounds needing contrast |
 
 Rules:
-- **Two-accent system (unchanged in spirit):** teal is the brand/structure accent; amber has exactly two permitted jobs: measured Results values and the synthetic/provenance scope bullet. A third accent MUST NOT be added, and amber MUST NOT spread beyond those slots.
+- **One-accent system:** teal is the only content accent. Evidence is distinguished by labels and filled/outlined square markers, not by a second result color.
 - The page has no error/warning/success status colors — it is editorial, not operational. Do not import status palettes from the bot, the dashboard, or Opsqora's status set (`--ok`/`--warn`/`--bad` were deliberately not ported).
-- The dark CTA and footer use `--ink` as ground with `--inverted` / `--inverted-muted` / `--inverted-line` — the only inverted zone on the page, except for dark buttons and the Telegram user-message mockup.
+- The dark CTA uses `--ink` as ground with literal white/transparent-white values in the local component rules. It is the only inverted zone on the page except dark buttons.
 
 ### 5.2 Typography — ADOPT roles (fluid rem scale)
 
-**Scale engine (2026-07-09, resolves rem/px consistency with Opsqora; see §34).** Type, spacing, box sizes, and container widths are authored in `rem` on a single fluid root: `html { font-size: clamp(1rem, 0.925rem + 0.2vw, 1.125rem) }` in `docs/styles.css`. The root scales 16px (viewport ≤600px) → 18px (≥1600px), so the whole system grows together on large displays and stays dense on small ones. Authoring convention: **1rem == 16px**, so every px value below renders identically at the 16px root (zero regression at the reference size). The clamp is rem-relative (not raw `vw`), so browser zoom and OS/browser font-size preferences keep working (WCAG 1.4.4/1.4.10). Hairlines and strokes ≤2px (`--line`/`--rule` borders, `:focus-visible` outline) plus effects (`--demo-shadow`, `backdrop-filter: blur()`) stay in **px** for crispness — everything else, including the 7–8px dot squares in §5.3, is rem.
+Type, spacing, box sizes, and container widths are authored in `rem` on a fluid root: `html { font-size: clamp(1rem, 0.96rem + 0.12vw, 1.0625rem) }`. Hairlines, focus strokes, shadows, and backdrop blur stay in px for crispness.
 
 - New type/spacing MUST be authored in rem; px is reserved for the ≤2px strokes and effects above.
 - MUST NOT reintroduce fixed-px font sizes for document-flow text.
-- This scale is shared with the sibling Opsqora landing (`fix(design): adopt fluid rem scale`) — the two systems now use identical rem math, differing only in the teal/ultramarine accent.
+- The sibling case may share the editorial principles, but FlatFeed's layout and evidence density follow this document and its own CSS.
 
 Three families, loaded via Google Fonts from the HTML head (this webfont import is a deliberate 2026-07-07 change; see §34):
 - `--font-ui` **Inter** — body, buttons, nav, meta values.
@@ -190,14 +184,12 @@ Sizes below list the **reference px at a 16px root**; each is authored in `style
 |---|---|---|---|
 | Hero h1 | display 600 | clamp(36px → 64px), lh 1.02, ls −0.035em | first-person outcome statement |
 | Section h2 | display 600 | clamp(28px → 48px), lh 1.06 | takeaway statements |
-| Boundary quote | display 500 | clamp(24px → 42px), lh 1.18 | the AI-boundary sentence |
 | Hero lede | ui 400 | clamp(16px → 20px) / 1.6 | `--ink-2` |
 | Body prose (`.case-prose p`) | ui 400 | 16px / 1.7, max-width 680px | `--ink-2` |
 | Kicker (`.kicker`) | mono 500 | 11px uppercase, ls 0.08em | `--ink-3`; index number span in `--accent` 600 |
-| Figure/metric value | display 600 | 36px (figures), 26px (panel metrics), clamp(22–30px) (results) | tabular-nums; results values amber |
 | Buttons (`.btn`) | ui 600 | 13px, padding 11×18 | square corners |
-| Table headers / dt labels | mono 500 | 11–11.5px uppercase | `--ink-3` |
-| Listing-card fields | mono 400 | 12px / 1.7 | mockup only |
+| Labels / dt | mono 500 | 10–11px uppercase | `--ink-3` |
+| Product-preview fields | ui/mono | 9–12px | compact product evidence only |
 
 Rules:
 - Base body is 15px/1.5 `--font-ui`; long-form prose measure stays ≤680px (reference px at the 16px root; authored as 0.9375rem/42.5rem).
@@ -206,23 +198,23 @@ Rules:
 
 ### 5.3 Borders, Radius, Elevation — ADOPT
 
-- **Square corners everywhere: border-radius 0.** The sanctioned exception is the macOS-style traffic-light dots in `.demo-frame-dots` because they are browser-window chrome, not content cards or controls. Other dots and squares (7–8px reference, authored as 0.4375rem/0.5rem, fluid with the root per §5.2) are literal squares. Do not reintroduce radii elsewhere.
-- 1px `--line` hairlines divide and border; **2px `--rule` top rules** open every numbered section, the hero meta grid, and panel/table headers — this rule-line motif is the page's structure signal. These stay fixed px (§5.2) so the hairline motif stays crisp at every root size.
-- Elevation: one shadow only — `--demo-shadow` on `.demo-frame`. Everything else is flat; `product-shot` inside the narrative is deliberately shadowless. The shadow's px offsets stay fixed (§5.2 effects exception).
+- **Square corners everywhere: border-radius 0.** Status dots are literal squares. Do not introduce decorative radii.
+- 1px `--line` hairlines divide and border; 1px `--ink` rules open sections and label groups.
+- Elevation: one shadow only — on `.product-preview`. Everything else is flat.
 - No gradients anywhere. The sticky header uses `color-mix` transparency + `backdrop-filter: blur(10px)`, not a gradient; the blur radius stays fixed px.
 
 ### 5.4 Grid and Width — ADOPT
 
-- One centered column: `.case` max-width **71.25rem** (= 1140px at the 16px root; grows to ~1282px at the 18px root on wide displays, so large screens are used rather than left as margin) + **1.5rem** (24px) side padding.
-- Sections are single-column: kicker + H2 head, then content blocks. The numbered mono kicker (`01`–`07`) is the page's navigation motif — keep it.
-- Tiled bands are bordered grids with internal 1px `--line` dividers (no gaps): `case-figures` 4-up, `case-meta` 5-up. Open grids with gaps: `case-steps--five` 5-up (workflow), `case-points` 3-up, `case-scope-columns` 2-up, `case-built` prose+shot 2-up, `demo-frame-body` 2-up. All collapse per §14.
-- The demo frame is full-width under the hero; the dark CTA is a full-width `--ink` block.
+- One centered column: `.case` width `min(100% - 3rem, 75rem)`.
+- Hero is a two-column proposition + product preview at desktop and a single linear column below 56rem.
+- Numbered mono kickers (`01`–`04`) are the section motif. Workflow is 5-up, decisions 3-up, evidence 2-up; each collapses per §14.
+- The dark CTA spans the content width.
 
 ### 5.5 Icons and Imagery — ADOPT
 
 - Icons are inline hand-written SVG strokes, stroke `currentColor`, width 2: 14px inside buttons (arrows, git-branch), 16px in panel headers. No icon library at runtime, no emoji on the page.
 - Brand: `assets/flatfeed-logo-mark.png` at 26px in the header/footer wordmark, `alt=""` (decorative next to the visible name).
-- Imagery: `assets/berlin-wbs-building.jpg` (demo listing photo) inside the listing-card mockup. The decorative CSS mini-map was removed in the 2026-07-07 redesign — do not resurrect it. Product "screenshots" are HTML mockups (`phone-panel`, `dashboard-panel`, `product-shot`) presented inside labeled browser-chrome demo frames with macOS-style traffic-light dots — CURRENT. If real screenshots are ever added (a stated next step in CASE_STUDY.md §7), they replace mockups only with captions stating they come from a real demo session.
+- Imagery: `assets/berlin-wbs-building.jpg` appears only inside the code-native product preview. The caption and alt text state that it is illustrative and does not depict the synthetic address. Do not add dashboard mockups or decorative illustrations.
 - Any photo of a building MUST keep alt text disclosing it is a demo image, and licensing stays documented in `assets/listing_photos/LICENSES.md`.
 
 ---
@@ -246,8 +238,9 @@ Rules:
 `/start` and `/filter` show the user's filter card (`<b>Your filter</b>` + current values) with contextual inline actions: `Set up filter` (empty filter) or `Show matches` / `Edit filter` / `Reset filter` / `🗑 Delete my data` (saved filter). The privacy action stays on the card — discoverable, not buried in `/help`.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → sticky top bar (logo mark + "FlatFeed" + mono "Case study" sub-label; 7-item nav mirroring the numbered sections: Problem · Why AI · Role · Approach · Built · Results · Learned; `View repository` button) → hero (kicker "AI product management — case study · 2026", first-person H1, lede, CTAs `Read the case study` / `View repository`, 5-column meta `dl`: Role / Domain / Type / Data / Year) → **demo frame** (browser-chrome figure labeled "Demo · synthetic data" holding the phone panel + dashboard panel mockups, with a figcaption stating they are mockups, not screenshots) → the numbered **7-part case framework**: 01 The Problem (+ 4-up scope figures) · 02 Why AI? (+ 3-up points; the negative decision leads, Build/Buy/Wrapper lives in 04) · 03 My Role (judgment verbs + disclosed agent-assisted implementation) · 04 The Approach (+ Build/Buy/Wrapper split, eval-strategy sentence, compliance posture, 5-step workflow band) · 05 What I Built (+ dashboard product-shot inside a compact browser-chrome frame, real-vs-synthetic scope columns, stack chips) → *unnumbered* AI-boundary pull quote → 06 Results (+ results table opened by a "Measured — synthetic golden-set eval" group-label row; the H2 carries the synthetic qualifier) · 07 What I Learned (+ what-I'd-do-differently line, 3-up points) → dark CTA block (`View repository` / `Read the Markdown version`) → sibling case-study cross-link (Opsqora) → footer (wordmark, provenance line, Repository + Markdown links).
-The 7-part structure mirrors `CASE_STUDY.md` section-for-section and the sibling Opsqora landing (same section names, order, and 7-item nav) — keep them in sync (§27); the boundary pull quote is deliberately outside the numbering. ≤920px the header wraps; the nav MUST stay reachable (horizontal scroll row), never `display:none` without replacement.
+Skip link → sticky top bar (brand; 4-item nav: Product · Decisions · Evidence · Next test; Repository + Try the demo) → split hero (plain-language proposition, WBS/Kaltmiete gloss, role/status metadata, one code-native Telegram product preview) → **four-question framework**: 01 Product · 02 Decisions · 03 Evidence · 04 Next test → dark CTA → sibling case cross-link → footer.
+
+The page MUST answer in order: what is the user flow, what did the candidate decide, what is actually demonstrated, and what should be tested next. AI QA appears only as one bounded decision/limitation; dashboard mockups, mock-cost, legal analysis, and detailed eval tables do not belong in the main public narrative. At ≤56rem the nav may hide because the four sections remain a single linear scroll and the two primary header actions remain visible.
 
 ### 6.4 Dashboard composition — ADOPT
 Order in `streamlit_app.py`: title `FlatFeed parser AI QA` + provenance caption → **Is AI QA running well now?** (coverage, current prompt-version caption) → **How useful is AI QA?** (feedback quality, false positives vs confirmed errors) → **How much does AI QA cost?** (tokens, dollars, budgets) → **Demo: parser made a mistake, AI checked it** (parser snapshot + raw listing text side by side) → **Where the parser is most at risk** (field-level patterns) → **How AI QA quality changed by version**.
@@ -269,7 +262,7 @@ The bot's "design system" is message structure, keyboards, and formatting discip
 - Choice grids: options flow in rows (districts 2–3 per row); mutually exclusive values are separate buttons, not toggles.
 - Rent step: four `≤ N EUR` presets + `No limit` + free-text entry accepted.
 - Every wizard step's last row is the nav row: `⬅ Back` (steps 2+) + `✖ Cancel`.
-- Confirmation keyboards state the consequence in the label: `Yes, reset filter` / `No, keep it`; `Yes, delete everything` / `No, keep my data`; `Yes, run catalog QA` / `Cancel`. A bare `Yes`/`No` pair MUST NOT be used for destructive or costly actions.
+- Confirmation keyboards state the consequence in the label: `Yes, reset filter` / `No, keep it`; `Yes, delete saved data` / `No, keep my data`; `Yes, run catalog QA` / `Cancel`. A bare `Yes`/`No` pair MUST NOT be used for destructive or costly actions.
 
 ### 7.3 Filter wizard — ADOPT
 Four fixed steps, always in this order: **1 WBS → 2 District → 3 Max Kaltmiete → 4 Rooms.** Each shows `Step N/4`. Steps 1 and 3 carry the plain-language explainers (`WBS_HINT`, `KALTMIETE_HINT` in `main.py`) — the gloss lives at the point of the question, not in `/help`. The wizard is entered only by explicit user action (`Set up filter`, `Edit filter`, `/filter`); `/start` never forces it. If the bot restarted mid-setup, `SETUP_EXPIRED_TEXT` states what happened and restarts cleanly — never silently resume with lost state.
@@ -281,7 +274,9 @@ Behind `🛠 Admin`, visible to every visitor as a demo view (§34 2026-07-10) �
 Manual refresh and listing actions have timeouts (`MANUAL_REFRESH_TIMEOUT_SECONDS`) and user-facing failure messages. A failure message states what failed and, for admins, where to look next ("Catalog QA failed. Check the logs."). Renter-facing failures never expose internals; they state the outcome and that the user can retry. Apologies, exclamation marks, and blame are out of register (§17).
 
 ### 7.6 Guided tour — ADOPT
-`/start` (plain, or via the `?start=tour` deep link) leads into a 5-screen, button-only tour before the regular filter/matches flow, product-first (§34 2026-07-11): **Step 1** shows the renter's filter as plain text, held ephemeral — nothing is written to `users` until the visitor explicitly taps `Use this demo filter` on step 5. **Step 2** runs the real matching predicate (`is_listing_match`) and the real source-activity check over the live catalog and shows "this card is 1 of N active matches" plus why it matched — a genuine result, not a hand-picked one. **Step 3** explains the product pipeline (Collect → Normalize → Verify → Match → Deliver) and the privacy facts, with no AI in that path. **Step 4** is the one AI step: a live WBS fault injected into the deterministically-selected tour listing, with the real admin alert format (via `_format_ai_qa_review`, `include_cost=False`, `include_confidence=False` for the tour) and triage keyboard attached to the same message; the fault-note header says `Simulated parser fault`, and every triage label gets the same neutral, fact-revealing response — the tour never grades the visitor's choice. **Step 5** is evidence, not a funnel: `Working now` / `Measured on synthetic data` (a live `len(load_golden_set())` count, never a hardcoded percentage) / `Not yet proven`, plus `Use this demo filter`, `Set up my own filter`, and `Read the case study`. Screen prefixes reuse the `Step N/4` idiom generalized to `Step N/5` (§28). Nothing tapped during the tour — the fault injection or the triage decision — is ever added to a session or committed (Variant B); the dashboard's AI QA section only counts reviews whose `qa_prompt_version` exactly equals `CURRENT_AI_QA_PROMPT_VERSION`, so visitor taps can never skew it. `Skip the tour` and `🛠 Admin` -> `Replay the tour` are always available. Tour-only match reasons (step 2's "Why it matched") are a deliberate, scoped exception to the §30 default that renter-facing match reasons stay internal — see §30's row.
+`/start` (plain, or via the `?start=tour` deep link) leads into a 3-step, button-only tour before the regular filter/matches flow: **Step 1** shows a temporary four-field filter; **Step 2** runs `is_listing_match` over the synthetic catalog, applies the synthetic adapter's local activity check, and sends one canonical card with field-level match reasons; **Step 3** separates Implemented / Measured on synthetic data / Not validated. Nothing is written to `users` until the visitor taps `Use this demo filter` on step 3.
+
+The parser-fault simulation is an optional branch after the core tour. It uses the deterministic mock provider, never calls a hosted model, and never persists tour feedback. Its copy MUST say that the fault is constructed and that admin labels do not change parsing or matching automatically. `Skip the tour` and `🛠 Admin` → `Replay the tour` remain available.
 
 ---
 
@@ -390,18 +385,17 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 ## 13. Data Visualization (dashboard + case page)
 
 - Dashboard charts confirm the adjacent metric blocks (coverage over time, cost, version comparison). If a metric answers the question, don't add a chart.
-- Case-page "charts" are static metric displays, not plots — CURRENT/ADOPT. Two forms: bordered figure/metric grids (big display value + short mono caption, ink values) and the Results table (amber values + detail column). Amber stays confined to Results values (§5.1).
-- Every metric card value on the case page MUST be reproducible: golden-set size ↔ `SYNTHETIC_LISTING_COUNT`/catalog, accuracy ↔ `python -m eval.run_eval` output, QA cost ↔ the run's logged cost. No hand-invented numbers, no rounding a 99.x up to 100.
-- Units and denominators stay with the number ("15 golden listings", "$0.000000 mock QA cost", "% of reviewed listings").
+- The case page has no charts or metric cards. Evidence is a labeled Demonstrated / Not demonstrated split.
+- The only public eval number is the authored regression-case count, verified by `scripts/check_eval_numbers.py`. Detailed eval diagnostics remain in the CLI report.
 
 ---
 
 ## 14. Responsive System (case-study page)
 
-Breakpoints are authored in `em` so reflow is zoom-aware (identical to px at the default font size, and unaffected by the fluid root, which media queries ignore — §5.2): **1080px = 67.5em** (hero meta → 3-up, workflow steps → 2-up), **920px = 57.5em** (header wraps and nav becomes a horizontal scroll row, demo-frame panels and the built/scope/points grids stack to one column, scope figures → 2-up, the Results detail column hides — the caption and prose keep the qualifier visible), **620px = 38.75em** (meta → 2-up, steps → 1-up, brand sub-label and demo-frame URL hide).
+Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids), **56rem** (linear hero, hidden redundant section nav), and **40rem** (single-column metadata/workflow and full-width CTA buttons).
 
 - Desktop is the primary reading surface; mobile is a supported viewing mode, not a separately designed product.
-- Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, CTAs, meta grid, at least one evidence panel; the synthetic qualifier for the Results numbers must survive every width (it lives in the table caption and the adjacent prose, not only in the hidden detail column).
+- Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, boundary-aware lede, CTAs, metadata, and product preview. The section nav may hide on narrow screens because the document remains a short linear flow.
 - The Telegram bot and Streamlit dashboard handle their own responsiveness — do not add custom viewport logic there.
 
 ---
@@ -409,10 +403,9 @@ Breakpoints are authored in `em` so reflow is zoom-aware (identical to px at the
 ## 15. Accessibility Baseline (case-study page) — WCAG 2.2 AA target
 
 - Landmarks and labels exist and MUST be preserved: the skip link, `aria-label` on nav ("Case study sections"), evidence panels, the workflow band, and the scope-figures list; decorative SVGs carry `aria-hidden` and the brand image an empty alt; the demo photo has a descriptive alt disclosing it is a demo image.
-- Contrast: `--ink-2` #4e5c5e on white ≈ 7.0:1 and `--ink-3` #657473 ≈ 4.9:1 (used for small mono captions — keep it ≥4.5:1 if retinted); `--accent` #02776f ≈ 5.4:1 — AA-safe for text; verify any new pair instrumentally before use. `--amber` #c86b05 appears only at 22–30px semibold (large-text scale) — do not use it for small text without checking.
+- Contrast: current `--ink-2`, `--ink-3`, and `--accent` are chosen for readable text on white; verify any retint instrumentally and keep normal text ≥4.5:1.
 - Keyboard: a global `:focus-visible` outline (2px `--accent`) covers all interactive elements — any new interactive element MUST keep a visible focus state.
-- `scroll-behavior: smooth` and the demo-frame live-dot blink exist only inside `prefers-reduced-motion: no-preference`; the reduced-motion block keeps animation and scroll behavior neutral. New animation MUST be added inside the same gating pattern.
-- Tables (`product-shot`) keep real `th` headers.
+- `scroll-behavior: smooth` exists only inside `prefers-reduced-motion: no-preference`; the reduced-motion block keeps behavior neutral. New animation MUST be gated the same way.
 - Telegram and Streamlit accessibility ride on their platforms; the project's obligation there is text clarity (§16) and never encoding meaning in emoji alone.
 
 ---
@@ -444,7 +437,7 @@ Voice is stable; tone flexes by context:
 | Normal bot flow | Plain, task-forward | "Which WBS should match?" |
 | Success | Plain confirmation, no celebration | "I found active listings that match your saved WBS filter." |
 | No results | Honest + what the filter was | State that nothing active matches; never pad with near-misses |
-| Destructive confirm | Consequence named, neutral | "Yes, delete everything" / "No, keep my data" |
+| Destructive confirm | Consequence named, neutral | "Yes, delete saved data" / "No, keep my data" |
 | Session loss | Own the cause, restart cleanly | "Your setup session expired (the bot restarted), so I lost the earlier answers. Let's start again." |
 | Renter-facing failure | Outcome + retry, no internals | "One or more sources may have returned an error or timed out." |
 | Admin failure | What failed + where to look | "Catalog QA failed. Check the logs." |
@@ -459,7 +452,7 @@ Voice is stable; tone flexes by context:
 |---|---|---|---|---|
 | Reply-keyboard buttons | Emoji + verb/noun | ≤3 words | `🔎 Show matches`, `⚙ Filter` | Emoji-only; clever names |
 | Inline action buttons | Verb + object, plain text | 2–4 words | `Set up filter`, `Edit filter`, `Run QA demo` | "OK", "Click here" |
-| Confirmation buttons | Consequence in the label | ≤4 words | `Yes, delete everything` / `No, keep my data` | Bare Yes/No for destructive actions |
+| Confirmation buttons | Consequence in the label | ≤5 words | `Yes, delete saved data` / `No, keep my data` | Bare Yes/No for destructive actions |
 | Wizard questions | Direct question, one thing | 1 sentence | "How many rooms do you need?" | Multi-question messages |
 | Wizard hints | `<i>` gloss at the point of use | 1–2 sentences | the WBS and Kaltmiete explainers | Glossary dumps in /help |
 | Card labels | `<b>Label:</b>` fixed vocabulary | 1 word | `District:`, `Kalt:`, `Warm:` | Renaming card fields |
@@ -520,7 +513,7 @@ Actions that have no product function (subscribe, bookmark, share, export, langu
 | Hidden answers | ground truth | Eval-only truth fields and case tags | — | hidden ground truth | Putting it anywhere near prompts |
 | Quality numbers | field accuracy / exact listing accuracy | Parser vs golden set | — | with "synthetic" scope attached | Unscoped "accuracy" |
 | Transit estimate | walking-time estimate | Geometric estimate from bundled station CSV | `S-Bahn:`/`U-Bahn:` minutes, `not calculated` | local walking-time estimates | Implying routing/geocoding services |
-| Notifications | one-time notification | Deduplicated delivery of a new match | — | notification deduplication | "alerts" (reserved for admin) |
+| Notifications | optional background notification | Newly seen match deduplicated against stored delivery history; manual matches may repeat | — | background notification deduplication | "every match once", "alerts" (reserved for admin) |
 | Admin alerts | admin alert | Source-health or high-risk QA alert to admins | — | admin alert | Mixing with user notifications |
 | Provenance | synthetic / demo / mock / estimated | Not from live systems or production | demo catalog | synthetic, demo-only, mock provider | "sample data" (vague), unlabeled values |
 
@@ -544,23 +537,21 @@ Audience adaptation is allowed (gloss depth, sentence length) — mechanical wor
 
 The page serves three reading depths; every depth must independently answer its questions.
 
-**10-second scan** (kicker + H1 + lede + meta grid + demo frame) must answer: What is this? What domain? What did the candidate do? Why AI-PM-relevant?
-Mechanics: kicker names the genre ("AI product management — case study · 2026"); H1 is a first-person outcome statement ("I built FlatFeed to give Berlin WBS renters one reliable feed of eligible apartments — without letting AI decide eligibility."); the lede names collection, normalization, matching, and the AI boundary in one breath; the demo frame's phone/dashboard panels prove the product's shape and its chrome label says "Demo · synthetic data".
+**10-second scan** (kicker + H1 + lede + meta + product preview) must answer: What is this, who is it for, what did the candidate own, and what is the prototype boundary?
+Mechanics: the H1 names one filter, Berlin WBS listings, Telegram, and prototype status. The lede says the current version uses a synthetic catalog and names live-source/renter outcomes as open. The product preview shows the four-field temporary filter and one current synthetic match; it does not show internal QA metrics.
 
-**30-second scan** (+ section headings, workflow band, boundary pull quote, results table) must answer: why AI is bounded, what was built, whether results are honest.
-Mechanics: section H2s state takeaways, not topics; the boundary pull quote is the mechanism statement ("AI QA may challenge the parser, but it cannot replace or mutate … automatically."); the scope columns separate "Real in this prototype" from "Synthetic on purpose"; the Results H2 ("A measurable quality loop, scored on a synthetic golden set."), the table's "Measured — synthetic golden-set eval" group-label row, and the caption and prose all carry the synthetic qualifier at the same depth as the numbers.
+**30-second scan** (+ section headings, workflow, decision cards, evidence split) must answer: what the core flow is, which three decisions matter, and what is demonstrated versus unvalidated.
+Mechanics: the four H2s state Product / Decisions / Evidence / Next test as takeaway sentences. Evidence uses two labeled lists, not a results dashboard. The only public eval number is the authored synthetic case count, immediately qualified as a regression guard rather than production accuracy.
 
-**Deep read** must answer: decisions, trade-offs, ownership, limitations, next steps — the 7-part framework (§6.3) covers exactly these; keep the parts and their order.
+**Deep read** must answer: problem hypothesis, product flow, ownership, three trade-offs, evidence limits, and next validation. Keep the four-question framework in §6.3 and the concise Markdown equivalent in `CASE_STUDY.md`.
 
 Element rules:
-- **Hero:** kicker → first-person outcome H1 → lede (what it does + AI stance) → CTAs → meta `dl` (Role / Domain / Type / Data / Year). Every meta value must be decodable without insider context.
-- **Section 02 (Why AI?)** always leads with the *negative* decision ("I did not make AI responsible for matching because…") before the positive use — this inversion is the page's strongest judgment signal; keep it.
-- **Workflow band:** exactly the pipeline the code implements (Collect → Normalize → Match → Review → Notify); if the pipeline changes, the band changes with it.
-- **Boundary pull quote:** the canonical AI-boundary sentence (§2), rendered as the page's only blockquote, outside the 7-part numbering. It restates the boundary, never a softened paraphrase.
-- **Scope columns:** "Real in this prototype" vs "Synthetic on purpose" — every line must be a FACT or MOCK/SYNTHETIC claim per §23; this is where the honesty inventory lives.
-- **Results:** numbers come from a real `python -m eval.run_eval` run; the qualifier "synthetic evaluation metrics, not production user-impact numbers" sits in the same paragraph; the amber table values restate the same numbers, nothing more, with the qualifier repeated in the table caption and in the "Measured — synthetic golden-set eval" group-label row. The closing paragraph states what 100% on a synthetic golden set does and does not mean — keep it next to the numbers it qualifies.
-- **Limitations and next steps** live in section 07, stated unhedged ("If I continued the project, I would…"), together with one what-I'd-do-differently reflection ("What I would do differently: …").
-- Mockup panels (phone/dashboard) depict only states the real product produces and stay inside the labeled demo frame; a listing card mockup MUST follow the §10 field vocabulary; the figcaption MUST keep stating they are mockups, not screenshots.
+- **Hero:** kicker → plain proposition H1 → boundary-aware lede → term gloss → CTAs → four-item meta `dl`. Every value is decodable without insider context.
+- **Product preview:** one code-native Telegram representation only. Values come from the current synthetic catalog; the caption says the photo is illustrative. No fake dashboard, fake browser chrome, or mock metrics.
+- **Workflow:** Filter → Normalize → Check → Match → Notify. "Check" is explicitly the synthetic adapter's local catalog state; "Notify" is optional background delivery with deduplication.
+- **Decisions:** exactly three public decisions: four-field scope, deterministic matching/optional QA boundary, reliability controls before live-source breadth.
+- **Evidence:** Demonstrated now vs Not demonstrated yet. Do not present field accuracy, exact accuracy, mock cost, or zero-error counts as product outcomes.
+- **Next test:** one permitted live source and a small renter observation, with Learn / Measure / Decide signals. It is a plan, not a claim.
 
 ---
 
@@ -592,22 +583,22 @@ Hard constraints (non-negotiable):
 
 ## 24. Candidate Ownership Language
 
-- The canonical ownership statement lives in CASE_STUDY.md §3 / case-study.html section 03 ("I defined the product scope, shaped the portfolio positioning, and designed the source-collection and matching flow, the deterministic parsing rules, the synthetic evaluation dataset, and the AI QA budget controls. Solo project: all product decisions, scope boundaries, and rules are mine. Implementation — the bot, the dashboard, and the eval harness — was built with AI coding agents (Claude Code and Codex) under a documented collaboration workflow in the repo."). Keep the HTML and Markdown versions in sync in *meaning*.
+- The canonical ownership statement says: "I owned the problem framing, scope, interaction rules, reliability trade-offs, and evaluation design. I implemented the bot, dashboard, and test harness with Claude Code and Codex as coding collaborators." Keep the HTML and Markdown versions in sync in *meaning*.
 - Verb discipline: **defined/designed/scoped/chose** = candidate judgment; **implemented/built/wrote** = delivery; **the bot/the parser/the eval does X** = system behavior; **demo/mock/synthetic** = illustrative outcome. Do not swap categories.
-- If AI coding agents contributed to implementation and the author wants that disclosed, the disclosure is added by the author — an agent MUST NOT add or remove ownership or collaboration claims on its own. The author approved the unified agent disclosure on 2026-07-08 (same wording as the sibling Opsqora landing); it now lives in section 03 and CASE_STUDY.md §3 and MUST NOT be removed or softened without the author.
+- The author approved the agent-collaboration disclosure; it lives in the Decisions contribution note and `CASE_STUDY.md` §2 and MUST NOT be removed or softened without the author.
 - First person ("I", "my") is correct on the case study and in CASE_STUDY.md. In the bot, "I" is the *bot* speaking about bot actions (§17) — never the candidate. The dashboard and README use no first person for ownership except CASE_STUDY-quoted material.
 
 ---
 
 ## 25. Professional Language Rules
 
-**Prefer:** concrete mechanisms tied to artifacts — "source-adapter registry, ingestion history, per-source activity checks", "daily count and dollar budgets", "one review per prompt version"; named thresholds ("alert at risk ≥ 75", "three consecutive failures"); verifiable statements ("no network request is made"); earned judgments ("eligibility decisions need to be predictable and explainable").
+**Prefer:** concrete mechanisms tied to artifacts — "four-field filter", "synthetic-adapter state check", "background notification deduplication", "15 authored regression cases". State whether each mechanism is in the main user path, optional, synthetic, or unvalidated.
 
 **Buzzword register.** Current status: *leverage, seamless, robust, cutting-edge, intelligent, actionable insights, AI-powered, end-to-end (as a boast), scalable, production-ready, enterprise-grade* appear on no surface as self-praise. Protect this. Rules rather than blanket bans:
 - *production-ready / enterprise-grade*: MUST NOT appear — the demo explicitly is neither.
 - *end-to-end*: acceptable only in the literal sense already used ("an end-to-end AI PM case: problem framing, trade-off definition, prototype delivery, evaluation, and honest documentation") — a scoped list, not a boast.
 - *scalable*: only about a specific mechanism with its limit stated (e.g. "SQLite is appropriate for this local portfolio prototype" is the model — a fitness claim, not a scale claim).
-- Self-praise adjectives about our own output ("reliable", "trusted", "honest" as feature labels) are acceptable only where the artifact proving them is shown or named at the same spot (e.g. the hero's "one reliable feed … without letting AI decide eligibility" is anchored by the boundary pull quote and the golden-set-scored Results section).
+- Self-praise adjectives about our own output ("reliable", "trusted", "honest") SHOULD NOT be used as feature labels. Name the control instead: state check, fail-closed unknown value, or notification deduplication.
 
 ---
 
@@ -615,10 +606,10 @@ Hard constraints (non-negotiable):
 
 - Headings state the takeaway or the question; a heading-only read of the case page or dashboard must be coherent.
 - Case-study paragraphs ≤5 sentences, one idea each; bot messages are 1–2 sentences; dashboard captions 1–2 sentences.
-- Lists for parallel mechanisms (README "What It Shows", the case page's point grids and scope columns); tables only for enumerable facts.
-- Key metrics render as metric cards with their qualifier in the adjacent prose (§22); the Telegram card's blank-line grouping (§10) is the bot's scannability mechanism.
+- Lists for parallel mechanisms (README "What It Shows", workflow, decisions, evidence); tables only for enumerable facts.
+- The case page does not use public metric cards. The authored regression-case count is one evidence-list item with its limitation directly below it.
 - Technical explanations follow "term (plain gloss)" on first use — the WBS and Kaltmiete hints are the models.
-- Review gates: the 10s/30s scan tests (§22) for any case-page change; for the bot, "can a new user reach a listing card in ≤5 taps from /start?"; for the dashboard, "does each section answer its own heading?"
+- Review gates: the 10s/30s scan tests (§22) for any case-page change; for the bot, "can a new user reach a listing card in two guided steps from /start?"; for the dashboard, "does each section answer its own heading?"
 
 ---
 
@@ -627,9 +618,9 @@ Hard constraints (non-negotiable):
 **MUST remain consistent (meaning-identical) across bot, dashboard, case page, and docs:**
 - The meaning of listing, filter, WBS tiers, Kaltmiete-only matching, district/Bezirk, golden set, risk score, triage labels (§20).
 - The AI boundary sentence pattern: parsing/matching deterministic; AI QA admin-only, budgeted, never mutating (§2, §12).
-- **Eval result numbers.** They currently appear in: `CASE_STUDY.md` §6, `docs/case-study.html` (demo-frame dashboard panel + Results table + Results prose), and any README mention. When an eval run changes them, update every occurrence in the same change — a stale number on one surface is a factual error.
-- **Eval sync check (automated, 2026-07-09 — see §34).** `scripts/check_eval_numbers.py` re-runs `eval.run_eval --json` and diffs every quoted number in `CASE_STUDY.md` and `docs/case-study.html` against it, rather than only locating occurrences: `PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m scripts.check_eval_numbers`. Run it after any eval-affecting change and before final review; a stale number fails the check instead of relying on a human re-reading a grep. If a required anchor phrase is no longer found, the prose changed enough that the check itself needs updating — treat that as a hard failure, not a silent pass.
-- The 7-part case structure between `CASE_STUDY.md` and `docs/case-study.html`.
+- **Public eval number.** The only public result number is the authored synthetic regression-case count. Field accuracy, exact-listing accuracy, mock cost, and quiet/caught counts stay in the runnable engineering report.
+- **Eval sync check.** `scripts/check_eval_numbers.py` re-runs `eval.run_eval --json` and verifies the authored-case count in `CASE_STUDY.md`, `README.md`, and `docs/case-study.html`.
+- The four-question Product / Decisions / Evidence / Next test structure and its five-part Markdown equivalent stay meaning-aligned.
 - WBS semantics: `flatfeed/wbs_rules.py` is the single source; documents give examples, the module defines truth.
 - The card field contract (§10) between `flatfeed/matching.py`, README's card sketch, PROJECT_CONTEXT's card sketch, and any case-page mockup.
 - Copy changes propagate across bot UI, dashboard UI, tests, and documentation together (a stated Known Constraint in PROJECT_CONTEXT).
@@ -654,15 +645,15 @@ Working well; reuse as-is; do not "improve" for uniformity's sake.
 | Filter card as home (wizard never forced) | `/start` | Respects returning users | Any future "home" message |
 | Fixed listing-card contract with canonical fallbacks | `flatfeed/matching.py` | Predictable, scannable, honest about unknowns | Never fork per-context card variants |
 | Fail-closed matching on unknown values | matching rules | Wrong sends are the costliest error | Default for any new matching field |
-| Activity re-check before delivery + notification dedupe | delivery pipeline | Trust preservation | Any new delivery path |
+| Adapter state check + optional background dedupe | delivery pipeline | Names the implemented boundary precisely | Do not imply live-network verification or manual-card dedupe |
 | Source-health alerting with cooldown | ingestion | Detects silent failure without alert spam | Any new background job |
 | Question-form dashboard sections with caption provenance | `streamlit_app.py` | Admin reads answers, not charts | All new dashboard sections |
 | Worked example on the dashboard ("parser made a mistake, AI checked it") | dashboard | Shows the loop, not just aggregates | Keep one concrete example per new metric family |
 | Ground-truth quarantine | `synthetic/` ↔ prompts | Makes the eval meaningful | Absolute; no exceptions |
 | Version-stamped QA reviews (one per listing per version) | `flatfeed/ai_qa.py` | Enables version comparison, caps cost | Any new AI artifact gets a version field |
-| Negative-decision-first "Why AI?" framing | case study §02 | Strongest judgment signal on the page | Keep in any rewrite |
-| Synthetic qualifier inside the results sentence | case study §06 | Honesty at every reading depth | Every future results claim |
-| Teal structure / amber results split | case page | Measured outcomes read as a distinct zone | Don't dilute amber elsewhere |
+| Three concise decision cards | case study §02 | Shows prioritization without a separate AI essay | Keep four-field scope, deterministic boundary, reliability-before-breadth |
+| Demonstrated / Not demonstrated split | case study §03 | Prevents prototype completion from reading as market validation | Every future evidence claim |
+| Teal-only structure accent | case page | Keeps weak evidence from gaining visual weight | Use labels and filled/outlined markers for evidence status |
 | Licensed demo photos with attribution file | `assets/listing_photos/` | Defensibility | Any new third-party asset gets the same treatment |
 
 ---
@@ -743,10 +734,10 @@ For Claude/Fable, Codex, and other coding agents.
 - [ ] Bot: wizard steps keep `Step N/4`, Back/Cancel, and point-of-use hints (§7.3).
 - [ ] Bot: destructive/costly actions have consequence-named confirmations (§7.2).
 - [ ] Card: field order, labels, grouping, and fallback strings match §10 exactly.
-- [ ] Delivery: activity re-check, dedupe, ≤10 cards, fail-closed matching intact (§3 P5).
+- [ ] Delivery: adapter state check, optional background dedupe, ≤10 cards, fail-closed matching intact (§3 P5).
 - [ ] Dashboard: new sections are question-headed with caption provenance; no hand-typed metric values (§8).
-- [ ] Case page: tokens only, square corners (no radius), shadow only on the demo frame; amber confined to Results values (§5).
-- [ ] Case page: 7-part structure, numbered-kicker motif, boundary quote outside the numbering, and nav reachable at all widths (§6.3, §14).
+- [ ] Case page: tokens only, square corners, shadow only on the product preview, one teal content accent (§5).
+- [ ] Case page: four-question structure, numbered-kicker motif, one product preview, and clear mobile linear flow (§6.3, §14).
 - [ ] Accessibility: aria labels/alt preserved; new text colors checked ≥4.5:1; new motion gated (§15).
 - [ ] Admin vs user separation intact: no QA jargon in renter-facing surfaces (§3 P8).
 
@@ -775,6 +766,14 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-14 minimal prototype narrative and three-step tour
+
+- **Problem:** the public case and guided tour gave internal parser/AI QA mechanics, mock metrics, and a seven-part strategy narrative more weight than the renter-facing product. Several phrases also exceeded the implementation boundary: four-field matching read as full eligibility, the synthetic adapter's local state check read as live-source verification, and optional background deduplication read as a guarantee for every card.
+- **Rationale:** hiring-manager comprehension and factual defensibility take priority over feature count. The public story now centers on one temporary filter, one actual matcher result from the synthetic catalog, three product decisions, a Demonstrated / Not demonstrated evidence split, and one next validation. AI QA is a bounded optional branch, not the renter path. Detailed eval diagnostics remain runnable engineering evidence instead of public product outcomes.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`, `CASE_STUDY.md`, `README.md`, `docs/demo-listing.html`, `docs/PROJECT_CONTEXT.md`, `main.py`, `tests/test_guided_tour.py`, and `scripts/check_eval_numbers.py`. This document's current rules in §§2–7 and 22–28 were updated to match.
+- **Compatibility impact:** the guided tour's required path changed from five screens to three; `tour:3` remains a compatibility explainer, while the main step-2 button now routes directly to `tour:5`, rendered as Step 3/3. The QA simulation remains available from the final keyboard. Public 100%/exact-accuracy/mock-cost blocks and the dashboard mockup were removed. The delete confirmation now names its actual database scope.
+- **Migration consideration:** fixed across current public and normative surfaces. Historical §34 entries and local plan files remain historical records and are not current requirements. A live-source test and renter study remain future validation, not implementation claims.
 
 ### 2026-07-11 product-first demo rework: tour v2, dashboard restructure, case-study honesty fixes
 
