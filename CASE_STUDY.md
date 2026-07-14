@@ -66,7 +66,8 @@ Demonstrated now:
 - temporary and saved four-field filter flows;
 - deterministic matching and standardized Telegram cards;
 - synthetic-adapter state checks and optional background deduplication;
-- 15 authored synthetic cases currently pass the parser regression check.
+- 15 synthetic test cases pass the regression check; live-source accuracy is
+  not measured.
 
 Not demonstrated yet:
 
@@ -75,13 +76,9 @@ Not demonstrated yet:
 - time saved or application outcomes;
 - hosted-model QA usefulness, false-alarm rate, or real cost.
 
-The 15-case result checks cases I designed. It is a repeatable regression guard,
-not an estimate of accuracy on arbitrary live listing text.
-
 ## 5. Next Test
 
-The next step is not more AI or more dashboard functionality. I would connect
-one source whose terms permit use and observe a small group of WBS renters using
-the filter-to-listing flow. The decision would be based on filter completion,
+Next, I would test the filter-to-listing flow with one permitted live source and
+a small group of WBS renters. The decision would be based on filter completion,
 useful listing opens, stale-card rate, and whether renters understand why a
 listing matched.

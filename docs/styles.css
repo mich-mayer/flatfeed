@@ -293,6 +293,10 @@ img {
   color: var(--ink-2);
 }
 
+.term-note span {
+  display: block;
+}
+
 .case-actions {
   display: flex;
   flex-wrap: wrap;
@@ -336,6 +340,11 @@ img {
   border: 1px solid var(--ink);
   background: var(--surface);
   box-shadow: 0 2rem 4.5rem -3.5rem rgba(16, 24, 25, 0.45);
+}
+
+.product-preview--telegram {
+  width: min(100%, 30rem);
+  justify-self: end;
 }
 
 .mac-window-bar {
