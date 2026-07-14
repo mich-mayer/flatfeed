@@ -61,7 +61,7 @@ def _listing_from_template(
         title=template.title,
         raw_text=template.raw_text,
         url=url,
-        image_url=listing_photo_for_index(index),
+        image_url=template.photo_asset or listing_photo_for_index(index),
         case_tags=(template.tag,),
         difficulty=template.difficulty,
     )

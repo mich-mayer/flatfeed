@@ -81,7 +81,7 @@ Derived from the product's actual behavior — not imported from external system
 
 **P3 — Public evidence stays proportional to what was tested.**
 *Why:* portfolio credibility rests on never implying live systems or production impact.
-*Implications:* the public case quotes only the authored synthetic regression-case count and explains that it covers designed cases. Detailed parser/QA diagnostics remain in the runnable eval report; transit minutes are geometric estimates; demo photos are disclosed as illustrative.
+*Implications:* the public case quotes only the authored synthetic regression-case count and explains that it covers designed cases. Detailed parser/QA diagnostics remain in the runnable eval report; transit minutes are geometric estimates; demo photos disclose whether they are illustrative or location-aligned, while apartment terms remain synthetic.
 *Anti-pattern:* turning 100% on authored cases, zero mock cost, or zero false alerts into a product result.
 
 **P4 — Ground truth is eval-only.**
@@ -214,8 +214,8 @@ Rules:
 
 - Icons are inline hand-written SVG strokes, stroke `currentColor`, width 2: 14px inside buttons (arrows, git-branch), 16px in panel headers. No icon library at runtime, no emoji on the page.
 - Brand: `assets/flatfeed-logo-mark.png` at 26px in the header/footer wordmark, `alt=""` (decorative next to the visible name).
-- Imagery: `assets/berlin-wbs-building.jpg` appears only inside the code-native product preview. The caption and alt text state that it is illustrative and does not depict the synthetic address. Do not add dashboard mockups or decorative illustrations.
-- Any photo of a building MUST keep alt text disclosing it is a demo image, and licensing stays documented in `assets/listing_photos/LICENSES.md`.
+- Imagery: `assets/berlin-wbs-building.jpg` appears only inside the code-native product preview. It depicts the same real building/location named by the showcase address; the caption and alt text state that the apartment terms remain synthetic. Do not add dashboard mockups or decorative illustrations.
+- Any photo of a building MUST keep alt text disclosing its demo context. Source, author, license, and modifications stay documented in `assets/listing_photos/LICENSES.md`; attribution for a licensed public-preview image also appears in the adjacent figcaption.
 
 ---
 
@@ -340,7 +340,7 @@ Rules:
 - **WBS line:** rendered through `display_wbs_requirement` from `flatfeed/wbs_rules.py` — allowed percentage list, `WBS required, type unknown` for generic requirements, `No WBS required` otherwise. Never re-implement WBS display logic elsewhere.
 - **Rooms:** integer when whole, decimal comma otherwise; filter value 5 means "5 or more".
 - The blank-line grouping (facts / prices / link) is part of the contract; `Open listing` is always the last line and the only link.
-- The photo (when present) is a deterministic demo asset; captions or docs referencing photos MUST NOT imply they depict the listing address.
+- The photo (when present) is a deterministic demo asset. The guided-tour showcase is the only address-aligned exception: its photo, displayed address, district, and coordinates refer to the same real location, while availability and apartment terms remain explicitly synthetic. Other catalog photos MUST NOT imply that they depict their listing address.
 
 ---
 
@@ -547,7 +547,7 @@ Mechanics: the four H2s state Product / Decisions / Evidence / Next test as take
 
 Element rules:
 - **Hero:** kicker → plain proposition H1 → boundary-aware lede → term gloss → CTAs → four-item meta `dl`. Every value is decodable without insider context.
-- **Product preview:** one code-native Telegram representation only. Values come from the current synthetic catalog; the caption says the photo is illustrative. No fake dashboard, fake browser chrome, or mock metrics.
+- **Product preview:** one code-native Telegram representation only. Values come from the current synthetic catalog; the caption separates the real building location from synthetic apartment terms and carries the photo attribution. No fake dashboard, fake browser chrome, or mock metrics.
 - **Workflow:** Filter → Normalize → Check → Match → Notify. "Check" is explicitly the synthetic adapter's local catalog state; "Notify" is optional background delivery with deduplication.
 - **Decisions:** exactly three public decisions: four-field scope, deterministic matching/optional QA boundary, reliability controls before live-source breadth.
 - **Evidence:** Demonstrated now vs Not demonstrated yet. Do not present field accuracy, exact accuracy, mock cost, or zero-error counts as product outcomes.
@@ -766,6 +766,14 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-14 address-aligned showcase photo and attribution
+
+- **Problem:** the primary demo card and case-study preview paired a Rosenfelder Straße address in Lichtenberg with a photograph of a residential block in Wedding. The mismatch weakened the credibility of the portfolio artifact, and the public preview did not credit the photographer at the point of display.
+- **Rationale:** factual coherence and license compliance outrank keeping a generic illustrative-photo rule for the main showcase. The showcase now uses one verified real location for its building photo, address, district, and coordinates. It still states that apartment availability, rent, floor, rooms, and WBS eligibility are synthetic, so location coherence does not become a housing-offer claim. Attribution sits below the public preview to keep the Telegram card contract concise; the linked demo-listing page and license register repeat the credit.
+- **Affected surfaces:** `synthetic/case_catalog.py`, `synthetic/generator.py`, `assets/listing_photos/LICENSES.md`, `docs/assets/berlin-wbs-building.jpg`, `docs/case-study.html`, `docs/demo-listing.html`, `README.md`, `docs/PROJECT_CONTEXT.md`, `tests/test_synthetic_catalog.py`, and this document (§§3, 5, 10, 22, 34).
+- **Compatibility impact:** the first synthetic case changes from Rosenfelder Str. 12 / 10315 to Suermondtstr. 56–64 / 13053 and uses a case-specific photo override. Its transit estimates change with the coordinates. Other synthetic cases retain the deterministic illustrative-photo pool. The listing-card fields and order do not change.
+- **Migration consideration:** fixed now in the catalog and current code-native public preview. A fresh real Telegram screenshot should replace the code-native preview after the updated card is captured; the adjacent attribution must remain when that swap happens.
 
 ### 2026-07-14 minimal prototype narrative and three-step tour
 

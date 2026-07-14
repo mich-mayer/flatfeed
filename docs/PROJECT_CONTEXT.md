@@ -204,11 +204,14 @@ Synthetic cases live in `synthetic/case_catalog.py`. Each case has visible
 listing text plus hidden truth fields for WBS, prices, rooms, floor, district,
 coordinates, and special constraints.
 
-Synthetic listing cards use a small local pool of illustrative photos of Berlin
-multi-family residential buildings. The photos are assigned deterministically
-from `assets/listing_photos/` and are not representations of the specific
-synthetic listing address. Source, author, and license details are documented in
-`assets/listing_photos/LICENSES.md`.
+Synthetic listing cards use a small local pool of photos of Berlin multi-family
+residential buildings. Most are illustrative and are not representations of the
+synthetic listing address. The guided-tour showcase is deliberately stricter:
+its Suermondtstraße photo, address, district, and coordinates refer to the same
+real location. Apartment availability, rent, floor, rooms, and WBS eligibility
+remain synthetic. Source, author, license, and modification details are
+documented in `assets/listing_photos/LICENSES.md`; the case-study caption credits
+the showcase photo at the point of display.
 
 Golden data is loaded through `synthetic/golden_set.py`. The eval runner in
 `eval/run_eval.py` compares parser output against the hidden truth and can

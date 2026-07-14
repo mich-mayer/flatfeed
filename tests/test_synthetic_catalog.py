@@ -19,12 +19,25 @@ class SyntheticCatalogTests(unittest.TestCase):
     def test_synthetic_listings_have_stable_local_photo_assets(self) -> None:
         listings = generate_synthetic_listings(count=len(LISTING_PHOTO_ASSETS) + 1)
 
+        expected = list(LISTING_PHOTO_ASSETS)
+        expected[0] = CASE_TEMPLATES[0].photo_asset
         self.assertEqual(
             [listing.image_url for listing in listings[: len(LISTING_PHOTO_ASSETS)]],
-            list(LISTING_PHOTO_ASSETS),
+            expected,
         )
         self.assertEqual(listings[-1].image_url, LISTING_PHOTO_ASSETS[0])
         self.assertTrue(listing_photo_assets_exist(Path(__file__).resolve().parents[1]))
+
+    def test_showcase_listing_photo_matches_its_real_location(self) -> None:
+        listing = generate_synthetic_listings(count=1)[0]
+
+        self.assertIn("Suermondtstr. 56-64", listing.raw_text)
+        self.assertEqual(listing.truth_postal_code, "13053")
+        self.assertEqual(listing.truth_bezirk, "Lichtenberg")
+        self.assertEqual(
+            listing.image_url,
+            "assets/listing_photos/berlin_hohenschoenhausen_suermondtstr_wohnblock.jpg",
+        )
 
     def test_all_case_templates_drive_address_level_coordinates(self) -> None:
         for template in CASE_TEMPLATES:
