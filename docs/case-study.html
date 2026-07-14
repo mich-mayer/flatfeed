@@ -52,8 +52,8 @@
             </p>
 
             <p class="term-note">
-              <strong>WBS</strong> (Wohnberechtigungsschein) is a certificate used to qualify for
-              subsidized housing in Berlin. <strong>Kaltmiete</strong> is rent before utilities.
+              <span><strong>WBS</strong> (Wohnberechtigungsschein) is a certificate used to qualify for subsidized housing in Berlin.</span>
+              <span><strong>Kaltmiete</strong> is rent before utilities.</span>
             </p>
 
             <div class="case-actions">
@@ -66,7 +66,7 @@
 
             <dl class="case-meta">
               <div><dt>Role</dt><dd>Product, UX, evaluation, implementation</dd></div>
-              <div><dt>User</dt><dd>Berlin WBS renters</dd></div>
+              <div><dt>Audience</dt><dd>Berlin WBS renters</dd></div>
               <div><dt>Status</dt><dd>Functional prototype</dd></div>
               <div><dt>Data</dt><dd>Synthetic by design</dd></div>
             </dl>
@@ -85,12 +85,11 @@
               <img
                 class="telegram-shot"
                 src="assets/flatfeed-telegram-showcase.png"
-                alt="Real Telegram demo screenshot showing a synthetic FlatFeed listing at Binger Str. 10 in Charlottenburg-Wilmersdorf"
+                alt="Telegram demo screenshot showing a synthetic FlatFeed listing at Binger Str. 10 in Charlottenburg-Wilmersdorf"
               >
             </div>
             <figcaption id="preview-caption">
-              Real Telegram demo session; apartment availability and terms are synthetic. The
-              building photo and address refer to the same location. Building photo:
+              Telegram demo session; apartment availability and terms are synthetic. Building photo:
               <a href="https://commons.wikimedia.org/wiki/File:Binger_Stra%C3%9Fe_10_Berlin-Wilmersdorf.jpg">Bodo Kubrak / Wikimedia Commons</a>,
               <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>.
             </figcaption>
@@ -100,7 +99,7 @@
         <section class="case-section" id="product">
           <header class="section-heading">
             <p class="kicker"><span>01</span>Product</p>
-            <h2>A repeated search becomes one explicit, inspectable workflow.</h2>
+            <h2>Set one filter. See matching listings.</h2>
             <p>
               The working hypothesis is that WBS renters lose time checking fragmented listing
               formats and reapplying the same listing criteria. FlatFeed tests a narrower job:
@@ -179,7 +178,7 @@
                 <li>End-to-end filter, match and Telegram delivery flow</li>
                 <li>Synthetic-adapter state check and background notification deduplication</li>
                 <li>Deterministic matching with field-level reasons</li>
-                <li>15 authored synthetic cases currently pass the parser regression check</li>
+                <li>15 synthetic test cases pass the regression check; live-source accuracy is not measured</li>
               </ul>
             </article>
             <article class="evidence-card evidence-card--open">
@@ -193,10 +192,6 @@
             </article>
           </div>
 
-          <p class="evidence-footnote">
-            The 15-case regression set covers cases I designed; it is a guard against regressions,
-            not proof that arbitrary live listing text will parse correctly.
-          </p>
         </section>
 
         <section class="next-test" id="next-test">
@@ -206,9 +201,7 @@
           </div>
           <div class="next-test-copy">
             <p>
-              The next step is not more AI or more dashboard features. I would connect one source
-              whose terms permit use, then watch a small group of WBS renters complete the
-              filter-to-listing flow.
+              Next, I would test the flow with one permitted live source and a small group of WBS renters.
             </p>
             <dl>
               <div><dt>Learn</dt><dd>Do renters understand and trust why a listing matched?</dd></div>

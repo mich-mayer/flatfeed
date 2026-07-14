@@ -27,7 +27,10 @@ PUBLIC_TARGETS = (
 )
 
 CASE_COUNT_PATTERN = re.compile(
-    r"(?P<count>\d+) authored synthetic cases currently pass the parser regression check",
+    r"(?P<count>\d+) (?:"
+    r"authored synthetic cases currently pass the parser regression check|"
+    r"synthetic test cases pass the regression check"
+    r")",
     re.IGNORECASE,
 )
 
@@ -52,7 +55,7 @@ def main() -> int:
         matches = list(CASE_COUNT_PATTERN.finditer(text))
         if not matches:
             errors.append(
-                f"{path.relative_to(PROJECT_ROOT)}: authored regression-case count not found"
+                f"{path.relative_to(PROJECT_ROOT)}: regression-case count not found"
             )
             continue
         for match in matches:

@@ -209,7 +209,7 @@ Rules:
 ### 5.4 Grid and Width — ADOPT
 
 - One centered column: `.case` width `min(100% - 3rem, 75rem)`.
-- Hero is a two-column proposition + product preview at desktop and a single linear column below 56rem. On the two-column layout, the top of `.hero-copy` aligns with the top of `.product-preview`; do not vertically center the shorter column against a tall product image.
+- Hero is a two-column proposition + product preview at desktop and a single linear column below 56rem. On the two-column layout, the top of `.hero-copy` aligns with the top of `.product-preview`; do not vertically center the shorter column against a tall product image. The portrait Telegram preview is capped at `30rem` and aligned to the right on wide screens; below 56rem the existing responsive width rule takes over.
 - Numbered mono kickers (`01`–`04`) are the section motif. Workflow is 5-up, decisions 3-up, evidence 2-up; each collapses per §14.
 - The dark CTA spans the content width.
 
@@ -550,7 +550,7 @@ Mechanics: the four H2s state Product / Decisions / Evidence / Next test as take
 
 Element rules:
 - **Hero:** kicker → plain proposition H1 → boundary-aware lede → term gloss → CTAs → four-item meta `dl`. Every value is decodable without insider context.
-- **Product preview:** one real Telegram demo-session screenshot only, presented inside a clearly external macOS-style evidence frame. Values come from the current synthetic catalog; the caption separates the real building location from synthetic apartment terms and carries the photo attribution. The screenshot may be cropped to exclude Telegram's empty composer, but its card content MUST NOT be edited. No fake dashboard, product-internal browser chrome, or mock metrics.
+- **Product preview:** one real Telegram demo-session screenshot only, presented inside a clearly external macOS-style evidence frame. Values come from the current synthetic catalog; the caption states that apartment terms are synthetic and carries the photo attribution. Location coherence remains documented in `assets/listing_photos/LICENSES.md`. The screenshot may be cropped to exclude Telegram's empty composer, but its card content MUST NOT be edited. No fake dashboard, product-internal browser chrome, or mock metrics.
 - **Workflow:** Filter → Normalize → Check → Match → Notify. "Check" is explicitly the synthetic adapter's local catalog state; "Notify" is optional background delivery with deduplication.
 - **Decisions:** exactly three public decisions: four-field scope, deterministic matching/optional QA boundary, reliability controls before live-source breadth.
 - **Evidence:** Demonstrated now vs Not demonstrated yet. Do not present field accuracy, exact accuracy, mock cost, or zero-error counts as product outcomes.
@@ -769,6 +769,14 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-14 hiring-manager copy and preview-density pass
+
+- **Problem:** the tall Telegram proof still dominated the wide hero, while several reader-facing phrases used process language (`explicit, inspectable workflow`, `regression set`) where a hiring manager needed a faster product explanation. The compact term gloss also placed WBS and Kaltmiete on one line, and the metadata label `User` was less precise than the intended audience label.
+- **Rationale:** the 10-second scan benefits from a slightly quieter proof image and plain, outcome-led copy. A `30rem` desktop cap reduces the screenshot by about 8% at 1440px without changing tablet/mobile readability. `Audience` avoids implying validated active users. The separate regression footnote is removed, but its live-accuracy limitation stays beside the 15-case number so evidence integrity is preserved.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`, `CASE_STUDY.md`, `scripts/check_eval_numbers.py`, and this document (§§5.4, 22, 23, 27, 34).
+- **Compatibility impact:** the previous hero preview width, inline term gloss, `User` label, longer Product heading, two-sentence preview disclaimer, separate regression footnote, contrastive Next test introduction, and exact-string-only eval-count checker no longer conform to the current concise case-page pattern.
+- **Migration consideration:** fixed now across the HTML case page and its Markdown equivalent. Product behavior, evidence values, screenshot contents, and mobile ordering do not change.
 
 ### 2026-07-14 top-aligned case-study hero
 
