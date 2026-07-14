@@ -10,6 +10,9 @@
   --accent: #08766e;
   --accent-deep: #055d57;
   --accent-wash: #e3f2ee;
+  --mac-close: #ff5f57;
+  --mac-minimize: #febc2e;
+  --mac-maximize: #28c840;
   --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
@@ -125,8 +128,7 @@ img {
   text-transform: uppercase;
 }
 
-.kicker,
-.preview-label {
+.kicker {
   color: var(--ink-3);
   font: 500 0.6875rem/1.45 var(--font-mono);
   letter-spacing: 0.08em;
@@ -336,164 +338,59 @@ img {
   box-shadow: 0 2rem 4.5rem -3.5rem rgba(16, 24, 25, 0.45);
 }
 
-.preview-bar {
+.mac-window-bar {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 0.9rem;
+  justify-content: center;
+  min-height: 2.625rem;
+  padding: 0.75rem 3.75rem;
   border-bottom: 1px solid var(--ink);
+  background: var(--surface);
+}
+
+.mac-window-controls {
+  position: absolute;
+  left: 0.9rem;
+  display: flex;
+  gap: 0.45rem;
+}
+
+.mac-window-dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: 50%;
+}
+
+.mac-window-dot--close {
+  background: var(--mac-close);
+}
+
+.mac-window-dot--minimize {
+  background: var(--mac-minimize);
+}
+
+.mac-window-dot--maximize {
+  background: var(--mac-maximize);
+}
+
+.mac-window-title {
   color: var(--ink-3);
   font: 500 0.625rem/1 var(--font-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.preview-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--ink);
-  font-weight: 600;
-}
-
-.preview-brand i {
-  width: 0.5rem;
-  height: 0.5rem;
-  background: var(--accent);
-}
-
-.preview-body {
-  padding: 1rem;
+.telegram-shot-crop {
+  overflow: hidden;
+  aspect-ratio: 886 / 1435;
   background: var(--wash);
 }
 
-.filter-card {
-  padding: 1rem;
-  border: 1px solid var(--line);
-  background: var(--surface);
-}
-
-.filter-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  margin-top: 0.75rem;
-  border-top: 1px solid var(--ink);
-}
-
-.filter-grid p {
-  padding: 0.7rem 0.7rem 0.5rem 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.filter-grid p:nth-child(even) {
-  padding-left: 0.7rem;
-  border-left: 1px solid var(--line);
-}
-
-.filter-grid span,
-.filter-grid strong {
-  display: block;
-}
-
-.filter-grid span {
-  color: var(--ink-3);
-  font: 500 0.5625rem/1.3 var(--font-mono);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.filter-grid strong {
-  margin-top: 0.2rem;
-  font-size: 0.75rem;
-}
-
-.match-divider {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.8rem 0.1rem 0.55rem;
-  color: var(--ink-3);
-  font: 500 0.5625rem/1 var(--font-mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.match-card {
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--surface);
-}
-
-.match-card img {
+.telegram-shot {
   width: 100%;
-  height: clamp(7rem, 15vh, 9.5rem);
-  object-fit: cover;
-  object-position: center 52%;
-  border-bottom: 1px solid var(--line);
-}
-
-.match-copy {
-  padding: 1rem;
-}
-
-.match-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: var(--accent-deep);
-  font: 600 0.625rem/1 var(--font-mono);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.match-status i {
-  width: 0.45rem;
-  height: 0.45rem;
-  background: var(--accent);
-}
-
-.match-copy h2 {
-  margin-top: 0.6rem;
-  font: 600 1.35rem/1.15 var(--font-display);
-  letter-spacing: -0.02em;
-}
-
-.match-place {
-  margin-top: 0.2rem;
-  color: var(--ink-3);
-  font-size: 0.75rem;
-}
-
-.match-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.8rem;
-}
-
-.match-facts span {
-  padding: 0.35rem 0.45rem;
-  border: 1px solid var(--line);
-  color: var(--ink-2);
-  font-size: 0.6875rem;
-}
-
-.match-facts strong {
-  color: var(--ink);
-}
-
-.match-reason {
-  margin-top: 0.8rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--line);
-  color: var(--ink-2);
-  font-size: 0.6875rem;
-  line-height: 1.55;
-}
-
-.match-reason strong {
-  color: var(--ink);
+  height: auto;
 }
 
 .product-preview figcaption {
@@ -936,8 +833,8 @@ img {
     border-left: 0;
   }
 
-  .preview-body {
-    padding: 0.7rem;
+  .mac-window-title {
+    font-size: 0.5625rem;
   }
 
   .workflow {
