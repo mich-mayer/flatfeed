@@ -30,11 +30,11 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
     CaseTemplate(
         tag="wbs_range_standard",
         difficulty="easy",
-        district="Lichtenberg",
-        postal_code="13053",
+        district="Charlottenburg-Wilmersdorf",
+        postal_code="14197",
         title="2-Zimmer-Wohnung mit WBS 100-140",
         raw_text=(
-            "Adresse\nSuermondtstr. 56-64\n13053 Berlin, Alt-Hohenschönhausen\n"
+            "Adresse\nBinger Str. 10\n14197 Berlin, Wilmersdorf\n"
             "Etage\n2\nZimmer\n2\nKaltmiete: 512,40 Euro\nWarmmiete: 690,20 Euro\n"
             "Für die Bewerbung ist ein WBS 100-140 erforderlich."
         ),
@@ -44,12 +44,12 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rent_warm_cents=69020,
         truth_rooms=2.0,
         truth_floor="2",
-        truth_bezirk="Lichtenberg",
-        truth_lat=52.549683,
-        truth_lon=13.498489,
+        truth_bezirk="Charlottenburg-Wilmersdorf",
+        truth_lat=52.475428093256056,
+        truth_lon=13.30930906109402,
         photo_asset=(
             "assets/listing_photos/"
-            "berlin_hohenschoenhausen_suermondtstr_wohnblock.jpg"
+            "berlin_wilmersdorf_binger_strasse_wohnblock.jpg"
         ),
     ),
     CaseTemplate(

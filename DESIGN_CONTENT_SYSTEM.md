@@ -139,7 +139,7 @@ Never choose "more impressive" over "more accurate".
 
 These tokens apply to `docs/case-study.html` / `docs/styles.css` only. The bot has no visual tokens (§7) and the dashboard uses stock Streamlit (§8).
 
-The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, four numbered sections, one code-native product preview, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine.
+The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, four numbered sections, one real Telegram product screenshot, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine.
 
 ### 5.1 Color — ADOPT
 
@@ -157,9 +157,12 @@ All colors come from `:root` in `docs/styles.css`. New page styles MUST use thes
 | `--accent` | `#08766e` | Single accent — FlatFeed teal | Kicker numbers, state dots, button hovers, selection, focus rings | Long text |
 | `--accent-deep` | `#055d57` | Accent text/links | Link hovers and demo-state label | — |
 | `--accent-wash` | `#e3f2ee` | Accent wash | Role note and quiet accent fills | Text backgrounds needing contrast |
+| `--mac-close` | `#ff5f57` | macOS-style close control | Decorative window control only | Content, status, or evidence |
+| `--mac-minimize` | `#febc2e` | macOS-style minimize control | Decorative window control only | Content, status, or evidence |
+| `--mac-maximize` | `#28c840` | macOS-style maximize control | Decorative window control only | Content, status, or evidence |
 
 Rules:
-- **One-accent system:** teal is the only content accent. Evidence is distinguished by labels and filled/outlined square markers, not by a second result color.
+- **One-accent system:** teal is the only content accent. The three macOS-style window-control tokens are a decorative chrome exception and MUST NOT encode product status or evidence. Evidence is distinguished by labels and filled/outlined square markers, not by a second result color.
 - The page has no error/warning/success status colors — it is editorial, not operational. Do not import status palettes from the bot, the dashboard, or Opsqora's status set (`--ok`/`--warn`/`--bad` were deliberately not ported).
 - The dark CTA uses `--ink` as ground with literal white/transparent-white values in the local component rules. It is the only inverted zone on the page except dark buttons.
 
@@ -198,7 +201,7 @@ Rules:
 
 ### 5.3 Borders, Radius, Elevation — ADOPT
 
-- **Square corners everywhere: border-radius 0.** Status dots are literal squares. Do not introduce decorative radii.
+- **Square corners by default: border-radius 0.** Status dots are literal squares. The three circular `.mac-window-dot` controls are the only sanctioned radius exception and exist solely in the screenshot frame.
 - 1px `--line` hairlines divide and border; 1px `--ink` rules open sections and label groups.
 - Elevation: one shadow only — on `.product-preview`. Everything else is flat.
 - No gradients anywhere. The sticky header uses `color-mix` transparency + `backdrop-filter: blur(10px)`, not a gradient; the blur radius stays fixed px.
@@ -214,7 +217,7 @@ Rules:
 
 - Icons are inline hand-written SVG strokes, stroke `currentColor`, width 2: 14px inside buttons (arrows, git-branch), 16px in panel headers. No icon library at runtime, no emoji on the page.
 - Brand: `assets/flatfeed-logo-mark.png` at 26px in the header/footer wordmark, `alt=""` (decorative next to the visible name).
-- Imagery: `assets/berlin-wbs-building.jpg` appears only inside the code-native product preview. It depicts the same real building/location named by the showcase address; the caption and alt text state that the apartment terms remain synthetic. Do not add dashboard mockups or decorative illustrations.
+- Imagery: `assets/flatfeed-telegram-showcase.png` is the sole hero product image. It is a real Telegram demo-session screenshot whose building photo and address refer to the same location; the caption and alt text state that apartment terms remain synthetic. The surrounding macOS-style bar is presentation chrome, not a claim that Telegram was captured in macOS. Do not add dashboard mockups or decorative illustrations.
 - Any photo of a building MUST keep alt text disclosing its demo context. Source, author, license, and modifications stay documented in `assets/listing_photos/LICENSES.md`; attribution for a licensed public-preview image also appears in the adjacent figcaption.
 
 ---
@@ -238,7 +241,7 @@ Rules:
 `/start` and `/filter` show the user's filter card (`<b>Your filter</b>` + current values) with contextual inline actions: `Set up filter` (empty filter) or `Show matches` / `Edit filter` / `Reset filter` / `🗑 Delete my data` (saved filter). The privacy action stays on the card — discoverable, not buried in `/help`.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → sticky top bar (brand; 4-item nav: Product · Decisions · Evidence · Next test; Repository + Try the demo) → split hero (plain-language proposition, WBS/Kaltmiete gloss, role/status metadata, one code-native Telegram product preview) → **four-question framework**: 01 Product · 02 Decisions · 03 Evidence · 04 Next test → dark CTA → sibling case cross-link → footer.
+Skip link → sticky top bar (brand; 4-item nav: Product · Decisions · Evidence · Next test; Repository + Try the demo) → split hero (plain-language proposition, WBS/Kaltmiete gloss, role/status metadata, one real Telegram demo screenshot in a macOS-style evidence frame) → **four-question framework**: 01 Product · 02 Decisions · 03 Evidence · 04 Next test → dark CTA → sibling case cross-link → footer.
 
 The page MUST answer in order: what is the user flow, what did the candidate decide, what is actually demonstrated, and what should be tested next. AI QA appears only as one bounded decision/limitation; dashboard mockups, mock-cost, legal analysis, and detailed eval tables do not belong in the main public narrative. At ≤56rem the nav may hide because the four sections remain a single linear scroll and the two primary header actions remain visible.
 
@@ -538,7 +541,7 @@ Audience adaptation is allowed (gloss depth, sentence length) — mechanical wor
 The page serves three reading depths; every depth must independently answer its questions.
 
 **10-second scan** (kicker + H1 + lede + meta + product preview) must answer: What is this, who is it for, what did the candidate own, and what is the prototype boundary?
-Mechanics: the H1 names one filter, Berlin WBS listings, Telegram, and prototype status. The lede says the current version uses a synthetic catalog and names live-source/renter outcomes as open. The product preview shows the four-field temporary filter and one current synthetic match; it does not show internal QA metrics.
+Mechanics: the H1 names one filter, Berlin WBS listings, Telegram, and prototype status. The lede says the current version uses a synthetic catalog and names live-source/renter outcomes as open. The product preview shows one current synthetic match in a real Telegram demo session; it does not show internal QA metrics.
 
 **30-second scan** (+ section headings, workflow, decision cards, evidence split) must answer: what the core flow is, which three decisions matter, and what is demonstrated versus unvalidated.
 Mechanics: the four H2s state Product / Decisions / Evidence / Next test as takeaway sentences. Evidence uses two labeled lists, not a results dashboard. The only public eval number is the authored synthetic case count, immediately qualified as a regression guard rather than production accuracy.
@@ -547,7 +550,7 @@ Mechanics: the four H2s state Product / Decisions / Evidence / Next test as take
 
 Element rules:
 - **Hero:** kicker → plain proposition H1 → boundary-aware lede → term gloss → CTAs → four-item meta `dl`. Every value is decodable without insider context.
-- **Product preview:** one code-native Telegram representation only. Values come from the current synthetic catalog; the caption separates the real building location from synthetic apartment terms and carries the photo attribution. No fake dashboard, fake browser chrome, or mock metrics.
+- **Product preview:** one real Telegram demo-session screenshot only, presented inside a clearly external macOS-style evidence frame. Values come from the current synthetic catalog; the caption separates the real building location from synthetic apartment terms and carries the photo attribution. The screenshot may be cropped to exclude Telegram's empty composer, but its card content MUST NOT be edited. No fake dashboard, product-internal browser chrome, or mock metrics.
 - **Workflow:** Filter → Normalize → Check → Match → Notify. "Check" is explicitly the synthetic adapter's local catalog state; "Notify" is optional background delivery with deduplication.
 - **Decisions:** exactly three public decisions: four-field scope, deterministic matching/optional QA boundary, reliability controls before live-source breadth.
 - **Evidence:** Demonstrated now vs Not demonstrated yet. Do not present field accuracy, exact accuracy, mock cost, or zero-error counts as product outcomes.
@@ -736,7 +739,7 @@ For Claude/Fable, Codex, and other coding agents.
 - [ ] Card: field order, labels, grouping, and fallback strings match §10 exactly.
 - [ ] Delivery: adapter state check, optional background dedupe, ≤10 cards, fail-closed matching intact (§3 P5).
 - [ ] Dashboard: new sections are question-headed with caption provenance; no hand-typed metric values (§8).
-- [ ] Case page: tokens only, square corners, shadow only on the product preview, one teal content accent (§5).
+- [ ] Case page: tokens only, square corners except the three macOS-style window controls, shadow only on the product preview, one teal content accent (§5).
 - [ ] Case page: four-question structure, numbered-kicker motif, one product preview, and clear mobile linear flow (§6.3, §14).
 - [ ] Accessibility: aria labels/alt preserved; new text colors checked ≥4.5:1; new motion gated (§15).
 - [ ] Admin vs user separation intact: no QA jargon in renter-facing surfaces (§3 P8).
@@ -774,6 +777,14 @@ Update this file in the same change. External references inform; project needs d
 - **Affected surfaces:** `synthetic/case_catalog.py`, `synthetic/generator.py`, `assets/listing_photos/LICENSES.md`, `docs/assets/berlin-wbs-building.jpg`, `docs/case-study.html`, `docs/demo-listing.html`, `README.md`, `docs/PROJECT_CONTEXT.md`, `tests/test_synthetic_catalog.py`, and this document (§§3, 5, 10, 22, 34).
 - **Compatibility impact:** the first synthetic case changes from Rosenfelder Str. 12 / 10315 to Suermondtstr. 56–64 / 13053 and uses a case-specific photo override. Its transit estimates change with the coordinates. Other synthetic cases retain the deterministic illustrative-photo pool. The listing-card fields and order do not change.
 - **Migration consideration:** fixed now in the catalog and current code-native public preview. A fresh real Telegram screenshot should replace the code-native preview after the updated card is captured; the adjacent attribution must remain when that swap happens.
+
+### 2026-07-14 real Telegram proof in a macOS-style frame
+
+- **Problem:** the case-study hero still reconstructed the bot card in HTML after the corrected, address-aligned card had been captured from a real Telegram session. That left the strongest product proof looking illustrative, and the raw phone screenshot included an empty composer that did not help a hiring manager assess the product.
+- **Rationale:** a real demo-session screenshot is more credible than a code-native reconstruction. The screenshot itself remains unedited; CSS crops only the empty Telegram composer. A minimal macOS-style bar with red, yellow, and green controls provides the requested portfolio-window context without pretending those controls belong to Telegram. The adjacent caption keeps the synthetic-data boundary and credits Bodo Kubrak at the point of display.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`, `docs/assets/flatfeed-telegram-showcase.png`, `docs/demo-listing.html`, `assets/listing_photos/LICENSES.md`, `README.md`, `docs/PROJECT_CONTEXT.md`, and this document (§§5, 22, 34). The underlying showcase data changes to Binger Str. 10 are recorded in `synthetic/case_catalog.py` and `tests/test_synthetic_catalog.py`.
+- **Compatibility impact:** the old code-native preview classes and `docs/assets/berlin-wbs-building.jpg` no longer conform to the current one-screenshot rule. Circular red/yellow/green window controls are a narrow exception to the square-corner and one-content-accent rules; they are decorative and carry no product meaning.
+- **Migration consideration:** fixed now. The obsolete preview asset and CSS are removed, and the previously open screenshot-replacement decision is closed.
 
 ### 2026-07-14 minimal prototype narrative and three-step tour
 
@@ -901,7 +912,6 @@ Questions needing a human decision before rules can be written (distinct from §
 | Issue | Decision type | Owner |
 |---|---|---|
 | Confirm the canonical public GitHub URL used in `docs/case-study.html` links | Content/publishing | Author |
-| Replace case-page HTML mockups with real demo-session screenshots (stated next step)? | Content | Author |
 | Should renters ever see match reasons (`MatchDecision.reasons`) in cards? | Product | Author |
 | Automate eval-number propagation into CASE_STUDY.md / case-study.html from `run_eval --json`? | Implementation | Author |
 | Converge the `All listings` / `Browse all listings` label pair on one form | Content | Author |
