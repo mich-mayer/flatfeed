@@ -20,6 +20,7 @@ class CaseTemplate:
     truth_bezirk: str
     truth_lat: float
     truth_lon: float
+    photo_asset: str | None = None
     truth_seniors_only: bool = False
     truth_exchange_only: bool = False
     truth_family_only: bool = False
@@ -30,10 +31,10 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         tag="wbs_range_standard",
         difficulty="easy",
         district="Lichtenberg",
-        postal_code="10315",
+        postal_code="13053",
         title="2-Zimmer-Wohnung mit WBS 100-140",
         raw_text=(
-            "Adresse\nRosenfelder Str. 12\n10315 Berlin, Friedrichsfelde\n"
+            "Adresse\nSuermondtstr. 56-64\n13053 Berlin, Alt-Hohenschönhausen\n"
             "Etage\n2\nZimmer\n2\nKaltmiete: 512,40 Euro\nWarmmiete: 690,20 Euro\n"
             "Für die Bewerbung ist ein WBS 100-140 erforderlich."
         ),
@@ -44,8 +45,12 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="2",
         truth_bezirk="Lichtenberg",
-        truth_lat=52.5108562,
-        truth_lon=13.5051807,
+        truth_lat=52.549683,
+        truth_lon=13.498489,
+        photo_asset=(
+            "assets/listing_photos/"
+            "berlin_hohenschoenhausen_suermondtstr_wohnblock.jpg"
+        ),
     ),
     CaseTemplate(
         tag="wbs_range_above_140",

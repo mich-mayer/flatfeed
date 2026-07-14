@@ -205,7 +205,9 @@ git diff --check
 - AI QA findings are admin-only and require human feedback.
 - User-facing listing cards are formatted in `flatfeed/matching.py`.
 - Listing photos are third-party Wikimedia Commons demo assets with separate
-  attribution and license details in `assets/listing_photos/LICENSES.md`.
+  attribution and license details in `assets/listing_photos/LICENSES.md`. The
+  guided-tour showcase uses an address-aligned Suermondtstraße photo; its
+  apartment details remain synthetic.
 - Synthetic listing URLs (the card's `Open listing` link) point at
   `docs/demo-listing.html`, a static GitHub Pages explainer — not a live
   housing site. See `docs/PROJECT_CONTEXT.md` for the activity-check
