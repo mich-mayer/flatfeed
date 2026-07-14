@@ -1,23 +1,19 @@
 # FlatFeed
 
-FlatFeed is a Telegram bot and Streamlit dashboard prototype for collecting
-Berlin WBS apartment listings from source adapters and matching them to user
-filters. The current demo uses synthetic listings instead of scraping real
-housing companies, then demonstrates deterministic parsing, matching, AI QA,
-and evals in a defensible portfolio setting.
+FlatFeed is a functional Telegram prototype for matching Berlin WBS apartment
+listings against four renter criteria. The current version runs on one
+synthetic source adapter: it demonstrates the end-to-end workflow and its
+failure controls, not live housing coverage or renter outcomes.
 
 ## What It Shows
 
-- Synthetic Berlin apartment catalog with hidden ground truth.
-- Source-adapter architecture for collecting listings from multiple catalogs.
-- Fixed Telegram filter setup: WBS, Bezirk, max Kaltmiete, and room count.
-- Deterministic parsing for WBS, prices, rooms, floor, address, and district.
-- Deterministic matching and one-time Telegram notifications.
-- Local S-Bahn/U-Bahn walking-time estimates from bundled station coordinates.
-- Optional admin-only AI QA for parser review; AI never mutates listings.
-- Eval runner that compares parser output with synthetic golden truth.
-- Streamlit "product operations" dashboard: pipeline readiness, source trust,
-  live parsing accuracy, AI QA usefulness/cost, and proven/unproven evidence.
+- Four-field Telegram filter: WBS, district, max Kaltmiete, and rooms.
+- Deterministic parsing and matching with fail-closed unknown values.
+- Standardized listing cards and a synthetic-adapter state check.
+- Optional background notification deduplication.
+- 15 authored synthetic cases currently pass the parser regression check.
+- Optional admin QA workflow; the public demo uses a deterministic mock and QA
+  cannot mutate listings or matching rules.
 
 No real source scraping, image reuploading, Google Maps, Photon geocoding, or
 server deployment scripts are part of the current demo product. The collection
@@ -112,42 +108,20 @@ Run the dashboard:
 ENV_FILE=.env.local streamlit run flatfeed/dashboard/streamlit_app.py
 ```
 
-## Demo Script
+## Guided Demo
 
-New visitors (hiring managers, first-time testers) get a 5-screen,
-product-first guided tour instead of the raw filter wizard:
+Send `/start`, or open `https://t.me/FlatFeedBot?start=tour` directly. The core
+tour has three steps:
 
-1. Send `/start`, or open `https://t.me/FlatFeedBot?start=tour` directly.
-   Both lead to the same intro with `Start the tour` / `Skip the tour`.
-2. **Step 1 — One renter job:** shows a realistic filter as plain text.
-   Held ephemeral — nothing is saved yet.
-3. **Step 2 — The result:** runs the real matching predicate and the real
-   source-activity check over the live catalog, then shows the resulting
-   listing card as "1 of N active matches" plus why it matched.
-4. **Step 3 — Rules make the decision:** the product pipeline (Collect →
-   Normalize → Verify → Match → Deliver) and the privacy facts. No AI here.
-5. **Step 4 — AI checks a narrow risk:** the one AI step. Injects a live WBS
-   fault and shows the resulting AI QA alert with the same triage buttons a
-   real admin sees, attached to the same message.
-6. **Step 5 — What this prototype proves:** `Working now` / `Measured on
-   synthetic data` (a live golden-set count) / `Not yet proven`, plus
-   `Use this demo filter` (saves it only now, on request), `Set up my own
-   filter`, and `Read the case study`.
-7. Nothing tapped during the tour is written to `ai_qa_reviews` or `users`
-   before that explicit final choice — the fault injection and triage are
-   display-only, so ten visitors never skew the metrics or each other's
-   filters. See `docs/PROJECT_CONTEXT.md` for the full guarantee.
-8. `🛠 Admin` is visible to every visitor as a demo view (including
-   `Replay the tour`); actions that change catalog data or spend budget stay
-   restricted to `ADMIN_TELEGRAM_USER_IDS` and say so if tapped without
-   admin rights.
-9. As an admin, `🛠 Admin` -> `Run QA demo` runs the same ephemeral
-   fault-injection flow over a few catalog listings; `Review flagged issues`
-   and `Run catalog QA` are the real, persisting admin paths.
-10. Tap `📊 Effectiveness dashboard` in the admin panel (or open the
-    dashboard directly) to inspect the product-operations view: pipeline
-    readiness, source trust, live parsing accuracy, AI QA usefulness/cost,
-    and proven/unproven evidence.
+1. A four-field demo filter is shown without saving it.
+2. The same matching predicate as the main product path runs against the
+   synthetic catalog and returns one standardized card with match reasons.
+3. The bot separates what is implemented and regression-checked from what has
+   not been validated with live sources or renters.
+
+Only `Use this demo filter` writes the temporary filter to the user record. The
+AI QA fault simulation remains available as an optional branch after the core
+tour; it uses a deterministic mock and stores no tour feedback.
 
 The persistent chat keyboard keeps the main story visible:
 
@@ -179,9 +153,9 @@ Use `--provider openai` only for optional AI QA experiments with an API key and
 explicit budget settings. The default OpenAI QA model is `gpt-5.4-mini`, with
 pricing configured as `$0.75 / 1M` input tokens and `$4.50 / 1M` output tokens.
 
-Eval result numbers are quoted by hand in `CASE_STUDY.md` and
-`docs/case-study.html`. After any eval run that changes them, check every
-quoted occurrence stayed in sync:
+Public portfolio surfaces quote only the authored regression-case count. Field
+accuracy and mock-provider diagnostics stay in the runnable eval report. After
+an eval change, verify the public count remains synchronized:
 
 ```bash
 PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m scripts.check_eval_numbers
