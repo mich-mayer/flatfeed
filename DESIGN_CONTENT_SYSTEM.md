@@ -209,7 +209,7 @@ Rules:
 ### 5.4 Grid and Width — ADOPT
 
 - One centered column: `.case` width `min(100% - 3rem, 75rem)`.
-- Hero is a two-column proposition + product preview at desktop and a single linear column below 56rem.
+- Hero is a two-column proposition + product preview at desktop and a single linear column below 56rem. On the two-column layout, the top of `.hero-copy` aligns with the top of `.product-preview`; do not vertically center the shorter column against a tall product image.
 - Numbered mono kickers (`01`–`04`) are the section motif. Workflow is 5-up, decisions 3-up, evidence 2-up; each collapses per §14.
 - The dark CTA spans the content width.
 
@@ -769,6 +769,14 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-14 top-aligned case-study hero
+
+- **Problem:** after the real portrait Telegram screenshot replaced the shorter HTML mockup, the hero's centered grid alignment pushed the proposition 61–131px below the screenshot at common desktop widths. The first screen read as two unrelated blocks instead of one proposition-and-proof pair.
+- **Rationale:** the existing Swiss editorial grid and 10-second-scan rules depend on a clear shared starting line. Top alignment preserves the approved type scale, column widths, whitespace, and responsive stack while restoring that relationship; resizing the headline or screenshot would solve a positioning defect by weakening content hierarchy or product evidence.
+- **Affected surfaces:** `docs/styles.css` and this document (§§5.4, 22, 34).
+- **Compatibility impact:** desktop `.case-hero` layouts that relied on vertical centering no longer conform. The single-column layout below 56rem keeps its existing source order and spacing.
+- **Migration consideration:** fixed now with `align-items: start`; no component or content migration is required.
 
 ### 2026-07-14 address-aligned showcase photo and attribution
 

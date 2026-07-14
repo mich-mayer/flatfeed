@@ -259,7 +259,7 @@ img {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(27rem, 0.88fr);
   gap: clamp(2.5rem, 6vw, 5.5rem);
-  align-items: center;
+  align-items: start;
   min-height: calc(100svh - 4rem);
   padding: 4rem 0 4.5rem;
 }
