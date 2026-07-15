@@ -770,6 +770,14 @@ Any change to this system (new rule, changed rule, new component/message class, 
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
 
+### 2026-07-15 exact showcase entrance and CC0 asset naming
+
+- **Problem:** the Wikimedia filename labels the CC0 photograph as Binger Straße 10, but the photographed entrance is marked `91` beside the `Schlangenbader Straße` sign; the nearby `Nauheimer Straße` sign points toward the intersecting street. Berlin's monument register confirms that these addresses belong to the same large residential block, but the filename is not the exact photographed entrance.
+- **Rationale:** retaining the verified CC0 photograph is the simplest rights-safe option. The showcase address now follows the visible entrance (`Schlangenbader Str. 91`) and address-level OpenStreetMap coordinates, while the local asset name describes what the image actually shows. Attribution remains as provenance even though CC0 does not require it.
+- **Affected surfaces:** `synthetic/case_catalog.py`, `synthetic/listing_photos.py`, `tests/test_synthetic_catalog.py`, `assets/listing_photos/LICENSES.md`, `README.md`, `docs/PROJECT_CONTEXT.md`, `docs/demo-listing.html`, the Telegram guided-tour card, `docs/assets/flatfeed-telegram-showcase.png`, `docs/case-study.html`, and this document (§§5.5, 22, 34).
+- **Compatibility impact:** the first synthetic case changes from Binger Str. 10 to Schlangenbader Str. 91 and receives corrected address-level coordinates. The previous local Binger-named asset path is removed. Existing captured Telegram screenshots containing Binger Str. 10 no longer represent the current catalog and must not be presented as current evidence.
+- **Migration consideration:** the catalog, tests, local asset naming, durable docs, Telegram card, and public case-study screenshot now use the corrected entrance address.
+
 ### 2026-07-14 hiring-manager copy and preview-density pass
 
 - **Problem:** the tall Telegram proof still dominated the wide hero, while several reader-facing phrases used process language (`explicit, inspectable workflow`, `regression set`) where a hiring manager needed a faster product explanation. The compact term gloss also placed WBS and Kaltmiete on one line, and the metadata label `User` was less precise than the intended audience label.

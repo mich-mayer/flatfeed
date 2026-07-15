@@ -206,7 +206,7 @@ git diff --check
 - User-facing listing cards are formatted in `flatfeed/matching.py`.
 - Listing photos are third-party Wikimedia Commons demo assets with separate
   attribution and license details in `assets/listing_photos/LICENSES.md`. The
-  guided-tour showcase uses an address-aligned Binger Straße photo; its
+  guided-tour showcase uses an address-aligned Schlangenbader Straße 91 photo; its
   apartment details remain synthetic.
 - Synthetic listing URLs (the card's `Open listing` link) point at
   `docs/demo-listing.html`, a static GitHub Pages explainer — not a live

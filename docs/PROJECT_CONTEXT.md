@@ -207,8 +207,8 @@ coordinates, and special constraints.
 Synthetic listing cards use a small local pool of photos of Berlin multi-family
 residential buildings. Most are illustrative and are not representations of the
 synthetic listing address. The guided-tour showcase is deliberately stricter:
-its Binger Straße photo, address, district, and coordinates refer to the same
-real location. Apartment availability, rent, floor, rooms, and WBS eligibility
+its Schlangenbader Straße 91 photo, address, district, and coordinates refer to the
+same real location. Apartment availability, rent, floor, rooms, and WBS eligibility
 remain synthetic. Source, author, license, and modification details are
 documented in `assets/listing_photos/LICENSES.md`; the case-study caption credits
 the showcase photo at the point of display.
