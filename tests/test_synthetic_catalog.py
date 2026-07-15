@@ -31,12 +31,14 @@ class SyntheticCatalogTests(unittest.TestCase):
     def test_showcase_listing_photo_matches_its_real_location(self) -> None:
         listing = generate_synthetic_listings(count=1)[0]
 
-        self.assertIn("Binger Str. 10", listing.raw_text)
+        self.assertIn("Schlangenbader Str. 91", listing.raw_text)
         self.assertEqual(listing.truth_postal_code, "14197")
         self.assertEqual(listing.truth_bezirk, "Charlottenburg-Wilmersdorf")
+        self.assertEqual(listing.truth_lat, 52.4758411)
+        self.assertEqual(listing.truth_lon, 13.3083927)
         self.assertEqual(
             listing.image_url,
-            "assets/listing_photos/berlin_wilmersdorf_binger_strasse_wohnblock.jpg",
+            "assets/listing_photos/berlin_wilmersdorf_schlangenbader_strasse_91_wohnblock.jpg",
         )
 
     def test_all_case_templates_drive_address_level_coordinates(self) -> None:

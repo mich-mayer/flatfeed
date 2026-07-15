@@ -6,7 +6,7 @@ from pathlib import Path
 LISTING_PHOTO_ASSETS: tuple[str, ...] = (
     "assets/listing_photos/berlin_tempelhof_alboinplatz_wohnblock.jpg",
     "assets/listing_photos/berlin_hohenschoenhausen_suermondtstr_wohnblock.jpg",
-    "assets/listing_photos/berlin_wilmersdorf_binger_strasse_wohnblock.jpg",
+    "assets/listing_photos/berlin_wilmersdorf_schlangenbader_strasse_91_wohnblock.jpg",
     "assets/listing_photos/berlin_wedding_ostender_strasse_wohnblock.jpg",
     "assets/listing_photos/berlin_mitte_memhardstrasse_wohnblock.jpg",
 )

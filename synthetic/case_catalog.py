@@ -34,7 +34,7 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         postal_code="14197",
         title="2-Zimmer-Wohnung mit WBS 100-140",
         raw_text=(
-            "Adresse\nBinger Str. 10\n14197 Berlin, Wilmersdorf\n"
+            "Adresse\nSchlangenbader Str. 91\n14197 Berlin, Wilmersdorf\n"
             "Etage\n2\nZimmer\n2\nKaltmiete: 512,40 Euro\nWarmmiete: 690,20 Euro\n"
             "Für die Bewerbung ist ein WBS 100-140 erforderlich."
         ),
@@ -45,11 +45,11 @@ CASE_TEMPLATES: tuple[CaseTemplate, ...] = (
         truth_rooms=2.0,
         truth_floor="2",
         truth_bezirk="Charlottenburg-Wilmersdorf",
-        truth_lat=52.475428093256056,
-        truth_lon=13.30930906109402,
+        truth_lat=52.4758411,
+        truth_lon=13.3083927,
         photo_asset=(
             "assets/listing_photos/"
-            "berlin_wilmersdorf_binger_strasse_wohnblock.jpg"
+            "berlin_wilmersdorf_schlangenbader_strasse_91_wohnblock.jpg"
         ),
     ),
     CaseTemplate(
