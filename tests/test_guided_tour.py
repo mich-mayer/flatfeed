@@ -387,7 +387,7 @@ class TourEphemeralTriageTests(unittest.IsolatedAsyncioTestCase):
                 self.assertIn("Recorded for this demo only", response_text)
                 self.assertIn("nothing you tap is stored", response_text)
                 self.assertIn(
-                    "<b>Parser error</b> is the expected label for this constructed example",
+                    "<b>Parser error</b> is the label an admin would confirm",
                     response_text,
                 )
                 self.assertNotIn("Correct —", response_text)
@@ -454,6 +454,18 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         bot = _FakeBot()
 
         with patch("main.SessionLocal", self.test_session):
+            with self.test_session() as session:
+                session.add(
+                    _make_listing(
+                        suffix="screen-fixture-2",
+                        rooms=2,
+                        district="Lichtenberg",
+                        raw_text="WBS 100-140 erforderlich. Kaltmiete: 550 Euro.",
+                        rent_kalt=550,
+                        first_seen_at=datetime(2026, 1, 2),
+                    )
+                )
+                session.commit()
             await M._send_tour_screen_2(callback, bot)
 
         # One tap = one message: the step framing, the "1 of N" result, and
@@ -462,12 +474,14 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(bot.sent_messages), 1)
         card_message = bot.sent_messages[0]
         self.assertIn("Step 2/3", card_message["text"])
-        self.assertIn("1 of 1 matching listing", card_message["text"])
+        self.assertIn("1 of 2 matching listings", card_message["text"])
         self.assertIn("Why it matched", card_message["text"])
         self.assertIn("District:", card_message["text"])
-        next_button = card_message["reply_markup"].inline_keyboard[0][0]
-        self.assertEqual(next_button.text, "See what is proven")
-        self.assertEqual(next_button.callback_data, "tour:5")
+        keyboard = card_message["reply_markup"].inline_keyboard
+        self.assertEqual(keyboard[0][0].text, "See what is proven")
+        self.assertEqual(keyboard[0][0].callback_data, "tour:5")
+        self.assertEqual(keyboard[1][0].text, "How matching works")
+        self.assertEqual(keyboard[1][0].callback_data, "tour:3")
 
     async def test_screen_3_explains_the_pipeline_and_privacy(self) -> None:
         callback = _FakeCallback("tour:3")
@@ -481,7 +495,7 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
             self.assertIn(word, text)
         self.assertIn("/delete", text)
         next_button = markup.inline_keyboard[0][0]
-        self.assertEqual(next_button.text, "Back to the summary")
+        self.assertEqual(next_button.text, "See what is proven")
         self.assertEqual(next_button.callback_data, "tour:5")
 
     async def test_screen_4_introduces_the_ai_layer(self) -> None:
@@ -491,7 +505,7 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(len(callback.message.answered), 1)
         text, markup = callback.message.answered[0]
-        self.assertIn("Optional · QA control", text)
+        self.assertIn("Optional · QA check", text)
         self.assertIn("cannot change a listing, matching rule or renter-facing card", text)
         next_button = markup.inline_keyboard[0][0]
         self.assertEqual(next_button.text, "Simulate a parser fault")
@@ -515,7 +529,7 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         button_texts = [b.text for row in markup.inline_keyboard for b in row]
         self.assertIn("Use this demo filter", button_texts)
         self.assertIn("Set up my own filter", button_texts)
-        self.assertIn("Optional: see the QA control", button_texts)
+        self.assertIn("Optional: try the QA check", button_texts)
         self.assertIn("Read the case study", button_texts)
 
 
@@ -573,7 +587,7 @@ class TourEntryPointTests(unittest.IsolatedAsyncioTestCase):
         pitch_text, pitch_markup = message.answered[1]
 
         self.assertIn("FlatFeed", intro_text)
-        self.assertIn("/delete", intro_text)
+        self.assertIn("does not save your filter until you explicitly keep it", intro_text)
         self.assertIsNotNone(intro_markup)  # persistent reply keyboard is attached
 
         tour_buttons = [
