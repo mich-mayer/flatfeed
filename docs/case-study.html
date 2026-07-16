@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
-      content="FlatFeed product case study: an end-to-end Telegram prototype for matching Berlin WBS listings with explicit renter filters."
+      content="FlatFeed product case study: a Telegram prototype that matches Berlin WBS listings against one saved four-field filter. Runs end to end on a synthetic catalog."
     >
     <title>FlatFeed | Product case study</title>
     <link rel="icon" href="favicon.ico" sizes="any">
@@ -26,7 +26,7 @@
         <a class="brand" href="case-study.html" aria-label="FlatFeed case study">
           <img class="brand-mark" src="assets/flatfeed-logo-mark.png" alt="">
           <strong>FlatFeed</strong>
-          <span class="brand-sub">Product case</span>
+          <span class="brand-sub">Case study</span>
         </a>
         <nav aria-label="Case study sections">
           <a href="#product">Product</a>
@@ -43,12 +43,13 @@
       <main id="case-main">
         <section class="case-hero" aria-labelledby="case-title">
           <div class="hero-copy">
-            <p class="kicker">Product case study · functional prototype · synthetic catalog</p>
-            <h1 id="case-title">One filter for Berlin WBS listings — tested as an end-to-end Telegram prototype.</h1>
+            <p class="kicker">Product case study · working prototype · synthetic catalog</p>
+            <h1 id="case-title">One filter for Berlin WBS listings, running end to end as a Telegram prototype.</h1>
             <p class="case-lede">
-              FlatFeed normalizes inconsistent listing text and compares four renter criteria with
-              explicit rules. The current version runs end to end on a synthetic catalog; live
-              source coverage, freshness and renter outcomes remain open questions.
+              A renter saves four criteria once — WBS, district, maximum Kaltmiete, rooms.
+              FlatFeed turns inconsistent listing text into comparable fields and shows active
+              listings that match all four. The current version runs end to end on a synthetic
+              catalog; live source coverage, freshness and renter outcomes remain open questions.
             </p>
 
             <p class="term-note">
@@ -58,7 +59,7 @@
 
             <div class="case-actions">
               <a class="btn btn--primary" href="https://t.me/FlatFeedBot?start=tour">
-                Try the guided demo
+                Try the demo
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
               </a>
               <a class="btn btn--ghost" href="#decisions">See the decisions</a>
@@ -67,7 +68,7 @@
             <dl class="case-meta">
               <div><dt>Role</dt><dd>Product, UX, evaluation, implementation</dd></div>
               <div><dt>Audience</dt><dd>Berlin WBS renters</dd></div>
-              <div><dt>Status</dt><dd>Functional prototype</dd></div>
+              <div><dt>Status</dt><dd>Working prototype</dd></div>
               <div><dt>Data</dt><dd>Synthetic by design</dd></div>
             </dl>
           </div>
@@ -102,18 +103,18 @@
             <p class="kicker"><span>01</span>Product</p>
             <h2>Set one filter. See matching listings.</h2>
             <p>
-              The working hypothesis is that WBS renters lose time checking fragmented listing
-              formats and reapplying the same listing criteria. FlatFeed tests a narrower job:
-              set one filter, then inspect active matches in a consistent format.
+              The working hypothesis: WBS renters lose time re-reading fragmented listings and
+              re-checking the same four criteria on each one. FlatFeed tests one narrow job:
+              set a filter once, then see active matches in one consistent format.
             </p>
           </header>
 
           <ol class="workflow" aria-label="FlatFeed product workflow">
-            <li><span>01</span><h3>Filter</h3><p>WBS, district, maximum cold rent and rooms.</p></li>
+            <li><span>01</span><h3>Filter</h3><p>WBS, district, maximum Kaltmiete and rooms.</p></li>
             <li><span>02</span><h3>Normalize</h3><p>Fixed rules turn listing text into comparable fields.</p></li>
-            <li><span>03</span><h3>Check</h3><p>The synthetic adapter confirms its local catalog state.</p></li>
+            <li><span>03</span><h3>Check</h3><p>The synthetic adapter re-checks that the listing is still active in its local catalog.</p></li>
             <li><span>04</span><h3>Match</h3><p>Explicit rules compare all four saved criteria.</p></li>
-            <li><span>05</span><h3>Notify</h3><p>Optional background delivery deduplicates newly seen matches.</p></li>
+            <li><span>05</span><h3>Notify</h3><p>Optional background notifications skip matches already recorded as delivered.</p></li>
           </ol>
         </section>
 
@@ -137,17 +138,18 @@
               <h3>Rules decide what renters see</h3>
               <p>
                 Parsing and matching are deterministic, so a match can be explained field by
-                field. Optional AI QA may flag parser drift for an admin, but cannot alter data or
-                user-facing results.
+                field. An optional AI QA step can flag a suspected parsing mistake to an admin;
+                it cannot change listings, rules, or what renters see.
               </p>
             </article>
             <article>
               <p class="decision-number">03</p>
               <h3>Reliability before source count</h3>
               <p>
-                A synthetic-adapter state check, background-delivery deduplication and deletion of
-                saved filter data are implemented. Live housing-company sources are outside this
-                version.
+                Every card is re-checked against the catalog before delivery, background
+                notifications skip matches already recorded as delivered, and a renter can
+                delete their saved data.
+                Live housing-company sources are outside this version.
               </p>
             </article>
           </div>
@@ -167,8 +169,8 @@
             <p class="kicker"><span>03</span>Evidence</p>
             <h2>The workflow runs. The market value is not yet proven.</h2>
             <p>
-              I use evidence labels to keep technical completion separate from user validation.
-              This is a functional product prototype, not a launched housing service.
+              I keep what is built separate from what users have validated. This is a working
+              prototype, not a launched housing service.
             </p>
           </header>
 
@@ -177,7 +179,7 @@
               <p class="evidence-status"><i aria-hidden="true"></i> Demonstrated now</p>
               <ul>
                 <li>End-to-end filter, match and Telegram delivery flow</li>
-                <li>Synthetic-adapter state check and background notification deduplication</li>
+                <li>Listings re-checked as active before delivery; background notifications skip matches already recorded as delivered</li>
                 <li>Deterministic matching with field-level reasons</li>
                 <li>15 synthetic test cases pass the regression check; live-source accuracy is not measured</li>
               </ul>
@@ -188,7 +190,7 @@
                 <li>Demand from real WBS renters</li>
                 <li>Coverage and freshness of permitted live sources</li>
                 <li>Time saved or application outcomes</li>
-                <li>Usefulness and false-alarm rate of hosted-model AI QA</li>
+                <li>Usefulness and false-alarm rate of AI QA with a real model (the demo uses a deterministic mock)</li>
               </ul>
             </article>
           </div>
@@ -206,8 +208,8 @@
             </p>
             <dl>
               <div><dt>Learn</dt><dd>Do renters understand and trust why a listing matched?</dd></div>
-              <div><dt>Measure</dt><dd>Filter completion, useful listing opens and stale-card rate.</dd></div>
-              <div><dt>Decide</dt><dd>Only then add source coverage or change the interaction.</dd></div>
+              <div><dt>Measure</dt><dd>How many renters finish the filter, how many open the listings they receive, and how often an opened card is already stale.</dd></div>
+              <div><dt>Decide</dt><dd>Only then add more sources or change the flow.</dd></div>
             </dl>
           </div>
         </section>
@@ -226,8 +228,8 @@
         <section class="case-sibling" aria-label="Another product case study">
           <p class="kicker">Another case</p>
           <p>
-            <strong>Opsqora</strong> explores a different AI boundary: AI clusters support feedback;
-            humans make the product decision.
+            <strong>Opsqora</strong> draws the AI boundary differently: the model clusters support
+            feedback, and humans make the product decision.
             <a href="https://mich-mayer.github.io/opsqora/case-study.html">Read the case study →</a>
           </p>
         </section>
@@ -241,7 +243,7 @@
         <p>Four explicit criteria. Deterministic matching. Synthetic data.</p>
         <nav aria-label="Footer links">
           <a href="https://github.com/mich-mayer/flatfeed">Repository</a>
-          <a href="https://github.com/mich-mayer/flatfeed/blob/main/CASE_STUDY.md">Markdown</a>
+          <a href="https://github.com/mich-mayer/flatfeed/blob/main/CASE_STUDY.md">Markdown version</a>
         </nav>
       </footer>
     </div>

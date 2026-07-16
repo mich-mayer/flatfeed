@@ -108,10 +108,11 @@ filter/matches flow:
 
 1. **One renter job** — shows the demo filter as plain text (WBS, district,
    Kaltmiete, rooms). Held ephemeral: nothing is written to `users` yet.
-2. **One matcher result** — runs the same matching predicate as the main
+2. **One match from the demo catalog** — runs the same matching predicate as the main
    product path (`is_listing_match`) over the synthetic catalog, then the
    synthetic adapter's local activity check (`_verified_active_matches`). It
-   shows one standardized card plus field-level match reasons.
+   shows one standardized card plus field-level match reasons, and offers an
+   optional `How matching works` pipeline explainer as a side branch.
 3. **Evidence and limits** — separates implemented behavior and the live
    golden-set count from unvalidated renter demand, live-source coverage, and
    hosted-model QA usefulness. `Use this demo filter` saves the filter only

@@ -1,9 +1,9 @@
 # FlatFeed
 
-FlatFeed is a functional Telegram prototype for matching Berlin WBS apartment
+FlatFeed is a working Telegram prototype for matching Berlin WBS apartment
 listings against four renter criteria. The current version runs on one
 synthetic source adapter: it demonstrates the end-to-end workflow and its
-failure controls, not live housing coverage or renter outcomes.
+reliability controls, not live housing coverage or renter outcomes.
 
 ## What It Shows
 

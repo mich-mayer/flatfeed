@@ -1,6 +1,6 @@
 # FlatFeed Case Study
 
-FlatFeed is a functional Telegram prototype for matching Berlin WBS apartment
+FlatFeed is a working Telegram prototype for matching Berlin WBS apartment
 listings against four renter criteria: WBS tier, district, maximum Kaltmiete,
 and room count. The current version runs on a synthetic catalog. It demonstrates
 the product workflow and its reliability controls; it does not demonstrate live
@@ -11,9 +11,9 @@ housing in Berlin. Kaltmiete is rent before utilities.
 
 ## 1. Product Hypothesis
 
-The premise is that WBS renters repeatedly inspect fragmented listing formats
-and apply the same basic checks. FlatFeed tests a narrower job: save one filter,
-then inspect matching listings in a consistent Telegram card.
+The premise: WBS renters re-read fragmented listings and repeat the same basic
+checks on each one. FlatFeed tests one narrow job: save one filter, then see
+matching listings as consistent Telegram cards.
 
 This premise has not yet been validated through renter research. The prototype
 exists to make that next test concrete, not to imply a launched housing service.
@@ -28,7 +28,8 @@ Filter → Normalize → Check → Match → Notify
 
 - A renter sets four filter fields.
 - Fixed parsing rules normalize listing text.
-- The current synthetic adapter checks the listing's state in its local catalog.
+- The current synthetic adapter re-checks that a listing is still active in
+  its local catalog.
 - Deterministic rules compare all four fields and explain a match.
 - An optional background path deduplicates newly seen matches against stored
   delivery history.
@@ -54,10 +55,10 @@ findings cannot automatically change listings, rules, or renter-facing results.
 
 ### Reliability before source count
 
-The prototype implements a synthetic-adapter state check, optional background
-notification deduplication, and deletion of the saved filter and delivery
-history from the FlatFeed database. Only one synthetic source adapter is
-implemented; there is no live housing-company ingestion in this version.
+Listings are re-checked as active before delivery, background notifications
+skip matches already recorded as delivered, and /delete removes the saved
+filter and delivery history from the FlatFeed database. Only one synthetic source adapter is implemented;
+there is no live housing-company ingestion in this version.
 
 ## 4. Evidence and Limits
 
@@ -74,11 +75,11 @@ Not demonstrated yet:
 - demand from real WBS renters;
 - permitted live-source coverage and freshness;
 - time saved or application outcomes;
-- hosted-model QA usefulness, false-alarm rate, or real cost.
+- usefulness, false-alarm rate, or real cost of AI QA with a real model.
 
 ## 5. Next Test
 
 Next, I would test the filter-to-listing flow with one permitted live source and
-a small group of WBS renters. The decision would be based on filter completion,
-useful listing opens, stale-card rate, and whether renters understand why a
-listing matched.
+a small group of WBS renters. The decision would be based on whether renters
+finish the filter, whether they open the listings they receive, how often an
+opened card is already stale, and whether they understand why a listing matched.
