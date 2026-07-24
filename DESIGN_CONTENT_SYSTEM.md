@@ -390,8 +390,20 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 - Dashboard charts confirm the adjacent metric blocks (coverage over time, cost, version comparison). If a metric answers the question, don't add a chart.
 - The case page has no charts. Evidence remains a labeled Demonstrated / Not demonstrated split.
 - Before frozen hosted-model validation, the only public eval number is the authored regression-case count, verified by `scripts/check_eval_numbers.py`.
-- After one exact frozen validation passes both the unchanged engineering contract and the Product Scorecard contract in `eval/AI_QA_EVAL_PLAN.md` §31, the Evidence section MAY contain one compact four-item scorecard: Parser Error Detection Rate, False Alert Rate, Correct Field Detection Rate, and Successful Check Rate. Each item MUST show the percentage and absolute count under the same-depth label `Synthetic frozen validation`.
-- The four-item scorecard is the only permitted landing metric block. Historical engineering metrics, field tables, confidence intervals, cost, and latency remain in the Markdown case study or eval artifacts. The scorecard sits below the renter-product story and MUST NOT turn the page into an AI QA dashboard.
+- After the one-time final locked holdout completes and passes a separate
+  evidence review, the Evidence section MAY report its result whether the
+  configuration passed or failed. It MUST show the final decision, the four
+  aggregate product metrics, and all seven field results under the same-depth
+  label `Offline AI QA evaluation · synthetic data · 600 listings`.
+- The landing reports only the final independent 600-listing result; development
+  and earlier validation scores stay out of public surfaces. The four aggregate
+  metrics explain overall behavior. The field table separately distinguishes
+  the four matching-critical filters from the three diagnostic listing fields
+  so the rejected rooms result cannot be hidden by the aggregate.
+- One clearly labeled inference-cost scenario MAY follow the final result. It
+  MUST name its volume proxy, formula, pricing date, assumptions, and exclusions
+  and MUST NOT read as measured production cost. Historical engineering
+  metrics, confidence intervals, and latency remain in eval artifacts.
 
 ---
 
@@ -546,7 +558,7 @@ The page serves three reading depths; every depth must independently answer its 
 Mechanics: the kicker states `working prototype` and `synthetic catalog` once. The H1 names one filter, Berlin WBS listings, and one consistent Telegram feed. The lede explains the save-once, normalize, and deterministic-match mechanism without repeating the prototype boundary. Metadata identifies the candidate's role, audience, status, and bounded admin-only AI QA role. Live-source and renter-outcome limitations stay in Evidence and the deeper case-study text instead of weakening the opening proposition. The product preview shows one current synthetic match in a real Telegram demo session; it does not show internal QA metrics.
 
 **30-second scan** (+ section headings, workflow, decision cards, evidence split) must answer: what the core flow is, which three decisions matter, and what is demonstrated versus unvalidated.
-Mechanics: the four H2s state Product / Decisions / Evidence / Next test as takeaway sentences. Decision cards explain the rationale and trade-off, not experiment outcomes. Evidence records implemented proof, measured synthetic results, and specific unknowns without repeating the decision rationale. Next test maps those unknowns to Learn / Measure / Decide signals. Evidence uses two labeled lists, not a results dashboard. Before frozen hosted-model validation, the only public eval number is the authored synthetic case count. After a passing frozen validation, one compact four-metric Product Scorecard may replace that numerical result under the explicit label `Synthetic frozen validation`; the surrounding evidence split and product-first hierarchy remain unchanged.
+Mechanics: the four H2s state Product / Decisions / Evidence / Next test as takeaway sentences. Decision cards explain the rationale and trade-off, not experiment outcomes. Evidence records implemented proof, measured synthetic results, and specific unknowns without repeating the decision rationale. Next test maps those unknowns to Learn / Measure / Decide signals. Evidence keeps the Demonstrated / Not demonstrated split, followed by one plain-language final-evaluation narrative: experiment setup, decision, aggregate metrics with formulas and focus, field-level results, failure analysis, stopping rationale, and a bounded cost scenario. Only the final 600-listing run may appear; the synthetic qualifier and rejected-configuration decision stay visible at the same depth as its strongest metrics.
 
 **Deep read** must answer: problem hypothesis, product flow, ownership, three trade-offs, evidence limits, and next validation. Keep the four-question framework in §6.3 and the concise Markdown equivalent in `CASE_STUDY.md`.
 
@@ -555,7 +567,11 @@ Element rules:
 - **Product preview:** one real Telegram demo-session screenshot only, presented inside a clearly external macOS-style evidence frame. Values come from the current synthetic catalog; the caption states that apartment terms are synthetic and carries the photo attribution. Location coherence remains documented in `assets/listing_photos/LICENSES.md`. The screenshot may be cropped to exclude Telegram's empty composer, but its card content MUST NOT be edited. No fake dashboard, product-internal browser chrome, or mock metrics.
 - **Workflow:** Filter → Normalize → Check → Match → Notify. "Check" is explicitly the synthetic adapter's local catalog state; "Notify" is optional background delivery with deduplication.
 - **Decisions:** exactly three public decisions: four-field scope, deterministic matching/optional QA boundary, reliability controls before live-source breadth. Each card explains why the boundary exists; measured outcomes belong in Evidence.
-- **Evidence:** Demonstrated now vs Not demonstrated yet. Implemented proof and synthetic results appear once; the Product Scorecard itself carries the hosted-model outcome. Do not present field accuracy, exact accuracy, mock cost, or zero-error counts as product outcomes. A passing frozen-validation Product Scorecard is the sole exception and is limited to the four metrics defined in §13.
+- **Evidence:** Demonstrated now vs Not demonstrated yet. Implemented proof and
+  synthetic results appear once. The final-evaluation block carries the hosted
+  model outcome, explains why each metric exists, and shows both aggregate and
+  field-level results. Field values are evaluation evidence, never renter or
+  production outcomes. No score from an earlier model iteration appears.
 - **Next test:** one permitted live source and a small renter observation, with Learn / Measure / Decide signals covering renter adoption, source freshness, human review of every AI alert, and a random sample of listings with no alert. It is a plan, not a claim.
 
 ---
@@ -580,7 +596,17 @@ Every claim on the case study, README, and CASE_STUDY.md carries one of these st
 Hard constraints (non-negotiable):
 - Synthetic eval numbers MUST NOT read as production evidence at any reading depth.
 - Eval numbers MUST come from an actual run and update **all** their occurrences together (§27); never round 99.x to 100, never keep stale numbers because they look better.
-- A hosted-model scorecard MUST come only from the one frozen validation run and MUST show `Synthetic frozen validation`, the absolute counts, and the real-world manual-audit limitation at the same reading depth. Calibration metrics and development-screen results MUST NOT appear on the landing.
+- A hosted-model result MUST come only from the final one-time locked holdout and
+  MUST show `Offline AI QA evaluation · synthetic data · 600 listings`, absolute
+  counts, the final accept/reject decision, and the real-world manual-audit
+  limitation at the same reading depth. Calibration, development-screen, and
+  earlier frozen-validation scores MUST NOT appear on the landing or public
+  Markdown case study.
+- Public cost calculations are ESTIMATE, not MEASURED: show the final run's
+  recorded per-check cost separately from a conservative no-cache scenario,
+  cite the workload proxy, and disclose that inference cost excludes source
+  access, hosting, monitoring, duplicates, pricing changes, real-listing length,
+  and human review.
 - A real product limitation MUST say that human review is still required for every AI alert and for an independent random sample of listings receiving no alert. This is PLANNED, not implemented; the prototype uses no housing-provider data without permission.
 - Capabilities exercised only through the synthetic adapter (multi-source collection, source health) MUST be described as architecture exercised by the synthetic adapter — the README's phrasing is the model.
 - $0 QA cost MUST stay attributed to the mock provider.
@@ -614,7 +640,11 @@ Hard constraints (non-negotiable):
 - Headings state the takeaway or the question; a heading-only read of the case page or dashboard must be coherent.
 - Case-study paragraphs ≤5 sentences, one idea each; bot messages are 1–2 sentences; dashboard captions 1–2 sentences.
 - Lists for parallel mechanisms (README "What It Shows", workflow, decisions, evidence); tables only for enumerable facts.
-- The case page uses no public metric cards before frozen hosted-model validation. After the §13 publication gate passes, exactly one compact four-item Product Scorecard is permitted in Evidence; no other numerical AI QA block is allowed.
+- The case page uses no public metric cards before hosted-model validation.
+  After the §13 final-result review, one evaluation block may contain the four
+  aggregate metrics, the seven-row field table, and one inference-cost
+  scenario. These elements remain subordinate to the product story and cannot
+  be split into repeated promotional number strips.
 - Technical explanations follow "term (plain gloss)" on first use — the WBS and Kaltmiete hints are the models.
 - Review gates: the 10s/30s scan tests (§22) for any case-page change; for the bot, "can a new user reach a listing card in two guided steps from /start?"; for the dashboard, "does each section answer its own heading?"
 
@@ -625,8 +655,17 @@ Hard constraints (non-negotiable):
 **MUST remain consistent (meaning-identical) across bot, dashboard, case page, and docs:**
 - The meaning of listing, filter, WBS tiers, Kaltmiete-only matching, district/Bezirk, golden set, risk score, triage labels (§20).
 - The AI boundary sentence pattern: parsing/matching deterministic; AI QA admin-only, budgeted, never mutating (§2, §12).
-- **Public eval numbers.** Before frozen hosted-model validation, the only public result number is the authored synthetic regression-case count. After the §13 publication gate passes, the landing numerical result block contains only the four simple Product Scorecard metrics, each with its absolute count and `Synthetic frozen validation` label. Field tables, historical engineering metrics, mock cost, latency, and quiet/caught diagnostics stay in the case study or runnable engineering artifacts.
-- **Eval sync check.** `scripts/check_eval_numbers.py` re-runs `eval.run_eval --json` and verifies the authored-case count in `CASE_STUDY.md`, `README.md`, and `docs/case-study.html`.
+- **Public eval numbers.** Before hosted-model validation, the only public result
+  number is the authored synthetic regression-case count. After the §13
+  final-result review, `docs/case-study.html` and `CASE_STUDY.md` contain only
+  the final 600-listing holdout numbers: four aggregate metrics, seven field
+  results, the recorded run cost, and the explicitly estimated 15,000-check
+  cost scenario. Historical model-iteration numbers, confidence intervals, and
+  latency stay in runnable engineering artifacts.
+- **Eval sync check.** `scripts/check_eval_numbers.py` re-runs
+  `eval.run_eval --json`, verifies the authored-case count in `README.md`, and
+  checks both public case-study surfaces against the final locked-holdout
+  scorecard, field report, and run cost.
 - The four-question Product / Decisions / Evidence / Next test structure and its five-part Markdown equivalent stay meaning-aligned.
 - WBS semantics: `flatfeed/wbs_rules.py` is the single source; documents give examples, the module defines truth.
 - The card field contract (§10) between `flatfeed/matching.py`, README's card sketch, PROJECT_CONTEXT's card sketch, and any case-page mockup.
@@ -672,7 +711,7 @@ Exists in the codebase today; MUST NOT be reused in new work; migrate when touch
 | Pattern | Current location | Reason | Replacement | Priority |
 |---|---|---|---|---|
 | ~~Two labels for the same catalog action (`📂 All listings` vs `📂 Browse all listings`)~~ | (resolved — `main.py`) | One action, one name (§19) — inline long form tolerated only until touched | Converged on **📂 All listings** everywhere (`main.py` inline no-matches button now matches the reply keyboard and help text); no test asserted the old string (§34, 2026-07-09) | Done — don't reintroduce a second wording |
-| Case-page GitHub links hard-coded to `github.com/mich-mayer/flatfeed` (×6) | `docs/case-study.html` — top-bar + hero + CTA + footer | Static page, no build step: a URL can't be single-sourced in markup without JS-only links (breaks no-JS on the page's key "view my code" CTA) or introducing a build/template; the 6 real hrefs are the correct static pattern | VERIFIED 2026-07-08 against `git origin` — canonical = `mich-mayer/flatfeed`, treat as FACT. A canonical-URL comment at `<body>` top is the documented source of truth; keep the 6 links in sync on any repo move/rename | Resolved-verified |
+| Case-page GitHub links hard-coded to `github.com/mich-mayer/flatfeed` (×7) | `docs/case-study.html` — top-bar + evidence + CTA + footer | Static page, no build step: a URL can't be single-sourced in markup without JS-only links (breaks no-JS on the page's key "view my code" CTA) or introducing a build/template; the 7 real hrefs are the correct static pattern | VERIFIED 2026-07-08 against `git origin` — canonical = `mich-mayer/flatfeed`, treat as FACT. A canonical-URL comment at `<body>` top is the documented source of truth; keep the 7 links in sync on any repo move/rename | Resolved-verified |
 
 ---
 
@@ -773,6 +812,33 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-24 final-result public case-study narrative
+
+- **Problem:** the landing led with a stronger 280-case validation scorecard and
+  reduced the final 600-listing holdout to a footnote. A first-time reader could
+  not see how the metrics were calculated, why both aggregate and field-level
+  gates existed, or why rooms made the final decision a fail.
+- **Rationale:** the final independent run is the most honest public result.
+  Present it as a complete PM case rather than a promotional scorecard:
+  experiment setup, metric purpose and calculation, all field results, failure
+  analysis, stopping decision, and a bounded inference-cost scenario. Strong
+  aggregate numbers remain visible, but cannot override the rejected rooms
+  guardrail. Earlier iteration scores stay out of public surfaces.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`,
+  `CASE_STUDY.md`, `scripts/check_eval_numbers.py`,
+  `docs/CURRENT_STATUS.md`, and this document (§§13, 22–23, 26–27, 34).
+- **Compatibility impact:** the public `Synthetic frozen validation` block and
+  its 280-case numbers are superseded. The current canonical evidence label is
+  `Offline AI QA evaluation · synthetic data · 600 listings`. The landing may
+  now show the seven field results and one explicitly bounded inference-cost
+  scenario; this is not permission for historical run tables or production-cost
+  claims.
+- **Migration consideration:** migrate the HTML and Markdown case studies
+  together, validate every number from final locked-holdout artifacts, keep the
+  user-approved stopping paragraph verbatim, and verify desktop/mobile reading
+  order before handoff. Product runtime and experiment artifacts remain
+  unchanged.
 
 ### 2026-07-24 durable current-status handoff
 

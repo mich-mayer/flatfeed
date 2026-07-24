@@ -122,20 +122,37 @@ metrics must not be used to override that decision.
   `eval/runs/terra-high-locked-holdout/`.
 - Public case study:
   `https://mich-mayer.github.io/flatfeed/case-study.html`.
-- Published copy states that the later 600-case synthetic holdout passed the
-  four aggregate metrics but failed the predeclared rooms guardrail, so the
-  checker was not finally accepted.
+- The local HTML and Markdown case-study surfaces now report only the final
+  600-listing result. They explain the experiment setup, metric formulas and
+  purpose, all seven field results, the failed rooms guardrail, the stopping
+  decision, and a clearly bounded 15,000-check inference-cost scenario.
+- Earlier model-iteration scores are not shown on those public case-study
+  surfaces.
+- The cost scenario uses the official 12,398 re-lettings reported for Berlin's
+  six state-owned housing companies excluding Berlinovo as an order-of-magnitude
+  proxy, not as a count of online ads. The rounded 15,000-check workload and
+  about `$65/year` conservative inference estimate are estimates, not measured
+  production cost.
+- These case-study changes are local until they are explicitly committed,
+  pushed, and deployed.
 - Commit `18c3c87afc5d53c05fcf9a714977111bfab54808` was pushed to `main`; its
   verification and GitHub Pages deployment passed.
 - Last full local verification for that release: 292 unit tests passed,
   deterministic eval 15/15, public metric sync passed, and
   `git diff --check` passed.
+- Current local verification for the pending case-study rewrite: 292 unit tests
+  passed; deterministic eval passed 15/15; public final-result, field, decision,
+  and cost sync passed; `git diff --check` passed; desktop and mobile browser
+  checks found no page overflow or console errors.
 
 ## Recommended Next Step
 
-Do not spend more API budget merely to produce a passing model result. For the
-portfolio prototype, the disciplined failed final gate is already useful
-evidence of product judgment.
+Do not spend more API budget merely to produce a passing model result. The final
+run provided enough evidence for this prototype: it showed that the approach
+was promising and identified a specific weakness in rooms detection. Because
+the evaluation used synthetic data, the next meaningful step is not further
+tuning on the same benchmark, but recalibration and validation on permitted
+real listings.
 
 The product-level next step, if permission and terms allow it, is a small pilot
 with one permitted live source plus manual review of a sample. This would test
