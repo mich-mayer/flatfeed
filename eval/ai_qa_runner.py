@@ -33,6 +33,7 @@ from eval.ai_qa_terra_calibration_cycle import (
 from eval.ai_qa_terra_high_cycle import DEFAULT_TERRA_HIGH_DATASET_DIR
 from eval.ai_qa_terra_high_screen import DEFAULT_TERRA_HIGH_SCREEN_DIR
 from eval.ai_qa_terra_v2_screen import DEFAULT_TERRA_V2_SCREEN_DIR
+from eval.ai_qa_holdout_readiness import audit_locked_holdout_readiness
 from eval.ai_qa_prompt import (
     EVAL_PROMPT_VERSION,
     PROMPT_INSTRUCTIONS,
@@ -139,6 +140,16 @@ TERRA_HIGH_FREEZE_PATH = (
     EVAL_ROOT / "runs" / "terra-high-configuration-freeze.json"
 )
 TERRA_HIGH_CALIBRATION_HARD_BUDGET_USD = Decimal("5.00")
+LOCKED_HOLDOUT_FREEZE_PATH = (
+    EVAL_ROOT / "runs" / "terra-high-locked-holdout-configuration-freeze.json"
+)
+LOCKED_HOLDOUT_RUN_DIR = EVAL_ROOT / "runs" / "terra-high-locked-holdout"
+LOCKED_HOLDOUT_HARD_BUDGET_USD = Decimal("10.40")
+TERRA_HIGH_VALIDATION_SCORECARD_PATH = (
+    TERRA_HIGH_VALIDATION_RUN_DIR
+    / "product-scorecard"
+    / "product_scorecard.json"
+)
 
 PREDICTIONS_FILENAME = "predictions.jsonl"
 RUN_MANIFEST_FILENAME = "run_manifest.json"
@@ -429,10 +440,6 @@ def _split_input_contract(
     }
     if split not in contracts:
         raise ValueError(f"unsupported dataset split: {split}")
-    if split == "locked_holdout":
-        raise OfflineRunnerError(
-            "locked holdout is disabled until the configuration-freeze step"
-        )
     manifest_path, dataset_dir = contracts[split]
     manifest = _load_dataset_manifest(manifest_path)
     try:
@@ -558,6 +565,8 @@ def build_run_plan(
         _validate_terra_high_cycle_plan(plan)
     if split == "terra_high_validation":
         _validate_terra_high_validation_freeze(plan)
+    if split == "locked_holdout":
+        _validate_locked_holdout_plan(plan)
     return plan
 
 
@@ -1135,6 +1144,231 @@ def write_terra_high_calibration_freeze(
     return output_path
 
 
+def _locked_holdout_frozen_configuration(
+    plan: RunPlan,
+) -> dict[str, object]:
+    return {
+        "model": plan.config.model,
+        "reasoning_effort": plan.config.reasoning_effort,
+        "prompt_version": plan.config.prompt_version,
+        "max_output_tokens": plan.config.max_output_tokens,
+        "retries": plan.config.retries,
+        "runner_version": RUNNER_VERSION,
+        "strict_structured_outputs": True,
+        "prompt_sha256": _sha256_bytes(
+            get_system_instructions(plan.config.prompt_version).encode("utf-8")
+        ),
+        "output_schema_sha256": _sha256_bytes(
+            _canonical_json(MODEL_OUTPUT_JSON_SCHEMA).encode("utf-8")
+        ),
+    }
+
+
+def _validate_locked_holdout_plan(plan: RunPlan) -> None:
+    expected = RunnerConfig(
+        model="gpt-5.6-terra",
+        reasoning_effort="high",
+        max_output_tokens=256,
+        retries=0,
+        timeout_seconds=plan.config.timeout_seconds,
+        prompt_version="terra-v1",
+    )
+    if plan.config != expected:
+        raise OfflineRunnerError(
+            "locked holdout configuration differs from contract"
+        )
+    if plan.case_count != 600:
+        raise OfflineRunnerError("locked holdout must use all 600 cases")
+    try:
+        freeze = json.loads(
+            LOCKED_HOLDOUT_FREEZE_PATH.read_text(encoding="utf-8")
+        )
+        frozen_holdout = freeze["holdout"]
+    except (OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
+        raise OfflineRunnerError(
+            "locked holdout is disabled until its one-run freeze exists"
+        ) from exc
+    if freeze.get("status") != "holdout_authorized_once":
+        raise OfflineRunnerError("locked holdout freeze is not authorized")
+    if freeze.get("configuration") != _locked_holdout_frozen_configuration(
+        plan
+    ):
+        raise OfflineRunnerError(
+            "locked holdout configuration differs from freeze"
+        )
+    expected_holdout = {
+        "split": "locked_holdout",
+        "case_count": 600,
+        "model_inputs_sha256": plan.input_sha256,
+        "dataset_manifest_sha256": plan.dataset_manifest_sha256,
+        "hard_budget_limit_usd": float(LOCKED_HOLDOUT_HARD_BUDGET_USD),
+        "preflight_worst_case_usd": float(plan.worst_case_cost_usd),
+        "run_count_limit": 1,
+        "partial_execution_allowed": False,
+        "prompt_changes_after_run": False,
+    }
+    if frozen_holdout != expected_holdout:
+        raise OfflineRunnerError("locked holdout input differs from freeze")
+
+
+def write_locked_holdout_configuration_freeze(
+    *,
+    output_path: Path = LOCKED_HOLDOUT_FREEZE_PATH,
+    validation_scorecard_path: Path = TERRA_HIGH_VALIDATION_SCORECARD_PATH,
+    validation_run_manifest_path: Path = (
+        TERRA_HIGH_VALIDATION_RUN_DIR / RUN_MANIFEST_FILENAME
+    ),
+    validation_freeze_path: Path = TERRA_HIGH_FREEZE_PATH,
+) -> Path:
+    """Authorize one exact 600-case holdout run after all prior gates pass."""
+
+    output_path = _ensure_inside_eval(output_path)
+    if output_path.exists():
+        raise FileExistsError("locked holdout configuration freeze already exists")
+    if (
+        (LOCKED_HOLDOUT_RUN_DIR / PREDICTIONS_FILENAME).exists()
+        or (LOCKED_HOLDOUT_RUN_DIR / RUN_MANIFEST_FILENAME).exists()
+    ):
+        raise FileExistsError(
+            "locked holdout run artifacts already exist; refusing release"
+        )
+
+    readiness = audit_locked_holdout_readiness()
+    if readiness.get("status") != "ready_with_declared_limitations":
+        raise OfflineRunnerError("locked holdout readiness audit did not pass")
+
+    scorecard = json.loads(
+        validation_scorecard_path.read_text(encoding="utf-8")
+    )
+    validation_manifest = json.loads(
+        validation_run_manifest_path.read_text(encoding="utf-8")
+    )
+    validation_freeze = json.loads(
+        validation_freeze_path.read_text(encoding="utf-8")
+    )
+    if scorecard.get("decision", {}).get("overall_status") != "pass":
+        raise OfflineRunnerError(
+            "Terra-high frozen validation did not pass every gate"
+        )
+    if (
+        validation_manifest.get("status") != "completed"
+        or validation_manifest.get("split") != "terra_high_validation"
+        or validation_manifest.get("case_count") != 280
+        or validation_manifest.get("result", {}).get("technical_failures") != 0
+    ):
+        raise OfflineRunnerError(
+            "Terra-high frozen validation evidence is incomplete"
+        )
+    if validation_freeze.get("status") != "validation_authorized_once":
+        raise OfflineRunnerError("Terra-high validation freeze is invalid")
+
+    config = RunnerConfig(
+        model="gpt-5.6-terra",
+        reasoning_effort="high",
+        max_output_tokens=256,
+        retries=0,
+        prompt_version="terra-v1",
+    )
+    input_path, input_sha, manifest_sha = _split_input_contract(
+        "locked_holdout"
+    )
+    rows = load_jsonl(input_path)
+    _validate_model_input_rows(rows)
+    plan = RunPlan(
+        split="locked_holdout",
+        input_path=input_path,
+        input_sha256=input_sha,
+        dataset_manifest_sha256=manifest_sha,
+        cases=tuple(rows),
+        config=config,
+        worst_case_cost_usd=sum(
+            (
+                _request_worst_case_cost(
+                    case,
+                    model=config.model,
+                    max_output_tokens=config.max_output_tokens,
+                    prompt_version=config.prompt_version,
+                )
+                for case in rows
+            ),
+            Decimal("0"),
+        ),
+    )
+    if plan.case_count != 600:
+        raise OfflineRunnerError("locked holdout must contain exactly 600 cases")
+    if plan.worst_case_cost_usd > LOCKED_HOLDOUT_HARD_BUDGET_USD:
+        raise OfflineRunnerError(
+            "locked holdout budget is below the preflight bound"
+        )
+
+    freeze = {
+        "schema_version": "1.0",
+        "status": "holdout_authorized_once",
+        "configuration": _locked_holdout_frozen_configuration(plan),
+        "prior_evidence": {
+            "terra_high_validation_scorecard_sha256": _sha256_file(
+                validation_scorecard_path
+            ),
+            "terra_high_validation_run_manifest_sha256": _sha256_file(
+                validation_run_manifest_path
+            ),
+            "terra_high_configuration_freeze_sha256": _sha256_file(
+                validation_freeze_path
+            ),
+        },
+        "readiness": {
+            "status": readiness["status"],
+            "dataset_manifest_sha256": readiness["source"][
+                "dataset_manifest_sha256"
+            ],
+            "truth_sha256": readiness["source"]["truth_sha256"],
+            "comparison_artifact_count": readiness["isolation"][
+                "comparison_artifact_count"
+            ],
+            "all_checks_passed": all(readiness["checks"].values()),
+        },
+        "holdout": {
+            "split": "locked_holdout",
+            "case_count": 600,
+            "model_inputs_sha256": input_sha,
+            "dataset_manifest_sha256": manifest_sha,
+            "hard_budget_limit_usd": float(
+                LOCKED_HOLDOUT_HARD_BUDGET_USD
+            ),
+            "preflight_worst_case_usd": float(plan.worst_case_cost_usd),
+            "run_count_limit": 1,
+            "partial_execution_allowed": False,
+            "prompt_changes_after_run": False,
+        },
+        "source_hashes": {
+            "runner_sha256": _sha256_file(Path(__file__)),
+            "prompt_module_sha256": _sha256_file(
+                EVAL_ROOT / "ai_qa_prompt.py"
+            ),
+            "scorer_sha256": _sha256_file(EVAL_ROOT / "ai_qa_scorer.py"),
+            "scorecard_sha256": _sha256_file(
+                EVAL_ROOT / "ai_qa_product_scorecard.py"
+            ),
+            "readiness_sha256": _sha256_file(
+                EVAL_ROOT / "ai_qa_holdout_readiness.py"
+            ),
+        },
+        "boundaries": {
+            "validation_passed_all_gates": True,
+            "holdout_authorized_once": True,
+            "locked_holdout_authorized": True,
+            "product_runtime_modified": False,
+            "landing_claim_authorized": False,
+        },
+    }
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(freeze, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return output_path
+
+
 def _validate_terra_calibration_plan(plan: RunPlan) -> None:
     expected = RunnerConfig(
         model="gpt-5.6-terra",
@@ -1679,6 +1913,21 @@ def execute_run_plan(
             raise OfflineRunnerError(
                 "Terra-high validation budget differs from freeze"
             )
+    if plan.split == "locked_holdout":
+        if output_dir != LOCKED_HOLDOUT_RUN_DIR.resolve():
+            raise OfflineRunnerError(
+                "locked holdout must use its canonical run directory"
+            )
+        freeze = json.loads(
+            LOCKED_HOLDOUT_FREEZE_PATH.read_text(encoding="utf-8")
+        )
+        frozen_budget = Decimal(
+            str(freeze["holdout"]["hard_budget_limit_usd"])
+        )
+        if budget_limit_usd != frozen_budget:
+            raise OfflineRunnerError(
+                "locked holdout budget differs from freeze"
+            )
     if plan.split == "luna_v4_validation":
         if output_dir != LUNA_V4_VALIDATION_RUN_DIR.resolve():
             raise OfflineRunnerError(
@@ -1770,10 +2019,16 @@ def dry_run_summary(
         "network_calls": 0,
         "split": plan.split,
         "case_count": plan.case_count,
-        "selected_case_ids": [
-            str(case["case_id"])
-            for case in plan.cases
-        ],
+        "selected_case_ids": (
+            None
+            if plan.split == "locked_holdout"
+            else [str(case["case_id"]) for case in plan.cases]
+        ),
+        "case_ids_sha256": _sha256_bytes(
+            _canonical_json(
+                [str(case["case_id"]) for case in plan.cases]
+            ).encode("utf-8")
+        ),
         "model": plan.config.model,
         "reasoning_effort": plan.config.reasoning_effort,
         "prompt": {
@@ -1807,7 +2062,7 @@ def dry_run_summary(
         "input_sha256": plan.input_sha256,
         "credential_source": ".env.eval.local",
         "credential_read": False,
-        "locked_holdout_enabled": False,
+        "locked_holdout_enabled": plan.split == "locked_holdout",
     }
     if budget_limit_usd is not None:
         summary["hard_budget_limit_usd"] = float(budget_limit_usd)
@@ -1904,6 +2159,7 @@ def main() -> None:
     mode.add_argument("--check-model", action="store_true")
     mode.add_argument("--execute", action="store_true")
     mode.add_argument("--freeze-luna-v4", action="store_true")
+    mode.add_argument("--freeze-locked-holdout", action="store_true")
     parser.add_argument("--max-cost-usd", type=_decimal_argument)
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--calibration-report", type=Path)
@@ -1919,7 +2175,22 @@ def main() -> None:
         prompt_version=args.prompt_version,
     )
     try:
-        if args.freeze_luna_v4:
+        if args.freeze_locked_holdout:
+            if args.max_cost_usd != LOCKED_HOLDOUT_HARD_BUDGET_USD:
+                parser.error(
+                    "--freeze-locked-holdout requires "
+                    f"--max-cost-usd {LOCKED_HOLDOUT_HARD_BUDGET_USD}"
+                )
+            freeze_path = write_locked_holdout_configuration_freeze()
+            result = {
+                "mode": "freeze_locked_holdout",
+                "artifact": str(freeze_path.relative_to(REPO_ROOT)),
+                "locked_holdout_authorized_once": True,
+                "hard_budget_limit_usd": float(
+                    LOCKED_HOLDOUT_HARD_BUDGET_USD
+                ),
+            }
+        elif args.freeze_luna_v4:
             if args.max_cost_usd is None:
                 parser.error("--freeze-luna-v4 requires --max-cost-usd")
             if args.calibration_report is None or args.calibration_run_manifest is None:

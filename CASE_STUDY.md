@@ -90,6 +90,11 @@ Kaltmiete 21/21, and rooms 20/21. Address/postal code, floor, and Warmmiete
 were also checked as diagnostic fields. The one missed parser error concerned
 rooms; the one false alert concerned WBS.
 
+A later one-time 600-case synthetic locked holdout passed all four aggregate
+scorecard metrics but did not confirm the configuration: the predeclared
+matching-critical rooms guardrail failed. I therefore kept the result as a
+measured limitation rather than treating the checker as finally accepted.
+
 Not demonstrated yet:
 
 - whether real WBS renters adopt and trust the feed;

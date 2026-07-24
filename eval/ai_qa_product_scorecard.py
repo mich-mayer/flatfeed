@@ -70,6 +70,7 @@ FROZEN_VALIDATION_SPLITS = (
     "terra_validation",
     "terra_high_validation",
 )
+LOCKED_HOLDOUT_SPLIT = "locked_holdout"
 
 REAL_WORLD_LIMITATIONS = (
     (
@@ -330,6 +331,87 @@ def _validate_frozen_validation(
             )
 
 
+def _validate_locked_holdout(
+    report: Mapping[str, Any],
+    run_manifest: Mapping[str, Any],
+    freeze: Mapping[str, Any],
+) -> None:
+    if report.get("split") != LOCKED_HOLDOUT_SPLIT:
+        raise ProductScorecardError("unexpected locked-holdout split")
+    if freeze.get("schema_version") != "1.0":
+        raise ProductScorecardError("unsupported holdout-freeze schema")
+    if freeze.get("status") != "holdout_authorized_once":
+        raise ProductScorecardError(
+            "configuration freeze does not authorize the locked holdout"
+        )
+    boundaries = freeze.get("boundaries")
+    if (
+        not isinstance(boundaries, Mapping)
+        or boundaries.get("locked_holdout_authorized") is not True
+        or boundaries.get("holdout_authorized_once") is not True
+        or boundaries.get("product_runtime_modified") is not False
+    ):
+        raise ProductScorecardError(
+            "locked holdout boundary is not correctly frozen"
+        )
+
+    frozen_configuration = freeze.get("configuration")
+    actual_configuration = run_manifest.get("configuration")
+    if not isinstance(frozen_configuration, Mapping) or not isinstance(
+        actual_configuration,
+        Mapping,
+    ):
+        raise ProductScorecardError("configuration data is missing")
+    for key, frozen_value in frozen_configuration.items():
+        actual_value = (
+            run_manifest.get("runner_version")
+            if key == "runner_version"
+            else actual_configuration.get(key)
+        )
+        if actual_value != frozen_value:
+            raise ProductScorecardError(
+                f"holdout configuration differs from freeze: {key}"
+            )
+
+    frozen_holdout = freeze.get("holdout")
+    actual_input = run_manifest.get("input")
+    actual_budget = run_manifest.get("budget")
+    if not isinstance(frozen_holdout, Mapping):
+        raise ProductScorecardError("frozen holdout data is missing")
+    if not isinstance(actual_input, Mapping) or not isinstance(
+        actual_budget,
+        Mapping,
+    ):
+        raise ProductScorecardError("holdout manifest data is missing")
+    checks = (
+        (
+            actual_input.get("sha256"),
+            frozen_holdout.get("model_inputs_sha256"),
+            "input hash",
+        ),
+        (
+            run_manifest.get("case_count"),
+            frozen_holdout.get("case_count"),
+            "case count",
+        ),
+        (
+            actual_budget.get("hard_limit_usd"),
+            frozen_holdout.get("hard_budget_limit_usd"),
+            "hard budget",
+        ),
+        (
+            run_manifest.get("split"),
+            frozen_holdout.get("split"),
+            "split",
+        ),
+    )
+    for actual, expected, label in checks:
+        if actual != expected:
+            raise ProductScorecardError(
+                f"holdout {label} differs from configuration freeze"
+            )
+
+
 def _metric_entry(
     *,
     key: str,
@@ -363,12 +445,17 @@ def build_product_scorecard(
     _validate_run_manifest(report, run_manifest)
     split = str(report["split"])
     is_frozen_validation = split in FROZEN_VALIDATION_SPLITS
-    if is_frozen_validation:
+    is_locked_holdout = split == LOCKED_HOLDOUT_SPLIT
+    is_frozen_evaluation = is_frozen_validation or is_locked_holdout
+    if is_frozen_evaluation:
         if freeze is None:
             raise ProductScorecardError(
                 f"{split} requires the configuration freeze"
             )
-        _validate_frozen_validation(report, run_manifest, freeze)
+        if is_locked_holdout:
+            _validate_locked_holdout(report, run_manifest, freeze)
+        else:
+            _validate_frozen_validation(report, run_manifest, freeze)
     elif freeze is not None:
         raise ProductScorecardError(
             "configuration freeze is accepted only for an approved validation split"
@@ -460,18 +547,26 @@ def build_product_scorecard(
         "contract_version": SCORECARD_CONTRACT_VERSION,
         "experiment": EXPERIMENT_LABEL,
         "evidence_label": (
-            "Synthetic frozen validation"
-            if is_frozen_validation
-            else "Synthetic calibration preview"
+            "Synthetic locked holdout"
+            if is_locked_holdout
+            else (
+                "Synthetic frozen validation"
+                if is_frozen_validation
+                else "Synthetic calibration preview"
+            )
         ),
         "evidence_scope": (
             "Synthetic offline parser-QA evidence only; not live-source, "
             "production-prevalence, or renter-outcome evidence."
         ),
         "publication_state": (
-            "result_ready_for_evidence_review"
-            if is_frozen_validation
-            else "not_public_calibration_preview"
+            "final_test_result_ready_for_evidence_review"
+            if is_locked_holdout
+            else (
+                "result_ready_for_evidence_review"
+                if is_frozen_validation
+                else "not_public_calibration_preview"
+            )
         ),
         "source": {
             "split": split,
@@ -509,6 +604,7 @@ def build_product_scorecard(
             "positive_landing_claim_allowed": (
                 is_frozen_validation and overall_status == "pass"
             ),
+            "public_copy_change_requires_separate_review": is_locked_holdout,
         },
         "real_world_limitations": list(REAL_WORLD_LIMITATIONS),
     }
@@ -525,11 +621,12 @@ def _format_percentage(value: object) -> str:
 def format_product_scorecard_markdown(
     scorecard: Mapping[str, Any],
 ) -> str:
-    decision_label = (
-        "Product decision"
-        if scorecard["evidence_label"] == "Synthetic frozen validation"
-        else "Preview gate status"
-    )
+    if scorecard["evidence_label"] == "Synthetic locked holdout":
+        decision_label = "Final-test decision"
+    elif scorecard["evidence_label"] == "Synthetic frozen validation":
+        decision_label = "Product decision"
+    else:
+        decision_label = "Preview gate status"
     lines = [
         "# AI QA Product Scorecard",
         "",

@@ -1,0 +1,9 @@
+{"case_id":"aqa-1e988b94ea5e2729caed","expected_field":"rooms","reason":"model_no_alert"}
+{"case_id":"aqa-370a952e6ce9ea32530d","expected_field":"rooms","reason":"model_no_alert"}
+{"case_id":"aqa-5273bef32135c8fc8284","expected_field":"rooms","reason":"model_no_alert"}
+{"case_id":"aqa-66ff6ce1b3743643a207","expected_field":"address_postal_code","reason":"model_no_alert"}
+{"case_id":"aqa-751e1e788681fc9414fc","expected_field":"rooms","reason":"model_no_alert"}
+{"case_id":"aqa-8101d09d5113a52cd5f2","expected_field":"rooms","reason":"model_no_alert"}
+{"case_id":"aqa-832b4dbe6c090bad9878","expected_field":"address_postal_code","reason":"model_no_alert"}
+{"case_id":"aqa-ae82097472f78cce311a","expected_field":"rooms","reason":"model_no_alert"}
+{"case_id":"aqa-e55d0c68c99050eb7f25","expected_field":"rooms","reason":"model_no_alert"}
