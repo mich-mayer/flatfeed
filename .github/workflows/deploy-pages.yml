@@ -21,6 +21,10 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: python -m pip install --upgrade pip && pip install -r requirements.txt
+      # Recreate ignored synthetic holdout files only inside the ephemeral runner.
+      # They are required by dataset-isolation tests but remain unpublished and
+      # are never sent to a model.
+      - run: python -m eval.ai_qa_datasets
       - run: python -m unittest discover -s tests
       - run: python -m eval.run_eval
       - run: python -m scripts.check_eval_numbers
