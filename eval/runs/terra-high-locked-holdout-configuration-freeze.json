@@ -1,0 +1,52 @@
+{
+  "boundaries": {
+    "holdout_authorized_once": true,
+    "landing_claim_authorized": false,
+    "locked_holdout_authorized": true,
+    "product_runtime_modified": false,
+    "validation_passed_all_gates": true
+  },
+  "configuration": {
+    "max_output_tokens": 256,
+    "model": "gpt-5.6-terra",
+    "output_schema_sha256": "f7c5d21b7ee06ff3647c4726253c74eeccecd250ec96c7275d07f70d24989945",
+    "prompt_sha256": "672629d914d73cde056968c0249ae14b522703987d632f967eee866496d8f6c9",
+    "prompt_version": "terra-v1",
+    "reasoning_effort": "high",
+    "retries": 0,
+    "runner_version": "1.5",
+    "strict_structured_outputs": true
+  },
+  "holdout": {
+    "case_count": 600,
+    "dataset_manifest_sha256": "0cdee436c38ae4f9a999e0c659b4f8824243507052be86a3b81ab5588079d5e0",
+    "hard_budget_limit_usd": 10.4,
+    "model_inputs_sha256": "30cd53ceb518191318b2abd10b8ceafc35685afc39680dc201f033a1f8603791",
+    "partial_execution_allowed": false,
+    "preflight_worst_case_usd": 10.38481,
+    "prompt_changes_after_run": false,
+    "run_count_limit": 1,
+    "split": "locked_holdout"
+  },
+  "prior_evidence": {
+    "terra_high_configuration_freeze_sha256": "978b9224d2c85beb108cc7553f257e1d834359d913d7c2e932a6500751f5394e",
+    "terra_high_validation_run_manifest_sha256": "704c34d60b057ef11042268814c9c02cc766dd58b87310b28533278f1397f234",
+    "terra_high_validation_scorecard_sha256": "9b75314ad4a85474a8c934b05a82d4fdbeda1878304c0d4d95310c2dd6d580db"
+  },
+  "readiness": {
+    "all_checks_passed": true,
+    "comparison_artifact_count": 20,
+    "dataset_manifest_sha256": "0cdee436c38ae4f9a999e0c659b4f8824243507052be86a3b81ab5588079d5e0",
+    "status": "ready_with_declared_limitations",
+    "truth_sha256": "a126d2a87948483bb853bc634353974770e886111f9570c816ed937b71f4675e"
+  },
+  "schema_version": "1.0",
+  "source_hashes": {
+    "prompt_module_sha256": "218ad5fb7b86af42bb36b088d6eff6736b897a0904a41fafa7f64bda5ae4ce06",
+    "readiness_sha256": "a7a8dc8395c308df87c2e07ef2bbc336e803bff90123a512d466443ede9039bf",
+    "runner_sha256": "948266532efaecdf553d4b3323bcd1f4a234140f69ba6e2f522b2a80528970f6",
+    "scorecard_sha256": "fe683494741dafbe5347c4ee9fb40ef7a0c7274e5b578afc7e111267b5863569",
+    "scorer_sha256": "0c9bfa49cfe5db78b7089d26a2c887517d2f53c37f463d71bb26d22de7d198ce"
+  },
+  "status": "holdout_authorized_once"
+}

@@ -180,11 +180,28 @@ class AIQARunnerPlanTests(unittest.TestCase):
         self.assertEqual(payload["network_calls"], 0)
 
     def test_locked_holdout_is_disabled_before_freeze(self) -> None:
-        with self.assertRaisesRegex(
-            OfflineRunnerError,
-            "disabled until the configuration-freeze step",
-        ):
-            build_run_plan(split="locked_holdout", limit=1)
+        with tempfile.TemporaryDirectory() as directory:
+            missing = Path(directory) / "missing-freeze.json"
+            with (
+                patch(
+                    "eval.ai_qa_runner.LOCKED_HOLDOUT_FREEZE_PATH",
+                    missing,
+                ),
+                self.assertRaisesRegex(
+                    OfflineRunnerError,
+                    "disabled until its one-run freeze exists",
+                ),
+            ):
+                build_run_plan(
+                    split="locked_holdout",
+                    config=RunnerConfig(
+                        model="gpt-5.6-terra",
+                        reasoning_effort="high",
+                        max_output_tokens=256,
+                        retries=0,
+                        prompt_version="terra-v1",
+                    ),
+                )
 
     def test_limit_and_config_validation(self) -> None:
         with self.assertRaisesRegex(ValueError, "limit must be positive"):

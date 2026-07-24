@@ -1,10 +1,11 @@
 # Offline AI QA Evaluation Contract
 
-**Status:** Terra-v1 high passed the one frozen validation and every
-predeclared engineering, Product Scorecard, and matching-critical field gate;
-locked holdout remains unopened
+**Status:** Terra-v1 high passed frozen validation, but its one 600-case locked
+holdout failed the predeclared rooms guardrail at 43/50. All four simple
+Product Scorecard metrics passed; the configuration is not finally accepted
+and the holdout is consumed
 
-**Date:** 2026-07-23
+**Date:** 2026-07-24
 
 **Scope:** Synthetic, offline feasibility evaluation only
 
@@ -2034,4 +2035,159 @@ It does not show performance on live housing-provider listings or natural
 parser-error prevalence. A real product would still need human review of every
 alert plus a random sample of no-alert listings. The validation is consumed
 and must not be rerun or used for prompt tuning. The locked holdout remains
-unopened, Sol was not run, and the product runtime remains unchanged.
+unrun, Sol was not run, and the product runtime remains unchanged.
+
+## 37. Locked Holdout Suitability Audit and Final-test Contract
+
+Before releasing the original 600-case locked holdout, its actual artifacts
+were re-audited against the final parser-QA job and the Product Scorecard
+introduced after the holdout was first generated. The audit is implemented in
+`eval/ai_qa_holdout_readiness.py` and can be reproduced without an API call:
+
+```bash
+.venv/bin/python -m eval.ai_qa_holdout_readiness
+```
+
+The audit reads the answer key only to compute aggregate composition. It emits
+no case IDs, raw listing text, parser snapshots, expected values, or corrupted
+values. No case-level information was used to change the prompt, model,
+reasoning effort, schema, or scorer.
+
+### Suitability result
+
+The original holdout is suitable for one final synthetic offline capability
+test of the frozen Terra-high configuration:
+
+- 300 clean and 300 exactly-one-error cases;
+- 600 unique exact model inputs;
+- zero exact-input overlap with the original development split and 19 later
+  Luna and Terra model-input artifacts;
+- all seven evaluated fields represented: 75 WBS, 60 Kaltmiete, 50 rooms,
+  40 address/postal-code, 30 district, 25 floor, and 20 Warmmiete errors;
+- all six synthetic text-format families represented with comparable clean
+  and corrupted counts;
+- all 12 districts, eight room values, ten floor values, and seven normalized
+  WBS result families represented;
+- the committed manifest and the local reproducible artifacts still match
+  model-input SHA-256
+  `30cd53ceb518191318b2abd10b8ceafc35685afc39680dc201f033a1f8603791`
+  and truth SHA-256
+  `a126d2a87948483bb853bc634353974770e886111f9570c816ed937b71f4675e`.
+
+The cases must not be regenerated or rebalanced after model selection. Doing
+so would make the final test easier to tailor to already observed Terra
+failures and would weaken the original precommitment.
+
+### Declared limitations
+
+The holdout is not a production-accuracy sample:
+
+- its 300/300 balance deliberately overrepresents parser errors and cannot
+  estimate production precision or natural error prevalence;
+- each corrupted case contains one planted error, so it does not test
+  multi-error listings, listings never collected, or complete parser collapse;
+- all cases come from six templates in the same base synthetic-generator
+  family as the original development data. Exact inputs are independent, but
+  transfer to real provider formats remains unmeasured;
+- clean and corrupted pools are comparable by aggregate format and field
+  distributions, but they are not one-to-one paired versions of the same
+  underlying listing;
+- all seven WBS families are present, but the 75 WBS errors are not evenly
+  allocated across them. The consumed 280-case Terra-high validation remains
+  the stronger balanced WBS-family diagnostic.
+
+These limitations do not invalidate the holdout for its bounded purpose:
+confirming the selected model on a larger independent sample from the
+predeclared synthetic task. They prohibit interpreting the result as evidence
+about live housing-provider pages or real-world parser prevalence.
+
+### Final 600-case gates
+
+The unchanged engineering gates in section 10 still apply. In addition, every
+Product Scorecard and matching-critical field gate below must pass:
+
+| Product metric | Target | Exact 600-case rule |
+|---|---:|---:|
+| Parser Error Detection Rate | `>= 95%` | at least 285/300 |
+| False Alert Rate | `<= 3%` | at most 9/300 |
+| Correct Field Detection Rate | `>= 90%` | at least 270/300 |
+| Successful Check Rate | `>= 99.5%` | at least 597/600 |
+
+| Matching-critical field | Target | Exact rule |
+|---|---:|---:|
+| WBS | `>= 90%` | at least 68/75 |
+| district | `>= 90%` | at least 27/30 |
+| Kaltmiete | `>= 90%` | at least 54/60 |
+| rooms | `>= 90%` | at least 45/50 |
+
+The final test configuration is fixed to `gpt-5.6-terra`,
+`reasoning_effort=high`, prompt `terra-v1`, strict Structured Outputs, 256
+maximum output tokens, zero retries, and `service_tier=default`. The prompt
+SHA-256 remains
+`672629d914d73cde056968c0249ae14b522703987d632f967eee866496d8f6c9`;
+the schema SHA-256 remains
+`f7c5d21b7ee06ff3647c4726253c74eeccecd250ec96c7275d07f70d24989945`.
+
+The audit did not itself release the holdout. The subsequent release and result
+are recorded below.
+
+### Final Terra-high locked-holdout result
+
+The runner implemented a minimal one-run guard and froze:
+
+- all 600 cases with no partial selection;
+- `gpt-5.6-terra`, `reasoning_effort=high`, prompt `terra-v1`;
+- strict Structured Outputs, 256 maximum output tokens, zero retries, and
+  `service_tier=default`;
+- the exact input, prompt, schema, dataset-manifest, readiness, and prior
+  passing-validation evidence hashes;
+- the canonical output directory and a `$10.40` local hard budget.
+
+The no-network dry-run scheduled 600 case requests and one model-availability
+check. Its deliberately conservative worst-case bound was `$10.384810`. The
+one real run then completed all 600 cases with valid structured outputs, zero
+retries, and zero technical failures.
+
+The four simple Product Scorecard metrics all passed:
+
+| Product metric | Result | Exact gate | Status |
+|---|---:|---:|---:|
+| Parser Error Detection Rate | 291/300, 97.0% | at least 285/300 | Pass |
+| False Alert Rate | 0/300, 0.0% | at most 9/300 | Pass |
+| Correct Field Detection Rate | 291/300, 97.0% | at least 270/300 | Pass |
+| Successful Check Rate | 600/600, 100.0% | at least 597/600 | Pass |
+
+The detailed field results were:
+
+| Field | Correct field | Role | Guardrail |
+|---|---:|---|---:|
+| WBS | 75/75, 100.0% | matching-critical | Pass |
+| district | 30/30, 100.0% | matching-critical | Pass |
+| Kaltmiete | 60/60, 100.0% | matching-critical | Pass |
+| rooms | 43/50, 86.0% | matching-critical | **Fail** |
+| address/postal code | 38/40, 95.0% | diagnostic | n/a |
+| floor | 25/25, 100.0% | diagnostic | n/a |
+| Warmmiete | 20/20, 100.0% | diagnostic | n/a |
+
+All nine misses were silent false negatives: seven `rooms_neighbor_value`
+cases and two `postal_code_substitution` cases. No clean case produced a false
+alert, and every emitted error alert named the correct field. Challenge-set
+precision and conditional field localization were both 100%.
+
+The run used 825,139 input tokens and 34,544 output tokens, including 19,847
+reasoning tokens. Recorded cost was `$1.011304`, or approximately
+`$0.001686` per case. Synchronous latency was 1,280 ms p50 and 3,550 ms p95.
+
+Final decision:
+
+- overall status is `fail` because rooms required at least 45/50 and achieved
+  43/50;
+- the four aggregate metrics are useful evidence but cannot override a failed
+  matching-critical field guardrail;
+- do not rerun the holdout, tune a prompt against it, or present Terra high as
+  finally accepted;
+- retain the passing 280-case frozen validation and this failed 600-case final
+  test as separate, auditable synthetic results;
+- the result does not measure live housing-provider formats, natural
+  parser-error prevalence, missing listings, or renter outcomes;
+- any public-copy change remains a separate evidence-governance decision.

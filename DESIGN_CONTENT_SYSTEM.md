@@ -774,6 +774,55 @@ Any change to this system (new rule, changed rule, new component/message class, 
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
 
+### 2026-07-24 Terra-high locked-holdout result
+
+- **Problem:** Terra high passed the 280-case frozen validation, but the
+  original 600-case locked holdout had not yet tested whether that selected
+  configuration generalized to the larger predeclared synthetic sample.
+- **Rationale:** run the holdout exactly once with a minimal freeze and
+  one-run guard, then let every predeclared gate decide the outcome. The four
+  simple aggregate metrics passed, but rooms achieved 43/50 against the 45/50
+  minimum. A matching-critical failure overrides the stronger aggregate
+  scorecard, so the configuration is not finally accepted.
+- **Affected surfaces:** `eval/ai_qa_runner.py`,
+  `eval/ai_qa_product_scorecard.py`, the locked-holdout run/freeze artifacts,
+  their tests, `eval/AI_QA_EVAL_PLAN.md`, `README.md`,
+  `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`, `docs/case-study.html`, and this
+  document (§34).
+- **Compatibility impact:** the landing keeps the already measured four-metric
+  frozen-validation scorecard but now states that the later locked holdout did
+  not confirm the configuration. No holdout metrics replace the landing
+  scorecard, and no product-runtime behavior changes.
+- **Migration consideration:** completed once. The holdout is consumed and
+  must not be rerun or used for prompt tuning. Any future hosted-model attempt
+  requires a new hypothesis and fresh development/calibration/validation data;
+  real-source measurement remains a future product step requiring permission.
+
+### 2026-07-24 locked-holdout suitability and final-test gates
+
+- **Problem:** the original 600-case locked holdout predates the four simple
+  Product Scorecard metrics, the matching-critical district guardrail, and the
+  later balanced WBS-family datasets. Its exact inputs were still independent,
+  but the repository had no reproducible artifact proving that the old
+  composition remained suitable for the selected Terra-high configuration.
+- **Rationale:** audit aggregate composition without exposing case-level
+  content or changing the frozen model. Keep the original cases because
+  regenerating or rebalancing them after model selection would weaken the
+  precommitment. Add exact 600-case Product Scorecard counts and critical-field
+  gates while declaring that same-generator synthetic cases cannot establish
+  live-provider accuracy or natural error prevalence.
+- **Affected surfaces:** `eval/ai_qa_holdout_readiness.py`,
+  `tests/test_ai_qa_holdout_readiness.py`, `eval/AI_QA_EVAL_PLAN.md` §37, and
+  this document (§34).
+- **Compatibility impact:** the locked holdout remains disabled and unchanged,
+  but any future release must now pass the readiness audit plus the four simple
+  metric gates and separate WBS, district, Kaltmiete, and rooms gates. A
+  holdout result does not automatically replace the current public validation
+  scorecard.
+- **Migration consideration:** audit and contract implemented now without an
+  API call. A holdout-specific one-run freeze, runner release guard, exact dry
+  run, and hard budget remain the next implementation step.
+
 ### 2026-07-24 final hiring-manager CTA and ownership audit
 
 - **Problem:** the contribution note listed broad ownership categories without

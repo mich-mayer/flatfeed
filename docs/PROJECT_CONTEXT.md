@@ -253,11 +253,12 @@ makes no LLM calls.
 - AI output never alters listing data, matching, or user-facing cards
   automatically.
 - A separate synthetic offline hosted-model feasibility experiment is recorded
-  in `eval/AI_QA_EVAL_PLAN.md`. `gpt-5.6-terra` with high reasoning passed the
-  one frozen synthetic validation and all predeclared field guardrails. This
-  accepts the configuration only as offline feasibility evidence, not
-  live-source accuracy; the locked holdout was not run and the experiment was
-  not integrated into the product runtime.
+  in `eval/AI_QA_EVAL_PLAN.md`. `gpt-5.6-terra` with high reasoning passed one
+  frozen synthetic validation, then failed the one 600-case locked holdout
+  because rooms correct-field recall was 43/50, below the predeclared 45/50
+  minimum. The configuration is not finally accepted; live-source accuracy
+  remains unmeasured and the experiment was not integrated into product
+  runtime.
 
 The Streamlit dashboard ("FlatFeed product operations") leads with the
 product pipeline and deterministic-parsing accuracy — AI QA is one section

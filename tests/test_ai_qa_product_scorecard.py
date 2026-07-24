@@ -419,6 +419,92 @@ class ProductScorecardBoundaryTests(unittest.TestCase):
         )
         self.assertEqual(scorecard["configuration"]["reasoning_effort"], "high")
 
+    def test_locked_holdout_uses_its_own_freeze_and_stays_non_public(self) -> None:
+        field_counts = {
+            "wbs": 75,
+            "district": 30,
+            "rent_kalt": 60,
+            "rooms": 50,
+            "address_postal_code": 40,
+            "floor": 25,
+            "rent_warm": 20,
+        }
+        truth = _truth(clean=300, field_counts=field_counts)
+        predictions = [
+            _prediction(
+                str(row["case_id"]),
+                has_error=row["case_type"] == "corrupted",
+                error_field=(
+                    {
+                        "display_wbs": "wbs",
+                        "district": "district",
+                        "rent_kalt": "rent_kalt",
+                        "rooms": "rooms",
+                        "address": "address_postal_code",
+                        "floor": "floor",
+                        "rent_warm": "rent_warm",
+                    }[str(row["corrupted_field"])]
+                    if row["case_type"] == "corrupted"
+                    else None
+                ),
+            )
+            for row in truth
+        ]
+        report = score_predictions(
+            truth,
+            predictions,
+            split="locked_holdout",
+        )
+        manifest = _run_manifest(
+            split="locked_holdout",
+            case_count=600,
+            reasoning_effort="high",
+        )
+        manifest["input"]["sha256"] = "holdout-input-hash"
+        manifest["budget"]["hard_limit_usd"] = 10.4
+        freeze = {
+            "schema_version": "1.0",
+            "status": "holdout_authorized_once",
+            "configuration": {
+                "model": "gpt-5.6-terra",
+                "reasoning_effort": "high",
+                "prompt_version": "terra-v1",
+                "max_output_tokens": 256,
+                "retries": 0,
+                "runner_version": "1.5",
+                "strict_structured_outputs": True,
+            },
+            "holdout": {
+                "split": "locked_holdout",
+                "case_count": 600,
+                "model_inputs_sha256": "holdout-input-hash",
+                "hard_budget_limit_usd": 10.4,
+            },
+            "boundaries": {
+                "locked_holdout_authorized": True,
+                "holdout_authorized_once": True,
+                "product_runtime_modified": False,
+            },
+        }
+
+        scorecard = build_product_scorecard(
+            report,
+            run_manifest=manifest,
+            freeze=freeze,
+        )
+
+        self.assertEqual(
+            scorecard["evidence_label"],
+            "Synthetic locked holdout",
+        )
+        self.assertEqual(scorecard["decision"]["overall_status"], "pass")
+        self.assertFalse(
+            scorecard["decision"]["positive_landing_claim_allowed"]
+        )
+        self.assertTrue(
+            scorecard["decision"]["public_copy_change_requires_separate_review"]
+        )
+
     def test_output_is_aggregate_only_and_byte_reproducible(self) -> None:
         report = _threshold_report(split="terra_calibration")
         scorecard = build_product_scorecard(

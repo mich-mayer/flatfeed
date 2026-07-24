@@ -162,11 +162,12 @@ PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m scripts.check_eval
 ```
 
 A separate synthetic offline hosted-model feasibility experiment is documented
-in `eval/AI_QA_EVAL_PLAN.md`. `gpt-5.6-terra` with high reasoning passed the
-one frozen synthetic validation and all predeclared field guardrails. This
-accepts the configuration only as offline feasibility evidence: the locked
-holdout was not run, live-source performance remains unmeasured, and nothing
-was integrated into the product runtime.
+in `eval/AI_QA_EVAL_PLAN.md`. `gpt-5.6-terra` with high reasoning passed one
+frozen synthetic validation, then failed the one 600-case locked holdout
+because rooms correct-field recall was 43/50, below the predeclared 45/50
+minimum. The configuration is therefore not finally accepted. Live-source
+performance remains unmeasured, and nothing was integrated into the product
+runtime.
 
 ## Environment Variables
 
