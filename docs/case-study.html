@@ -16,7 +16,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260723-scorecard">
+    <link rel="stylesheet" href="styles.css?v=20260724-final-evidence">
   </head>
   <body>
     <div class="case">
@@ -167,10 +167,11 @@
         <section class="case-section" id="evidence">
           <header class="section-heading">
             <p class="kicker"><span>03</span>Evidence</p>
-            <h2>The core workflow works. Real-world usefulness is the next test.</h2>
+            <h2>The final AI test found one weakness before real-data validation.</h2>
             <p>
-              Repository evidence shows what runs and what the synthetic evaluation measured.
-              The open questions require permitted live data and renter observation.
+              The evidence below separates what runs in the prototype, what the final synthetic
+              model test measured, and what still requires permitted real listings and renter
+              observation.
             </p>
           </header>
 
@@ -197,37 +198,249 @@
 
           <section class="qa-scorecard" aria-labelledby="qa-scorecard-title">
             <div class="qa-scorecard__heading">
-              <p class="preview-label">Synthetic frozen validation</p>
-              <h3 id="qa-scorecard-title">How reliably did the AI checker find planted parser errors?</h3>
+              <p class="preview-label">Offline AI QA evaluation · synthetic data · 600 listings</p>
+              <div>
+                <h3 id="qa-scorecard-title">Could an AI checker catch parser mistakes before they affected apartment matching?</h3>
+                <p>
+                  FlatFeed uses deterministic rules to parse listings and match them to renter
+                  filters. I tested a hosted model as an admin-only second check—not as part of
+                  renter matching. The final evaluation used 600 synthetic listings: 300 clean
+                  listings and 300 listings containing exactly one planted parser error.
+                </p>
+              </div>
             </div>
+
+            <aside class="qa-outcome" aria-label="Final evaluation decision">
+              <p class="preview-label">Decision</p>
+              <p>
+                <strong>Promising result; configuration not accepted.</strong> The checker detected
+                291 of 300 planted errors and raised no false alerts on 300 clean listings.
+                However, it correctly detected only 43 of 50 rooms errors, below the predeclared
+                minimum of 45. I therefore did not accept the configuration.
+              </p>
+            </aside>
+
+            <div class="qa-explainer">
+              <h4>Why measure the model at two levels?</h4>
+              <p>
+                Overall metrics tested whether the checker could find errors without creating
+                unnecessary admin work. Field-level guardrails tested whether a strong average
+                was hiding a weakness in one of the four fields that directly controls apartment
+                matching.
+              </p>
+            </div>
+
             <dl class="qa-scorecard__metrics">
               <div>
                 <dt>Parser Error Detection Rate</dt>
-                <dd><strong>99.3%</strong><span>139/140 parser errors detected</span></dd>
+                <dd>
+                  <strong>97.0%</strong>
+                  <span>291 of 300 planted errors detected</span>
+                  <p>Calculation: corrupted listings that produced an alert ÷ 300 corrupted listings.</p>
+                  <p><b>Focus:</b> how many parser mistakes reach admin review.</p>
+                  <p><b>Prototype target:</b> at least 95% (285/300). Target met.</p>
+                </dd>
               </div>
               <div>
                 <dt>False Alert Rate</dt>
-                <dd><strong>0.7%</strong><span>1/140 clean listings flagged</span></dd>
+                <dd>
+                  <strong>0.0%</strong>
+                  <span>0 of 300 clean listings flagged</span>
+                  <p>Calculation: clean listings that produced an alert ÷ 300 clean listings.</p>
+                  <p><b>Focus:</b> unnecessary admin reviews caused by the checker.</p>
+                  <p><b>Prototype target:</b> at most 3% (9/300). Target met.</p>
+                </dd>
               </div>
               <div>
                 <dt>Correct Field Detection Rate</dt>
-                <dd><strong>99.3%</strong><span>139/140 errors found and field named</span></dd>
+                <dd>
+                  <strong>97.0%</strong>
+                  <span>291 of 300 errors found and field named</span>
+                  <p>Calculation: corrupted listings where the wrong field was correctly named ÷ 300 corrupted listings.</p>
+                  <p><b>Focus:</b> whether an alert tells an admin where to investigate.</p>
+                  <p><b>Prototype target:</b> at least 90% (270/300). Target met.</p>
+                </dd>
               </div>
               <div>
                 <dt>Successful Check Rate</dt>
-                <dd><strong>100.0%</strong><span>280/280 checks returned a valid result</span></dd>
+                <dd>
+                  <strong>100.0%</strong>
+                  <span>600 of 600 checks returned a valid result</span>
+                  <p>Calculation: valid structured model responses ÷ 600 attempted checks.</p>
+                  <p><b>Focus:</b> whether the check completes in a form the system can use.</p>
+                  <p><b>Prototype target:</b> at least 99.5% (597/600). Target met.</p>
+                </dd>
               </div>
             </dl>
-            <p class="evidence-footnote">
-              Balanced synthetic cases, not live listings or production accuracy. With permitted
-              real data, an admin would still review every alert and a random sample of listings
-              with no alert so missed parser errors can be measured.
+
+            <p class="qa-threshold-note">
+              These thresholds were predeclared product acceptance criteria for this prototype,
+              not universal industry benchmarks.
             </p>
+
+            <div class="qa-field-results">
+              <div class="qa-subheading">
+                <p class="preview-label">Field-level guardrails</p>
+                <div>
+                  <h4>Did the overall result hide a weakness in one type of data?</h4>
+                  <p>
+                    Each corrupted listing contained one planted error. A field result counts how
+                    often the checker both raised an alert and correctly named that field.
+                    Matching-critical fields control the renter’s filter; diagnostic fields help
+                    inspect the listing but do not decide the four-field match.
+                  </p>
+                </div>
+              </div>
+
+              <div class="qa-table-wrap" role="region" aria-label="AI checker results by listing field" tabindex="0">
+                <table class="qa-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Field</th>
+                      <th scope="col">Role</th>
+                      <th scope="col">Correct detections</th>
+                      <th scope="col">Predeclared target</th>
+                      <th scope="col">Outcome</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">WBS</th>
+                      <td>Matching-critical filter</td>
+                      <td>75/75 · 100.0%</td>
+                      <td>At least 68/75</td>
+                      <td>Target met</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">District</th>
+                      <td>Matching-critical filter</td>
+                      <td>30/30 · 100.0%</td>
+                      <td>At least 27/30</td>
+                      <td>Target met</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Kaltmiete</th>
+                      <td>Matching-critical filter</td>
+                      <td>60/60 · 100.0%</td>
+                      <td>At least 54/60</td>
+                      <td>Target met</td>
+                    </tr>
+                    <tr class="qa-table__miss">
+                      <th scope="row">Rooms</th>
+                      <td>Matching-critical filter</td>
+                      <td>43/50 · 86.0%</td>
+                      <td>At least 45/50</td>
+                      <td>Target missed</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Address / postal code</th>
+                      <td>Diagnostic listing field</td>
+                      <td>38/40 · 95.0%</td>
+                      <td>Diagnostic only</td>
+                      <td>2 misses recorded</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Floor</th>
+                      <td>Diagnostic listing field</td>
+                      <td>25/25 · 100.0%</td>
+                      <td>Diagnostic only</td>
+                      <td>No misses</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Warmmiete</th>
+                      <td>Diagnostic listing field</td>
+                      <td>20/20 · 100.0%</td>
+                      <td>Diagnostic only</td>
+                      <td>No misses</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="qa-findings">
+              <article>
+                <p class="preview-label">What failed</p>
+                <h4>Nine planted errors were missed.</h4>
+                <p>
+                  Seven were neighboring-value rooms errors and two were postal-code
+                  substitutions. Rooms directly determine whether a listing matches a renter’s
+                  filter, so a miss could wrongly include or exclude an apartment. That is why
+                  the configuration failed even though all four overall metrics met their targets.
+                </p>
+              </article>
+              <article>
+                <p class="preview-label">How I reached the stopping point</p>
+                <h4>Increase model effort only when the evidence justifies it.</h4>
+                <p>
+                  The final configuration used gpt-5.6-terra with high reasoning effort and strict
+                  structured outputs. During development, I increased the model’s reasoning effort
+                  only when lower-effort configurations were insufficient. This page reports only
+                  the final independent 600-listing run.
+                </p>
+                <p>
+                  Within the prototype’s planned budget for real-model testing, I used the final
+                  benchmark once and kept its result unchanged.
+                </p>
+              </article>
+            </div>
+
+            <blockquote class="qa-stop">
+              The final run provided enough evidence for this prototype: it showed that the approach was promising and identified a specific weakness in rooms detection. Because the evaluation used synthetic data, the next meaningful step is not further tuning on the same benchmark, but recalibration and validation on permitted real listings.
+            </blockquote>
+
+            <section class="qa-cost" aria-labelledby="qa-cost-title">
+              <div class="qa-subheading">
+                <p class="preview-label">Cost scenario · model inference only</p>
+                <div>
+                  <h4 id="qa-cost-title">Would this checker be affordable at Berlin municipal-listing scale?</h4>
+                  <p>
+                    Berlin’s six state-owned housing companies covered by the 2024 cooperation
+                    report, excluding Berlinovo, reported 12,398 apartment re-lettings. This is the
+                    closest official volume proxy I found—not a count of online ads. Because no
+                    consolidated public count of unique listings is available, I rounded up to a
+                    planning scenario of 15,000 unique listing checks per year.
+                    <a href="https://www.berlin.de/sen/stadt/presse/pressemeldungen/pressemitteilung.1628093.php">View the Berlin source</a>.
+                  </p>
+                </div>
+              </div>
+
+              <div class="qa-cost__calculation">
+                <div>
+                  <p class="preview-label">Conservative planning case</p>
+                  <strong>About $65/year</strong>
+                  <span>$5.38/month · 15,000 × $0.00430 per check</span>
+                  <p>Uses the final run’s token volume without relying on a prompt-cache discount.</p>
+                </div>
+                <div>
+                  <p class="preview-label">Observed run pattern</p>
+                  <strong>About $25/year</strong>
+                  <span>$2.11/month · 15,000 × $0.00169 per check</span>
+                  <p>The final 600-check run cost $1.011304 with its observed caching pattern.</p>
+                </div>
+              </div>
+
+              <p class="evidence-footnote">
+                Estimate based on one check per unique listing per prompt version and the prices
+                recorded on 21 July 2026. It excludes source access, hosting, monitoring,
+                duplicate listings, price changes, differences in real-listing length, and human
+                review. The 12,398 re-lettings establish an order of magnitude, not the exact number
+                of ads that a live system would process.
+              </p>
+            </section>
+
             <p class="evidence-footnote">
-              A later one-time 600-case synthetic locked holdout passed these four aggregate
-              metrics but failed the predeclared matching-critical rooms guardrail, so I did not
-              treat the checker as finally accepted.
+              The evaluation used balanced synthetic cases, not live listings or natural
+              production error rates. With permitted real data, an admin would still review every
+              alert and a random sample of listings with no alert so missed parser errors can be
+              measured.
             </p>
+
+            <nav class="qa-evidence-links" aria-label="AI evaluation evidence">
+              <a href="https://github.com/mich-mayer/flatfeed/blob/main/eval/AI_QA_EVAL_PLAN.md">Evaluation contract</a>
+              <a href="https://github.com/mich-mayer/flatfeed/blob/main/eval/runs/terra-high-locked-holdout/reports/report.md">Final 600-listing report</a>
+              <a href="https://github.com/mich-mayer/flatfeed">Repository</a>
+            </nav>
           </section>
 
         </section>

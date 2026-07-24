@@ -42,6 +42,7 @@ body {
 h1,
 h2,
 h3,
+h4,
 p,
 figure,
 figcaption,
@@ -607,9 +608,60 @@ img {
   letter-spacing: -0.025em;
 }
 
+.qa-scorecard__heading > div > p,
+.qa-subheading > div > p,
+.qa-explainer p,
+.qa-findings article > h4 ~ p,
+.qa-cost__calculation p {
+  color: var(--ink-2);
+  line-height: 1.65;
+}
+
+.qa-scorecard__heading > div > p {
+  max-width: 46rem;
+  margin-top: 0.85rem;
+}
+
+.qa-outcome {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1.25rem 1.5rem;
+  border-left: 2px solid var(--accent);
+  background: var(--accent-wash);
+}
+
+.qa-outcome > p:last-child {
+  max-width: 48rem;
+  color: var(--ink-2);
+  line-height: 1.65;
+}
+
+.qa-outcome strong {
+  color: var(--ink);
+}
+
+.qa-explainer {
+  max-width: 48rem;
+  margin-top: 2.5rem;
+}
+
+.qa-explainer h4,
+.qa-subheading h4,
+.qa-findings h4 {
+  font: 600 clamp(1.15rem, 2vw, 1.5rem)/1.2 var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.qa-explainer p,
+.qa-subheading > div > p {
+  margin-top: 0.65rem;
+}
+
 .qa-scorecard__metrics {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   margin-top: 2rem;
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
@@ -646,6 +698,185 @@ img {
   margin-top: 0.65rem;
   color: var(--ink-3);
   font: 400 0.71875rem/1.5 var(--font-mono);
+}
+
+.qa-scorecard__metrics dd p {
+  margin-top: 0.75rem;
+  color: var(--ink-2);
+  font-size: 0.78125rem;
+  line-height: 1.55;
+}
+
+.qa-scorecard__metrics dd p + p {
+  margin-top: 0.4rem;
+}
+
+.qa-scorecard__metrics b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.qa-threshold-note {
+  max-width: 48rem;
+  margin-top: 1rem;
+  color: var(--ink-3);
+  font: 400 0.71875rem/1.6 var(--font-mono);
+}
+
+.qa-field-results,
+.qa-cost {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--ink);
+}
+
+.qa-subheading {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 1.5rem;
+}
+
+.qa-subheading > div > p {
+  max-width: 48rem;
+}
+
+.qa-subheading a,
+.qa-evidence-links a {
+  color: var(--accent-deep);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.qa-table-wrap {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+
+.qa-table {
+  width: 100%;
+  min-width: 47rem;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.qa-table th,
+.qa-table td {
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.qa-table thead th {
+  background: var(--wash);
+  color: var(--ink-2);
+  font: 600 0.625rem/1.4 var(--font-mono);
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.qa-table tbody th {
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.qa-table tbody td {
+  color: var(--ink-2);
+  font-size: 0.78125rem;
+  line-height: 1.45;
+}
+
+.qa-table__miss th,
+.qa-table__miss td {
+  background: var(--accent-wash);
+}
+
+.qa-table__miss td:last-child {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.qa-findings {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.qa-findings article {
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+}
+
+.qa-findings h4 {
+  margin-top: 0.75rem;
+}
+
+.qa-findings article > h4 ~ p {
+  margin-top: 0.75rem;
+  font-size: 0.84375rem;
+}
+
+.qa-findings article > p + p {
+  margin-top: 0.75rem;
+}
+
+.qa-stop {
+  margin: 2rem 0 0;
+  padding: 1.5rem;
+  border-left: 2px solid var(--accent);
+  background: var(--wash);
+  color: var(--ink);
+  font: 500 clamp(1rem, 1.8vw, 1.2rem)/1.6 var(--font-display);
+}
+
+.qa-cost__calculation {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  margin-top: 1.5rem;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.qa-cost__calculation > div {
+  padding: 1.5rem;
+  background: var(--surface);
+}
+
+.qa-cost__calculation strong,
+.qa-cost__calculation span {
+  display: block;
+}
+
+.qa-cost__calculation strong {
+  margin-top: 0.85rem;
+  color: var(--accent);
+  font: 600 clamp(1.75rem, 3vw, 2.5rem)/1 var(--font-display);
+  letter-spacing: -0.035em;
+}
+
+.qa-cost__calculation span {
+  margin-top: 0.6rem;
+  color: var(--ink-3);
+  font: 400 0.71875rem/1.5 var(--font-mono);
+}
+
+.qa-cost__calculation p:last-child {
+  margin-top: 0.75rem;
+  font-size: 0.78125rem;
+}
+
+.qa-evidence-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.78125rem;
 }
 
 .next-test {
@@ -862,16 +1093,25 @@ img {
   }
 
   .qa-scorecard__heading,
+  .qa-outcome,
+  .qa-subheading,
   .qa-scorecard__metrics {
     grid-template-columns: 1fr;
   }
 
-  .qa-scorecard__heading {
+  .qa-scorecard__heading,
+  .qa-outcome,
+  .qa-subheading {
     gap: 0.75rem;
   }
 
   .qa-scorecard__metrics dt {
     min-height: 0;
+  }
+
+  .qa-findings,
+  .qa-cost__calculation {
+    grid-template-columns: 1fr;
   }
 
   .next-test {
