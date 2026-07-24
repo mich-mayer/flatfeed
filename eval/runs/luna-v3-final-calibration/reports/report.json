@@ -1,0 +1,488 @@
+{
+  "acceptance_gates": {
+    "gates": {
+      "challenge_set_precision": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.85,
+        "value": 0.9519230769230769
+      },
+      "error_recall": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 0.99
+      },
+      "false_alert_rate": {
+        "comparison": "max",
+        "status": "pass",
+        "threshold": 0.08,
+        "value": 0.05
+      },
+      "field_localization_accuracy": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 0.9797979797979798
+      },
+      "rent_kalt_per_field_recall": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 0.92
+      },
+      "rooms_per_field_recall": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 1.0
+      },
+      "structured_output_coverage": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.995,
+        "value": 1.0
+      },
+      "wbs_per_field_recall": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 1.0
+      }
+    },
+    "note": "Targets from the eval contract; not achieved results until scored.",
+    "overall_status": "pass"
+  },
+  "counts": {
+    "alerted_corrupted_cases": 99,
+    "alerts": 104,
+    "clean_cases": 100,
+    "correctly_localized_alerts": 97,
+    "corrupted_cases": 100,
+    "false_negatives": 1,
+    "false_positives": 5,
+    "invalid_structured_outputs": 0,
+    "outcome_invalid_json": 0,
+    "outcome_invalid_schema": 0,
+    "outcome_technical_failure": 0,
+    "outcome_valid": 200,
+    "technical_failures": 0,
+    "total_cases": 200,
+    "uncovered_cases": 0,
+    "valid_structured_outputs": 200,
+    "wrong_field_localizations": 2
+  },
+  "diagnostics": {
+    "false_negatives": [
+      {
+        "case_id": "aqa-bf9fe6175a8ee79c6ba9",
+        "expected_field": "district",
+        "reason": "model_no_alert"
+      }
+    ],
+    "false_positives": [
+      {
+        "case_id": "aqa-1a3ffb0fbc84b540ee11",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-1f40437c3e082ecdf7e3",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-70d213003e4570cf8773",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-acb2f380f98e88c31832",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-e338a5c2dff3e7d1afff",
+        "predicted_field": "wbs"
+      }
+    ],
+    "invalid_outputs": [],
+    "technical_failure_categories": {},
+    "wrong_field_localizations": [
+      {
+        "case_id": "aqa-39ff4e3f59afbdf1c548",
+        "expected_field": "rent_kalt",
+        "predicted_field": "rent_warm"
+      },
+      {
+        "case_id": "aqa-cc6912d2eb45124d9e62",
+        "expected_field": "rent_kalt",
+        "predicted_field": "rent_warm"
+      }
+    ]
+  },
+  "evidence_scope": "Synthetic challenge-set engineering artifact; not production precision or user-impact evidence.",
+  "experiment": "synthetic offline AI QA evaluation",
+  "field_breakdown": {
+    "address_postal_code": {
+      "alerted": 10,
+      "correctly_localized": 10,
+      "error_alert_recall": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 0.9999999999999999,
+          "low": 0.7224672001371107
+        }
+      },
+      "label": "address/postal code",
+      "localized_recall": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 0.9999999999999999,
+          "low": 0.7224672001371107
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 10,
+      "wrong_localization": 0
+    },
+    "district": {
+      "alerted": 7,
+      "correctly_localized": 7,
+      "error_alert_recall": {
+        "denominator": 8,
+        "numerator": 7,
+        "value": 0.875,
+        "wilson_95_ci": {
+          "high": 0.9775825085499433,
+          "low": 0.5291118177871464
+        }
+      },
+      "label": "district",
+      "localized_recall": {
+        "denominator": 8,
+        "numerator": 7,
+        "value": 0.875,
+        "wilson_95_ci": {
+          "high": 0.9775825085499433,
+          "low": 0.5291118177871464
+        }
+      },
+      "missed": 1,
+      "missed_by_reason": {
+        "model_no_alert": 1
+      },
+      "total_corrupted": 8,
+      "wrong_localization": 0
+    },
+    "floor": {
+      "alerted": 15,
+      "correctly_localized": 15,
+      "error_alert_recall": {
+        "denominator": 15,
+        "numerator": 15,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.7961166989641515
+        }
+      },
+      "label": "floor",
+      "localized_recall": {
+        "denominator": 15,
+        "numerator": 15,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.7961166989641515
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 15,
+      "wrong_localization": 0
+    },
+    "rent_kalt": {
+      "alerted": 25,
+      "correctly_localized": 23,
+      "error_alert_recall": {
+        "denominator": 25,
+        "numerator": 25,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 0.9999999999999999,
+          "low": 0.8668077490609515
+        }
+      },
+      "label": "Kaltmiete",
+      "localized_recall": {
+        "denominator": 25,
+        "numerator": 23,
+        "value": 0.92,
+        "wilson_95_ci": {
+          "high": 0.9777795987151524,
+          "low": 0.7503389104960468
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 25,
+      "wrong_localization": 2
+    },
+    "rent_warm": {
+      "alerted": 7,
+      "correctly_localized": 7,
+      "error_alert_recall": {
+        "denominator": 7,
+        "numerator": 7,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.6456695649333126
+        }
+      },
+      "label": "Warmmiete",
+      "localized_recall": {
+        "denominator": 7,
+        "numerator": 7,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.6456695649333126
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 7,
+      "wrong_localization": 0
+    },
+    "rooms": {
+      "alerted": 15,
+      "correctly_localized": 15,
+      "error_alert_recall": {
+        "denominator": 15,
+        "numerator": 15,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.7961166989641515
+        }
+      },
+      "label": "rooms",
+      "localized_recall": {
+        "denominator": 15,
+        "numerator": 15,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.7961166989641515
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 15,
+      "wrong_localization": 0
+    },
+    "wbs": {
+      "alerted": 20,
+      "correctly_localized": 20,
+      "error_alert_recall": {
+        "denominator": 20,
+        "numerator": 20,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.8388748419471806
+        }
+      },
+      "label": "WBS",
+      "localized_recall": {
+        "denominator": 20,
+        "numerator": 20,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.8388748419471806
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 20,
+      "wrong_localization": 0
+    }
+  },
+  "metrics": {
+    "challenge_set_precision": {
+      "denominator": 104,
+      "numerator": 99,
+      "value": 0.9519230769230769,
+      "wilson_95_ci": {
+        "high": 0.9792919576741477,
+        "low": 0.8923579720276744
+      }
+    },
+    "error_recall": {
+      "denominator": 100,
+      "numerator": 99,
+      "value": 0.99,
+      "wilson_95_ci": {
+        "high": 0.9982325679358593,
+        "low": 0.9455138038212946
+      }
+    },
+    "false_alert_rate": {
+      "denominator": 100,
+      "numerator": 5,
+      "value": 0.05,
+      "wilson_95_ci": {
+        "high": 0.11175046923191913,
+        "low": 0.02154367915436796
+      }
+    },
+    "field_localization_accuracy": {
+      "denominator": 99,
+      "numerator": 97,
+      "value": 0.9797979797979798,
+      "wilson_95_ci": {
+        "high": 0.9944422798892423,
+        "low": 0.9293096883284993
+      }
+    },
+    "missed_error_rate": {
+      "denominator": 100,
+      "numerator": 1,
+      "value": 0.01,
+      "wilson_95_ci": {
+        "high": 0.054486196178705315,
+        "low": 0.0017674320641406505
+      }
+    },
+    "structured_output_coverage": {
+      "denominator": 200,
+      "numerator": 200,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.9811546736227335
+      }
+    },
+    "technical_failure_rate": {
+      "denominator": 200,
+      "numerator": 0,
+      "value": 0.0,
+      "wilson_95_ci": {
+        "high": 0.018845326377266575,
+        "low": 1.734723475976807e-18
+      }
+    }
+  },
+  "model_output_schema_version": "1.0",
+  "operational": {
+    "case_result_records": 200,
+    "completed_cases": 200,
+    "cost": {
+      "cost_per_completed_case_usd": 0.0011328199999999999,
+      "is_partial": false,
+      "records_with_cost": 200,
+      "total_case_records": 200,
+      "total_usd": 0.226564
+    },
+    "latency_by_mode": {
+      "synchronous_case": {
+        "is_partial": false,
+        "p50_ms": 963.0400209999976,
+        "p95_ms": 4637.833641699994,
+        "sample_count": 200,
+        "total_case_records": 200
+      }
+    },
+    "request_count": 200,
+    "retry_count": 0,
+    "token_usage": {
+      "cached_input_tokens": 0,
+      "input_tokens": 199450,
+      "is_partial": false,
+      "output_tokens": 4519,
+      "reasoning_tokens": 0,
+      "records_with_usage": 200,
+      "total_case_records": 200,
+      "total_tokens": 203969
+    }
+  },
+  "per_field_recall": {
+    "address_postal_code": {
+      "denominator": 10,
+      "numerator": 10,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 0.9999999999999999,
+        "low": 0.7224672001371107
+      }
+    },
+    "district": {
+      "denominator": 8,
+      "numerator": 7,
+      "value": 0.875,
+      "wilson_95_ci": {
+        "high": 0.9775825085499433,
+        "low": 0.5291118177871464
+      }
+    },
+    "floor": {
+      "denominator": 15,
+      "numerator": 15,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.7961166989641515
+      }
+    },
+    "rent_kalt": {
+      "denominator": 25,
+      "numerator": 23,
+      "value": 0.92,
+      "wilson_95_ci": {
+        "high": 0.9777795987151524,
+        "low": 0.7503389104960468
+      }
+    },
+    "rent_warm": {
+      "denominator": 7,
+      "numerator": 7,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.6456695649333126
+      }
+    },
+    "rooms": {
+      "denominator": 15,
+      "numerator": 15,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.7961166989641515
+      }
+    },
+    "wbs": {
+      "denominator": 20,
+      "numerator": 20,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.8388748419471806
+      }
+    }
+  },
+  "provenance": {
+    "predictions_file": "predictions.jsonl",
+    "predictions_sha256": "6afdefd1d16c2d846258b0b36fd849246cab6afa65094b25f98f143e0b3d59f2",
+    "truth_file": "calibration_truth.jsonl",
+    "truth_sha256": "2cb37e2b4665a0c37a9d35c21b8853fb6b61228f834d23de5896ba144e7f3cae"
+  },
+  "report_schema_version": "1.0",
+  "run_label": "luna-v3-final-calibration",
+  "scorer_version": "1.0",
+  "split": "luna_v3_calibration"
+}

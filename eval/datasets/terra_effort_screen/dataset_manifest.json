@@ -1,0 +1,93 @@
+{
+  "boundaries": {
+    "calibration_or_validation_evidence": false,
+    "development_only": true,
+    "locked_holdout_used": false,
+    "luna_low_validation_used": false,
+    "openai_called_during_generation": false,
+    "product_runtime_modified": false,
+    "sol_authorized": false
+  },
+  "composition": {
+    "clean_families": {
+      "100": 2,
+      "100, 140": 2,
+      "100, 140, 160, 180": 2,
+      "140, 160, 180, 220": 2,
+      "160, 180, 220": 2,
+      "No WBS required": 3,
+      "WBS required, type unknown": 3
+    },
+    "non_wbs_error_fields": {
+      "address_postal_code": 2,
+      "district": 2,
+      "floor": 2,
+      "rent_kalt": 2,
+      "rent_warm": 2,
+      "rooms": 2
+    },
+    "wbs_error_families": {
+      "100": 3,
+      "100, 140": 3,
+      "100, 140, 160, 180": 2,
+      "140, 160, 180, 220": 2,
+      "160, 180, 220": 2,
+      "No WBS required": 4,
+      "WBS required, type unknown": 4
+    }
+  },
+  "counts": {
+    "clean": 16,
+    "corrupted": 32,
+    "total": 48
+  },
+  "error_distribution": {
+    "address_postal_code": 2,
+    "district": 2,
+    "floor": 2,
+    "rent_kalt": 2,
+    "rent_warm": 2,
+    "rooms": 2,
+    "wbs": 20
+  },
+  "experiment": "synthetic offline Terra reasoning-effort screen",
+  "isolation": {
+    "overlaps": {
+      "ai_qa_development_model_inputs": 0,
+      "ai_qa_locked_holdout_model_inputs": 0,
+      "luna_calibration_calibration_model_inputs": 0,
+      "luna_calibration_validation_model_inputs": 0,
+      "luna_effort_screen_model_inputs": 0,
+      "luna_low_cycle_calibration_model_inputs": 0,
+      "luna_low_cycle_validation_model_inputs": 0,
+      "luna_v3_cycle_calibration_model_inputs": 0,
+      "luna_v3_cycle_validation_model_inputs": 0,
+      "luna_v4_cycle_calibration_model_inputs": 0,
+      "luna_v4_cycle_validation_model_inputs": 0,
+      "luna_v5_cycle_calibration_model_inputs": 0,
+      "luna_v5_cycle_validation_model_inputs": 0
+    }
+  },
+  "model_inputs": {
+    "file": "model_inputs.jsonl",
+    "lines": 48,
+    "sha256": "3208360094cadf99a712ba014d82fa9fcf826be6317e183d362def00d368e5eb"
+  },
+  "schema_version": "1.0",
+  "seed": 20260803,
+  "selection_rule": {
+    "coverage": 1.0,
+    "maximum_clean_false_alerts": 1,
+    "minimum_correct_non_wbs": 11,
+    "minimum_correct_wbs": 18,
+    "minimum_total_correct": 44,
+    "minimum_total_delta_low_minus_none": 0,
+    "technical_failures": 0
+  },
+  "split": "terra_effort_screen",
+  "truth": {
+    "file": "truth.jsonl",
+    "lines": 48,
+    "sha256": "d40c727d13b4f133afa93695e8b745e0b226651cdf5cb2e64815aebd6b9717f0"
+  }
+}

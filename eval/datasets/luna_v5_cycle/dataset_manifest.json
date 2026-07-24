@@ -1,0 +1,177 @@
+{
+  "boundaries": {
+    "locked_holdout_modified": false,
+    "locked_holdout_truth_read": false,
+    "locked_holdout_used_for_inference": false,
+    "luna_v6_permitted_by_default": false,
+    "maximum_new_prompt_versions": 1,
+    "openai_called_during_generation": false,
+    "product_runtime_modified": false
+  },
+  "experiment": "synthetic offline AI QA Luna-v5 balanced WBS recovery cycle",
+  "hash_algorithm": "SHA-256",
+  "hypothesis": "A normalized-set prompt plus balanced WBS negative controls can preserve WBS recall without WBS-salience false alerts.",
+  "isolation": {
+    "comparison_basis": "raw_text plus parser_snapshot",
+    "overlaps": {
+      "calibration_locked_holdout": 0,
+      "calibration_luna_v1_calibration": 0,
+      "calibration_luna_v2_validation": 0,
+      "calibration_luna_v3_calibration": 0,
+      "calibration_luna_v3_validation": 0,
+      "calibration_luna_v4_calibration": 0,
+      "calibration_luna_v4_validation": 0,
+      "calibration_original_development": 0,
+      "calibration_validation": 0,
+      "validation_locked_holdout": 0,
+      "validation_luna_v1_calibration": 0,
+      "validation_luna_v2_validation": 0,
+      "validation_luna_v3_calibration": 0,
+      "validation_luna_v3_validation": 0,
+      "validation_luna_v4_calibration": 0,
+      "validation_luna_v4_validation": 0,
+      "validation_original_development": 0
+    }
+  },
+  "schema_version": "1.0",
+  "splits": {
+    "luna_v5_calibration": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 146194,
+          "file": "calibration_model_inputs.jsonl",
+          "lines": 280,
+          "sha256": "e2d2179034fc622644dfb4e5bc4a7e2510fdd4675012eb28baa1a0c12f9691dd"
+        },
+        "truth": {
+          "bytes": 48678,
+          "file": "calibration_truth.jsonl",
+          "lines": 280,
+          "sha256": "b799920179b81f4e5593f16fda4de067e51eac77b010a69912cd786026a63347"
+        }
+      },
+      "counts": {
+        "clean": 140,
+        "corrupted": 140,
+        "total": 280
+      },
+      "error_distribution": {
+        "address_postal_code": 14,
+        "district": 10,
+        "floor": 10,
+        "rent_kalt": 21,
+        "rent_warm": 8,
+        "rooms": 21,
+        "wbs": 56
+      },
+      "permitted_use": "one luna-v5 calibration run",
+      "seed": 20260729,
+      "wbs_semantic_balance": {
+        "100": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140, 160, 180": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "140, 160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "No WBS required": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "WBS required, type unknown": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        }
+      }
+    },
+    "luna_v5_validation": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 146205,
+          "file": "validation_model_inputs.jsonl",
+          "lines": 280,
+          "sha256": "c4009fd9faa87d3966361fa6aa435c826bf13f2e153ba7143d6e3d3445decdcd"
+        },
+        "truth": {
+          "bytes": 48706,
+          "file": "validation_truth.jsonl",
+          "lines": 280,
+          "sha256": "ca4d049ba1c2620cdabe4caa639321301223cd371ab9c554eb1090e83c6e558d"
+        }
+      },
+      "counts": {
+        "clean": 140,
+        "corrupted": 140,
+        "total": 280
+      },
+      "error_distribution": {
+        "address_postal_code": 14,
+        "district": 10,
+        "floor": 10,
+        "rent_kalt": 21,
+        "rent_warm": 8,
+        "rooms": 21,
+        "wbs": 56
+      },
+      "permitted_use": "one frozen luna-v5 validation run",
+      "seed": 20260730,
+      "wbs_semantic_balance": {
+        "100": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140, 160, 180": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "140, 160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "No WBS required": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "WBS required, type unknown": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        }
+      }
+    }
+  }
+}

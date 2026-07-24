@@ -1,0 +1,280 @@
+{"case_id":"aqa-b0c34e549590161ac12a","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"996,11 EUR","corruption_type":"kaltmiete_label_swap","expected_value":"820,71 EUR"}
+{"case_id":"aqa-114d81a3da077655d087","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"WBS required, type unknown","corruption_type":"wbs_requirement_added","expected_value":"No WBS required"}
+{"case_id":"aqa-e3d597f279749a322677","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-00ecdb0d10ead4b9a529","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-2c3e2eaa3666ec40e7c7","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"160, 180, 220"}
+{"case_id":"aqa-78fe62e369ef695b891e","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-df2a3b8845ae31915a57","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-a15ef13d79dc26cc59fb","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":2.0,"corruption_type":"rooms_neighbor_value","expected_value":1.0}
+{"case_id":"aqa-b0dac3b3f42e8febfe90","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-e9f9d3b1f367e84f4580","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"No WBS required","corruption_type":"wbs_requirement_dropped","expected_value":"WBS required, type unknown"}
+{"case_id":"aqa-1c40e6cb9347cace6c26","case_type":"corrupted","corrupted_field":"postal_code","corrupted_value":"10319","corruption_type":"postal_code_substitution","expected_value":"13353"}
+{"case_id":"aqa-c6eab5355a4bd3bcca3a","case_type":"corrupted","corrupted_field":"district","corrupted_value":"Charlottenburg-Wilmersdorf","corruption_type":"district_neighbor_substitution","expected_value":"Tempelhof-Schöneberg"}
+{"case_id":"aqa-d8074dfc05183545c1ed","case_type":"corrupted","corrupted_field":"address","corrupted_value":"Edisonstraße 199","corruption_type":"address_house_number_shift","expected_value":"Edisonstraße 193"}
+{"case_id":"aqa-62309c81c9e4bb76a17a","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-44a9cc0bfeb4fba95232","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-05d9dfbcd4075ad4ac76","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-ec893081fc89382ad3e9","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-c83d2b186567b0b6b9ad","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-a8c97df7ce8abb00c6cf","case_type":"corrupted","corrupted_field":"rent_warm","corrupted_value":"920,92 EUR","corruption_type":"warmmiete_label_swap","expected_value":"1.139,00 EUR"}
+{"case_id":"aqa-e40834dc14c4303d8109","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-0b5db86b63887cd9bf5e","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-a31ccfb9f18c0124feb4","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":4.5,"corruption_type":"rooms_neighbor_value","expected_value":5.0}
+{"case_id":"aqa-3cb24739be4eb1d46e17","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-b23665290c6026d64bb6","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-7d4015788c5a2900c3b2","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-9da1ef06f1a8e5bca155","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-93a15ea8d87ee042eefa","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-2bb9ece85f88af532556","case_type":"corrupted","corrupted_field":"district","corrupted_value":"Friedrichshain-Kreuzberg","corruption_type":"district_neighbor_substitution","expected_value":"Tempelhof-Schöneberg"}
+{"case_id":"aqa-2f4abc14fbc30338c207","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"100"}
+{"case_id":"aqa-2d997cf9aa1da1804ed6","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-ba1792373701a0a65375","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140, 160, 180"}
+{"case_id":"aqa-1bf905fdb08805ba9e2a","case_type":"corrupted","corrupted_field":"district","corrupted_value":"Mitte","corruption_type":"district_neighbor_substitution","expected_value":"Pankow"}
+{"case_id":"aqa-94c98def8af2f9f678b3","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-9a85ee77f443f81bb11c","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-19edd71363f3177441bb","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"160, 180, 220"}
+{"case_id":"aqa-e7eb3142869411726376","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-d2d123c6d4b27f65e0cc","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"140, 160, 180, 220"}
+{"case_id":"aqa-b2b0fac42098b2baea2f","case_type":"corrupted","corrupted_field":"postal_code","corrupted_value":"10827","corruption_type":"postal_code_substitution","expected_value":"12627"}
+{"case_id":"aqa-cf49abdcb515ffce9de2","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-7d48eb979394265c0c65","case_type":"corrupted","corrupted_field":"rent_warm","corrupted_value":"805,96 EUR","corruption_type":"warmmiete_label_swap","expected_value":"1.018,30 EUR"}
+{"case_id":"aqa-78cd01b9335ba06e72d0","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140, 160, 180"}
+{"case_id":"aqa-8502beadc56c93a74682","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"972,10 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"847,10 EUR"}
+{"case_id":"aqa-5b372bb6f56c7b80321e","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-20a05c2062c8c1446301","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-a2f58be0c09a0d688111","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-31f05d089e4ddfb8893c","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-8d93c325a7786e041c99","case_type":"corrupted","corrupted_field":"postal_code","corrupted_value":"12627","corruption_type":"postal_code_substitution","expected_value":"13088"}
+{"case_id":"aqa-f6552348e69935ee0c83","case_type":"corrupted","corrupted_field":"postal_code","corrupted_value":"12681","corruption_type":"postal_code_substitution","expected_value":"10557"}
+{"case_id":"aqa-608d2ad7c2b7633ae1d4","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-ff72c3bfe8f9cd873099","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":3.0,"corruption_type":"rooms_neighbor_value","expected_value":4.0}
+{"case_id":"aqa-114db73ed459b1d515ca","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-02f5ce4600fe3c2a5b43","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"160, 180, 220"}
+{"case_id":"aqa-b18df36657a932b42b77","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-2f2515314b08c753d24d","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-ad9f0ffd6b5d39ab5ad9","case_type":"corrupted","corrupted_field":"rent_warm","corrupted_value":"1.084,22 EUR","corruption_type":"warmmiete_label_swap","expected_value":"1.348,22 EUR"}
+{"case_id":"aqa-141eef8843ca205d59c2","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"596,59 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"721,59 EUR"}
+{"case_id":"aqa-bf8c95e6620ce30b22f1","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140"}
+{"case_id":"aqa-84db525a7d106cba9e9c","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-1a472586258506843248","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"140, 160, 180, 220"}
+{"case_id":"aqa-f47be7098a503d831503","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-1b52dfa0f05d664bfe92","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-200fafcafe0af273a577","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-66512ed338520c8eaf63","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-cd8a00f20305ac6025b1","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-3841919c2511eee88392","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-ab0a97f1903f51d236d7","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-9d825f484425a0e755fd","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_specificity_confusion","expected_value":"WBS required, type unknown"}
+{"case_id":"aqa-b45fb192694c210b4119","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-e283d3a5e6c9d2701be4","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-7ab9fff24440a9e4004a","case_type":"corrupted","corrupted_field":"floor","corrupted_value":"1","corruption_type":"floor_neighbor_value","expected_value":"Hochparterre"}
+{"case_id":"aqa-812d382bf769033fdb33","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":4.0,"corruption_type":"rooms_neighbor_value","expected_value":3.0}
+{"case_id":"aqa-da371f05f8912775af20","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"140, 160, 180, 220","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140"}
+{"case_id":"aqa-90b07e2f6661148cfd2e","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"No WBS required","corruption_type":"wbs_requirement_dropped","expected_value":"100"}
+{"case_id":"aqa-557c6d19a42d9e14c148","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-de3c491b40e79cffac65","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-21fddf5d15e84cb047d9","case_type":"corrupted","corrupted_field":"floor","corrupted_value":"5","corruption_type":"floor_neighbor_value","expected_value":"6"}
+{"case_id":"aqa-f8c6deb60575f4662b1e","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"1.037,02 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"1.136,02 EUR"}
+{"case_id":"aqa-11bba7caf04171442df7","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"160, 180, 220","corruption_type":"wbs_range_boundary_shift","expected_value":"140, 160, 180, 220"}
+{"case_id":"aqa-73b799f63b012e281cd8","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_requirement_added","expected_value":"No WBS required"}
+{"case_id":"aqa-ce9fa60af79396eb219f","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":1.0,"corruption_type":"rooms_neighbor_value","expected_value":1.5}
+{"case_id":"aqa-99ce48fee01ae41d8c05","case_type":"corrupted","corrupted_field":"floor","corrupted_value":"1","corruption_type":"floor_neighbor_value","expected_value":"2"}
+{"case_id":"aqa-1880d71d73a4b573788c","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"1.035,22 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"936,22 EUR"}
+{"case_id":"aqa-97079f0cf73cc696791d","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_requirement_added","expected_value":"No WBS required"}
+{"case_id":"aqa-ee22c5620acb0c2858cc","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":4.5,"corruption_type":"rooms_neighbor_value","expected_value":5.0}
+{"case_id":"aqa-3753046741b4a7461a59","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":1.0,"corruption_type":"rooms_neighbor_value","expected_value":1.5}
+{"case_id":"aqa-c8e4f80990fc7633d3bd","case_type":"corrupted","corrupted_field":"rent_warm","corrupted_value":"811,98 EUR","corruption_type":"warmmiete_label_swap","expected_value":"1.066,17 EUR"}
+{"case_id":"aqa-5cef89c46f06e9e3ba1d","case_type":"corrupted","corrupted_field":"postal_code","corrupted_value":"13437","corruption_type":"postal_code_substitution","expected_value":"12099"}
+{"case_id":"aqa-57c0eb48aac18f568a63","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-3ba30feb120c8276bd26","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-acd725c56867641081c4","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-0289bb0076f362aebee9","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"140, 160, 180, 220","corruption_type":"wbs_range_boundary_shift","expected_value":"160, 180, 220"}
+{"case_id":"aqa-cc8fc7d5a2c9f20f235e","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-f60274bd432bb73cf1eb","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-efb7a5c5b4733ec2108f","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-04b4053948b6c51335a0","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-321bd5f57adaf8ee024e","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":4.0,"corruption_type":"rooms_neighbor_value","expected_value":5.0}
+{"case_id":"aqa-7e0f9bfe5fb7dc440bdd","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-ad27ab96cda34e654833","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-174dd35f8362c12967e3","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140"}
+{"case_id":"aqa-45b0ed3fc1802e3a6323","case_type":"corrupted","corrupted_field":"postal_code","corrupted_value":"14197","corruption_type":"postal_code_substitution","expected_value":"13435"}
+{"case_id":"aqa-e55bbf14befff7b6942b","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-b594d7bf3bc7efc790ef","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-436cfd9d0252e04e7284","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-9f9ac0e607144b4625ef","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"160, 180, 220"}
+{"case_id":"aqa-6819240bad3333f73b11","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140, 160, 180, 220","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140, 160, 180"}
+{"case_id":"aqa-bfa662a25f6fc5ff0ee8","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-964015ff448aa5734ca4","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-c06e7791ccb6e3f77e7c","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-fdec1fde42ddd1f8d62d","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"819,85 EUR","corruption_type":"kaltmiete_label_swap","expected_value":"604,19 EUR"}
+{"case_id":"aqa-71ce16d29fbbde656ffa","case_type":"corrupted","corrupted_field":"floor","corrupted_value":"2","corruption_type":"floor_neighbor_value","expected_value":"1"}
+{"case_id":"aqa-21d18b3dfc93d5363bc1","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"WBS required, type unknown","corruption_type":"wbs_requirement_added","expected_value":"No WBS required"}
+{"case_id":"aqa-728219d36f25b0d67be9","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-2a6a4a104c39f2262e40","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_specificity_confusion","expected_value":"WBS required, type unknown"}
+{"case_id":"aqa-a04309b605590008f849","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-3116e741c69f2b06de36","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-b4600756dbe0563d5b65","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-f5a8150841bbbd1c1784","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-f16f89070edec3ab6ea9","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"140, 160, 180, 220"}
+{"case_id":"aqa-f4a41bc3721417dc7d21","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140"}
+{"case_id":"aqa-c8fbb6cf635f1e90ad6a","case_type":"corrupted","corrupted_field":"floor","corrupted_value":"3","corruption_type":"floor_neighbor_value","expected_value":"2"}
+{"case_id":"aqa-5e6c2abce2e9a5681a35","case_type":"corrupted","corrupted_field":"district","corrupted_value":"Charlottenburg-Wilmersdorf","corruption_type":"district_neighbor_substitution","expected_value":"Tempelhof-Schöneberg"}
+{"case_id":"aqa-811a6a7ec31ea6afbf7d","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"160, 180, 220","corruption_type":"wbs_range_boundary_shift","expected_value":"140, 160, 180, 220"}
+{"case_id":"aqa-f760f63646455cc8e34f","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-a26b58e453d8e2eedc90","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-88b61e77214c74007166","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":2.5,"corruption_type":"rooms_neighbor_value","expected_value":1.5}
+{"case_id":"aqa-b020841492fba135082b","case_type":"corrupted","corrupted_field":"floor","corrupted_value":"7","corruption_type":"floor_neighbor_value","expected_value":"DG"}
+{"case_id":"aqa-44bf266cb72e40677af5","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-8101948b15e214932337","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-3a64dde1c0b694c0f133","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-9fc3321ce33a1d85bde3","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-79838eb4bb43f06abe61","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"No WBS required","corruption_type":"wbs_requirement_dropped","expected_value":"100"}
+{"case_id":"aqa-7007168108f00a3dcdfe","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-fd822afaf1a74b9094b0","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-440d9a334e5bbd787f34","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-bc3bf8c6eb87477e1723","case_type":"corrupted","corrupted_field":"floor","corrupted_value":"1","corruption_type":"floor_neighbor_value","expected_value":"2"}
+{"case_id":"aqa-96d28e8ddbb8c4e61e36","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"615,56 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"714,56 EUR"}
+{"case_id":"aqa-d8ad347d88fb0e76db21","case_type":"corrupted","corrupted_field":"rent_warm","corrupted_value":"848,62 EUR","corruption_type":"warmmiete_label_swap","expected_value":"1.102,96 EUR"}
+{"case_id":"aqa-cbc0907b1a13fb63f5f3","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"140, 160, 180, 220","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140"}
+{"case_id":"aqa-d413aef884e02f7a4ecb","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"884,24 EUR","corruption_type":"kaltmiete_label_swap","expected_value":"723,18 EUR"}
+{"case_id":"aqa-c0caadefa442a8e2041c","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"963,87 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"864,87 EUR"}
+{"case_id":"aqa-87afce83958f90fb8a75","case_type":"corrupted","corrupted_field":"rent_warm","corrupted_value":"708,43 EUR","corruption_type":"warmmiete_amount_shift","expected_value":"807,43 EUR"}
+{"case_id":"aqa-a78ed5089a317d224a8b","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":4.0,"corruption_type":"rooms_neighbor_value","expected_value":3.5}
+{"case_id":"aqa-5fc3ee131aef08754248","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"140, 160, 180, 220"}
+{"case_id":"aqa-6ce3ebff37a3d0957ae3","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-f11009c25e00bed38fec","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":4.5,"corruption_type":"rooms_neighbor_value","expected_value":5.0}
+{"case_id":"aqa-60f3e92a1e8451cffe00","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-180cfeb59dc7fb8872c3","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-b1b57bcb8bce0491ebe5","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"140, 160, 180, 220"}
+{"case_id":"aqa-bfbb95367c90e22badd7","case_type":"corrupted","corrupted_field":"district","corrupted_value":"Treptow-Köpenick","corruption_type":"district_neighbor_substitution","expected_value":"Neukölln"}
+{"case_id":"aqa-f5b522411cceb2b7f449","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-c6843f3051f53081d60f","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-815a16d2b7473486d625","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-559c1ea4f5d59d96693f","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"160, 180, 220"}
+{"case_id":"aqa-3b9de677b0956440dc7a","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":1.0,"corruption_type":"rooms_neighbor_value","expected_value":2.0}
+{"case_id":"aqa-7e54a5c2d53251db4e96","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-d575c4d885b6813977db","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"667,05 EUR","corruption_type":"kaltmiete_label_swap","expected_value":"531,90 EUR"}
+{"case_id":"aqa-1fb7b7fd681437814337","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-8f6099b3f7ce293d043a","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"160, 180, 220"}
+{"case_id":"aqa-1a5db27e91396dfc6f8d","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-18bf9752e9d2d72fb72f","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-1b38578d661383afb968","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-e9b69daec76df9eb75a1","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-7423722da10e42e6de89","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140, 160, 180"}
+{"case_id":"aqa-0ad266bceb0f74bdc2df","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-a18dfb1bbb6006331bbf","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"WBS required, type unknown","corruption_type":"wbs_requirement_added","expected_value":"No WBS required"}
+{"case_id":"aqa-229944d005169c77f897","case_type":"corrupted","corrupted_field":"district","corrupted_value":"Tempelhof-Schöneberg","corruption_type":"district_neighbor_substitution","expected_value":"Neukölln"}
+{"case_id":"aqa-0a138920a84a3ec7ee23","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-91a9e901817bbf2fc92d","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"1.107,38 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"982,38 EUR"}
+{"case_id":"aqa-2a30a72402bc89f1ebe4","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-854d160673ed7cf4499e","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-f719ddf82ba2e76fb1e8","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-1f63c335d35613057636","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"592,28 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"691,28 EUR"}
+{"case_id":"aqa-7e3e23d8e79676bf6616","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-b93b2899b9d29a35c5f2","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-53a953fa219146b05515","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"No WBS required","corruption_type":"wbs_requirement_dropped","expected_value":"100"}
+{"case_id":"aqa-3078c063ce9642d5f6c0","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-907c8a587bbed8de8e5c","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_requirement_added","expected_value":"No WBS required"}
+{"case_id":"aqa-9d8e497310099665c14f","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"WBS required, type unknown","corruption_type":"wbs_requirement_added","expected_value":"No WBS required"}
+{"case_id":"aqa-e5edbe7d68e53ec737f4","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-4cfcc10093cc91637194","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"786,35 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"911,35 EUR"}
+{"case_id":"aqa-4954a4b82b77f59f48f3","case_type":"corrupted","corrupted_field":"postal_code","corrupted_value":"10319","corruption_type":"postal_code_substitution","expected_value":"14197"}
+{"case_id":"aqa-2ed2fd2ac7b3db57eff0","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"100"}
+{"case_id":"aqa-c0352f94d7fa83d27563","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-f29bf0b35f060539da4a","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-4ba7c3f7752dd53076b7","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-c93d4647ea4768bd4a12","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":4.5,"corruption_type":"rooms_neighbor_value","expected_value":5.0}
+{"case_id":"aqa-fc111a8361bdb4d9b65a","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-ef6af2102746c6d08aaa","case_type":"corrupted","corrupted_field":"address","corrupted_value":"Hellersdorfer Straße 32","corruption_type":"address_house_number_shift","expected_value":"Hellersdorfer Straße 30"}
+{"case_id":"aqa-be3c9c772ef910a4af0a","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-47986e89c88e30a52769","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"1.069,54 EUR","corruption_type":"kaltmiete_label_swap","expected_value":"810,01 EUR"}
+{"case_id":"aqa-d7a735113f303c02627c","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"514,80 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"689,80 EUR"}
+{"case_id":"aqa-1a438193855da770abd4","case_type":"corrupted","corrupted_field":"rent_warm","corrupted_value":"578,57 EUR","corruption_type":"warmmiete_label_swap","expected_value":"749,96 EUR"}
+{"case_id":"aqa-8c525f8eef0e4b48ae97","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"160, 180, 220","corruption_type":"wbs_range_boundary_shift","expected_value":"140, 160, 180, 220"}
+{"case_id":"aqa-7c20511280f757f41f0a","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140, 160, 180"}
+{"case_id":"aqa-ac3528859dbeb953305c","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_specificity_confusion","expected_value":"WBS required, type unknown"}
+{"case_id":"aqa-a53b691295d84a64f8a8","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-857d64808a158cbfb8b5","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_specificity_confusion","expected_value":"WBS required, type unknown"}
+{"case_id":"aqa-35a4b3a3c7ba12828cf7","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":1.5,"corruption_type":"rooms_neighbor_value","expected_value":1.0}
+{"case_id":"aqa-8f7c66ece63f53888a0a","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-255ee227f4321270db60","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-190a2f82cb37eb916d9a","case_type":"corrupted","corrupted_field":"rent_warm","corrupted_value":"547,49 EUR","corruption_type":"warmmiete_amount_shift","expected_value":"646,49 EUR"}
+{"case_id":"aqa-78e0701b7fe1f247f252","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-43dd1937b47590a6a485","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-f410898119d194e3e285","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"1.087,53 EUR","corruption_type":"kaltmiete_label_swap","expected_value":"864,37 EUR"}
+{"case_id":"aqa-f0d174565040c6ccf726","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-29d410dfe5e80ec1086b","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-b7f91b1e417bae0da5c9","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-66f569e61c66086e77f4","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_specificity_confusion","expected_value":"WBS required, type unknown"}
+{"case_id":"aqa-7331a9163e263ca5cf82","case_type":"corrupted","corrupted_field":"postal_code","corrupted_value":"13437","corruption_type":"postal_code_substitution","expected_value":"13187"}
+{"case_id":"aqa-9f6bb4c9c40f1944a7d6","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-fcededa9f6d64c6c1f14","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-653bcbaea35781afc0e9","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-94ccc7f128b80e228b24","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-d62a4a753a032321e2c7","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140"}
+{"case_id":"aqa-d96ac97489ac30fed319","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-11e52a7849298e295ab1","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140"}
+{"case_id":"aqa-4529be268fe0102a1395","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-42fea118dbff20d0ff4d","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":3.0,"corruption_type":"rooms_neighbor_value","expected_value":4.0}
+{"case_id":"aqa-f7c470922b228593e616","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-a5f73f9b4192dc7a3a5c","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140, 160, 180"}
+{"case_id":"aqa-488b42cd139ba7e2fc62","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-1d066471ac86ac6b6d46","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-fd681638603fafbdc4f8","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140, 160, 180, 220","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140, 160, 180"}
+{"case_id":"aqa-f19eb448842860ce43ff","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"No WBS required","corruption_type":"wbs_requirement_dropped","expected_value":"WBS required, type unknown"}
+{"case_id":"aqa-63ebb89d091f6ed03357","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"WBS required, type unknown","corruption_type":"wbs_requirement_added","expected_value":"No WBS required"}
+{"case_id":"aqa-d0558de302d35e0665b9","case_type":"corrupted","corrupted_field":"floor","corrupted_value":"EG","corruption_type":"floor_neighbor_value","expected_value":"1"}
+{"case_id":"aqa-cba6159f0a6a1c8dc7ab","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"918,16 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"743,16 EUR"}
+{"case_id":"aqa-e195e8e57f9a72c9db7a","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":4.0,"corruption_type":"rooms_neighbor_value","expected_value":3.0}
+{"case_id":"aqa-6c0ff6768181d636ab9f","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-9cdc907d0059f0fdc29d","case_type":"corrupted","corrupted_field":"address","corrupted_value":"Schloßstraße 93b","corruption_type":"address_house_number_shift","expected_value":"Schloßstraße 103b"}
+{"case_id":"aqa-30d27ced6d887c41bd71","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"100"}
+{"case_id":"aqa-2750021f59c9075f720c","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-67f25579caeb7cce5d54","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-38b1c7291ff2c6c564a2","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-935060ed20f666d57bac","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-ccfe07ac1bb7813594a2","case_type":"corrupted","corrupted_field":"floor","corrupted_value":"3","corruption_type":"floor_neighbor_value","expected_value":"2"}
+{"case_id":"aqa-b3439bcda7079367ee96","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"998,60 EUR","corruption_type":"kaltmiete_label_swap","expected_value":"764,50 EUR"}
+{"case_id":"aqa-eda5ba3cffa60b397726","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-d8958fad473cc9680533","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":3.5,"corruption_type":"rooms_neighbor_value","expected_value":3.0}
+{"case_id":"aqa-5eaf5586de33e4be3f48","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-08ac05fccde668ecff35","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-0a1341c0945f5e1329e6","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-db6a7021f99533f91f1c","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-97bb3086747761966aea","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-5d883d9e28f6f89a13d7","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-104486a6a5fb8f56df36","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140"}
+{"case_id":"aqa-bb8dd83b831f5f8b982c","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-7a977358e7c15b026cc1","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"No WBS required","corruption_type":"wbs_requirement_dropped","expected_value":"100"}
+{"case_id":"aqa-2a78019f89f2c8aae7b9","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-bda7b8b6e1918b05af25","case_type":"corrupted","corrupted_field":"district","corrupted_value":"Spandau","corruption_type":"district_neighbor_substitution","expected_value":"Reinickendorf"}
+{"case_id":"aqa-71de700d1af19c7366c5","case_type":"corrupted","corrupted_field":"address","corrupted_value":"Neuendorfer Straße 217","corruption_type":"address_house_number_shift","expected_value":"Neuendorfer Straße 215"}
+{"case_id":"aqa-5103894659c569b24839","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-11406725d2581a59a7a1","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"100, 140, 160, 180"}
+{"case_id":"aqa-c7ed73185f545b93d300","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":1.5,"corruption_type":"rooms_neighbor_value","expected_value":2.0}
+{"case_id":"aqa-d10f0626520e440eca42","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-9059d1b530d78765ba2e","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":2.0,"corruption_type":"rooms_neighbor_value","expected_value":1.0}
+{"case_id":"aqa-47194a8c94894975beba","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-07809ba5ee1bd0b771c3","case_type":"corrupted","corrupted_field":"floor","corrupted_value":"2","corruption_type":"floor_neighbor_value","expected_value":"3"}
+{"case_id":"aqa-56fc4ea7adde2b171521","case_type":"corrupted","corrupted_field":"district","corrupted_value":"Steglitz-Zehlendorf","corruption_type":"district_neighbor_substitution","expected_value":"Spandau"}
+{"case_id":"aqa-476ab0946157fdbe9b76","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"801,90 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"976,90 EUR"}
+{"case_id":"aqa-c3fa1cf4389a605ec8f7","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-cb75bc1d0d6d85b44246","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-8dddf263ff0dcd773517","case_type":"corrupted","corrupted_field":"address","corrupted_value":"Müllerstraße 125","corruption_type":"address_house_number_shift","expected_value":"Müllerstraße 129"}
+{"case_id":"aqa-574f00723be00bae661a","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-9444da58629d6d7c6484","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-9553286cc29f64694296","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":4.5,"corruption_type":"rooms_neighbor_value","expected_value":5.0}
+{"case_id":"aqa-8adfd135d5e69bf63b38","case_type":"corrupted","corrupted_field":"district","corrupted_value":"Treptow-Köpenick","corruption_type":"district_neighbor_substitution","expected_value":"Neukölln"}
+{"case_id":"aqa-bddeed0e419d4bd74e7d","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"160, 180, 220"}
+{"case_id":"aqa-6e0ee3ae2fc5f3702a02","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-3dba5dfffc5e778994cf","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-0307a451b7ac60bcc55f","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-e68c9b0ab1bcad170207","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-d327416dca8d5101c130","case_type":"corrupted","corrupted_field":"postal_code","corrupted_value":"13435","corruption_type":"postal_code_substitution","expected_value":"12353"}
+{"case_id":"aqa-10d5b6d635ec32e01cae","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"100, 140","corruption_type":"wbs_range_boundary_shift","expected_value":"100"}
+{"case_id":"aqa-a645bba81f6826e5f6fd","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"871,39 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"772,39 EUR"}
+{"case_id":"aqa-1abf5852a758fba566b2","case_type":"corrupted","corrupted_field":"district","corrupted_value":"Spandau","corruption_type":"district_neighbor_substitution","expected_value":"Charlottenburg-Wilmersdorf"}
+{"case_id":"aqa-dd3cd03811e88683b22d","case_type":"clean","corrupted_field":null,"corrupted_value":null,"corruption_type":null,"expected_value":null}
+{"case_id":"aqa-affdbde208126afc88eb","case_type":"corrupted","corrupted_field":"rooms","corrupted_value":4.5,"corruption_type":"rooms_neighbor_value","expected_value":4.0}
+{"case_id":"aqa-bb93724d152cb0dfdf24","case_type":"corrupted","corrupted_field":"display_wbs","corrupted_value":"No WBS required","corruption_type":"wbs_requirement_dropped","expected_value":"WBS required, type unknown"}
+{"case_id":"aqa-e863b2f8811ae877c753","case_type":"corrupted","corrupted_field":"rent_kalt","corrupted_value":"981,75 EUR","corruption_type":"kaltmiete_amount_shift","expected_value":"806,75 EUR"}

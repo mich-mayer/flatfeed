@@ -1,0 +1,44 @@
+{
+  "experiment": "synthetic offline AI QA evaluation",
+  "freeze_status": "validation_completed_failed",
+  "frozen_on": "2026-07-21",
+  "calibration": {
+    "case_count": 200,
+    "overall_gate_status": "pass",
+    "report_sha256": "29c64a03981cdb7ba705b3c4e93424de9284632cf3313703d842ce74b5d82273",
+    "run_manifest_sha256": "0c7dd16cc61540892a26d43262b37105671a57a84f240f0163f3415ccc9419d5"
+  },
+  "configuration": {
+    "max_output_tokens": 64,
+    "model": "gpt-5.6-luna",
+    "output_schema_sha256": "f7c5d21b7ee06ff3647c4726253c74eeccecd250ec96c7275d07f70d24989945",
+    "prompt_sha256": "0004e241d89fe4354dd51fff2efd4a49e40db8a31d0014fdc8647532d7dfce9a",
+    "prompt_version": "luna-v3",
+    "reasoning_effort": "none",
+    "retries": 0,
+    "runner_version": "1.2",
+    "strict_structured_outputs": true
+  },
+  "validation": {
+    "case_count": 200,
+    "dataset_manifest_sha256": "12215800e6e7c0ead2cf1f0ff7d91cd503ed92158d9ec48b1792b95ad13db51d",
+    "hard_budget_limit_usd": 0.813,
+    "model_inputs_sha256": "7b49f6371a499711dee977038e234ca7f5ea1b3a0d0a61f572c0d474466f1f01",
+    "prompt_changes_after_run": false,
+    "run_count_limit": 1,
+    "split": "luna_v3_validation"
+  },
+  "validation_result": {
+    "overall_gate_status": "fail",
+    "failed_gate": "wbs_per_field_recall",
+    "failed_gate_threshold": 0.9,
+    "failed_gate_value": 0.85,
+    "locked_holdout_release_authorized": false,
+    "prompt_changes_after_result": false
+  },
+  "boundaries": {
+    "locked_holdout_released": false,
+    "product_runtime_integration": false,
+    "synthetic_offline_evaluation": true
+  }
+}

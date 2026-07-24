@@ -1,0 +1,208 @@
+{
+  "boundaries": {
+    "consumed_validation_reused": false,
+    "development_screen_reused": false,
+    "locked_holdout_truth_read": false,
+    "locked_holdout_used_for_inference": false,
+    "openai_called_during_generation": false,
+    "product_runtime_modified": false,
+    "sol_authorized": false,
+    "validation_authorized_now": false,
+    "validation_requires_passing_calibration_freeze": true
+  },
+  "configuration": {
+    "max_output_tokens": 256,
+    "model": "gpt-5.6-terra",
+    "prompt_version": "terra-v1",
+    "reasoning_effort": "high",
+    "retries": 0,
+    "strict_structured_outputs": true
+  },
+  "experiment": "synthetic offline Terra-high calibration cycle",
+  "hypothesis": "Terra-v1 with high reasoning preserves the paired rooms gain on independent balanced calibration data.",
+  "isolation": {
+    "comparison_basis": "raw_text plus parser_snapshot",
+    "overlaps": {
+      "calibration_ai_qa_development_model_inputs": 0,
+      "calibration_ai_qa_locked_holdout_model_inputs": 0,
+      "calibration_luna_calibration_calibration_model_inputs": 0,
+      "calibration_luna_calibration_validation_model_inputs": 0,
+      "calibration_luna_effort_screen_model_inputs": 0,
+      "calibration_luna_low_cycle_calibration_model_inputs": 0,
+      "calibration_luna_low_cycle_validation_model_inputs": 0,
+      "calibration_luna_v3_cycle_calibration_model_inputs": 0,
+      "calibration_luna_v3_cycle_validation_model_inputs": 0,
+      "calibration_luna_v4_cycle_calibration_model_inputs": 0,
+      "calibration_luna_v4_cycle_validation_model_inputs": 0,
+      "calibration_luna_v5_cycle_calibration_model_inputs": 0,
+      "calibration_luna_v5_cycle_validation_model_inputs": 0,
+      "calibration_terra_calibration_cycle_calibration_model_inputs": 0,
+      "calibration_terra_calibration_cycle_validation_model_inputs": 0,
+      "calibration_terra_effort_screen_model_inputs": 0,
+      "calibration_terra_high_reasoning_screen": 0,
+      "calibration_terra_prompt_reasoning_screen_model_inputs": 0,
+      "calibration_terra_v2_prompt_screen_model_inputs": 0,
+      "calibration_validation": 0,
+      "validation_ai_qa_development_model_inputs": 0,
+      "validation_ai_qa_locked_holdout_model_inputs": 0,
+      "validation_luna_calibration_calibration_model_inputs": 0,
+      "validation_luna_calibration_validation_model_inputs": 0,
+      "validation_luna_effort_screen_model_inputs": 0,
+      "validation_luna_low_cycle_calibration_model_inputs": 0,
+      "validation_luna_low_cycle_validation_model_inputs": 0,
+      "validation_luna_v3_cycle_calibration_model_inputs": 0,
+      "validation_luna_v3_cycle_validation_model_inputs": 0,
+      "validation_luna_v4_cycle_calibration_model_inputs": 0,
+      "validation_luna_v4_cycle_validation_model_inputs": 0,
+      "validation_luna_v5_cycle_calibration_model_inputs": 0,
+      "validation_luna_v5_cycle_validation_model_inputs": 0,
+      "validation_terra_calibration_cycle_calibration_model_inputs": 0,
+      "validation_terra_calibration_cycle_validation_model_inputs": 0,
+      "validation_terra_effort_screen_model_inputs": 0,
+      "validation_terra_high_reasoning_screen": 0,
+      "validation_terra_prompt_reasoning_screen_model_inputs": 0,
+      "validation_terra_v2_prompt_screen_model_inputs": 0
+    }
+  },
+  "schema_version": "1.0",
+  "splits": {
+    "terra_high_calibration": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 146100,
+          "file": "calibration_model_inputs.jsonl",
+          "lines": 280,
+          "sha256": "5e0906d7fd4158724b23ac9670cc01f575e1d11d6c1aef4999f90d34676a3199"
+        },
+        "truth": {
+          "bytes": 48593,
+          "file": "calibration_truth.jsonl",
+          "lines": 280,
+          "sha256": "1a121da6067b67b01df7ac575bf8f8d18eb9bdef6512f21e7d8ec03db2486571"
+        }
+      },
+      "counts": {
+        "clean": 140,
+        "corrupted": 140,
+        "total": 280
+      },
+      "error_distribution": {
+        "address_postal_code": 14,
+        "district": 10,
+        "floor": 10,
+        "rent_kalt": 21,
+        "rent_warm": 8,
+        "rooms": 21,
+        "wbs": 56
+      },
+      "permitted_use": "one Terra-high calibration run",
+      "seed": 20260824,
+      "wbs_semantic_balance": {
+        "100": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140, 160, 180": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "140, 160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "No WBS required": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "WBS required, type unknown": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        }
+      }
+    },
+    "terra_high_validation": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 146146,
+          "file": "validation_model_inputs.jsonl",
+          "lines": 280,
+          "sha256": "fb26a15e4e4489c82dec342449f44dc8df18daed7bf6c71f5d6d3a8c3c6a4f65"
+        },
+        "truth": {
+          "bytes": 48656,
+          "file": "validation_truth.jsonl",
+          "lines": 280,
+          "sha256": "58cdbea6704a62696a43ca53ca7935ec5c7835d348ed85bd2efc414fe6274ee2"
+        }
+      },
+      "counts": {
+        "clean": 140,
+        "corrupted": 140,
+        "total": 280
+      },
+      "error_distribution": {
+        "address_postal_code": 14,
+        "district": 10,
+        "floor": 10,
+        "rent_kalt": 21,
+        "rent_warm": 8,
+        "rooms": 21,
+        "wbs": 56
+      },
+      "permitted_use": "one frozen Terra-high validation run after passing calibration",
+      "seed": 20260825,
+      "wbs_semantic_balance": {
+        "100": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140, 160, 180": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "140, 160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "No WBS required": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "WBS required, type unknown": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 # FlatFeed — Design & Content System
 
 **Status:** Normative. Single source of truth for UI, layout, components, copy, terminology, and case-study content.
-**Date:** 2026-07-14 (public prototype narrative, evidence scope, and guided tour updated; see §34 history for earlier decisions).
+**Date:** 2026-07-24 (hero limitation copy tightened; see §34 history for earlier decisions).
 **Basis:** source code inspection (`main.py`, `flatfeed/`, `synthetic/`, `eval/`), an evidence/claim audit, desktop and mobile browser renders of the case-study page, and the project docs (`README.md`, `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`). No renter research or usability study has been run; product-value statements remain hypotheses.
 
 **Rule keywords.** MUST = mandatory project rule. SHOULD = default; deviate only for a stated reason. MAY = permitted option. MUST NOT = prohibited. Rules without a keyword are descriptive context.
@@ -81,7 +81,7 @@ Derived from the product's actual behavior — not imported from external system
 
 **P3 — Public evidence stays proportional to what was tested.**
 *Why:* portfolio credibility rests on never implying live systems or production impact.
-*Implications:* the public case quotes only the authored synthetic regression-case count and explains that it covers designed cases. Detailed parser/QA diagnostics remain in the runnable eval report; transit minutes are geometric estimates; demo photos disclose whether they are illustrative or location-aligned, while apartment terms remain synthetic.
+*Implications:* before a frozen hosted-model validation exists, the public case quotes only the authored synthetic regression-case count and explains that it covers designed cases. After one exact frozen validation passes the predeclared engineering and Product Scorecard gates, the landing may replace that numerical result with exactly four simple AI QA metrics under the same-depth label `Synthetic frozen validation`; §13 and §23 define the narrow exception. Detailed field diagnostics remain in the case study or runnable eval artifacts; transit minutes are geometric estimates; demo photos disclose whether they are illustrative or location-aligned, while apartment terms remain synthetic.
 *Anti-pattern:* turning 100% on authored cases, zero mock cost, or zero false alerts into a product result.
 
 **P4 — Ground truth is eval-only.**
@@ -388,8 +388,10 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 ## 13. Data Visualization (dashboard + case page)
 
 - Dashboard charts confirm the adjacent metric blocks (coverage over time, cost, version comparison). If a metric answers the question, don't add a chart.
-- The case page has no charts or metric cards. Evidence is a labeled Demonstrated / Not demonstrated split.
-- The only public eval number is the authored regression-case count, verified by `scripts/check_eval_numbers.py`. Detailed eval diagnostics remain in the CLI report.
+- The case page has no charts. Evidence remains a labeled Demonstrated / Not demonstrated split.
+- Before frozen hosted-model validation, the only public eval number is the authored regression-case count, verified by `scripts/check_eval_numbers.py`.
+- After one exact frozen validation passes both the unchanged engineering contract and the Product Scorecard contract in `eval/AI_QA_EVAL_PLAN.md` §31, the Evidence section MAY contain one compact four-item scorecard: Parser Error Detection Rate, False Alert Rate, Correct Field Detection Rate, and Successful Check Rate. Each item MUST show the percentage and absolute count under the same-depth label `Synthetic frozen validation`.
+- The four-item scorecard is the only permitted landing metric block. Historical engineering metrics, field tables, confidence intervals, cost, and latency remain in the Markdown case study or eval artifacts. The scorecard sits below the renter-product story and MUST NOT turn the page into an AI QA dashboard.
 
 ---
 
@@ -541,20 +543,20 @@ Audience adaptation is allowed (gloss depth, sentence length) — mechanical wor
 The page serves three reading depths; every depth must independently answer its questions.
 
 **10-second scan** (kicker + H1 + lede + meta + product preview) must answer: What is this, who is it for, what did the candidate own, and what is the prototype boundary?
-Mechanics: the H1 names one filter, Berlin WBS listings, Telegram, and prototype status. The lede says the current version uses a synthetic catalog and names live-source/renter outcomes as open. The product preview shows one current synthetic match in a real Telegram demo session; it does not show internal QA metrics.
+Mechanics: the kicker states `working prototype` and `synthetic catalog` once. The H1 names one filter, Berlin WBS listings, and one consistent Telegram feed. The lede explains the save-once, normalize, and deterministic-match mechanism without repeating the prototype boundary. Metadata identifies the candidate's role, audience, status, and bounded admin-only AI QA role. Live-source and renter-outcome limitations stay in Evidence and the deeper case-study text instead of weakening the opening proposition. The product preview shows one current synthetic match in a real Telegram demo session; it does not show internal QA metrics.
 
 **30-second scan** (+ section headings, workflow, decision cards, evidence split) must answer: what the core flow is, which three decisions matter, and what is demonstrated versus unvalidated.
-Mechanics: the four H2s state Product / Decisions / Evidence / Next test as takeaway sentences. Evidence uses two labeled lists, not a results dashboard. The only public eval number is the authored synthetic case count, immediately qualified as a regression guard rather than production accuracy.
+Mechanics: the four H2s state Product / Decisions / Evidence / Next test as takeaway sentences. Decision cards explain the rationale and trade-off, not experiment outcomes. Evidence records implemented proof, measured synthetic results, and specific unknowns without repeating the decision rationale. Next test maps those unknowns to Learn / Measure / Decide signals. Evidence uses two labeled lists, not a results dashboard. Before frozen hosted-model validation, the only public eval number is the authored synthetic case count. After a passing frozen validation, one compact four-metric Product Scorecard may replace that numerical result under the explicit label `Synthetic frozen validation`; the surrounding evidence split and product-first hierarchy remain unchanged.
 
 **Deep read** must answer: problem hypothesis, product flow, ownership, three trade-offs, evidence limits, and next validation. Keep the four-question framework in §6.3 and the concise Markdown equivalent in `CASE_STUDY.md`.
 
 Element rules:
-- **Hero:** kicker → plain proposition H1 → boundary-aware lede → term gloss → CTAs → four-item meta `dl`. Every value is decodable without insider context.
+- **Hero:** boundary-aware kicker → plain proposition H1 → product-mechanism lede → term gloss → CTAs → four-item meta `dl`. Every value is decodable without insider context.
 - **Product preview:** one real Telegram demo-session screenshot only, presented inside a clearly external macOS-style evidence frame. Values come from the current synthetic catalog; the caption states that apartment terms are synthetic and carries the photo attribution. Location coherence remains documented in `assets/listing_photos/LICENSES.md`. The screenshot may be cropped to exclude Telegram's empty composer, but its card content MUST NOT be edited. No fake dashboard, product-internal browser chrome, or mock metrics.
 - **Workflow:** Filter → Normalize → Check → Match → Notify. "Check" is explicitly the synthetic adapter's local catalog state; "Notify" is optional background delivery with deduplication.
-- **Decisions:** exactly three public decisions: four-field scope, deterministic matching/optional QA boundary, reliability controls before live-source breadth.
-- **Evidence:** Demonstrated now vs Not demonstrated yet. Do not present field accuracy, exact accuracy, mock cost, or zero-error counts as product outcomes.
-- **Next test:** one permitted live source and a small renter observation, with Learn / Measure / Decide signals. It is a plan, not a claim.
+- **Decisions:** exactly three public decisions: four-field scope, deterministic matching/optional QA boundary, reliability controls before live-source breadth. Each card explains why the boundary exists; measured outcomes belong in Evidence.
+- **Evidence:** Demonstrated now vs Not demonstrated yet. Implemented proof and synthetic results appear once; the Product Scorecard itself carries the hosted-model outcome. Do not present field accuracy, exact accuracy, mock cost, or zero-error counts as product outcomes. A passing frozen-validation Product Scorecard is the sole exception and is limited to the four metrics defined in §13.
+- **Next test:** one permitted live source and a small renter observation, with Learn / Measure / Decide signals covering renter adoption, source freshness, human review of every AI alert, and a random sample of listings with no alert. It is a plan, not a claim.
 
 ---
 
@@ -578,6 +580,8 @@ Every claim on the case study, README, and CASE_STUDY.md carries one of these st
 Hard constraints (non-negotiable):
 - Synthetic eval numbers MUST NOT read as production evidence at any reading depth.
 - Eval numbers MUST come from an actual run and update **all** their occurrences together (§27); never round 99.x to 100, never keep stale numbers because they look better.
+- A hosted-model scorecard MUST come only from the one frozen validation run and MUST show `Synthetic frozen validation`, the absolute counts, and the real-world manual-audit limitation at the same reading depth. Calibration metrics and development-screen results MUST NOT appear on the landing.
+- A real product limitation MUST say that human review is still required for every AI alert and for an independent random sample of listings receiving no alert. This is PLANNED, not implemented; the prototype uses no housing-provider data without permission.
 - Capabilities exercised only through the synthetic adapter (multi-source collection, source health) MUST be described as architecture exercised by the synthetic adapter — the README's phrasing is the model.
 - $0 QA cost MUST stay attributed to the mock provider.
 - Hiring signal MUST NOT be improved by inventing evidence. Ever.
@@ -586,7 +590,7 @@ Hard constraints (non-negotiable):
 
 ## 24. Candidate Ownership Language
 
-- The canonical ownership statement says: "I owned the problem framing, scope, interaction rules, reliability trade-offs, and evaluation design. I implemented the bot, dashboard, and test harness with Claude Code and Codex as coding collaborators." Keep the HTML and Markdown versions in sync in *meaning*.
+- The canonical ownership statement says: "I defined the renter problem, product scope, matching and AI guardrails, reliability trade-offs, and evaluation contract. I implemented the bot, dashboard, and test harness with Claude Code and Codex as coding collaborators." Keep the HTML and Markdown versions in sync in *meaning*.
 - Verb discipline: **defined/designed/scoped/chose** = candidate judgment; **implemented/built/wrote** = delivery; **the bot/the parser/the eval does X** = system behavior; **demo/mock/synthetic** = illustrative outcome. Do not swap categories.
 - The author approved the agent-collaboration disclosure; it lives in the Decisions contribution note and `CASE_STUDY.md` §2 and MUST NOT be removed or softened without the author.
 - First person ("I", "my") is correct on the case study and in CASE_STUDY.md. In the bot, "I" is the *bot* speaking about bot actions (§17) — never the candidate. The dashboard and README use no first person for ownership except CASE_STUDY-quoted material.
@@ -610,7 +614,7 @@ Hard constraints (non-negotiable):
 - Headings state the takeaway or the question; a heading-only read of the case page or dashboard must be coherent.
 - Case-study paragraphs ≤5 sentences, one idea each; bot messages are 1–2 sentences; dashboard captions 1–2 sentences.
 - Lists for parallel mechanisms (README "What It Shows", workflow, decisions, evidence); tables only for enumerable facts.
-- The case page does not use public metric cards. The authored regression-case count is one evidence-list item with its limitation directly below it.
+- The case page uses no public metric cards before frozen hosted-model validation. After the §13 publication gate passes, exactly one compact four-item Product Scorecard is permitted in Evidence; no other numerical AI QA block is allowed.
 - Technical explanations follow "term (plain gloss)" on first use — the WBS and Kaltmiete hints are the models.
 - Review gates: the 10s/30s scan tests (§22) for any case-page change; for the bot, "can a new user reach a listing card in two guided steps from /start?"; for the dashboard, "does each section answer its own heading?"
 
@@ -621,7 +625,7 @@ Hard constraints (non-negotiable):
 **MUST remain consistent (meaning-identical) across bot, dashboard, case page, and docs:**
 - The meaning of listing, filter, WBS tiers, Kaltmiete-only matching, district/Bezirk, golden set, risk score, triage labels (§20).
 - The AI boundary sentence pattern: parsing/matching deterministic; AI QA admin-only, budgeted, never mutating (§2, §12).
-- **Public eval number.** The only public result number is the authored synthetic regression-case count. Field accuracy, exact-listing accuracy, mock cost, and quiet/caught counts stay in the runnable engineering report.
+- **Public eval numbers.** Before frozen hosted-model validation, the only public result number is the authored synthetic regression-case count. After the §13 publication gate passes, the landing numerical result block contains only the four simple Product Scorecard metrics, each with its absolute count and `Synthetic frozen validation` label. Field tables, historical engineering metrics, mock cost, latency, and quiet/caught diagnostics stay in the case study or runnable engineering artifacts.
 - **Eval sync check.** `scripts/check_eval_numbers.py` re-runs `eval.run_eval --json` and verifies the authored-case count in `CASE_STUDY.md`, `README.md`, and `docs/case-study.html`.
 - The four-question Product / Decisions / Evidence / Next test structure and its five-part Markdown equivalent stay meaning-aligned.
 - WBS semantics: `flatfeed/wbs_rules.py` is the single source; documents give examples, the module defines truth.
@@ -769,6 +773,173 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-24 final hiring-manager CTA and ownership audit
+
+- **Problem:** the contribution note listed broad ownership categories without
+  naming the product and AI decisions, the final CTA pointed readers toward
+  implementation instead of product evidence, and the footer repeated the
+  already prominent synthetic-data qualifier rather than closing on the
+  product's distinctive operating boundary.
+- **Rationale:** name the renter problem, matching and AI guardrails, and
+  evaluation contract as the candidate's decisions while preserving the
+  approved coding-collaborator disclosure. Invite the reader to try the renter
+  flow or inspect its evidence. Close with the concise positioning line `One
+  saved filter. Deterministic matching. Admin-only AI QA.` Synthetic provenance
+  remains visible in the hero, preview caption, Evidence, and scorecard.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this
+  document (§24, §34).
+- **Compatibility impact:** the ownership sentence changes meaning-identically
+  across HTML and Markdown; CTA labels and URLs remain unchanged; the footer
+  positioning line changes without removing any required evidence label.
+- **Migration consideration:** fixed now as a copy-only change. No runtime,
+  metrics, links, components, or responsive styles changed.
+
+### 2026-07-24 decision-evidence-next-test separation
+
+- **Problem:** the AI validation result appeared inside a decision card and
+  again in Evidence, while reliability features were repeated across Product,
+  Decisions, and Evidence. Next test named activities but did not map them back
+  to the three unresolved product risks.
+- **Rationale:** make each section do one job. Decisions explain why scope and
+  boundaries exist; Evidence records what runs, what was measured, and what is
+  still unknown; Next test states what to learn, measure, and use as the
+  expansion decision. Keep the four-metric scorecard as the single landing
+  location for the hosted-model outcome.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this
+  document (§22, §34).
+- **Compatibility impact:** remove the frozen-validation result from the
+  deterministic-rules decision card, tighten the Evidence lists, and expand the
+  Learn / Measure / Decide signals to include renter adoption, source
+  freshness, human review of every AI alert, and a random sample of listings
+  with no alert.
+- **Migration consideration:** fixed now as a copy-only narrative change.
+  Product behavior, metrics, evidence labels, and runtime boundaries remain
+  unchanged.
+
+### 2026-07-24 hero product-message tightening
+
+- **Problem:** the hero repeated `working prototype`, `synthetic catalog`, and
+  `end to end` across the kicker, H1, lede, and metadata, then ended with a
+  generic list of open questions. The repetition weakened the product value
+  without adding a meaningful risk control.
+- **Rationale:** keep the factual `working prototype · synthetic catalog`
+  boundary once in the kicker. Let the H1 state the user value — one filter and
+  one consistent Telegram feed — and let the lede explain how the product
+  works. Replace the repeated `Data: Synthetic by design` metadata item with
+  the bounded `AI role: Admin-only parser QA`, which adds relevant AI PM
+  context without turning QA into the primary product story. Detailed
+  limitations remain specific and actionable in Evidence.
+- **Affected surfaces:** `docs/case-study.html` and this document (§22, §34).
+- **Compatibility impact:** the H1 and lede are shorter and product-led; the
+  fourth metadata item now explains AI's bounded role. The hero no longer names
+  live-source coverage, freshness, and renter outcomes as open questions.
+  Those limitations remain explicit in the Evidence section, the next-test
+  section, `CASE_STUDY.md`, `README.md`, and `docs/PROJECT_CONTEXT.md`.
+- **Migration consideration:** fixed now as a copy-only change. No metrics,
+  evidence labels, runtime behavior, or responsive styles changed.
+
+### 2026-07-23 Terra-high passing frozen-validation publication
+
+- **Problem:** the exact Terra-high configuration completed its one authorized
+  frozen validation after the Product Scorecard publication contract was
+  written. Public surfaces still described the earlier rejected medium
+  configuration and therefore understated the current repository evidence.
+- **Rationale:** publish exactly the four permitted simple metrics because the
+  frozen engineering contract, Product Scorecard, and every matching-critical
+  field guardrail passed. Keep the renter workflow ahead of the QA evidence,
+  label the block `Synthetic frozen validation`, show absolute counts, and
+  state the manual-audit limitation beside the results.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`,
+  `CASE_STUDY.md`, `README.md`, `docs/PROJECT_CONTEXT.md`,
+  `eval/AI_QA_EVAL_PLAN.md`, this document, the aggregate scorecard reporter,
+  and its tests.
+- **Compatibility impact:** replace the qualitative rejected-Terra wording on
+  current-state surfaces. The landing removes the authored regression-case
+  number and exposes only the four approved hosted-model metrics. Detailed
+  field diagnostics remain in the Markdown case study and eval artifacts.
+- **Migration consideration:** fixed now. The result remains synthetic offline
+  feasibility evidence; the public demo continues to use the deterministic
+  mock, product runtime is unchanged, and the locked holdout stays closed.
+
+### 2026-07-23 frozen-validation Product Scorecard contract
+
+- **Problem:** the engineering eval uses several technically correct metrics,
+  but they are too detailed for a hiring-manager-facing product case. The
+  existing public rule also prohibited every hosted-model metric, even after a
+  new Terra configuration passed calibration and was frozen for independent
+  validation. At the same time, synthetic validation cannot show whether the
+  checker misses naturally occurring parser errors on permitted live data.
+- **Rationale:** use four plain-language metrics tied directly to the admin QA
+  job: Parser Error Detection Rate, False Alert Rate, Correct Field Detection
+  Rate, and Successful Check Rate. Permit them only after one exact frozen
+  validation passes both the unchanged engineering gates and the stricter
+  Product Scorecard gates. Keep the product promise and renter workflow first;
+  place the scorecard in Evidence and state that a real product would still
+  require human review of alerts plus a random sample of silent cases. This
+  preserves a simple prototype while showing that real-world measurement and
+  source-coverage controls were considered.
+- **Affected surfaces:** this document (§§3, 13, 22–23, 26–27, 34),
+  `eval/AI_QA_EVAL_PLAN.md`, new
+  `eval/ai_qa_product_scorecard.py`, and
+  `tests/test_ai_qa_product_scorecard.py`. The landing and Markdown case study
+  are deliberately not updated with new result numbers before validation.
+- **Compatibility impact:** the prior absolute rule that only the 15-case
+  regression count could ever be public is now conditional. Once the
+  publication gate passes, the landing numerical result block contains only
+  the four Product Scorecard metrics; detailed field and engineering metrics
+  remain off the landing. Existing synthetic, mock, non-mutating, and
+  real-source limitations remain mandatory.
+- **Migration consideration:** contract and aggregate-only reporter implemented
+  before validation. The frozen scorer, prompt, model, reasoning effort,
+  dataset, retries, output limit, configuration freeze, product runtime, and
+  existing run artifacts are unchanged. Landing migration is deferred until a
+  real frozen-validation artifact exists and passes evidence review.
+
+### 2026-07-23 Terra frozen-validation evidence update
+
+- **Problem:** the latest Terra configuration completed its one authorized
+  frozen validation after the public feasibility wording had been written
+  around the earlier Luna failure.
+- **Rationale:** the four simple aggregate Product Scorecard metrics passed,
+  but the matching-critical rooms guardrail and unchanged engineering contract
+  failed at 18/21. The landing therefore keeps no hosted-model metric block.
+  The public case records the outcome qualitatively so it neither hides the
+  completed experiment nor presents a rejected configuration as accepted.
+- **Affected surfaces:** `CASE_STUDY.md`, `docs/case-study.html`, `README.md`,
+  `docs/PROJECT_CONTEXT.md`, `eval/AI_QA_EVAL_PLAN.md`, and this document.
+- **Compatibility impact:** replace the current-state phrase "missed a
+  predeclared critical WBS gate" with the latest result: all four simple
+  aggregate targets passed, but the predeclared matching-critical rooms
+  guardrail failed. Historical Luna artifacts and their recorded WBS failure
+  remain unchanged.
+- **Migration consideration:** no runtime integration, metric cards, or locked
+  holdout run. The consumed validation is not rerun or used as a new acceptance
+  attempt.
+
+### 2026-07-22 hosted-model feasibility evidence update
+
+- **Problem:** the public case study still said hosted-model AI QA usefulness
+  had not been tested, but the repository now contains a completed synthetic
+  offline feasibility experiment. Leaving the old wording would understate the
+  implemented evaluation work; presenting the experiment as accepted would be
+  false because frozen validation missed a predeclared critical WBS gate.
+- **Rationale:** factual integrity and evidence separation take priority over a
+  stronger-looking result. The public story now records the completed
+  experiment and its stop decision qualitatively, without publishing internal
+  metric tables or turning balanced synthetic challenge-set results into
+  production claims. The public demo remains on the deterministic mock.
+- **Affected surfaces:** `CASE_STUDY.md`, `docs/case-study.html`, `README.md`,
+  `docs/PROJECT_CONTEXT.md`, and this document.
+- **Compatibility impact:** the statements "hosted-model usefulness has not
+  been tested" and "Usefulness and false-alarm rate of AI QA with a real
+  model" no longer describe the repository accurately. They are replaced by
+  the narrower limitation: live-source and real-prevalence performance remain
+  untested.
+- **Migration consideration:** fixed now across the public Markdown, HTML, and
+  durable context. No AI configuration was accepted, no locked holdout was
+  run, no runtime integration was added, and the only public eval number
+  remains the authored deterministic regression-case count.
 
 ### 2026-07-15 plain-language copy pass (landing, docs, guided tour)
 

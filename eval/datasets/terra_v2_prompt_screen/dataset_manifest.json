@@ -1,0 +1,130 @@
+{
+  "advancement_rule": {
+    "absolute": {
+      "coverage": 1.0,
+      "maximum_clean_false_alerts": 1,
+      "minimum_correct_other_fields": 7,
+      "minimum_correct_rooms": 19,
+      "minimum_correct_wbs": 19,
+      "minimum_total_correct": 61,
+      "technical_failures": 0
+    },
+    "comparative": {
+      "clean_false_alert_regressions_allowed": 0,
+      "minimum_additional_correct_rooms_vs_v1": 1,
+      "other_field_regressions_allowed": 0,
+      "wbs_regressions_allowed": 0
+    }
+  },
+  "boundaries": {
+    "calibration_or_validation_evidence": false,
+    "consumed_validation_reused": false,
+    "development_only": true,
+    "locked_holdout_used": false,
+    "openai_called_during_generation": false,
+    "product_runtime_modified": false,
+    "sol_authorized": false
+  },
+  "composition": {
+    "clean_families": {
+      "100": 3,
+      "100, 140": 2,
+      "100, 140, 160, 180": 1,
+      "140, 160, 180, 220": 2,
+      "160, 180, 220": 3,
+      "No WBS required": 3,
+      "WBS required, type unknown": 2
+    },
+    "non_wbs_error_families": {
+      "100": 4,
+      "100, 140": 4,
+      "100, 140, 160, 180": 4,
+      "140, 160, 180, 220": 4,
+      "160, 180, 220": 4,
+      "No WBS required": 4,
+      "WBS required, type unknown": 4
+    },
+    "non_wbs_error_fields": {
+      "address_postal_code": 2,
+      "district": 2,
+      "floor": 1,
+      "rent_kalt": 2,
+      "rent_warm": 1,
+      "rooms": 20
+    },
+    "wbs_error_families": {
+      "100": 3,
+      "100, 140": 2,
+      "100, 140, 160, 180": 2,
+      "140, 160, 180, 220": 2,
+      "160, 180, 220": 4,
+      "No WBS required": 4,
+      "WBS required, type unknown": 3
+    }
+  },
+  "counts": {
+    "clean": 16,
+    "corrupted": 48,
+    "total": 64
+  },
+  "error_distribution": {
+    "address_postal_code": 2,
+    "district": 2,
+    "floor": 1,
+    "rent_kalt": 2,
+    "rent_warm": 1,
+    "rooms": 20,
+    "wbs": 20
+  },
+  "experiment": "synthetic offline Terra-v2 prompt screen",
+  "hypothesis": "A task-general equality ledger and final rooms/WBS contradiction veto reduce direct comparison misses without increasing false alerts.",
+  "isolation": {
+    "comparison_basis": "raw_text plus parser_snapshot",
+    "overlaps": {
+      "ai_qa_development_model_inputs": 0,
+      "ai_qa_locked_holdout_model_inputs": 0,
+      "luna_calibration_calibration_model_inputs": 0,
+      "luna_calibration_validation_model_inputs": 0,
+      "luna_effort_screen_model_inputs": 0,
+      "luna_low_cycle_calibration_model_inputs": 0,
+      "luna_low_cycle_validation_model_inputs": 0,
+      "luna_v3_cycle_calibration_model_inputs": 0,
+      "luna_v3_cycle_validation_model_inputs": 0,
+      "luna_v4_cycle_calibration_model_inputs": 0,
+      "luna_v4_cycle_validation_model_inputs": 0,
+      "luna_v5_cycle_calibration_model_inputs": 0,
+      "luna_v5_cycle_validation_model_inputs": 0,
+      "terra_calibration_cycle_calibration_model_inputs": 0,
+      "terra_calibration_cycle_validation_model_inputs": 0,
+      "terra_effort_screen_model_inputs": 0,
+      "terra_prompt_reasoning_screen_model_inputs": 0
+    }
+  },
+  "model_inputs": {
+    "file": "model_inputs.jsonl",
+    "lines": 64,
+    "sha256": "2fd5fe9250eed90fbec0f533e970715b946c1d7bc2c8e93a262e0cc8a354b7e8"
+  },
+  "profiles": [
+    {
+      "id": "terra-v1-medium",
+      "model": "gpt-5.6-terra",
+      "prompt_version": "terra-v1",
+      "reasoning_effort": "medium"
+    },
+    {
+      "id": "terra-v2-medium",
+      "model": "gpt-5.6-terra",
+      "prompt_version": "terra-v2",
+      "reasoning_effort": "medium"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260822,
+  "split": "terra_v2_prompt_screen",
+  "truth": {
+    "file": "truth.jsonl",
+    "lines": 64,
+    "sha256": "d3b0f9b543124348846e4c5f9adcf2af075783123960e03d70eb3ab858d425cb"
+  }
+}

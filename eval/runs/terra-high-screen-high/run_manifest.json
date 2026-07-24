@@ -1,0 +1,53 @@
+{
+  "budget": {
+    "cached_input_price_per_1m": 0.25,
+    "estimate_method": "UTF-8 bytes as a conservative input-token upper bound; max output tokens; all retry attempts reserved",
+    "hard_limit_usd": 1.0,
+    "input_price_per_1m": 2.5,
+    "output_price_per_1m": 15.0,
+    "preflight_worst_case_usd": 0.8315275,
+    "pricing_observed_date": "2026-07-21",
+    "pricing_source": "https://developers.openai.com/api/docs/pricing"
+  },
+  "case_count": 48,
+  "case_ids_sha256": "aae89af687fd80ea0edfd45a1e4e3f6e0ef8e463f2c4e8372253acb54059a007",
+  "completed_at": "2026-07-23T17:52:51.669011+00:00",
+  "configuration": {
+    "max_output_tokens": 256,
+    "model": "gpt-5.6-terra",
+    "output_schema_sha256": "f7c5d21b7ee06ff3647c4726253c74eeccecd250ec96c7275d07f70d24989945",
+    "prompt_sha256": "672629d914d73cde056968c0249ae14b522703987d632f967eee866496d8f6c9",
+    "prompt_version": "terra-v1",
+    "reasoning_effort": "high",
+    "responses_api": true,
+    "retries": 0,
+    "service_tier": "default",
+    "store": false,
+    "strict_structured_outputs": true,
+    "timeout_seconds": 60.0
+  },
+  "credential": {
+    "source": ".env.eval.local",
+    "value_persisted": false,
+    "variable": "OPENAI_API_KEY"
+  },
+  "experiment": "synthetic offline AI QA evaluation",
+  "input": {
+    "dataset_manifest_sha256": "ece89234f6612b781c86c8ebf0e533bcc6b5f00f271b04d94222dbd4278894a2",
+    "file": "model_inputs.jsonl",
+    "sha256": "4a8ea0a67fbe914121fba8f552f58a779a2bdc83abc121ac52957d06a71b737c"
+  },
+  "product_boundary": "Offline eval only; no Telegram bot or product-runtime integration.",
+  "result": {
+    "completed_cases": 48,
+    "predictions_file": "predictions.jsonl",
+    "predictions_sha256": "8b5dbb1292776b02102d265ea416457768d52588eb98184c692912f7a681250c",
+    "recorded_cost_usd": 0.08740375,
+    "technical_failures": 0
+  },
+  "runner_version": "1.5",
+  "schema_version": "1.0",
+  "split": "terra_high_reasoning_screen",
+  "started_at": "2026-07-23T17:51:36.900994+00:00",
+  "status": "completed"
+}

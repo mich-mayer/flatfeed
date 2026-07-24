@@ -115,8 +115,8 @@ filter/matches flow:
    optional `How matching works` pipeline explainer as a side branch.
 3. **Evidence and limits** — separates implemented behavior and the live
    golden-set count from unvalidated renter demand, live-source coverage, and
-   hosted-model QA usefulness. `Use this demo filter` saves the filter only
-   now, on explicit request.
+   AI QA performance on live-source listings. `Use this demo filter` saves the
+   filter only now, on explicit request.
 
 The parser-fault and triage simulation is an optional branch after step 3. It
 is not part of the renter flow and the public demo uses a deterministic mock
@@ -252,6 +252,12 @@ makes no LLM calls.
 - The admin labels the finding parser error, parser correct, or unsure.
 - AI output never alters listing data, matching, or user-facing cards
   automatically.
+- A separate synthetic offline hosted-model feasibility experiment is recorded
+  in `eval/AI_QA_EVAL_PLAN.md`. `gpt-5.6-terra` with high reasoning passed the
+  one frozen synthetic validation and all predeclared field guardrails. This
+  accepts the configuration only as offline feasibility evidence, not
+  live-source accuracy; the locked holdout was not run and the experiment was
+  not integrated into the product runtime.
 
 The Streamlit dashboard ("FlatFeed product operations") leads with the
 product pipeline and deterministic-parsing accuracy — AI QA is one section

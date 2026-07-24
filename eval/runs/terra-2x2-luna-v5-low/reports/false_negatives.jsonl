@@ -1,0 +1,4 @@
+{"case_id":"aqa-4ae9acaa55420f4cc1a1","expected_field":"wbs","reason":"model_no_alert"}
+{"case_id":"aqa-884d8dfdccb7b1fd7220","expected_field":"wbs","reason":"model_no_alert"}
+{"case_id":"aqa-9d09575563f5fbdc30f6","expected_field":"rent_warm","reason":"technical_failure"}
+{"case_id":"aqa-dec023397bd728f57f49","expected_field":"wbs","reason":"model_no_alert"}

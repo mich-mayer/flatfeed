@@ -1,0 +1,123 @@
+{
+  "boundaries": {
+    "calibration_or_validation_evidence": false,
+    "development_only": true,
+    "locked_holdout_used": false,
+    "luna_low_validation_used": false,
+    "openai_called_during_generation": false,
+    "product_runtime_modified": false,
+    "sol_authorized": false
+  },
+  "composition": {
+    "clean_families": {
+      "100": 2,
+      "100, 140": 2,
+      "100, 140, 160, 180": 2,
+      "140, 160, 180, 220": 2,
+      "160, 180, 220": 2,
+      "No WBS required": 3,
+      "WBS required, type unknown": 3
+    },
+    "non_wbs_error_fields": {
+      "address_postal_code": 2,
+      "district": 2,
+      "floor": 2,
+      "rent_kalt": 2,
+      "rent_warm": 2,
+      "rooms": 2
+    },
+    "wbs_error_families": {
+      "100": 3,
+      "100, 140": 3,
+      "100, 140, 160, 180": 2,
+      "140, 160, 180, 220": 2,
+      "160, 180, 220": 2,
+      "No WBS required": 4,
+      "WBS required, type unknown": 4
+    }
+  },
+  "counts": {
+    "clean": 16,
+    "corrupted": 32,
+    "total": 48
+  },
+  "error_distribution": {
+    "address_postal_code": 2,
+    "district": 2,
+    "floor": 2,
+    "rent_kalt": 2,
+    "rent_warm": 2,
+    "rooms": 2,
+    "wbs": 20
+  },
+  "experiment": "synthetic offline Terra prompt x reasoning screen",
+  "isolation": {
+    "overlaps": {
+      "ai_qa_development_model_inputs": 0,
+      "ai_qa_locked_holdout_model_inputs": 0,
+      "luna_calibration_calibration_model_inputs": 0,
+      "luna_calibration_validation_model_inputs": 0,
+      "luna_effort_screen_model_inputs": 0,
+      "luna_low_cycle_calibration_model_inputs": 0,
+      "luna_low_cycle_validation_model_inputs": 0,
+      "luna_v3_cycle_calibration_model_inputs": 0,
+      "luna_v3_cycle_validation_model_inputs": 0,
+      "luna_v4_cycle_calibration_model_inputs": 0,
+      "luna_v4_cycle_validation_model_inputs": 0,
+      "luna_v5_cycle_calibration_model_inputs": 0,
+      "luna_v5_cycle_validation_model_inputs": 0,
+      "terra_effort_screen_model_inputs": 0
+    }
+  },
+  "model_inputs": {
+    "file": "model_inputs.jsonl",
+    "lines": 48,
+    "sha256": "ef02b258ea795b386b778f724bd3adf35fb879104bc775ca669d606a35f88dac"
+  },
+  "profiles": [
+    {
+      "id": "luna-v5-low",
+      "prompt_version": "luna-v5",
+      "reasoning_effort": "low"
+    },
+    {
+      "id": "terra-v1-low",
+      "prompt_version": "terra-v1",
+      "reasoning_effort": "low"
+    },
+    {
+      "id": "luna-v5-medium",
+      "prompt_version": "luna-v5",
+      "reasoning_effort": "medium"
+    },
+    {
+      "id": "terra-v1-medium",
+      "prompt_version": "terra-v1",
+      "reasoning_effort": "medium"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260819,
+  "selection_rule": {
+    "coverage": 1.0,
+    "maximum_clean_false_alerts": 1,
+    "minimum_correct_non_wbs": 11,
+    "minimum_correct_wbs": 18,
+    "minimum_total_correct": 44,
+    "technical_failures": 0,
+    "tie_break_order": [
+      "total_correct_desc",
+      "correct_wbs_desc",
+      "correct_non_wbs_desc",
+      "false_alerts_asc",
+      "observed_cost_usd_asc",
+      "profile_id_asc"
+    ]
+  },
+  "split": "terra_prompt_reasoning_screen",
+  "truth": {
+    "file": "truth.jsonl",
+    "lines": 48,
+    "sha256": "48f0ef7f76dc410a4428858846724fc651cfa1eb81471254842ef11162fe999c"
+  }
+}

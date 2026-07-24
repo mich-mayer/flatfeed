@@ -1,0 +1,7 @@
+{"case_id":"aqa-019503d049e92a325bcb","expected_field":"floor","reason":"technical_failure"}
+{"case_id":"aqa-10648fd8213518876a8e","expected_field":"district","reason":"technical_failure"}
+{"case_id":"aqa-130b8822f19b1c3b9a4b","expected_field":"rent_kalt","reason":"technical_failure"}
+{"case_id":"aqa-2f6d4017939c240a970b","expected_field":"wbs","reason":"technical_failure"}
+{"case_id":"aqa-3c053d65ee986ecb4ed6","expected_field":"rent_kalt","reason":"technical_failure"}
+{"case_id":"aqa-42613c5c05681e573784","expected_field":"rent_kalt","reason":"technical_failure"}
+{"case_id":"aqa-c9426b6040727e7a5881","expected_field":"rooms","reason":"technical_failure"}

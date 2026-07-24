@@ -1,0 +1,199 @@
+{
+  "boundaries": {
+    "development_screen_reused": false,
+    "locked_holdout_truth_read": false,
+    "locked_holdout_used_for_inference": false,
+    "openai_called_during_generation": false,
+    "product_runtime_modified": false,
+    "sol_authorized": false,
+    "validation_authorized_now": false,
+    "validation_requires_passing_calibration_freeze": true
+  },
+  "configuration": {
+    "max_output_tokens": 256,
+    "model": "gpt-5.6-terra",
+    "prompt_version": "terra-v1",
+    "reasoning_effort": "medium",
+    "retries": 0,
+    "strict_structured_outputs": true
+  },
+  "experiment": "synthetic offline Terra calibration cycle",
+  "hypothesis": "Terra-v1 with medium reasoning can preserve the 2x2 screen gains on independent calibration data.",
+  "isolation": {
+    "comparison_basis": "raw_text plus parser_snapshot",
+    "overlaps": {
+      "calibration_locked_holdout": 0,
+      "calibration_luna_effort_screen": 0,
+      "calibration_luna_low_calibration": 0,
+      "calibration_luna_low_validation": 0,
+      "calibration_luna_v1_calibration": 0,
+      "calibration_luna_v2_validation": 0,
+      "calibration_luna_v3_calibration": 0,
+      "calibration_luna_v3_validation": 0,
+      "calibration_luna_v4_calibration": 0,
+      "calibration_luna_v4_validation": 0,
+      "calibration_luna_v5_calibration": 0,
+      "calibration_luna_v5_validation": 0,
+      "calibration_original_development": 0,
+      "calibration_terra_effort_screen": 0,
+      "calibration_terra_prompt_reasoning_screen": 0,
+      "calibration_validation": 0,
+      "validation_locked_holdout": 0,
+      "validation_luna_effort_screen": 0,
+      "validation_luna_low_calibration": 0,
+      "validation_luna_low_validation": 0,
+      "validation_luna_v1_calibration": 0,
+      "validation_luna_v2_validation": 0,
+      "validation_luna_v3_calibration": 0,
+      "validation_luna_v3_validation": 0,
+      "validation_luna_v4_calibration": 0,
+      "validation_luna_v4_validation": 0,
+      "validation_luna_v5_calibration": 0,
+      "validation_luna_v5_validation": 0,
+      "validation_original_development": 0,
+      "validation_terra_effort_screen": 0,
+      "validation_terra_prompt_reasoning_screen": 0
+    }
+  },
+  "schema_version": "1.0",
+  "splits": {
+    "terra_calibration": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 146140,
+          "file": "calibration_model_inputs.jsonl",
+          "lines": 280,
+          "sha256": "83474873c20f7d5231ec3523492bdbfc03a9e99364c1933775918a187c0fd335"
+        },
+        "truth": {
+          "bytes": 48761,
+          "file": "calibration_truth.jsonl",
+          "lines": 280,
+          "sha256": "fa4e08574a12349898d72430328a6e4d2b2ea070705f19c94f6c3c4f926f8043"
+        }
+      },
+      "counts": {
+        "clean": 140,
+        "corrupted": 140,
+        "total": 280
+      },
+      "error_distribution": {
+        "address_postal_code": 14,
+        "district": 10,
+        "floor": 10,
+        "rent_kalt": 21,
+        "rent_warm": 8,
+        "rooms": 21,
+        "wbs": 56
+      },
+      "permitted_use": "one Terra calibration run",
+      "seed": 20260820,
+      "wbs_semantic_balance": {
+        "100": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140, 160, 180": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "140, 160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "No WBS required": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "WBS required, type unknown": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        }
+      }
+    },
+    "terra_validation": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 146164,
+          "file": "validation_model_inputs.jsonl",
+          "lines": 280,
+          "sha256": "1b6dabc602067d571adf42b6a0e467293503ac4802eb4910974dcba0663f58e2"
+        },
+        "truth": {
+          "bytes": 48635,
+          "file": "validation_truth.jsonl",
+          "lines": 280,
+          "sha256": "2ddfb4d1db958e3963aced37f1b706668a9ea9c82992878910f1933dde6934f4"
+        }
+      },
+      "counts": {
+        "clean": 140,
+        "corrupted": 140,
+        "total": 280
+      },
+      "error_distribution": {
+        "address_postal_code": 14,
+        "district": 10,
+        "floor": 10,
+        "rent_kalt": 21,
+        "rent_warm": 8,
+        "rooms": 21,
+        "wbs": 56
+      },
+      "permitted_use": "one frozen Terra validation run after passing calibration",
+      "seed": 20260821,
+      "wbs_semantic_balance": {
+        "100": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "100, 140, 160, 180": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "140, 160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "160, 180, 220": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "No WBS required": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        },
+        "WBS required, type unknown": {
+          "clean": 20,
+          "non_wbs_corrupted": 12,
+          "wbs_corrupted": 8
+        }
+      }
+    }
+  }
+}

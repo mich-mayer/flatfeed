@@ -1,0 +1,53 @@
+{
+  "budget": {
+    "cached_input_price_per_1m": 0.1,
+    "estimate_method": "UTF-8 bytes as a conservative input-token upper bound; max output tokens; all retry attempts reserved",
+    "hard_limit_usd": 0.813,
+    "input_price_per_1m": 1.0,
+    "output_price_per_1m": 6.0,
+    "preflight_worst_case_usd": 0.812972,
+    "pricing_observed_date": "2026-07-21",
+    "pricing_source": "https://developers.openai.com/api/docs/pricing"
+  },
+  "case_count": 200,
+  "case_ids_sha256": "ccdf8b4098759fdf74989d6bb0fece63afd1fb0c47c0a39ca5d6a406947ea6ee",
+  "completed_at": "2026-07-21T18:40:13.888794+00:00",
+  "configuration": {
+    "max_output_tokens": 64,
+    "model": "gpt-5.6-luna",
+    "output_schema_sha256": "f7c5d21b7ee06ff3647c4726253c74eeccecd250ec96c7275d07f70d24989945",
+    "prompt_sha256": "0004e241d89fe4354dd51fff2efd4a49e40db8a31d0014fdc8647532d7dfce9a",
+    "prompt_version": "luna-v3",
+    "reasoning_effort": "none",
+    "responses_api": true,
+    "retries": 0,
+    "service_tier": "default",
+    "store": false,
+    "strict_structured_outputs": true,
+    "timeout_seconds": 60.0
+  },
+  "credential": {
+    "source": ".env.eval.local",
+    "value_persisted": false,
+    "variable": "OPENAI_API_KEY"
+  },
+  "experiment": "synthetic offline AI QA evaluation",
+  "input": {
+    "dataset_manifest_sha256": "12215800e6e7c0ead2cf1f0ff7d91cd503ed92158d9ec48b1792b95ad13db51d",
+    "file": "calibration_model_inputs.jsonl",
+    "sha256": "668c6a16fe3afa827925d8ca308f7190c63d7857573cb9b944d7ef8de6b7bbc4"
+  },
+  "product_boundary": "Offline eval only; no Telegram bot or product-runtime integration.",
+  "result": {
+    "completed_cases": 200,
+    "predictions_file": "predictions.jsonl",
+    "predictions_sha256": "6afdefd1d16c2d846258b0b36fd849246cab6afa65094b25f98f143e0b3d59f2",
+    "recorded_cost_usd": 0.226564,
+    "technical_failures": 0
+  },
+  "runner_version": "1.2",
+  "schema_version": "1.0",
+  "split": "luna_v3_calibration",
+  "started_at": "2026-07-21T18:34:54.628634+00:00",
+  "status": "completed"
+}

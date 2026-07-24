@@ -161,6 +161,13 @@ an eval change, verify the public count remains synchronized:
 PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m scripts.check_eval_numbers
 ```
 
+A separate synthetic offline hosted-model feasibility experiment is documented
+in `eval/AI_QA_EVAL_PLAN.md`. `gpt-5.6-terra` with high reasoning passed the
+one frozen synthetic validation and all predeclared field guardrails. This
+accepts the configuration only as offline feasibility evidence: the locked
+holdout was not run, live-source performance remains unmeasured, and nothing
+was integrated into the product runtime.
+
 ## Environment Variables
 
 See `.env.example` for the full list. The main product-specific settings are:

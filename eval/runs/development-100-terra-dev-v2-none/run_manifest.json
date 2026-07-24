@@ -1,0 +1,53 @@
+{
+  "budget": {
+    "cached_input_price_per_1m": 0.25,
+    "estimate_method": "UTF-8 bytes as a conservative input-token upper bound; max output tokens; all retry attempts reserved",
+    "hard_limit_usd": 0.6,
+    "input_price_per_1m": 2.5,
+    "output_price_per_1m": 15.0,
+    "preflight_worst_case_usd": 0.591475,
+    "pricing_observed_date": "2026-07-21",
+    "pricing_source": "https://developers.openai.com/api/docs/pricing"
+  },
+  "case_count": 100,
+  "case_ids_sha256": "33168b3689696ed090b22cdf02a71b6ae9a2ec59e0d67248d33571f06a5c2102",
+  "completed_at": "2026-07-21T18:04:39.905296+00:00",
+  "configuration": {
+    "max_output_tokens": 64,
+    "model": "gpt-5.6-terra",
+    "output_schema_sha256": "f7c5d21b7ee06ff3647c4726253c74eeccecd250ec96c7275d07f70d24989945",
+    "prompt_sha256": "849b4610f260f5e1d0ed49104b4798e9c2757af72f09687d0867fe57908aef47",
+    "prompt_version": "dev-v2",
+    "reasoning_effort": "none",
+    "responses_api": true,
+    "retries": 0,
+    "service_tier": "default",
+    "store": false,
+    "strict_structured_outputs": true,
+    "timeout_seconds": 60.0
+  },
+  "credential": {
+    "source": ".env.eval.local",
+    "value_persisted": false,
+    "variable": "OPENAI_API_KEY"
+  },
+  "experiment": "synthetic offline AI QA evaluation",
+  "input": {
+    "dataset_manifest_sha256": "0cdee436c38ae4f9a999e0c659b4f8824243507052be86a3b81ab5588079d5e0",
+    "file": "development_model_inputs.jsonl",
+    "sha256": "769535d321782051dfb68934e9c0d7aa3c1f449cc900fd7aa28c9d7fd2d51b67"
+  },
+  "product_boundary": "Offline eval only; no Telegram bot or product-runtime integration.",
+  "result": {
+    "completed_cases": 100,
+    "predictions_file": "predictions.jsonl",
+    "predictions_sha256": "d5a21fa94f2b5e4f8b2a3bd934146747709b3dba9a3007cb00963a700f14c9de",
+    "recorded_cost_usd": 0.1749575,
+    "technical_failures": 0
+  },
+  "runner_version": "1.1",
+  "schema_version": "1.0",
+  "split": "development",
+  "started_at": "2026-07-21T18:02:40.029950+00:00",
+  "status": "completed"
+}

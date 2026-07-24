@@ -1,0 +1,533 @@
+{
+  "acceptance_gates": {
+    "gates": {
+      "challenge_set_precision": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.85,
+        "value": 0.8958333333333334
+      },
+      "error_recall": {
+        "comparison": "min",
+        "status": "fail",
+        "threshold": 0.9,
+        "value": 0.86
+      },
+      "false_alert_rate": {
+        "comparison": "max",
+        "status": "fail",
+        "threshold": 0.08,
+        "value": 0.1
+      },
+      "field_localization_accuracy": {
+        "comparison": "min",
+        "status": "fail",
+        "threshold": 0.9,
+        "value": 0.8837209302325582
+      },
+      "rent_kalt_per_field_recall": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 1.0
+      },
+      "rooms_per_field_recall": {
+        "comparison": "min",
+        "status": "fail",
+        "threshold": 0.9,
+        "value": 0.625
+      },
+      "structured_output_coverage": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.995,
+        "value": 1.0
+      },
+      "wbs_per_field_recall": {
+        "comparison": "min",
+        "status": "fail",
+        "threshold": 0.9,
+        "value": 0.7692307692307693
+      }
+    },
+    "note": "Targets from the eval contract; not achieved results until scored.",
+    "overall_status": "fail"
+  },
+  "counts": {
+    "alerted_corrupted_cases": 43,
+    "alerts": 48,
+    "clean_cases": 50,
+    "correctly_localized_alerts": 38,
+    "corrupted_cases": 50,
+    "false_negatives": 7,
+    "false_positives": 5,
+    "invalid_structured_outputs": 0,
+    "outcome_invalid_json": 0,
+    "outcome_invalid_schema": 0,
+    "outcome_technical_failure": 0,
+    "outcome_valid": 100,
+    "technical_failures": 0,
+    "total_cases": 100,
+    "uncovered_cases": 0,
+    "valid_structured_outputs": 100,
+    "wrong_field_localizations": 5
+  },
+  "diagnostics": {
+    "false_negatives": [
+      {
+        "case_id": "aqa-11f00d914ab1724dac9c",
+        "expected_field": "rooms",
+        "reason": "model_no_alert"
+      },
+      {
+        "case_id": "aqa-5921ec7270205095a6e9",
+        "expected_field": "floor",
+        "reason": "model_no_alert"
+      },
+      {
+        "case_id": "aqa-7169afc0afeb42e6a260",
+        "expected_field": "address_postal_code",
+        "reason": "model_no_alert"
+      },
+      {
+        "case_id": "aqa-875961fd05b9235e770b",
+        "expected_field": "wbs",
+        "reason": "model_no_alert"
+      },
+      {
+        "case_id": "aqa-8c608e427b441aae1354",
+        "expected_field": "wbs",
+        "reason": "model_no_alert"
+      },
+      {
+        "case_id": "aqa-c567370d1646285ef16c",
+        "expected_field": "address_postal_code",
+        "reason": "model_no_alert"
+      },
+      {
+        "case_id": "aqa-f108263bf43f955fd093",
+        "expected_field": "wbs",
+        "reason": "model_no_alert"
+      }
+    ],
+    "false_positives": [
+      {
+        "case_id": "aqa-3c7594b845f1a5ac2433",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-8a63819c41188d99d0f4",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-af75cc25a2f5663e5b66",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-bc39e006186fa2a62cc7",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-f946aacf108d9b3e5988",
+        "predicted_field": "wbs"
+      }
+    ],
+    "invalid_outputs": [],
+    "technical_failure_categories": {},
+    "wrong_field_localizations": [
+      {
+        "case_id": "aqa-1ebdd2bfcbabc6026dce",
+        "expected_field": "address_postal_code",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-4855c5393ffc8bfe133f",
+        "expected_field": "district",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-6edbb95aabfd56678f6f",
+        "expected_field": "address_postal_code",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-c9426b6040727e7a5881",
+        "expected_field": "rooms",
+        "predicted_field": "wbs"
+      },
+      {
+        "case_id": "aqa-cb40edd64d8bc7778f9e",
+        "expected_field": "rooms",
+        "predicted_field": "wbs"
+      }
+    ]
+  },
+  "evidence_scope": "Synthetic challenge-set engineering artifact; not production precision or user-impact evidence.",
+  "experiment": "synthetic offline AI QA evaluation",
+  "field_breakdown": {
+    "address_postal_code": {
+      "alerted": 5,
+      "correctly_localized": 3,
+      "error_alert_recall": {
+        "denominator": 7,
+        "numerator": 5,
+        "value": 0.7142857142857143,
+        "wilson_95_ci": {
+          "high": 0.9177810759959433,
+          "low": 0.35893445183261935
+        }
+      },
+      "label": "address/postal code",
+      "localized_recall": {
+        "denominator": 7,
+        "numerator": 3,
+        "value": 0.42857142857142855,
+        "wilson_95_ci": {
+          "high": 0.7495416354723428,
+          "low": 0.15821985525146975
+        }
+      },
+      "missed": 2,
+      "missed_by_reason": {
+        "model_no_alert": 2
+      },
+      "total_corrupted": 7,
+      "wrong_localization": 2
+    },
+    "district": {
+      "alerted": 5,
+      "correctly_localized": 4,
+      "error_alert_recall": {
+        "denominator": 5,
+        "numerator": 5,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.5655175352168251
+        }
+      },
+      "label": "district",
+      "localized_recall": {
+        "denominator": 5,
+        "numerator": 4,
+        "value": 0.8,
+        "wilson_95_ci": {
+          "high": 0.9637758913675698,
+          "low": 0.37553462976252533
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 5,
+      "wrong_localization": 1
+    },
+    "floor": {
+      "alerted": 3,
+      "correctly_localized": 3,
+      "error_alert_recall": {
+        "denominator": 4,
+        "numerator": 3,
+        "value": 0.75,
+        "wilson_95_ci": {
+          "high": 0.9544127391902995,
+          "low": 0.30064184258240184
+        }
+      },
+      "label": "floor",
+      "localized_recall": {
+        "denominator": 4,
+        "numerator": 3,
+        "value": 0.75,
+        "wilson_95_ci": {
+          "high": 0.9544127391902995,
+          "low": 0.30064184258240184
+        }
+      },
+      "missed": 1,
+      "missed_by_reason": {
+        "model_no_alert": 1
+      },
+      "total_corrupted": 4,
+      "wrong_localization": 0
+    },
+    "rent_kalt": {
+      "alerted": 10,
+      "correctly_localized": 10,
+      "error_alert_recall": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 0.9999999999999999,
+          "low": 0.7224672001371107
+        }
+      },
+      "label": "Kaltmiete",
+      "localized_recall": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 0.9999999999999999,
+          "low": 0.7224672001371107
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 10,
+      "wrong_localization": 0
+    },
+    "rent_warm": {
+      "alerted": 3,
+      "correctly_localized": 3,
+      "error_alert_recall": {
+        "denominator": 3,
+        "numerator": 3,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.4385029682449546
+        }
+      },
+      "label": "Warmmiete",
+      "localized_recall": {
+        "denominator": 3,
+        "numerator": 3,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.4385029682449546
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 3,
+      "wrong_localization": 0
+    },
+    "rooms": {
+      "alerted": 7,
+      "correctly_localized": 5,
+      "error_alert_recall": {
+        "denominator": 8,
+        "numerator": 7,
+        "value": 0.875,
+        "wilson_95_ci": {
+          "high": 0.9775825085499433,
+          "low": 0.5291118177871464
+        }
+      },
+      "label": "rooms",
+      "localized_recall": {
+        "denominator": 8,
+        "numerator": 5,
+        "value": 0.625,
+        "wilson_95_ci": {
+          "high": 0.8631557141764026,
+          "low": 0.30574239460262737
+        }
+      },
+      "missed": 1,
+      "missed_by_reason": {
+        "model_no_alert": 1
+      },
+      "total_corrupted": 8,
+      "wrong_localization": 2
+    },
+    "wbs": {
+      "alerted": 10,
+      "correctly_localized": 10,
+      "error_alert_recall": {
+        "denominator": 13,
+        "numerator": 10,
+        "value": 0.7692307692307693,
+        "wilson_95_ci": {
+          "high": 0.9182047128150143,
+          "low": 0.49743624053272495
+        }
+      },
+      "label": "WBS",
+      "localized_recall": {
+        "denominator": 13,
+        "numerator": 10,
+        "value": 0.7692307692307693,
+        "wilson_95_ci": {
+          "high": 0.9182047128150143,
+          "low": 0.49743624053272495
+        }
+      },
+      "missed": 3,
+      "missed_by_reason": {
+        "model_no_alert": 3
+      },
+      "total_corrupted": 13,
+      "wrong_localization": 0
+    }
+  },
+  "metrics": {
+    "challenge_set_precision": {
+      "denominator": 48,
+      "numerator": 43,
+      "value": 0.8958333333333334,
+      "wilson_95_ci": {
+        "high": 0.9546782809581869,
+        "low": 0.7783257830561368
+      }
+    },
+    "error_recall": {
+      "denominator": 50,
+      "numerator": 43,
+      "value": 0.86,
+      "wilson_95_ci": {
+        "high": 0.9304916657298371,
+        "low": 0.7381380628941446
+      }
+    },
+    "false_alert_rate": {
+      "denominator": 50,
+      "numerator": 5,
+      "value": 0.1,
+      "wilson_95_ci": {
+        "high": 0.21360231437479654,
+        "low": 0.04347576493189041
+      }
+    },
+    "field_localization_accuracy": {
+      "denominator": 43,
+      "numerator": 38,
+      "value": 0.8837209302325582,
+      "wilson_95_ci": {
+        "high": 0.9492957226019584,
+        "low": 0.7552083818991787
+      }
+    },
+    "missed_error_rate": {
+      "denominator": 50,
+      "numerator": 7,
+      "value": 0.14,
+      "wilson_95_ci": {
+        "high": 0.2618619371058554,
+        "low": 0.06950833427016294
+      }
+    },
+    "structured_output_coverage": {
+      "denominator": 100,
+      "numerator": 100,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.9630065017930143
+      }
+    },
+    "technical_failure_rate": {
+      "denominator": 100,
+      "numerator": 0,
+      "value": 0.0,
+      "wilson_95_ci": {
+        "high": 0.03699349820698568,
+        "low": 3.469446951953614e-18
+      }
+    }
+  },
+  "model_output_schema_version": "1.0",
+  "operational": {
+    "case_result_records": 100,
+    "completed_cases": 100,
+    "cost": {
+      "cost_per_completed_case_usd": 0.0005243775,
+      "is_partial": false,
+      "records_with_cost": 100,
+      "total_case_records": 100,
+      "total_usd": 0.05243775
+    },
+    "latency_by_mode": {
+      "synchronous_case": {
+        "is_partial": false,
+        "p50_ms": 876.2944164999985,
+        "p95_ms": 2741.6197916499978,
+        "sample_count": 100,
+        "total_case_records": 100
+      }
+    },
+    "request_count": 100,
+    "retry_count": 0,
+    "token_usage": {
+      "cached_input_tokens": 0,
+      "input_tokens": 56315,
+      "is_partial": false,
+      "output_tokens": 2267,
+      "reasoning_tokens": 0,
+      "records_with_usage": 100,
+      "total_case_records": 100,
+      "total_tokens": 58582
+    }
+  },
+  "per_field_recall": {
+    "address_postal_code": {
+      "denominator": 7,
+      "numerator": 3,
+      "value": 0.42857142857142855,
+      "wilson_95_ci": {
+        "high": 0.7495416354723428,
+        "low": 0.15821985525146975
+      }
+    },
+    "district": {
+      "denominator": 5,
+      "numerator": 4,
+      "value": 0.8,
+      "wilson_95_ci": {
+        "high": 0.9637758913675698,
+        "low": 0.37553462976252533
+      }
+    },
+    "floor": {
+      "denominator": 4,
+      "numerator": 3,
+      "value": 0.75,
+      "wilson_95_ci": {
+        "high": 0.9544127391902995,
+        "low": 0.30064184258240184
+      }
+    },
+    "rent_kalt": {
+      "denominator": 10,
+      "numerator": 10,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 0.9999999999999999,
+        "low": 0.7224672001371107
+      }
+    },
+    "rent_warm": {
+      "denominator": 3,
+      "numerator": 3,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.4385029682449546
+      }
+    },
+    "rooms": {
+      "denominator": 8,
+      "numerator": 5,
+      "value": 0.625,
+      "wilson_95_ci": {
+        "high": 0.8631557141764026,
+        "low": 0.30574239460262737
+      }
+    },
+    "wbs": {
+      "denominator": 13,
+      "numerator": 10,
+      "value": 0.7692307692307693,
+      "wilson_95_ci": {
+        "high": 0.9182047128150143,
+        "low": 0.49743624053272495
+      }
+    }
+  },
+  "report_schema_version": "1.0",
+  "run_label": "development-100-dev-v2-none",
+  "scorer_version": "1.0",
+  "split": "development"
+}

@@ -1,0 +1,195 @@
+{
+  "address_postal_code": {
+    "alerted": 10,
+    "correctly_localized": 10,
+    "error_alert_recall": {
+      "denominator": 10,
+      "numerator": 10,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 0.9999999999999999,
+        "low": 0.7224672001371107
+      }
+    },
+    "label": "address/postal code",
+    "localized_recall": {
+      "denominator": 10,
+      "numerator": 10,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 0.9999999999999999,
+        "low": 0.7224672001371107
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 10,
+    "wrong_localization": 0
+  },
+  "district": {
+    "alerted": 10,
+    "correctly_localized": 7,
+    "error_alert_recall": {
+      "denominator": 10,
+      "numerator": 10,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 0.9999999999999999,
+        "low": 0.7224672001371107
+      }
+    },
+    "label": "district",
+    "localized_recall": {
+      "denominator": 10,
+      "numerator": 7,
+      "value": 0.7,
+      "wilson_95_ci": {
+        "high": 0.8922087325936989,
+        "low": 0.39677814746114537
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 10,
+    "wrong_localization": 3
+  },
+  "floor": {
+    "alerted": 8,
+    "correctly_localized": 6,
+    "error_alert_recall": {
+      "denominator": 8,
+      "numerator": 8,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.6755924351161198
+      }
+    },
+    "label": "floor",
+    "localized_recall": {
+      "denominator": 8,
+      "numerator": 6,
+      "value": 0.75,
+      "wilson_95_ci": {
+        "high": 0.9285207872478909,
+        "low": 0.40927543031016883
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 8,
+    "wrong_localization": 2
+  },
+  "rent_kalt": {
+    "alerted": 20,
+    "correctly_localized": 16,
+    "error_alert_recall": {
+      "denominator": 20,
+      "numerator": 20,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.8388748419471806
+      }
+    },
+    "label": "Kaltmiete",
+    "localized_recall": {
+      "denominator": 20,
+      "numerator": 16,
+      "value": 0.8,
+      "wilson_95_ci": {
+        "high": 0.919342337420202,
+        "low": 0.5839825677481064
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 20,
+    "wrong_localization": 4
+  },
+  "rent_warm": {
+    "alerted": 7,
+    "correctly_localized": 5,
+    "error_alert_recall": {
+      "denominator": 7,
+      "numerator": 7,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.6456695649333126
+      }
+    },
+    "label": "Warmmiete",
+    "localized_recall": {
+      "denominator": 7,
+      "numerator": 5,
+      "value": 0.7142857142857143,
+      "wilson_95_ci": {
+        "high": 0.9177810759959433,
+        "low": 0.35893445183261935
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 7,
+    "wrong_localization": 2
+  },
+  "rooms": {
+    "alerted": 14,
+    "correctly_localized": 12,
+    "error_alert_recall": {
+      "denominator": 15,
+      "numerator": 14,
+      "value": 0.9333333333333333,
+      "wilson_95_ci": {
+        "high": 0.9881331045067315,
+        "low": 0.7018347012621998
+      }
+    },
+    "label": "rooms",
+    "localized_recall": {
+      "denominator": 15,
+      "numerator": 12,
+      "value": 0.8,
+      "wilson_95_ci": {
+        "high": 0.9295245065301844,
+        "low": 0.5481455128483065
+      }
+    },
+    "missed": 1,
+    "missed_by_reason": {
+      "model_no_alert": 1
+    },
+    "total_corrupted": 15,
+    "wrong_localization": 2
+  },
+  "wbs": {
+    "alerted": 48,
+    "correctly_localized": 48,
+    "error_alert_recall": {
+      "denominator": 50,
+      "numerator": 48,
+      "value": 0.96,
+      "wilson_95_ci": {
+        "high": 0.9889611156723802,
+        "low": 0.8653990931249297
+      }
+    },
+    "label": "WBS",
+    "localized_recall": {
+      "denominator": 50,
+      "numerator": 48,
+      "value": 0.96,
+      "wilson_95_ci": {
+        "high": 0.9889611156723802,
+        "low": 0.8653990931249297
+      }
+    },
+    "missed": 2,
+    "missed_by_reason": {
+      "model_no_alert": 2
+    },
+    "total_corrupted": 50,
+    "wrong_localization": 0
+  }
+}
