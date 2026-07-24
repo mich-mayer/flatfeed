@@ -16,7 +16,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260715-crop">
+    <link rel="stylesheet" href="styles.css?v=20260723-scorecard">
   </head>
   <body>
     <div class="case">
@@ -44,12 +44,11 @@
         <section class="case-hero" aria-labelledby="case-title">
           <div class="hero-copy">
             <p class="kicker">Product case study · working prototype · synthetic catalog</p>
-            <h1 id="case-title">One filter for Berlin WBS listings, running end to end as a Telegram prototype.</h1>
+            <h1 id="case-title">One filter for Berlin WBS listings in one consistent Telegram feed.</h1>
             <p class="case-lede">
-              A renter saves four criteria once — WBS, district, maximum Kaltmiete, rooms.
-              FlatFeed turns inconsistent listing text into comparable fields and shows active
-              listings that match all four. The current version runs end to end on a synthetic
-              catalog; live source coverage, freshness and renter outcomes remain open questions.
+              A renter saves four criteria once — WBS, district, maximum Kaltmiete and rooms.
+              FlatFeed normalizes inconsistent listing text, applies the same matching rules to
+              every result and presents matching apartments as standardized cards.
             </p>
 
             <p class="term-note">
@@ -69,7 +68,7 @@
               <div><dt>Role</dt><dd>Product, UX, evaluation, implementation</dd></div>
               <div><dt>Audience</dt><dd>Berlin WBS renters</dd></div>
               <div><dt>Status</dt><dd>Working prototype</dd></div>
-              <div><dt>Data</dt><dd>Synthetic by design</dd></div>
+              <div><dt>AI role</dt><dd>Admin-only parser QA</dd></div>
             </dl>
           </div>
 
@@ -137,19 +136,20 @@
               <p class="decision-number">02</p>
               <h3>Rules decide what renters see</h3>
               <p>
-                Parsing and matching are deterministic, so a match can be explained field by
-                field. An optional AI QA step can flag a suspected parsing mistake to an admin;
-                it cannot change listings, rules, or what renters see.
+                Parsing and matching are deterministic, so every renter-facing match can be
+                explained field by field. AI QA is a separate admin-only review: it can flag a
+                suspected parsing mistake, but it cannot change listings, matching rules or
+                renter-facing results.
               </p>
             </article>
             <article>
               <p class="decision-number">03</p>
               <h3>Reliability before source count</h3>
               <p>
-                Every card is re-checked against the catalog before delivery, background
-                notifications skip matches already recorded as delivered, and a renter can
-                delete their saved data.
-                Live housing-company sources are outside this version.
+                Before adding sources, I protected the core loop against stale and duplicate
+                results. Every card is re-checked against the catalog before delivery, background
+                notifications skip matches already recorded as delivered, and renters can delete
+                their saved data.
               </p>
             </article>
           </div>
@@ -157,9 +157,9 @@
           <aside class="role-note" aria-label="Role and implementation note">
             <p class="preview-label">My contribution</p>
             <p>
-              I owned the problem framing, scope, interaction rules, reliability trade-offs and
-              evaluation design. I implemented the bot, dashboard and test harness with Claude Code
-              and Codex as coding collaborators.
+              I defined the renter problem, product scope, matching and AI guardrails, reliability
+              trade-offs and evaluation contract. I implemented the bot, dashboard and test
+              harness with Claude Code and Codex as coding collaborators.
             </p>
           </aside>
         </section>
@@ -167,10 +167,10 @@
         <section class="case-section" id="evidence">
           <header class="section-heading">
             <p class="kicker"><span>03</span>Evidence</p>
-            <h2>The workflow runs. The market value is not yet proven.</h2>
+            <h2>The core workflow works. Real-world usefulness is the next test.</h2>
             <p>
-              I keep what is built separate from what users have validated. This is a working
-              prototype, not a launched housing service.
+              Repository evidence shows what runs and what the synthetic evaluation measured.
+              The open questions require permitted live data and renter observation.
             </p>
           </header>
 
@@ -178,22 +178,52 @@
             <article class="evidence-card evidence-card--shown">
               <p class="evidence-status"><i aria-hidden="true"></i> Demonstrated now</p>
               <ul>
-                <li>End-to-end filter, match and Telegram delivery flow</li>
-                <li>Listings re-checked as active before delivery; background notifications skip matches already recorded as delivered</li>
-                <li>Deterministic matching with field-level reasons</li>
-                <li>15 synthetic test cases pass the regression check; live-source accuracy is not measured</li>
+                <li>A renter can save a four-field filter and receive matching Telegram cards</li>
+                <li>Deterministic matching applies all four criteria and fails closed on unknown rent or rooms</li>
+                <li>The synthetic catalog checks activity before delivery; background notifications deduplicate previously delivered matches</li>
+                <li>The deterministic synthetic regression suite passes; live-source accuracy is not measured</li>
               </ul>
             </article>
             <article class="evidence-card evidence-card--open">
               <p class="evidence-status"><i aria-hidden="true"></i> Not demonstrated yet</p>
               <ul>
-                <li>Demand from real WBS renters</li>
-                <li>Coverage and freshness of permitted live sources</li>
-                <li>Time saved or application outcomes</li>
-                <li>Usefulness and false-alarm rate of AI QA with a real model (the demo uses a deterministic mock)</li>
+                <li>Whether real WBS renters adopt and trust the feed</li>
+                <li>Whether one permitted live source can stay complete and fresh</li>
+                <li>Whether the feed saves time or improves application outcomes</li>
+                <li>Whether the synthetic AI QA result transfers to real listing formats and error rates</li>
               </ul>
             </article>
           </div>
+
+          <section class="qa-scorecard" aria-labelledby="qa-scorecard-title">
+            <div class="qa-scorecard__heading">
+              <p class="preview-label">Synthetic frozen validation</p>
+              <h3 id="qa-scorecard-title">How reliably did the AI checker find planted parser errors?</h3>
+            </div>
+            <dl class="qa-scorecard__metrics">
+              <div>
+                <dt>Parser Error Detection Rate</dt>
+                <dd><strong>99.3%</strong><span>139/140 parser errors detected</span></dd>
+              </div>
+              <div>
+                <dt>False Alert Rate</dt>
+                <dd><strong>0.7%</strong><span>1/140 clean listings flagged</span></dd>
+              </div>
+              <div>
+                <dt>Correct Field Detection Rate</dt>
+                <dd><strong>99.3%</strong><span>139/140 errors found and field named</span></dd>
+              </div>
+              <div>
+                <dt>Successful Check Rate</dt>
+                <dd><strong>100.0%</strong><span>280/280 checks returned a valid result</span></dd>
+              </div>
+            </dl>
+            <p class="evidence-footnote">
+              Balanced synthetic cases, not live listings or production accuracy. With permitted
+              real data, an admin would still review every alert and a random sample of listings
+              with no alert so missed parser errors can be measured.
+            </p>
+          </section>
 
         </section>
 
@@ -204,12 +234,14 @@
           </div>
           <div class="next-test-copy">
             <p>
-              Next, I would test the flow with one permitted live source and a small group of WBS renters.
+              Next, I would test the complete flow with one permitted live source and a small
+              group of WBS renters. Alongside the renter test, a manually labelled sample would
+              check whether the synthetic AI QA result transfers to real listing formats.
             </p>
             <dl>
-              <div><dt>Learn</dt><dd>Do renters understand and trust why a listing matched?</dd></div>
-              <div><dt>Measure</dt><dd>How many renters finish the filter, how many open the listings they receive, and how often an opened card is already stale.</dd></div>
-              <div><dt>Decide</dt><dd>Only then add more sources or change the flow.</dd></div>
+              <div><dt>Learn</dt><dd>Do renters understand why each listing appears and trust the standardized cards?</dd></div>
+              <div><dt>Measure</dt><dd>Filter completion, listing opens, stale-open rate, plus human review of every AI alert and a random sample of listings with no alert.</dd></div>
+              <div><dt>Decide</dt><dd>Add sources only if renters use the feed, source freshness is manageable and the AI checker works on real listing formats without excessive misses or false alerts.</dd></div>
             </dl>
           </div>
         </section>
@@ -217,7 +249,7 @@
         <section class="case-cta">
           <div>
             <p class="kicker">Inspect the work</p>
-            <h2>See the renter flow or review the implementation.</h2>
+            <h2>Try the renter flow or inspect the evidence behind it.</h2>
           </div>
           <div class="case-actions">
             <a class="btn btn--accent" href="https://t.me/FlatFeedBot?start=tour">Try the demo</a>
@@ -240,7 +272,7 @@
           <img class="brand-mark" src="assets/flatfeed-logo-mark.png" alt="">
           <strong>FlatFeed</strong>
         </a>
-        <p>Four explicit criteria. Deterministic matching. Synthetic data.</p>
+        <p>One saved filter. Deterministic matching. Admin-only AI QA.</p>
         <nav aria-label="Footer links">
           <a href="https://github.com/mich-mayer/flatfeed">Repository</a>
           <a href="https://github.com/mich-mayer/flatfeed/blob/main/CASE_STUDY.md">Markdown version</a>

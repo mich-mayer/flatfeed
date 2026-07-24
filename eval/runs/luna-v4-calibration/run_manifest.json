@@ -1,0 +1,53 @@
+{
+  "budget": {
+    "cached_input_price_per_1m": 0.1,
+    "estimate_method": "UTF-8 bytes as a conservative input-token upper bound; max output tokens; all retry attempts reserved",
+    "hard_limit_usd": 1.2,
+    "input_price_per_1m": 1.0,
+    "output_price_per_1m": 6.0,
+    "preflight_worst_case_usd": 1.15966,
+    "pricing_observed_date": "2026-07-21",
+    "pricing_source": "https://developers.openai.com/api/docs/pricing"
+  },
+  "case_count": 240,
+  "case_ids_sha256": "57d027ba192125ac90a17fcb9d5bbffb5aed9ca86f4a10e3145ae8383a9dbb0c",
+  "completed_at": "2026-07-22T16:45:07.722986+00:00",
+  "configuration": {
+    "max_output_tokens": 64,
+    "model": "gpt-5.6-luna",
+    "output_schema_sha256": "f7c5d21b7ee06ff3647c4726253c74eeccecd250ec96c7275d07f70d24989945",
+    "prompt_sha256": "78106f77678be1357cd2debb08770f1bc6eb1095eea32e09ff65abadeb2a7658",
+    "prompt_version": "luna-v4",
+    "reasoning_effort": "none",
+    "responses_api": true,
+    "retries": 0,
+    "service_tier": "default",
+    "store": false,
+    "strict_structured_outputs": true,
+    "timeout_seconds": 60.0
+  },
+  "credential": {
+    "source": ".env.eval.local",
+    "value_persisted": false,
+    "variable": "OPENAI_API_KEY"
+  },
+  "experiment": "synthetic offline AI QA evaluation",
+  "input": {
+    "dataset_manifest_sha256": "3a61e44ef619ea86bf67b0e67b26bfe0e275fbfdc4b275dfecce2637a1d99f9e",
+    "file": "calibration_model_inputs.jsonl",
+    "sha256": "f43a40d6ccce501b9195f23b08a18c207530eb40c33d28ea2073e2923ecc16cf"
+  },
+  "product_boundary": "Offline eval only; no Telegram bot or product-runtime integration.",
+  "result": {
+    "completed_cases": 240,
+    "predictions_file": "predictions.jsonl",
+    "predictions_sha256": "85bb52ad5300d1bdc2a1e16c379ef6d7a3d9244c7b588ed665a9a3f8f376a4d2",
+    "recorded_cost_usd": 0.320571,
+    "technical_failures": 0
+  },
+  "runner_version": "1.3",
+  "schema_version": "1.0",
+  "split": "luna_v4_calibration",
+  "started_at": "2026-07-22T16:39:56.514218+00:00",
+  "status": "completed"
+}

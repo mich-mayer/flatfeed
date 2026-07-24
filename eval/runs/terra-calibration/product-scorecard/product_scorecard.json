@@ -1,0 +1,231 @@
+{
+  "case_counts": {
+    "clean": 140,
+    "corrupted": 140,
+    "total": 280
+  },
+  "configuration": {
+    "max_output_tokens": 256,
+    "model": "gpt-5.6-terra",
+    "prompt_version": "terra-v1",
+    "reasoning_effort": "medium",
+    "retries": 0,
+    "strict_structured_outputs": true
+  },
+  "contract_version": "product-scorecard-v1",
+  "decision": {
+    "frozen_engineering_contract_status": "pass",
+    "matching_critical_guardrails_status": "pass",
+    "overall_status": "pass",
+    "positive_landing_claim_allowed": false,
+    "simple_metrics_status": "pass"
+  },
+  "evidence_label": "Synthetic calibration preview",
+  "evidence_scope": "Synthetic offline parser-QA evidence only; not live-source, production-prevalence, or renter-outcome evidence.",
+  "experiment": "synthetic offline AI QA evaluation",
+  "fields": {
+    "address_postal_code": {
+      "guardrail": null,
+      "label": "address/postal code",
+      "matching_critical": false,
+      "result": {
+        "denominator": 14,
+        "numerator": 14,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.7846891972623643
+        }
+      }
+    },
+    "district": {
+      "guardrail": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9
+      },
+      "label": "district",
+      "matching_critical": true,
+      "result": {
+        "denominator": 10,
+        "numerator": 9,
+        "value": 0.9,
+        "wilson_95_ci": {
+          "high": 0.9821237869049271,
+          "low": 0.5958499732047615
+        }
+      }
+    },
+    "floor": {
+      "guardrail": null,
+      "label": "floor",
+      "matching_critical": false,
+      "result": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 0.9999999999999999,
+          "low": 0.7224672001371107
+        }
+      }
+    },
+    "rent_kalt": {
+      "guardrail": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9
+      },
+      "label": "Kaltmiete",
+      "matching_critical": true,
+      "result": {
+        "denominator": 21,
+        "numerator": 21,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.8453609810751531
+        }
+      }
+    },
+    "rent_warm": {
+      "guardrail": null,
+      "label": "Warmmiete",
+      "matching_critical": false,
+      "result": {
+        "denominator": 8,
+        "numerator": 8,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.6755924351161198
+        }
+      }
+    },
+    "rooms": {
+      "guardrail": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9
+      },
+      "label": "rooms",
+      "matching_critical": true,
+      "result": {
+        "denominator": 21,
+        "numerator": 19,
+        "value": 0.9047619047619048,
+        "wilson_95_ci": {
+          "high": 0.9734812325619255,
+          "low": 0.7108586092608176
+        }
+      }
+    },
+    "wbs": {
+      "guardrail": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9
+      },
+      "label": "WBS",
+      "matching_critical": true,
+      "result": {
+        "denominator": 56,
+        "numerator": 53,
+        "value": 0.9464285714285714,
+        "wilson_95_ci": {
+          "high": 0.9816142186178909,
+          "low": 0.8539269093117847
+        }
+      }
+    }
+  },
+  "metrics": {
+    "correct_field_detection_rate": {
+      "definition": "Corrupted listings with the correct field named divided by all corrupted listings.",
+      "gate": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9
+      },
+      "label": "Correct Field Detection Rate",
+      "result": {
+        "denominator": 140,
+        "numerator": 134,
+        "value": 0.9571428571428572,
+        "wilson_95_ci": {
+          "high": 0.9802124588924483,
+          "low": 0.9096561579126599
+        }
+      }
+    },
+    "false_alert_rate": {
+      "definition": "Alerted clean listings divided by all clean listings.",
+      "gate": {
+        "comparison": "max",
+        "status": "pass",
+        "threshold": 0.03
+      },
+      "label": "False Alert Rate",
+      "result": {
+        "denominator": 140,
+        "numerator": 0,
+        "value": 0.0,
+        "wilson_95_ci": {
+          "high": 0.026706200369412993,
+          "low": 1.734723475976807e-18
+        }
+      }
+    },
+    "parser_error_detection_rate": {
+      "definition": "Alerted corrupted listings divided by all corrupted listings.",
+      "gate": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.95
+      },
+      "label": "Parser Error Detection Rate",
+      "result": {
+        "denominator": 140,
+        "numerator": 134,
+        "value": 0.9571428571428572,
+        "wilson_95_ci": {
+          "high": 0.9802124588924483,
+          "low": 0.9096561579126599
+        }
+      }
+    },
+    "successful_check_rate": {
+      "definition": "Schema-conforming model responses divided by all attempted checks.",
+      "gate": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.995
+      },
+      "label": "Successful Check Rate",
+      "result": {
+        "denominator": 280,
+        "numerator": 280,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.9864661813793707
+        }
+      }
+    }
+  },
+  "publication_state": "not_public_calibration_preview",
+  "real_world_limitations": [
+    "This scorecard measures a synthetic challenge set, not performance on live housing-provider listings or real parser-error prevalence.",
+    "A real product would need human review of every AI alert and an independent random sample of listings that received no alert so missed parser errors can be measured.",
+    "FlatFeed does not currently use housing-provider data without permission, so that real-world audit workflow is planned rather than implemented in this prototype.",
+    "The checker can evaluate only listings and raw text that the collection layer obtained; missing listings require a separate source-coverage control."
+  ],
+  "scorecard_schema_version": "1.0",
+  "source": {
+    "configuration_freeze_sha256": null,
+    "report_sha256": "bb4234b5ba20ba2754ebc3ef98e207dac8319f7c52d23d3e288a628516d2bc77",
+    "run_label": "terra-v1-medium-calibration",
+    "run_manifest_sha256": "dfbdf243cb01a26ec0a7b14236c9ce66139e4e7a4b9bbb9e0831f23b50f2b62f",
+    "split": "terra_calibration"
+  }
+}

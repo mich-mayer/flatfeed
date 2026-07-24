@@ -1,0 +1,259 @@
+{
+  "combined_estimated_cost_usd": 0.7439125,
+  "decision": {
+    "action": "advance_to_fresh_calibration_contract",
+    "selected_profile": "terra-v1-medium"
+  },
+  "eligibility": {
+    "luna-v5-low": {
+      "correct_non_wbs_at_least_11_of_12": true,
+      "correct_wbs_at_least_18_of_20": false,
+      "coverage_100_percent": false,
+      "false_alerts_at_most_1_of_16": true,
+      "total_correct_at_least_44_of_48": true,
+      "zero_technical_failures": false
+    },
+    "luna-v5-medium": {
+      "correct_non_wbs_at_least_11_of_12": true,
+      "correct_wbs_at_least_18_of_20": true,
+      "coverage_100_percent": true,
+      "false_alerts_at_most_1_of_16": true,
+      "total_correct_at_least_44_of_48": true,
+      "zero_technical_failures": true
+    },
+    "terra-v1-low": {
+      "correct_non_wbs_at_least_11_of_12": true,
+      "correct_wbs_at_least_18_of_20": true,
+      "coverage_100_percent": true,
+      "false_alerts_at_most_1_of_16": true,
+      "total_correct_at_least_44_of_48": true,
+      "zero_technical_failures": true
+    },
+    "terra-v1-medium": {
+      "correct_non_wbs_at_least_11_of_12": true,
+      "correct_wbs_at_least_18_of_20": true,
+      "coverage_100_percent": true,
+      "false_alerts_at_most_1_of_16": true,
+      "total_correct_at_least_44_of_48": true,
+      "zero_technical_failures": true
+    }
+  },
+  "eligible_profiles": [
+    "terra-v1-medium",
+    "terra-v1-low",
+    "luna-v5-medium"
+  ],
+  "evidence_scope": "development diagnostic; not calibration or validation",
+  "experiment": "synthetic offline Terra prompt x reasoning screen",
+  "locked_holdout_used": false,
+  "luna_low_validation_used": false,
+  "paired_comparisons": {
+    "prompt_effect_at_low_left_luna_right_terra": {
+      "both_correct": 44,
+      "both_wrong": 0,
+      "left_only_correct": 0,
+      "right_only_correct": 4
+    },
+    "prompt_effect_at_medium_left_luna_right_terra": {
+      "both_correct": 45,
+      "both_wrong": 0,
+      "left_only_correct": 0,
+      "right_only_correct": 3
+    },
+    "reasoning_effect_luna_v5_left_low_right_medium": {
+      "both_correct": 42,
+      "both_wrong": 1,
+      "left_only_correct": 2,
+      "right_only_correct": 3
+    },
+    "reasoning_effect_terra_v1_left_low_right_medium": {
+      "both_correct": 48,
+      "both_wrong": 0,
+      "left_only_correct": 0,
+      "right_only_correct": 0
+    }
+  },
+  "profiles": {
+    "luna-v5-low": {
+      "clean_cases": 16,
+      "correct_non_wbs": 11,
+      "correct_wbs": 17,
+      "coverage": 0.9791666666666666,
+      "covered": 47,
+      "false_alerts": 0,
+      "non_wbs_cases": 12,
+      "non_wbs_diverted_to_wbs": 0,
+      "operational": {
+        "case_result_records": 48,
+        "completed_cases": 47,
+        "cost": {
+          "cost_per_completed_case_usd": null,
+          "is_partial": true,
+          "records_with_cost": 47,
+          "total_case_records": 48,
+          "total_usd": 0.1716175
+        },
+        "latency_by_mode": {
+          "synchronous_case": {
+            "is_partial": false,
+            "p50_ms": 1289.1438334999998,
+            "p95_ms": 2143.9262373,
+            "sample_count": 48,
+            "total_case_records": 48
+          }
+        },
+        "request_count": 48,
+        "retry_count": 0,
+        "token_usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 57187,
+          "is_partial": true,
+          "output_tokens": 1910,
+          "reasoning_tokens": 803,
+          "records_with_usage": 47,
+          "total_case_records": 48,
+          "total_tokens": 59097
+        }
+      },
+      "technical_failures": 1,
+      "total_correct": 44,
+      "wbs_cases": 20
+    },
+    "luna-v5-medium": {
+      "clean_cases": 16,
+      "correct_non_wbs": 11,
+      "correct_wbs": 18,
+      "coverage": 1.0,
+      "covered": 48,
+      "false_alerts": 0,
+      "non_wbs_cases": 12,
+      "non_wbs_diverted_to_wbs": 0,
+      "operational": {
+        "case_result_records": 48,
+        "completed_cases": 48,
+        "cost": {
+          "cost_per_completed_case_usd": 0.0035715625,
+          "is_partial": false,
+          "records_with_cost": 48,
+          "total_case_records": 48,
+          "total_usd": 0.171435
+        },
+        "latency_by_mode": {
+          "synchronous_case": {
+            "is_partial": false,
+            "p50_ms": 1247.0746874999995,
+            "p95_ms": 2975.316362400004,
+            "sample_count": 48,
+            "total_case_records": 48
+          }
+        },
+        "request_count": 48,
+        "retry_count": 0,
+        "token_usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 58410,
+          "is_partial": false,
+          "output_tokens": 1694,
+          "reasoning_tokens": 576,
+          "records_with_usage": 48,
+          "total_case_records": 48,
+          "total_tokens": 60104
+        }
+      },
+      "technical_failures": 0,
+      "total_correct": 45,
+      "wbs_cases": 20
+    },
+    "terra-v1-low": {
+      "clean_cases": 16,
+      "correct_non_wbs": 12,
+      "correct_wbs": 20,
+      "coverage": 1.0,
+      "covered": 48,
+      "false_alerts": 0,
+      "non_wbs_cases": 12,
+      "non_wbs_diverted_to_wbs": 0,
+      "operational": {
+        "case_result_records": 48,
+        "completed_cases": 48,
+        "cost": {
+          "cost_per_completed_case_usd": 0.00424625,
+          "is_partial": false,
+          "records_with_cost": 48,
+          "total_case_records": 48,
+          "total_usd": 0.20382
+        },
+        "latency_by_mode": {
+          "synchronous_case": {
+            "is_partial": false,
+            "p50_ms": 1483.2339160000006,
+            "p95_ms": 3171.8956335500025,
+            "sample_count": 48,
+            "total_case_records": 48
+          }
+        },
+        "request_count": 48,
+        "retry_count": 0,
+        "token_usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 66090,
+          "is_partial": false,
+          "output_tokens": 2573,
+          "reasoning_tokens": 1393,
+          "records_with_usage": 48,
+          "total_case_records": 48,
+          "total_tokens": 68663
+        }
+      },
+      "technical_failures": 0,
+      "total_correct": 48,
+      "wbs_cases": 20
+    },
+    "terra-v1-medium": {
+      "clean_cases": 16,
+      "correct_non_wbs": 12,
+      "correct_wbs": 20,
+      "coverage": 1.0,
+      "covered": 48,
+      "false_alerts": 0,
+      "non_wbs_cases": 12,
+      "non_wbs_diverted_to_wbs": 0,
+      "operational": {
+        "case_result_records": 48,
+        "completed_cases": 48,
+        "cost": {
+          "cost_per_completed_case_usd": 0.004105,
+          "is_partial": false,
+          "records_with_cost": 48,
+          "total_case_records": 48,
+          "total_usd": 0.19704
+        },
+        "latency_by_mode": {
+          "synchronous_case": {
+            "is_partial": false,
+            "p50_ms": 1208.2408755000006,
+            "p95_ms": 4123.180491449999,
+            "sample_count": 48,
+            "total_case_records": 48
+          }
+        },
+        "request_count": 48,
+        "retry_count": 0,
+        "token_usage": {
+          "cached_input_tokens": 0,
+          "input_tokens": 66090,
+          "is_partial": false,
+          "output_tokens": 2121,
+          "reasoning_tokens": 973,
+          "records_with_usage": 48,
+          "total_case_records": 48,
+          "total_tokens": 68211
+        }
+      },
+      "technical_failures": 0,
+      "total_correct": 48,
+      "wbs_cases": 20
+    }
+  },
+  "sol_used": false
+}

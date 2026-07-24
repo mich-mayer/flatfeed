@@ -1,0 +1,195 @@
+{
+  "address_postal_code": {
+    "alerted": 0,
+    "correctly_localized": 0,
+    "error_alert_recall": {
+      "denominator": 2,
+      "numerator": 0,
+      "value": 0.0,
+      "wilson_95_ci": {
+        "high": 0.6576197724933469,
+        "low": 0.0
+      }
+    },
+    "label": "address/postal code",
+    "localized_recall": {
+      "denominator": 2,
+      "numerator": 0,
+      "value": 0.0,
+      "wilson_95_ci": {
+        "high": 0.6576197724933469,
+        "low": 0.0
+      }
+    },
+    "missed": 2,
+    "missed_by_reason": {
+      "model_no_alert": 2
+    },
+    "total_corrupted": 2,
+    "wrong_localization": 0
+  },
+  "district": {
+    "alerted": 2,
+    "correctly_localized": 2,
+    "error_alert_recall": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "label": "district",
+    "localized_recall": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 2,
+    "wrong_localization": 0
+  },
+  "floor": {
+    "alerted": 2,
+    "correctly_localized": 2,
+    "error_alert_recall": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "label": "floor",
+    "localized_recall": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 2,
+    "wrong_localization": 0
+  },
+  "rent_kalt": {
+    "alerted": 2,
+    "correctly_localized": 2,
+    "error_alert_recall": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "label": "Kaltmiete",
+    "localized_recall": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 2,
+    "wrong_localization": 0
+  },
+  "rent_warm": {
+    "alerted": 2,
+    "correctly_localized": 2,
+    "error_alert_recall": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "label": "Warmmiete",
+    "localized_recall": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 2,
+    "wrong_localization": 0
+  },
+  "rooms": {
+    "alerted": 2,
+    "correctly_localized": 2,
+    "error_alert_recall": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "label": "rooms",
+    "localized_recall": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 2,
+    "wrong_localization": 0
+  },
+  "wbs": {
+    "alerted": 16,
+    "correctly_localized": 16,
+    "error_alert_recall": {
+      "denominator": 20,
+      "numerator": 16,
+      "value": 0.8,
+      "wilson_95_ci": {
+        "high": 0.919342337420202,
+        "low": 0.5839825677481064
+      }
+    },
+    "label": "WBS",
+    "localized_recall": {
+      "denominator": 20,
+      "numerator": 16,
+      "value": 0.8,
+      "wilson_95_ci": {
+        "high": 0.919342337420202,
+        "low": 0.5839825677481064
+      }
+    },
+    "missed": 4,
+    "missed_by_reason": {
+      "model_no_alert": 4
+    },
+    "total_corrupted": 20,
+    "wrong_localization": 0
+  }
+}

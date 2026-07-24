@@ -1,0 +1,120 @@
+{
+  "advancement": {
+    "absolute": {
+      "correct_other_fields_at_least_7_of_8": false,
+      "correct_rooms_at_least_19_of_20": true,
+      "correct_wbs_at_least_19_of_20": false,
+      "coverage_100_percent": true,
+      "false_alerts_at_most_1_of_16": true,
+      "total_correct_at_least_61_of_64": false,
+      "zero_technical_failures": true
+    },
+    "all_criteria_pass": false,
+    "comparative": {
+      "at_least_one_additional_correct_rooms_case": true,
+      "no_clean_false_alert_regression": true,
+      "no_other_field_regression": false,
+      "no_wbs_regression": false
+    }
+  },
+  "combined_recorded_cost_usd": 0.19249175000000002,
+  "consumed_validation_reused": false,
+  "decision": {
+    "action": "stop_terra_v2_prompt_change",
+    "selected_profile": null
+  },
+  "evidence_scope": "development diagnostic; not calibration or validation",
+  "experiment": "synthetic offline Terra-v2 prompt screen",
+  "locked_holdout_used": false,
+  "paired_comparison": {
+    "both_correct": 58,
+    "both_wrong": 1,
+    "v1_only_correct": 4,
+    "v2_only_correct": 1
+  },
+  "profiles": {
+    "terra-v1-medium": {
+      "correct_other_fields": 8,
+      "correct_rooms": 19,
+      "correct_wbs": 19,
+      "coverage": 1.0,
+      "false_alerts": 0,
+      "operational": {
+        "case_result_records": 64,
+        "completed_cases": 64,
+        "cost": {
+          "cost_per_completed_case_usd": 0.0014709921875,
+          "is_partial": false,
+          "records_with_cost": 64,
+          "total_case_records": 64,
+          "total_usd": 0.0941435
+        },
+        "latency_by_mode": {
+          "synchronous_case": {
+            "is_partial": false,
+            "p50_ms": 1070.3942505000014,
+            "p95_ms": 2000.9881688499988,
+            "sample_count": 64,
+            "total_case_records": 64
+          }
+        },
+        "request_count": 64,
+        "retry_count": 0,
+        "token_usage": {
+          "cached_input_tokens": 74834,
+          "input_tokens": 88172,
+          "is_partial": false,
+          "output_tokens": 2806,
+          "reasoning_tokens": 1291,
+          "records_with_usage": 64,
+          "total_case_records": 64,
+          "total_tokens": 90978
+        }
+      },
+      "technical_failures": 0,
+      "total_correct": 62
+    },
+    "terra-v2-medium": {
+      "correct_other_fields": 6,
+      "correct_rooms": 20,
+      "correct_wbs": 17,
+      "coverage": 1.0,
+      "false_alerts": 0,
+      "operational": {
+        "case_result_records": 64,
+        "completed_cases": 64,
+        "cost": {
+          "cost_per_completed_case_usd": 0.00153669140625,
+          "is_partial": false,
+          "records_with_cost": 64,
+          "total_case_records": 64,
+          "total_usd": 0.09834825
+        },
+        "latency_by_mode": {
+          "synchronous_case": {
+            "is_partial": false,
+            "p50_ms": 1107.6594580000005,
+            "p95_ms": 3077.965756249997,
+            "sample_count": 64,
+            "total_case_records": 64
+          }
+        },
+        "request_count": 64,
+        "retry_count": 0,
+        "token_usage": {
+          "cached_input_tokens": 85583,
+          "input_tokens": 100716,
+          "is_partial": false,
+          "output_tokens": 2608,
+          "reasoning_tokens": 1108,
+          "records_with_usage": 64,
+          "total_case_records": 64,
+          "total_tokens": 103324
+        }
+      },
+      "technical_failures": 0,
+      "total_correct": 59
+    }
+  },
+  "sol_used": false
+}

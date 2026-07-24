@@ -1,0 +1,297 @@
+{
+  "aggregate_observations": {
+    "distinct_failed_fields": 2,
+    "distinct_missed_corruption_subtypes": 4,
+    "distinct_missed_wbs_subtypes": 3,
+    "failed_fields": [
+      "address_postal_code",
+      "wbs"
+    ],
+    "missed_corruption_subtypes": [
+      "address_postal_code:postal_code_substitution",
+      "wbs:wbs_range_boundary_shift",
+      "wbs:wbs_requirement_added",
+      "wbs:wbs_specificity_confusion"
+    ],
+    "postal_code_substitution": {
+      "both_wrong": 2,
+      "exposures": 2,
+      "low_misses": 2
+    },
+    "small_subgroup_caution": "The screen is a 48-case development diagnostic; subtype counts are not independent performance estimates.",
+    "wbs_misses": 3
+  },
+  "boundaries": {
+    "calibration_authorized": false,
+    "contains_case_ids": false,
+    "contains_exact_field_values": false,
+    "contains_parser_snapshots": false,
+    "contains_raw_listing_text": false,
+    "locked_holdout_used": false,
+    "new_model_calls": false,
+    "prompt_tuning_authorized": false,
+    "screen_rerun_authorized": false,
+    "sol_used": false,
+    "validation_used": false
+  },
+  "configuration": {
+    "model": "gpt-5.6-terra",
+    "prompt_version": "luna-v5",
+    "reasoning_effort": "low"
+  },
+  "decision": {
+    "action": "do_not_tune_or_rerun_terra_on_this_screen",
+    "next_experiment": "predeclare a fresh independent Sol reasoning/configuration screen without using Terra screen cases",
+    "terra_status": "stop"
+  },
+  "evidence_scope": "aggregate development diagnostics only; not calibration, validation, or a causal prompt test",
+  "experiment": "synthetic offline Terra reasoning-screen failure audit",
+  "low_outcomes_by_corruption_subtype": [
+    {
+      "correct": 0,
+      "exposures": 2,
+      "field_and_subtype": "address_postal_code:postal_code_substitution",
+      "misses": 2,
+      "recall": 0.0
+    },
+    {
+      "correct": 10,
+      "exposures": 11,
+      "field_and_subtype": "wbs:wbs_range_boundary_shift",
+      "misses": 1,
+      "recall": 0.9090909090909091
+    },
+    {
+      "correct": 3,
+      "exposures": 4,
+      "field_and_subtype": "wbs:wbs_specificity_confusion",
+      "misses": 1,
+      "recall": 0.75
+    },
+    {
+      "correct": 3,
+      "exposures": 4,
+      "field_and_subtype": "wbs:wbs_requirement_added",
+      "misses": 1,
+      "recall": 0.75
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "field_and_subtype": "rooms:rooms_neighbor_value",
+      "misses": 0,
+      "recall": 1.0
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "field_and_subtype": "rent_kalt:kaltmiete_label_swap",
+      "misses": 0,
+      "recall": 1.0
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "field_and_subtype": "floor:floor_neighbor_value",
+      "misses": 0,
+      "recall": 1.0
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "field_and_subtype": "district:district_neighbor_substitution",
+      "misses": 0,
+      "recall": 1.0
+    },
+    {
+      "correct": 1,
+      "exposures": 1,
+      "field_and_subtype": "wbs:wbs_requirement_dropped",
+      "misses": 0,
+      "recall": 1.0
+    },
+    {
+      "correct": 1,
+      "exposures": 1,
+      "field_and_subtype": "rent_warm:warmmiete_label_swap",
+      "misses": 0,
+      "recall": 1.0
+    },
+    {
+      "correct": 1,
+      "exposures": 1,
+      "field_and_subtype": "rent_warm:warmmiete_amount_shift",
+      "misses": 0,
+      "recall": 1.0
+    }
+  ],
+  "low_outcomes_by_field": [
+    {
+      "correct": 17,
+      "exposures": 20,
+      "field": "wbs",
+      "misses": 3,
+      "recall": 0.85
+    },
+    {
+      "correct": 0,
+      "exposures": 2,
+      "field": "address_postal_code",
+      "misses": 2,
+      "recall": 0.0
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "field": "rooms",
+      "misses": 0,
+      "recall": 1.0
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "field": "rent_warm",
+      "misses": 0,
+      "recall": 1.0
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "field": "rent_kalt",
+      "misses": 0,
+      "recall": 1.0
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "field": "floor",
+      "misses": 0,
+      "recall": 1.0
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "field": "district",
+      "misses": 0,
+      "recall": 1.0
+    }
+  ],
+  "low_wbs_outcomes_by_semantic_family": [
+    {
+      "correct": 3,
+      "exposures": 4,
+      "misses": 1,
+      "recall": 0.75,
+      "semantic_family": "WBS required, type unknown"
+    },
+    {
+      "correct": 3,
+      "exposures": 4,
+      "misses": 1,
+      "recall": 0.75,
+      "semantic_family": "No WBS required"
+    },
+    {
+      "correct": 1,
+      "exposures": 2,
+      "misses": 1,
+      "recall": 0.5,
+      "semantic_family": "160, 180, 220"
+    },
+    {
+      "correct": 3,
+      "exposures": 3,
+      "misses": 0,
+      "recall": 1.0,
+      "semantic_family": "100, 140"
+    },
+    {
+      "correct": 3,
+      "exposures": 3,
+      "misses": 0,
+      "recall": 1.0,
+      "semantic_family": "100"
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "misses": 0,
+      "recall": 1.0,
+      "semantic_family": "140, 160, 180, 220"
+    },
+    {
+      "correct": 2,
+      "exposures": 2,
+      "misses": 0,
+      "recall": 1.0,
+      "semantic_family": "100, 140, 160, 180"
+    }
+  ],
+  "paired_outcomes": {
+    "both_correct": 41,
+    "both_wrong": 4,
+    "low_only_correct": 2,
+    "none_only_correct": 1
+  },
+  "paired_outcomes_by_field": {
+    "address_postal_code": {
+      "both_correct": 0,
+      "both_wrong": 2,
+      "low_only_correct": 0,
+      "none_only_correct": 0
+    },
+    "clean": {
+      "both_correct": 16,
+      "both_wrong": 0,
+      "low_only_correct": 0,
+      "none_only_correct": 0
+    },
+    "district": {
+      "both_correct": 2,
+      "both_wrong": 0,
+      "low_only_correct": 0,
+      "none_only_correct": 0
+    },
+    "floor": {
+      "both_correct": 2,
+      "both_wrong": 0,
+      "low_only_correct": 0,
+      "none_only_correct": 0
+    },
+    "rent_kalt": {
+      "both_correct": 2,
+      "both_wrong": 0,
+      "low_only_correct": 0,
+      "none_only_correct": 0
+    },
+    "rent_warm": {
+      "both_correct": 2,
+      "both_wrong": 0,
+      "low_only_correct": 0,
+      "none_only_correct": 0
+    },
+    "rooms": {
+      "both_correct": 2,
+      "both_wrong": 0,
+      "low_only_correct": 0,
+      "none_only_correct": 0
+    },
+    "wbs": {
+      "both_correct": 15,
+      "both_wrong": 2,
+      "low_only_correct": 2,
+      "none_only_correct": 1
+    }
+  },
+  "prompt_hypothesis_assessment": {
+    "prompt_may_contribute": true,
+    "reason": "2/2 postal-code substitutions were missed by both Terra configurations, while low also missed 3 WBS subtypes.",
+    "reason_not_supported": "The failed advancement gates span address/postal-code and WBS, and the WBS misses span 3 corruption subtypes. A change covering both gates would be multi-axis and tuned to this development screen.",
+    "single_narrow_prompt_change_supported": false
+  },
+  "totals": {
+    "clean_cases": 16,
+    "corrupted_cases": 32,
+    "low_misses": 5
+  }
+}

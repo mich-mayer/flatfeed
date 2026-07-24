@@ -1,0 +1,93 @@
+{
+  "boundaries": {
+    "locked_holdout_modified": false,
+    "locked_holdout_read_for_generation": false,
+    "openai_called": false,
+    "product_runtime_modified": false
+  },
+  "experiment": "synthetic offline AI QA Luna calibration",
+  "hash_algorithm": "SHA-256",
+  "isolation": {
+    "comparison_basis": "raw_text plus parser_snapshot",
+    "overlaps": {
+      "calibration_locked_holdout": 0,
+      "calibration_original_development": 0,
+      "calibration_validation": 0,
+      "validation_locked_holdout": 0,
+      "validation_original_development": 0
+    }
+  },
+  "schema_version": "1.0",
+  "serialization": {
+    "encoding": "UTF-8",
+    "format": "JSON Lines",
+    "json_keys": "sorted",
+    "line_ending": "LF"
+  },
+  "splits": {
+    "luna_calibration": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 51746,
+          "file": "calibration_model_inputs.jsonl",
+          "lines": 100,
+          "sha256": "df29e12c0dd1ab903df9d23d6001a00665252bf11eea4a200b71937f7906ed2e"
+        },
+        "truth": {
+          "bytes": 17323,
+          "file": "calibration_truth.jsonl",
+          "lines": 100,
+          "sha256": "785af508c733a5f79d68ac380e6f5fcd3204e9ee948d84207cbd916bac60c6d8"
+        }
+      },
+      "counts": {
+        "clean": 50,
+        "corrupted": 50,
+        "total": 100
+      },
+      "error_distribution": {
+        "address_postal_code": 7,
+        "district": 5,
+        "floor": 4,
+        "rent_kalt": 10,
+        "rent_warm": 3,
+        "rooms": 8,
+        "wbs": 13
+      },
+      "permitted_use": "one luna-v1 calibration run",
+      "seed": 20260723
+    },
+    "luna_validation": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 51551,
+          "file": "validation_model_inputs.jsonl",
+          "lines": 100,
+          "sha256": "38915d73797e3dc7a2a3968daa472f7283c049376feee14b38bf088a38aa45a4"
+        },
+        "truth": {
+          "bytes": 17365,
+          "file": "validation_truth.jsonl",
+          "lines": 100,
+          "sha256": "a9f3555cb887b190a5dc6b547c4fbdcf5b18d3cb818f651f028c57dab82503c0"
+        }
+      },
+      "counts": {
+        "clean": 50,
+        "corrupted": 50,
+        "total": 100
+      },
+      "error_distribution": {
+        "address_postal_code": 7,
+        "district": 5,
+        "floor": 4,
+        "rent_kalt": 10,
+        "rent_warm": 3,
+        "rooms": 8,
+        "wbs": 13
+      },
+      "permitted_use": "one frozen luna-v1 validation run",
+      "seed": 20260724
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "boundaries": {
+    "locked_holdout_modified": false,
+    "locked_holdout_truth_read": false,
+    "locked_holdout_used_for_inference": false,
+    "maximum_new_prompt_versions": 1,
+    "openai_called_during_generation": false,
+    "product_runtime_modified": false,
+    "prompt_changes_after_validation": false
+  },
+  "experiment": "synthetic offline AI QA Luna-v3 final cycle",
+  "hash_algorithm": "SHA-256",
+  "isolation": {
+    "comparison_basis": "raw_text plus parser_snapshot",
+    "overlaps": {
+      "calibration_locked_holdout": 0,
+      "calibration_luna_v1_calibration": 0,
+      "calibration_luna_v2_validation": 0,
+      "calibration_original_development": 0,
+      "calibration_validation": 0,
+      "validation_locked_holdout": 0,
+      "validation_luna_v1_calibration": 0,
+      "validation_luna_v2_validation": 0,
+      "validation_original_development": 0
+    }
+  },
+  "schema_version": "1.0",
+  "serialization": {
+    "encoding": "UTF-8",
+    "format": "JSON Lines",
+    "json_keys": "sorted",
+    "line_ending": "LF"
+  },
+  "splits": {
+    "luna_v3_calibration": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 103372,
+          "file": "calibration_model_inputs.jsonl",
+          "lines": 200,
+          "sha256": "668c6a16fe3afa827925d8ca308f7190c63d7857573cb9b944d7ef8de6b7bbc4"
+        },
+        "truth": {
+          "bytes": 34303,
+          "file": "calibration_truth.jsonl",
+          "lines": 200,
+          "sha256": "2cb37e2b4665a0c37a9d35c21b8853fb6b61228f834d23de5896ba144e7f3cae"
+        }
+      },
+      "counts": {
+        "clean": 100,
+        "corrupted": 100,
+        "total": 200
+      },
+      "error_distribution": {
+        "address_postal_code": 10,
+        "district": 8,
+        "floor": 15,
+        "rent_kalt": 25,
+        "rent_warm": 7,
+        "rooms": 15,
+        "wbs": 20
+      },
+      "permitted_use": "one luna-v3 calibration run",
+      "seed": 20260725
+    },
+    "luna_v3_validation": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 103346,
+          "file": "validation_model_inputs.jsonl",
+          "lines": 200,
+          "sha256": "7b49f6371a499711dee977038e234ca7f5ea1b3a0d0a61f572c0d474466f1f01"
+        },
+        "truth": {
+          "bytes": 34405,
+          "file": "validation_truth.jsonl",
+          "lines": 200,
+          "sha256": "44274420bc4060020f3364a23b8bb7b781b90a445b0a7665c320810a1468380f"
+        }
+      },
+      "counts": {
+        "clean": 100,
+        "corrupted": 100,
+        "total": 200
+      },
+      "error_distribution": {
+        "address_postal_code": 10,
+        "district": 8,
+        "floor": 15,
+        "rent_kalt": 25,
+        "rent_warm": 7,
+        "rooms": 15,
+        "wbs": 20
+      },
+      "permitted_use": "one frozen luna-v3 validation run",
+      "seed": 20260726
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{"case_id":"aqa-15a2b6cd4f23524d4ffa","expected_field":"wbs","reason":"model_no_alert"}
+{"case_id":"aqa-4278cc4338aa0c9e1461","expected_field":"rooms","reason":"model_no_alert"}
+{"case_id":"aqa-61ab0f6513225b48a5b3","expected_field":"wbs","reason":"model_no_alert"}
+{"case_id":"aqa-8086b3689f3a9f3751b4","expected_field":"district","reason":"model_no_alert"}
+{"case_id":"aqa-9d32c76f8424cfb09fd1","expected_field":"wbs","reason":"model_no_alert"}
+{"case_id":"aqa-a5f07a31880e6030ceb6","expected_field":"rooms","reason":"model_no_alert"}

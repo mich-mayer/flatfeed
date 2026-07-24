@@ -1,0 +1,82 @@
+{
+  "boundaries": {
+    "calibration_or_validation_evidence": false,
+    "development_only": true,
+    "locked_holdout_used": false,
+    "openai_called_during_generation": false,
+    "product_runtime_modified": false
+  },
+  "composition": {
+    "clean_families": {
+      "100, 140": 2,
+      "100, 140, 160, 180": 2,
+      "140, 160, 180, 220": 2,
+      "160, 180, 220": 2
+    },
+    "non_wbs_error_fields": {
+      "address_postal_code": 1,
+      "district": 1,
+      "floor": 1,
+      "rent_kalt": 1,
+      "rent_warm": 1,
+      "rooms": 1
+    },
+    "wbs_error_families": {
+      "100": 3,
+      "100, 140": 3,
+      "100, 140, 160, 180": 2,
+      "No WBS required": 1,
+      "WBS required, type unknown": 1
+    }
+  },
+  "counts": {
+    "clean": 8,
+    "corrupted": 16,
+    "total": 24
+  },
+  "error_distribution": {
+    "address_postal_code": 1,
+    "district": 1,
+    "floor": 1,
+    "rent_kalt": 1,
+    "rent_warm": 1,
+    "rooms": 1,
+    "wbs": 10
+  },
+  "experiment": "synthetic offline Luna reasoning-effort screen",
+  "isolation": {
+    "overlaps": {
+      "ai_qa_development_model_inputs": 0,
+      "ai_qa_locked_holdout_model_inputs": 0,
+      "luna_calibration_calibration_model_inputs": 0,
+      "luna_calibration_validation_model_inputs": 0,
+      "luna_v3_cycle_calibration_model_inputs": 0,
+      "luna_v3_cycle_validation_model_inputs": 0,
+      "luna_v4_cycle_calibration_model_inputs": 0,
+      "luna_v4_cycle_validation_model_inputs": 0,
+      "luna_v5_cycle_calibration_model_inputs": 0,
+      "luna_v5_cycle_validation_model_inputs": 0
+    }
+  },
+  "model_inputs": {
+    "file": "model_inputs.jsonl",
+    "lines": 24,
+    "sha256": "fd67995f81ec616fd630c854fa326eb2a6374f0aa27b8d9e6f26daa2d9d5d1ed"
+  },
+  "schema_version": "1.0",
+  "seed": 20260731,
+  "selection_rule": {
+    "coverage": 1.0,
+    "maximum_false_alert_increase": 0,
+    "minimum_additional_correct_wbs_for_low": 2,
+    "minimum_non_wbs_correct_delta": 0,
+    "minimum_total_correct_delta": 0,
+    "technical_failures": 0
+  },
+  "split": "luna_effort_screen",
+  "truth": {
+    "file": "truth.jsonl",
+    "lines": 24,
+    "sha256": "d1c74c7e44ed3fc7dea3f8339a2fe7566607602da98220a2a14bac1b1e3d74f2"
+  }
+}

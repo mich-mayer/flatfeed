@@ -1,0 +1,247 @@
+{
+  "aggregate_observations": {
+    "distinct_missed_transitions": 6,
+    "maximum_misses_in_one_transition": 1,
+    "no_or_generic_wbs_family_misses": 4,
+    "small_subgroup_caution": "Subtype and family counts are diagnostic calibration slices, not independent performance estimates.",
+    "total_wbs_misses": 6,
+    "zero_miss_semantic_families": [
+      "100, 140",
+      "140, 160, 180, 220",
+      "160, 180, 220"
+    ]
+  },
+  "boundaries": {
+    "calibration_rerun_authorized": false,
+    "configuration_freeze_created": false,
+    "contains_case_ids": false,
+    "contains_parser_snapshots": false,
+    "contains_raw_listing_text": false,
+    "locked_holdout_used": false,
+    "new_model_calls": false,
+    "prompt_tuning_authorized": false,
+    "validation_authorized": false
+  },
+  "configuration": {
+    "model": "gpt-5.6-luna",
+    "prompt_version": "luna-v5",
+    "reasoning_effort": "low"
+  },
+  "cross_cycle_context": {
+    "clean_false_alerts": {
+      "current": 0,
+      "denominator_each": 140,
+      "previous": 5
+    },
+    "comparison_type": "descriptive only; different calibration inputs and reasoning configurations, not a paired causal estimate",
+    "current_cycle": "Luna-v5 low",
+    "previous_cycle": "Luna-v5 none",
+    "wbs_localized_misses": {
+      "current": 6,
+      "denominator_each": 56,
+      "previous": 11
+    },
+    "wrong_field_localizations": {
+      "current": 0,
+      "previous": 4
+    }
+  },
+  "decision": {
+    "action": "stop_without_freeze_or_validation",
+    "calibration_status": "fail",
+    "next_decision": "close Luna with the measured limitation or separately authorize a stronger-model experiment on new data"
+  },
+  "experiment": "synthetic offline AI QA Luna-low failure audit",
+  "field_outcomes": [
+    {
+      "correctly_localized": 50,
+      "exposures": 56,
+      "field": "wbs",
+      "localized_recall": 0.8928571428571429,
+      "misses": 6
+    },
+    {
+      "correctly_localized": 13,
+      "exposures": 14,
+      "field": "address_postal_code",
+      "localized_recall": 0.9285714285714286,
+      "misses": 1
+    },
+    {
+      "correctly_localized": 9,
+      "exposures": 10,
+      "field": "district",
+      "localized_recall": 0.9,
+      "misses": 1
+    },
+    {
+      "correctly_localized": 21,
+      "exposures": 21,
+      "field": "rooms",
+      "localized_recall": 1.0,
+      "misses": 0
+    },
+    {
+      "correctly_localized": 21,
+      "exposures": 21,
+      "field": "rent_kalt",
+      "localized_recall": 1.0,
+      "misses": 0
+    },
+    {
+      "correctly_localized": 10,
+      "exposures": 10,
+      "field": "floor",
+      "localized_recall": 1.0,
+      "misses": 0
+    },
+    {
+      "correctly_localized": 8,
+      "exposures": 8,
+      "field": "rent_warm",
+      "localized_recall": 1.0,
+      "misses": 0
+    }
+  ],
+  "missed_wbs_transitions": [
+    {
+      "correctly_localized": 6,
+      "exposures": 7,
+      "localized_recall": 0.8571428571428571,
+      "misses": 1,
+      "transition": "WBS required, type unknown -> No WBS required"
+    },
+    {
+      "correctly_localized": 4,
+      "exposures": 5,
+      "localized_recall": 0.8,
+      "misses": 1,
+      "transition": "No WBS required -> 100"
+    },
+    {
+      "correctly_localized": 4,
+      "exposures": 5,
+      "localized_recall": 0.8,
+      "misses": 1,
+      "transition": "100, 140, 160, 180 -> 100, 140, 160, 180, 220"
+    },
+    {
+      "correctly_localized": 4,
+      "exposures": 5,
+      "localized_recall": 0.8,
+      "misses": 1,
+      "transition": "100 -> 100, 140"
+    },
+    {
+      "correctly_localized": 2,
+      "exposures": 3,
+      "localized_recall": 0.6666666666666666,
+      "misses": 1,
+      "transition": "No WBS required -> WBS required, type unknown"
+    },
+    {
+      "correctly_localized": 0,
+      "exposures": 1,
+      "localized_recall": 0.0,
+      "misses": 1,
+      "transition": "WBS required, type unknown -> 100"
+    }
+  ],
+  "scope": "aggregate calibration diagnostics only; no validation or locked holdout inference",
+  "totals": {
+    "clean_cases": 140,
+    "corrupted_cases": 140,
+    "false_alerts": 0,
+    "false_negatives": 8,
+    "wrong_field_localizations": 0
+  },
+  "wbs_by_corruption_type": [
+    {
+      "correctly_localized": 35,
+      "corruption_type": "wbs_range_boundary_shift",
+      "exposures": 37,
+      "localized_recall": 0.9459459459459459,
+      "misses": 2
+    },
+    {
+      "correctly_localized": 6,
+      "corruption_type": "wbs_requirement_added",
+      "exposures": 8,
+      "localized_recall": 0.75,
+      "misses": 2
+    },
+    {
+      "correctly_localized": 9,
+      "corruption_type": "wbs_requirement_dropped",
+      "exposures": 10,
+      "localized_recall": 0.9,
+      "misses": 1
+    },
+    {
+      "correctly_localized": 0,
+      "corruption_type": "wbs_specificity_confusion",
+      "exposures": 1,
+      "localized_recall": 0.0,
+      "misses": 1
+    }
+  ],
+  "wbs_by_semantic_family": [
+    {
+      "correctly_localized": 6,
+      "exposures": 8,
+      "localized_recall": 0.75,
+      "misses": 2,
+      "semantic_family": "WBS required, type unknown"
+    },
+    {
+      "correctly_localized": 6,
+      "exposures": 8,
+      "localized_recall": 0.75,
+      "misses": 2,
+      "semantic_family": "No WBS required"
+    },
+    {
+      "correctly_localized": 7,
+      "exposures": 8,
+      "localized_recall": 0.875,
+      "misses": 1,
+      "semantic_family": "100, 140, 160, 180"
+    },
+    {
+      "correctly_localized": 7,
+      "exposures": 8,
+      "localized_recall": 0.875,
+      "misses": 1,
+      "semantic_family": "100"
+    },
+    {
+      "correctly_localized": 8,
+      "exposures": 8,
+      "localized_recall": 1.0,
+      "misses": 0,
+      "semantic_family": "160, 180, 220"
+    },
+    {
+      "correctly_localized": 8,
+      "exposures": 8,
+      "localized_recall": 1.0,
+      "misses": 0,
+      "semantic_family": "140, 160, 180, 220"
+    },
+    {
+      "correctly_localized": 8,
+      "exposures": 8,
+      "localized_recall": 1.0,
+      "misses": 0,
+      "semantic_family": "100, 140"
+    }
+  ],
+  "wbs_gate": {
+    "correctly_localized": 50,
+    "corrupted_cases": 56,
+    "minimum_correct_to_pass": 51,
+    "shortfall_cases": 1,
+    "status": "fail",
+    "threshold": 0.9
+  }
+}

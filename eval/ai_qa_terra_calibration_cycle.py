@@ -1,0 +1,182 @@
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Mapping, Sequence
+
+from eval.ai_qa_datasets import build_ai_qa_split_from_clean_cases, verify_ai_qa_split_rows
+from eval.ai_qa_luna_low_cycle import (
+    DEFAULT_LUNA_LOW_DATASET_DIR,
+    LUNA_LOW_COUNTS,
+    LUNA_LOW_ERROR_DISTRIBUTION,
+    _artifact_entry,
+    _canonical_json,
+    _prior_model_input_paths,
+    _read_jsonl,
+    _sha256_file,
+    _signature,
+)
+from eval.ai_qa_luna_v5_cycle import _verify_semantic_balance, generate_balanced_wbs_cases
+from eval.ai_qa_terra_effort_screen import DEFAULT_TERRA_EFFORT_SCREEN_DIR
+from eval.ai_qa_terra_prompt_reasoning_screen import DEFAULT_TERRA_PROMPT_REASONING_SCREEN_DIR
+
+
+SCHEMA_VERSION = "1.0"
+DEFAULT_TERRA_CALIBRATION_DATASET_DIR = Path(__file__).with_name("datasets") / "terra_calibration_cycle"
+COUNTS = dict(LUNA_LOW_COUNTS)
+ERROR_DISTRIBUTION = dict(LUNA_LOW_ERROR_DISTRIBUTION)
+SPLITS: dict[str, dict[str, object]] = {
+    "terra_calibration": {
+        "seed": 20260820,
+        "model_inputs": "calibration_model_inputs.jsonl",
+        "truth": "calibration_truth.jsonl",
+        "permitted_use": "one Terra calibration run",
+    },
+    "terra_validation": {
+        "seed": 20260821,
+        "model_inputs": "validation_model_inputs.jsonl",
+        "truth": "validation_truth.jsonl",
+        "permitted_use": "one frozen Terra validation run after passing calibration",
+    },
+}
+
+
+def build_terra_calibration_cycle_rows() -> dict[str, tuple[list[dict[str, object]], list[dict[str, object]]]]:
+    datasets = {}
+    for split, config in SPLITS.items():
+        seed = int(config["seed"])
+        source = generate_balanced_wbs_cases(seed=seed)
+        rows = build_ai_qa_split_from_clean_cases(
+            source_cases=source,
+            seed=seed,
+            counts=COUNTS,
+            error_distribution=ERROR_DISTRIBUTION,
+        )
+        verify_ai_qa_split_rows(
+            split_name=split,
+            input_rows=rows[0],
+            truth_rows=rows[1],
+            expected_counts=COUNTS,
+            expected_distribution=ERROR_DISTRIBUTION,
+        )
+        _verify_semantic_balance(*rows)
+        datasets[split] = rows
+    return datasets
+
+
+def _prior_paths() -> dict[str, Path]:
+    return {
+        **_prior_model_input_paths(),
+        "luna_low_calibration": DEFAULT_LUNA_LOW_DATASET_DIR / "calibration_model_inputs.jsonl",
+        "luna_low_validation": DEFAULT_LUNA_LOW_DATASET_DIR / "validation_model_inputs.jsonl",
+        "terra_effort_screen": DEFAULT_TERRA_EFFORT_SCREEN_DIR / "model_inputs.jsonl",
+        "terra_prompt_reasoning_screen": DEFAULT_TERRA_PROMPT_REASONING_SCREEN_DIR / "model_inputs.jsonl",
+    }
+
+
+def _verify_isolation(
+    datasets: Mapping[str, tuple[Sequence[Mapping[str, object]], Sequence[Mapping[str, object]]]],
+) -> dict[str, int]:
+    generated = {split: {_signature(row) for row in rows[0]} for split, rows in datasets.items()}
+    calibration, validation = generated["terra_calibration"], generated["terra_validation"]
+    overlaps = {"calibration_validation": len(calibration & validation)}
+    for name, path in _prior_paths().items():
+        prior = {_signature(row) for row in _read_jsonl(path)}
+        overlaps[f"calibration_{name}"] = len(calibration & prior)
+        overlaps[f"validation_{name}"] = len(validation & prior)
+    if any(overlaps.values()):
+        raise ValueError(f"Terra calibration dataset overlap: {overlaps}")
+    return overlaps
+
+
+def write_terra_calibration_cycle(
+    output_dir: Path = DEFAULT_TERRA_CALIBRATION_DATASET_DIR,
+) -> dict[str, object]:
+    datasets = build_terra_calibration_cycle_rows()
+    overlaps = _verify_isolation(datasets)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    split_manifest = {}
+    for split, (inputs, truth) in datasets.items():
+        config = SPLITS[split]
+        input_path, truth_path = output_dir / str(config["model_inputs"]), output_dir / str(config["truth"])
+        input_path.write_text("".join(f"{_canonical_json(row)}\n" for row in inputs), encoding="utf-8")
+        truth_path.write_text("".join(f"{_canonical_json(row)}\n" for row in truth), encoding="utf-8")
+        split_manifest[split] = {
+            "seed": config["seed"],
+            "counts": {**COUNTS, "total": sum(COUNTS.values())},
+            "error_distribution": ERROR_DISTRIBUTION,
+            "wbs_semantic_balance": _verify_semantic_balance(inputs, truth),
+            "permitted_use": config["permitted_use"],
+            "artifacts": {
+                "model_inputs": _artifact_entry(input_path, lines=len(inputs)),
+                "truth": _artifact_entry(truth_path, lines=len(truth)),
+            },
+        }
+    manifest = {
+        "schema_version": SCHEMA_VERSION,
+        "experiment": "synthetic offline Terra calibration cycle",
+        "hypothesis": "Terra-v1 with medium reasoning can preserve the 2x2 screen gains on independent calibration data.",
+        "configuration": {
+            "model": "gpt-5.6-terra",
+            "reasoning_effort": "medium",
+            "prompt_version": "terra-v1",
+            "max_output_tokens": 256,
+            "retries": 0,
+            "strict_structured_outputs": True,
+        },
+        "splits": split_manifest,
+        "isolation": {"comparison_basis": "raw_text plus parser_snapshot", "overlaps": overlaps},
+        "boundaries": {
+            "development_screen_reused": False,
+            "validation_requires_passing_calibration_freeze": True,
+            "validation_authorized_now": False,
+            "locked_holdout_used_for_inference": False,
+            "locked_holdout_truth_read": False,
+            "openai_called_during_generation": False,
+            "product_runtime_modified": False,
+            "sol_authorized": False,
+        },
+    }
+    (output_dir / "dataset_manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    verify_terra_calibration_cycle(output_dir)
+    return manifest
+
+
+def verify_terra_calibration_cycle(output_dir: Path = DEFAULT_TERRA_CALIBRATION_DATASET_DIR) -> dict[str, object]:
+    manifest = json.loads((output_dir / "dataset_manifest.json").read_text(encoding="utf-8"))
+    datasets = {}
+    for split in SPLITS:
+        entry = manifest["splits"][split]
+        input_path = output_dir / entry["artifacts"]["model_inputs"]["file"]
+        truth_path = output_dir / entry["artifacts"]["truth"]["file"]
+        if _sha256_file(input_path) != entry["artifacts"]["model_inputs"]["sha256"]:
+            raise ValueError(f"{split} input hash mismatch")
+        if _sha256_file(truth_path) != entry["artifacts"]["truth"]["sha256"]:
+            raise ValueError(f"{split} truth hash mismatch")
+        rows = (_read_jsonl(input_path), _read_jsonl(truth_path))
+        verify_ai_qa_split_rows(split_name=split, input_rows=rows[0], truth_rows=rows[1], expected_counts=COUNTS, expected_distribution=ERROR_DISTRIBUTION)
+        if _verify_semantic_balance(*rows) != entry["wbs_semantic_balance"]:
+            raise ValueError(f"{split} WBS balance mismatch")
+        datasets[split] = rows
+    if _verify_isolation(datasets) != manifest["isolation"]["overlaps"]:
+        raise ValueError("Terra calibration isolation metadata mismatch")
+    return manifest
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate independent Terra calibration and validation data.")
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_TERRA_CALIBRATION_DATASET_DIR)
+    parser.add_argument("--verify-only", action="store_true")
+    args = parser.parse_args()
+    manifest = verify_terra_calibration_cycle(args.output_dir) if args.verify_only else write_terra_calibration_cycle(args.output_dir)
+    print(json.dumps({
+        "configuration": manifest["configuration"],
+        "splits": {name: {"seed": value["seed"], "counts": value["counts"], "input_sha256": value["artifacts"]["model_inputs"]["sha256"], "truth_sha256": value["artifacts"]["truth"]["sha256"]} for name, value in manifest["splits"].items()},
+        "overlaps": manifest["isolation"]["overlaps"],
+        "boundaries": manifest["boundaries"],
+    }, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()

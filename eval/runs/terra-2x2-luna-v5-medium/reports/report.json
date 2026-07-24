@@ -1,0 +1,462 @@
+{
+  "acceptance_gates": {
+    "gates": {
+      "challenge_set_precision": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.85,
+        "value": 1.0
+      },
+      "error_recall": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 0.90625
+      },
+      "false_alert_rate": {
+        "comparison": "max",
+        "status": "pass",
+        "threshold": 0.08,
+        "value": 0.0
+      },
+      "field_localization_accuracy": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 1.0
+      },
+      "rent_kalt_per_field_recall": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 1.0
+      },
+      "rooms_per_field_recall": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 1.0
+      },
+      "structured_output_coverage": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.995,
+        "value": 1.0
+      },
+      "wbs_per_field_recall": {
+        "comparison": "min",
+        "status": "pass",
+        "threshold": 0.9,
+        "value": 0.9
+      }
+    },
+    "note": "Targets from the eval contract; not achieved results until scored.",
+    "overall_status": "pass"
+  },
+  "counts": {
+    "alerted_corrupted_cases": 29,
+    "alerts": 29,
+    "clean_cases": 16,
+    "correctly_localized_alerts": 29,
+    "corrupted_cases": 32,
+    "false_negatives": 3,
+    "false_positives": 0,
+    "invalid_structured_outputs": 0,
+    "outcome_invalid_json": 0,
+    "outcome_invalid_schema": 0,
+    "outcome_technical_failure": 0,
+    "outcome_valid": 48,
+    "technical_failures": 0,
+    "total_cases": 48,
+    "uncovered_cases": 0,
+    "valid_structured_outputs": 48,
+    "wrong_field_localizations": 0
+  },
+  "diagnostics": {
+    "false_negatives": [
+      {
+        "case_id": "aqa-86d3084200a31322ee52",
+        "expected_field": "district",
+        "reason": "model_no_alert"
+      },
+      {
+        "case_id": "aqa-c58a5f95989f06b290cf",
+        "expected_field": "wbs",
+        "reason": "model_no_alert"
+      },
+      {
+        "case_id": "aqa-dec023397bd728f57f49",
+        "expected_field": "wbs",
+        "reason": "model_no_alert"
+      }
+    ],
+    "false_positives": [],
+    "invalid_outputs": [],
+    "technical_failure_categories": {},
+    "wrong_field_localizations": []
+  },
+  "evidence_scope": "Synthetic challenge-set engineering artifact; not production precision or user-impact evidence.",
+  "experiment": "synthetic offline AI QA evaluation",
+  "field_breakdown": {
+    "address_postal_code": {
+      "alerted": 2,
+      "correctly_localized": 2,
+      "error_alert_recall": {
+        "denominator": 2,
+        "numerator": 2,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.34238022750665303
+        }
+      },
+      "label": "address/postal code",
+      "localized_recall": {
+        "denominator": 2,
+        "numerator": 2,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.34238022750665303
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 2,
+      "wrong_localization": 0
+    },
+    "district": {
+      "alerted": 1,
+      "correctly_localized": 1,
+      "error_alert_recall": {
+        "denominator": 2,
+        "numerator": 1,
+        "value": 0.5,
+        "wilson_95_ci": {
+          "high": 0.9054687942657693,
+          "low": 0.09453120573423074
+        }
+      },
+      "label": "district",
+      "localized_recall": {
+        "denominator": 2,
+        "numerator": 1,
+        "value": 0.5,
+        "wilson_95_ci": {
+          "high": 0.9054687942657693,
+          "low": 0.09453120573423074
+        }
+      },
+      "missed": 1,
+      "missed_by_reason": {
+        "model_no_alert": 1
+      },
+      "total_corrupted": 2,
+      "wrong_localization": 0
+    },
+    "floor": {
+      "alerted": 2,
+      "correctly_localized": 2,
+      "error_alert_recall": {
+        "denominator": 2,
+        "numerator": 2,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.34238022750665303
+        }
+      },
+      "label": "floor",
+      "localized_recall": {
+        "denominator": 2,
+        "numerator": 2,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.34238022750665303
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 2,
+      "wrong_localization": 0
+    },
+    "rent_kalt": {
+      "alerted": 2,
+      "correctly_localized": 2,
+      "error_alert_recall": {
+        "denominator": 2,
+        "numerator": 2,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.34238022750665303
+        }
+      },
+      "label": "Kaltmiete",
+      "localized_recall": {
+        "denominator": 2,
+        "numerator": 2,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.34238022750665303
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 2,
+      "wrong_localization": 0
+    },
+    "rent_warm": {
+      "alerted": 2,
+      "correctly_localized": 2,
+      "error_alert_recall": {
+        "denominator": 2,
+        "numerator": 2,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.34238022750665303
+        }
+      },
+      "label": "Warmmiete",
+      "localized_recall": {
+        "denominator": 2,
+        "numerator": 2,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.34238022750665303
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 2,
+      "wrong_localization": 0
+    },
+    "rooms": {
+      "alerted": 2,
+      "correctly_localized": 2,
+      "error_alert_recall": {
+        "denominator": 2,
+        "numerator": 2,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.34238022750665303
+        }
+      },
+      "label": "rooms",
+      "localized_recall": {
+        "denominator": 2,
+        "numerator": 2,
+        "value": 1.0,
+        "wilson_95_ci": {
+          "high": 1.0,
+          "low": 0.34238022750665303
+        }
+      },
+      "missed": 0,
+      "missed_by_reason": {},
+      "total_corrupted": 2,
+      "wrong_localization": 0
+    },
+    "wbs": {
+      "alerted": 18,
+      "correctly_localized": 18,
+      "error_alert_recall": {
+        "denominator": 20,
+        "numerator": 18,
+        "value": 0.9,
+        "wilson_95_ci": {
+          "high": 0.9721335187862319,
+          "low": 0.6989663547715128
+        }
+      },
+      "label": "WBS",
+      "localized_recall": {
+        "denominator": 20,
+        "numerator": 18,
+        "value": 0.9,
+        "wilson_95_ci": {
+          "high": 0.9721335187862319,
+          "low": 0.6989663547715128
+        }
+      },
+      "missed": 2,
+      "missed_by_reason": {
+        "model_no_alert": 2
+      },
+      "total_corrupted": 20,
+      "wrong_localization": 0
+    }
+  },
+  "metrics": {
+    "challenge_set_precision": {
+      "denominator": 29,
+      "numerator": 29,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.8830302015002593
+      }
+    },
+    "error_recall": {
+      "denominator": 32,
+      "numerator": 29,
+      "value": 0.90625,
+      "wilson_95_ci": {
+        "high": 0.9675984487016337,
+        "low": 0.7578184527161212
+      }
+    },
+    "false_alert_rate": {
+      "denominator": 16,
+      "numerator": 0,
+      "value": 0.0,
+      "wilson_95_ci": {
+        "high": 0.1936076805344365,
+        "low": 0.0
+      }
+    },
+    "field_localization_accuracy": {
+      "denominator": 29,
+      "numerator": 29,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.8830302015002593
+      }
+    },
+    "missed_error_rate": {
+      "denominator": 32,
+      "numerator": 3,
+      "value": 0.09375,
+      "wilson_95_ci": {
+        "high": 0.24218154728387864,
+        "low": 0.032401551298366194
+      }
+    },
+    "structured_output_coverage": {
+      "denominator": 48,
+      "numerator": 48,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 0.9999999999999999,
+        "low": 0.9258998703338824
+      }
+    },
+    "technical_failure_rate": {
+      "denominator": 48,
+      "numerator": 0,
+      "value": 0.0,
+      "wilson_95_ci": {
+        "high": 0.07410012966611748,
+        "low": 6.938893903907228e-18
+      }
+    }
+  },
+  "model_output_schema_version": "1.0",
+  "operational": {
+    "case_result_records": 48,
+    "completed_cases": 48,
+    "cost": {
+      "cost_per_completed_case_usd": 0.0035715625,
+      "is_partial": false,
+      "records_with_cost": 48,
+      "total_case_records": 48,
+      "total_usd": 0.171435
+    },
+    "latency_by_mode": {
+      "synchronous_case": {
+        "is_partial": false,
+        "p50_ms": 1247.0746874999995,
+        "p95_ms": 2975.316362400004,
+        "sample_count": 48,
+        "total_case_records": 48
+      }
+    },
+    "request_count": 48,
+    "retry_count": 0,
+    "token_usage": {
+      "cached_input_tokens": 0,
+      "input_tokens": 58410,
+      "is_partial": false,
+      "output_tokens": 1694,
+      "reasoning_tokens": 576,
+      "records_with_usage": 48,
+      "total_case_records": 48,
+      "total_tokens": 60104
+    }
+  },
+  "per_field_recall": {
+    "address_postal_code": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "district": {
+      "denominator": 2,
+      "numerator": 1,
+      "value": 0.5,
+      "wilson_95_ci": {
+        "high": 0.9054687942657693,
+        "low": 0.09453120573423074
+      }
+    },
+    "floor": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "rent_kalt": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "rent_warm": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "rooms": {
+      "denominator": 2,
+      "numerator": 2,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.34238022750665303
+      }
+    },
+    "wbs": {
+      "denominator": 20,
+      "numerator": 18,
+      "value": 0.9,
+      "wilson_95_ci": {
+        "high": 0.9721335187862319,
+        "low": 0.6989663547715128
+      }
+    }
+  },
+  "report_schema_version": "1.0",
+  "run_label": "luna-v5-medium",
+  "scorer_version": "1.0",
+  "split": "terra_prompt_reasoning_screen"
+}

@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "experiment": "synthetic offline AI QA evaluation",
+  "hash_algorithm": "SHA-256",
+  "serialization": {
+    "encoding": "UTF-8",
+    "format": "JSON Lines",
+    "json_keys": "sorted",
+    "line_ending": "LF"
+  },
+  "seeds": {
+    "dataset": 20260722,
+    "clean_source_cases": 3965354110990896036,
+    "development_field_order": 7622573933671769028,
+    "development_corruptions": 14386341292929314794,
+    "development_row_order": 1331514007512186804,
+    "locked_holdout_field_order": 16252562429799227301,
+    "locked_holdout_corruptions": 15884457757653074484,
+    "locked_holdout_row_order": 16642191007281754584
+  },
+  "splits": {
+    "development": {
+      "counts": {
+        "clean": 50,
+        "corrupted": 50,
+        "total": 100
+      },
+      "error_distribution": {
+        "WBS": 13,
+        "Kaltmiete": 10,
+        "rooms": 8,
+        "address/postal code": 7,
+        "district": 5,
+        "floor": 4,
+        "Warmmiete": 3
+      },
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 51590,
+          "file": "development_model_inputs.jsonl",
+          "lines": 100,
+          "sha256": "769535d321782051dfb68934e9c0d7aa3c1f449cc900fd7aa28c9d7fd2d51b67"
+        },
+        "truth": {
+          "bytes": 17344,
+          "file": "development_truth.jsonl",
+          "lines": 100,
+          "sha256": "97ee98e410bab63fa591d685303375561ca7e18566fa4f16e55e6cd4d6381512"
+        }
+      }
+    },
+    "locked_holdout": {
+      "locked": true,
+      "permitted_use": "one frozen final evaluation only",
+      "counts": {
+        "clean": 300,
+        "corrupted": 300,
+        "total": 600
+      },
+      "error_distribution": {
+        "WBS": 75,
+        "Kaltmiete": 60,
+        "rooms": 50,
+        "address/postal code": 40,
+        "district": 30,
+        "floor": 25,
+        "Warmmiete": 20
+      },
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 309724,
+          "file": "locked_holdout_model_inputs.jsonl",
+          "lines": 600,
+          "sha256": "30cd53ceb518191318b2abd10b8ceafc35685afc39680dc201f033a1f8603791"
+        },
+        "truth": {
+          "bytes": 103866,
+          "file": "locked_holdout_truth.jsonl",
+          "lines": 600,
+          "sha256": "a126d2a87948483bb853bc634353974770e886111f9570c816ed937b71f4675e"
+        }
+      }
+    }
+  },
+  "global_counts": {
+    "cases": 700,
+    "unique_case_ids": 700,
+    "unique_raw_texts": 700,
+    "development_holdout_overlap": 0
+  }
+}

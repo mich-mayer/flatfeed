@@ -1,0 +1,37 @@
+{
+  "boundaries": {
+    "calibration_passed_engineering_gates": true,
+    "calibration_passed_product_gates": true,
+    "landing_claim_authorized": false,
+    "locked_holdout_authorized": false,
+    "product_runtime_modified": false,
+    "validation_authorized_once": true
+  },
+  "calibration_evidence": {
+    "report_sha256": "cd8981c2c6c5b115300338466bb1b36832d64c7524fc13f9b912d234f5ebe115",
+    "run_manifest_sha256": "3c38e967e12c5d7835d11a74a0640b78742f554021064aacd83f7dd6cc214e92"
+  },
+  "configuration": {
+    "max_output_tokens": 256,
+    "model": "gpt-5.6-terra",
+    "output_schema_sha256": "f7c5d21b7ee06ff3647c4726253c74eeccecd250ec96c7275d07f70d24989945",
+    "prompt_sha256": "672629d914d73cde056968c0249ae14b522703987d632f967eee866496d8f6c9",
+    "prompt_version": "terra-v1",
+    "reasoning_effort": "high",
+    "retries": 0,
+    "runner_version": "1.5",
+    "strict_structured_outputs": true
+  },
+  "schema_version": "1.0",
+  "status": "validation_authorized_once",
+  "validation": {
+    "case_count": 280,
+    "dataset_manifest_sha256": "4a6bbfe0915d1ce88c1a97cb37cf6d9fce30bfb716049b0be0b0de9f77fc38b7",
+    "hard_budget_limit_usd": 5.0,
+    "model_inputs_sha256": "fb26a15e4e4489c82dec342449f44dc8df18daed7bf6c71f5d6d3a8c3c6a4f65",
+    "preflight_worst_case_usd": 4.850265,
+    "prompt_changes_after_run": false,
+    "run_count_limit": 1,
+    "split": "terra_high_validation"
+  }
+}

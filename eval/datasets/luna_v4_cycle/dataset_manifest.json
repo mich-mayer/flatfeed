@@ -1,0 +1,125 @@
+{
+  "boundaries": {
+    "locked_holdout_modified": false,
+    "locked_holdout_truth_read": false,
+    "locked_holdout_used_for_inference": false,
+    "maximum_new_prompt_versions": 1,
+    "openai_called_during_generation": false,
+    "product_runtime_modified": false,
+    "prompt_changes_after_validation": false
+  },
+  "experiment": "synthetic offline AI QA Luna-v4 WBS semantic-drift cycle",
+  "hash_algorithm": "SHA-256",
+  "hypothesis": "Explicit boundary-preserving WBS comparison can close the 141-to-220 failure class without increasing false alerts.",
+  "isolation": {
+    "comparison_basis": "raw_text plus parser_snapshot",
+    "overlaps": {
+      "calibration_locked_holdout": 0,
+      "calibration_luna_v1_calibration": 0,
+      "calibration_luna_v2_validation": 0,
+      "calibration_luna_v3_calibration": 0,
+      "calibration_luna_v3_validation": 0,
+      "calibration_original_development": 0,
+      "calibration_validation": 0,
+      "validation_locked_holdout": 0,
+      "validation_luna_v1_calibration": 0,
+      "validation_luna_v2_validation": 0,
+      "validation_luna_v3_calibration": 0,
+      "validation_luna_v3_validation": 0,
+      "validation_original_development": 0
+    }
+  },
+  "schema_version": "1.0",
+  "serialization": {
+    "encoding": "UTF-8",
+    "format": "JSON Lines",
+    "json_keys": "sorted",
+    "line_ending": "LF"
+  },
+  "splits": {
+    "luna_v4_calibration": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 127900,
+          "file": "calibration_model_inputs.jsonl",
+          "lines": 240,
+          "sha256": "f43a40d6ccce501b9195f23b08a18c207530eb40c33d28ea2073e2923ecc16cf"
+        },
+        "truth": {
+          "bytes": 41862,
+          "file": "calibration_truth.jsonl",
+          "lines": 240,
+          "sha256": "0d4e1661877ceef8b2e969bedc8e410f054e8bd70ebac203e5aed9a46272fa16"
+        }
+      },
+      "counts": {
+        "clean": 120,
+        "corrupted": 120,
+        "total": 240
+      },
+      "error_distribution": {
+        "address_postal_code": 10,
+        "district": 10,
+        "floor": 8,
+        "rent_kalt": 20,
+        "rent_warm": 7,
+        "rooms": 15,
+        "wbs": 50
+      },
+      "permitted_use": "one luna-v4 calibration run",
+      "seed": 20260727
+    },
+    "luna_v4_validation": {
+      "artifacts": {
+        "model_inputs": {
+          "bytes": 127910,
+          "file": "validation_model_inputs.jsonl",
+          "lines": 240,
+          "sha256": "d75046c26b7b9a674dbd8e8aeb1784e907388cf9748fc62ebc677d764ac480ae"
+        },
+        "truth": {
+          "bytes": 41892,
+          "file": "validation_truth.jsonl",
+          "lines": 240,
+          "sha256": "98152ff26baf530abcc7ca623fcfc32f517a54140982b774295d0488c22b271a"
+        }
+      },
+      "counts": {
+        "clean": 120,
+        "corrupted": 120,
+        "total": 240
+      },
+      "error_distribution": {
+        "address_postal_code": 10,
+        "district": 10,
+        "floor": 8,
+        "rent_kalt": 20,
+        "rent_warm": 7,
+        "rooms": 15,
+        "wbs": 50
+      },
+      "permitted_use": "one frozen luna-v4 validation run",
+      "seed": 20260728
+    }
+  },
+  "wbs_semantic_drift": {
+    "phrases_per_expected_value": {
+      "100": 6,
+      "100, 140": 6,
+      "100, 140, 160, 180": 6,
+      "140, 160, 180, 220": 6,
+      "160, 180, 220": 6,
+      "No WBS required": 6,
+      "WBS required, type unknown": 6
+    },
+    "registered_expected_values": [
+      "100",
+      "100, 140",
+      "100, 140, 160, 180",
+      "140, 160, 180, 220",
+      "160, 180, 220",
+      "No WBS required",
+      "WBS required, type unknown"
+    ]
+  }
+}

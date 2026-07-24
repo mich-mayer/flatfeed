@@ -1,0 +1,114 @@
+{
+  "decision": "advance_low_to_fresh_calibration_contract",
+  "delta_low_minus_none": {
+    "correct_non_wbs": 1,
+    "correct_wbs": 3,
+    "false_alerts": -2,
+    "total_correct": 6
+  },
+  "evidence_scope": "development diagnostic; not calibration or validation",
+  "experiment": "synthetic offline Luna reasoning-effort screen",
+  "locked_holdout_used": false,
+  "low": {
+    "clean_cases": 8,
+    "correct_non_wbs": 6,
+    "correct_wbs": 10,
+    "coverage": 1.0,
+    "covered": 24,
+    "false_alerts": 0,
+    "non_wbs_cases": 6,
+    "non_wbs_diverted_to_wbs": 0,
+    "operational": {
+      "case_result_records": 24,
+      "completed_cases": 24,
+      "cost": {
+        "cost_per_completed_case_usd": 0.0015359166666666665,
+        "is_partial": false,
+        "records_with_cost": 24,
+        "total_case_records": 24,
+        "total_usd": 0.036862
+      },
+      "latency_by_mode": {
+        "synchronous_case": {
+          "is_partial": false,
+          "p50_ms": 1255.5777705,
+          "p95_ms": 2671.5019856999984,
+          "sample_count": 24,
+          "total_case_records": 24
+        }
+      },
+      "request_count": 24,
+      "retry_count": 0,
+      "token_usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 29248,
+        "is_partial": false,
+        "output_tokens": 1269,
+        "reasoning_tokens": 688,
+        "records_with_usage": 24,
+        "total_case_records": 24,
+        "total_tokens": 30517
+      }
+    },
+    "technical_failures": 0,
+    "total_correct": 24,
+    "wbs_cases": 10
+  },
+  "none": {
+    "clean_cases": 8,
+    "correct_non_wbs": 5,
+    "correct_wbs": 7,
+    "coverage": 1.0,
+    "covered": 24,
+    "false_alerts": 2,
+    "non_wbs_cases": 6,
+    "non_wbs_diverted_to_wbs": 0,
+    "operational": {
+      "case_result_records": 24,
+      "completed_cases": 24,
+      "cost": {
+        "cost_per_completed_case_usd": 0.0013546666666666666,
+        "is_partial": false,
+        "records_with_cost": 24,
+        "total_case_records": 24,
+        "total_usd": 0.032512
+      },
+      "latency_by_mode": {
+        "synchronous_case": {
+          "is_partial": false,
+          "p50_ms": 1041.7410420000008,
+          "p95_ms": 2391.8108250999994,
+          "sample_count": 24,
+          "total_case_records": 24
+        }
+      },
+      "request_count": 24,
+      "retry_count": 0,
+      "token_usage": {
+        "cached_input_tokens": 0,
+        "input_tokens": 29248,
+        "is_partial": false,
+        "output_tokens": 544,
+        "reasoning_tokens": 0,
+        "records_with_usage": 24,
+        "total_case_records": 24,
+        "total_tokens": 29792
+      }
+    },
+    "technical_failures": 0,
+    "total_correct": 18,
+    "wbs_cases": 10
+  },
+  "paired_outcomes": {
+    "both_correct": 18,
+    "low_only_correct": 6
+  },
+  "selection_criteria": {
+    "low_adds_at_least_two_correct_wbs": true,
+    "low_coverage_100_percent": true,
+    "low_does_not_increase_false_alerts": true,
+    "low_does_not_reduce_non_wbs_correct": true,
+    "low_does_not_reduce_total_correct": true,
+    "low_zero_technical_failures": true
+  }
+}

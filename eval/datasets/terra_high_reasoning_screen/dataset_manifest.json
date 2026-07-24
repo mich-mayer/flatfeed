@@ -1,0 +1,133 @@
+{
+  "advancement_rule": {
+    "absolute": {
+      "coverage": 1.0,
+      "maximum_clean_false_alerts": 1,
+      "minimum_correct_other_fields": 7,
+      "minimum_correct_rooms": 13,
+      "minimum_correct_wbs": 13,
+      "minimum_total_correct": 45,
+      "technical_failures": 0
+    },
+    "comparative": {
+      "clean_false_alert_regressions_allowed": 0,
+      "minimum_matching_critical_gain_vs_medium": 1,
+      "minimum_total_gain_vs_medium": 1,
+      "other_field_regressions_allowed": 0,
+      "rooms_regressions_allowed": 0,
+      "wbs_regressions_allowed": 0
+    }
+  },
+  "boundaries": {
+    "calibration_or_validation_evidence": false,
+    "consumed_validation_reused": false,
+    "development_only": true,
+    "locked_holdout_used": false,
+    "openai_called_during_generation": false,
+    "product_runtime_modified": false,
+    "sol_authorized": false
+  },
+  "composition": {
+    "clean_families": {
+      "100": 2,
+      "100, 140": 2,
+      "100, 140, 160, 180": 1,
+      "140, 160, 180, 220": 1,
+      "160, 180, 220": 2,
+      "No WBS required": 2,
+      "WBS required, type unknown": 2
+    },
+    "non_wbs_error_families": {
+      "100": 3,
+      "100, 140": 3,
+      "100, 140, 160, 180": 3,
+      "140, 160, 180, 220": 3,
+      "160, 180, 220": 4,
+      "No WBS required": 3,
+      "WBS required, type unknown": 3
+    },
+    "non_wbs_error_fields": {
+      "address_postal_code": 2,
+      "district": 2,
+      "floor": 1,
+      "rent_kalt": 2,
+      "rent_warm": 1,
+      "rooms": 14
+    },
+    "wbs_error_families": {
+      "100": 2,
+      "100, 140": 2,
+      "100, 140, 160, 180": 2,
+      "140, 160, 180, 220": 2,
+      "160, 180, 220": 2,
+      "No WBS required": 2,
+      "WBS required, type unknown": 2
+    }
+  },
+  "counts": {
+    "clean": 12,
+    "corrupted": 36,
+    "total": 48
+  },
+  "error_distribution": {
+    "address_postal_code": 2,
+    "district": 2,
+    "floor": 1,
+    "rent_kalt": 2,
+    "rent_warm": 1,
+    "rooms": 14,
+    "wbs": 14
+  },
+  "experiment": "synthetic offline Terra medium-vs-high reasoning screen",
+  "hypothesis": "Higher reasoning improves direct comparison accuracy with the frozen terra-v1 prompt and no category regression.",
+  "isolation": {
+    "comparison_basis": "raw_text plus parser_snapshot",
+    "overlaps": {
+      "ai_qa_development_model_inputs": 0,
+      "ai_qa_locked_holdout_model_inputs": 0,
+      "luna_calibration_calibration_model_inputs": 0,
+      "luna_calibration_validation_model_inputs": 0,
+      "luna_effort_screen_model_inputs": 0,
+      "luna_low_cycle_calibration_model_inputs": 0,
+      "luna_low_cycle_validation_model_inputs": 0,
+      "luna_v3_cycle_calibration_model_inputs": 0,
+      "luna_v3_cycle_validation_model_inputs": 0,
+      "luna_v4_cycle_calibration_model_inputs": 0,
+      "luna_v4_cycle_validation_model_inputs": 0,
+      "luna_v5_cycle_calibration_model_inputs": 0,
+      "luna_v5_cycle_validation_model_inputs": 0,
+      "terra_calibration_cycle_calibration_model_inputs": 0,
+      "terra_calibration_cycle_validation_model_inputs": 0,
+      "terra_effort_screen_model_inputs": 0,
+      "terra_prompt_reasoning_screen_model_inputs": 0,
+      "terra_v2_prompt_screen_model_inputs": 0
+    }
+  },
+  "model_inputs": {
+    "file": "model_inputs.jsonl",
+    "lines": 48,
+    "sha256": "4a8ea0a67fbe914121fba8f552f58a779a2bdc83abc121ac52957d06a71b737c"
+  },
+  "profiles": [
+    {
+      "id": "terra-v1-medium",
+      "model": "gpt-5.6-terra",
+      "prompt_version": "terra-v1",
+      "reasoning_effort": "medium"
+    },
+    {
+      "id": "terra-v1-high",
+      "model": "gpt-5.6-terra",
+      "prompt_version": "terra-v1",
+      "reasoning_effort": "high"
+    }
+  ],
+  "schema_version": "1.0",
+  "seed": 20260823,
+  "split": "terra_high_reasoning_screen",
+  "truth": {
+    "file": "truth.jsonl",
+    "lines": 48,
+    "sha256": "5421a74fadf833357399f7f1696953b0feaf32a82e608517b4c424ed4bc27dea"
+  }
+}

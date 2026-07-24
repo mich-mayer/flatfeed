@@ -19,3 +19,5 @@ logs/
 .DS_Store
 Pic*.png
 Screenshot*.png
+eval/datasets/ai_qa/locked_holdout_model_inputs.jsonl
+eval/datasets/ai_qa/locked_holdout_truth.jsonl

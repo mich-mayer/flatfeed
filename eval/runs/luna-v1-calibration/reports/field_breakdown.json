@@ -1,0 +1,193 @@
+{
+  "address_postal_code": {
+    "alerted": 7,
+    "correctly_localized": 7,
+    "error_alert_recall": {
+      "denominator": 7,
+      "numerator": 7,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.6456695649333126
+      }
+    },
+    "label": "address/postal code",
+    "localized_recall": {
+      "denominator": 7,
+      "numerator": 7,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.6456695649333126
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 7,
+    "wrong_localization": 0
+  },
+  "district": {
+    "alerted": 5,
+    "correctly_localized": 5,
+    "error_alert_recall": {
+      "denominator": 5,
+      "numerator": 5,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.5655175352168251
+      }
+    },
+    "label": "district",
+    "localized_recall": {
+      "denominator": 5,
+      "numerator": 5,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.5655175352168251
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 5,
+    "wrong_localization": 0
+  },
+  "floor": {
+    "alerted": 4,
+    "correctly_localized": 3,
+    "error_alert_recall": {
+      "denominator": 4,
+      "numerator": 4,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.5101091635454027
+      }
+    },
+    "label": "floor",
+    "localized_recall": {
+      "denominator": 4,
+      "numerator": 3,
+      "value": 0.75,
+      "wilson_95_ci": {
+        "high": 0.9544127391902995,
+        "low": 0.30064184258240184
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 4,
+    "wrong_localization": 1
+  },
+  "rent_kalt": {
+    "alerted": 10,
+    "correctly_localized": 10,
+    "error_alert_recall": {
+      "denominator": 10,
+      "numerator": 10,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 0.9999999999999999,
+        "low": 0.7224672001371107
+      }
+    },
+    "label": "Kaltmiete",
+    "localized_recall": {
+      "denominator": 10,
+      "numerator": 10,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 0.9999999999999999,
+        "low": 0.7224672001371107
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 10,
+    "wrong_localization": 0
+  },
+  "rent_warm": {
+    "alerted": 3,
+    "correctly_localized": 3,
+    "error_alert_recall": {
+      "denominator": 3,
+      "numerator": 3,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.4385029682449546
+      }
+    },
+    "label": "Warmmiete",
+    "localized_recall": {
+      "denominator": 3,
+      "numerator": 3,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.4385029682449546
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 3,
+    "wrong_localization": 0
+  },
+  "rooms": {
+    "alerted": 8,
+    "correctly_localized": 8,
+    "error_alert_recall": {
+      "denominator": 8,
+      "numerator": 8,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.6755924351161198
+      }
+    },
+    "label": "rooms",
+    "localized_recall": {
+      "denominator": 8,
+      "numerator": 8,
+      "value": 1.0,
+      "wilson_95_ci": {
+        "high": 1.0,
+        "low": 0.6755924351161198
+      }
+    },
+    "missed": 0,
+    "missed_by_reason": {},
+    "total_corrupted": 8,
+    "wrong_localization": 0
+  },
+  "wbs": {
+    "alerted": 11,
+    "correctly_localized": 11,
+    "error_alert_recall": {
+      "denominator": 13,
+      "numerator": 11,
+      "value": 0.8461538461538461,
+      "wilson_95_ci": {
+        "high": 0.9567418216419186,
+        "low": 0.5776536898051745
+      }
+    },
+    "label": "WBS",
+    "localized_recall": {
+      "denominator": 13,
+      "numerator": 11,
+      "value": 0.8461538461538461,
+      "wilson_95_ci": {
+        "high": 0.9567418216419186,
+        "low": 0.5776536898051745
+      }
+    },
+    "missed": 2,
+    "missed_by_reason": {
+      "model_no_alert": 2
+    },
+    "total_corrupted": 13,
+    "wrong_localization": 0
+  }
+}
