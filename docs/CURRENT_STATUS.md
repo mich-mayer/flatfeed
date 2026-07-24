@@ -122,7 +122,7 @@ metrics must not be used to override that decision.
   `eval/runs/terra-high-locked-holdout/`.
 - Public case study:
   `https://mich-mayer.github.io/flatfeed/case-study.html`.
-- The local HTML and Markdown case-study surfaces now report only the final
+- The public HTML and Markdown case-study surfaces now report only the final
   600-listing result. They explain the experiment setup, metric formulas and
   purpose, all seven field results, the failed rooms guardrail, the stopping
   decision, and a clearly bounded 15,000-check inference-cost scenario.
@@ -133,17 +133,13 @@ metrics must not be used to override that decision.
   proxy, not as a count of online ads. The rounded 15,000-check workload and
   about `$65/year` conservative inference estimate are estimates, not measured
   production cost.
-- These case-study changes are local until they are explicitly committed,
-  pushed, and deployed.
-- Commit `18c3c87afc5d53c05fcf9a714977111bfab54808` was pushed to `main`; its
-  verification and GitHub Pages deployment passed.
-- Last full local verification for that release: 292 unit tests passed,
-  deterministic eval 15/15, public metric sync passed, and
-  `git diff --check` passed.
-- Current local verification for the pending case-study rewrite: 292 unit tests
-  passed; deterministic eval passed 15/15; public final-result, field, decision,
-  and cost sync passed; `git diff --check` passed; desktop and mobile browser
-  checks found no page overflow or console errors.
+- Commit `2837a54279a7761788ebc3ef9990b45f67917c9b` was pushed to `main`;
+  Verify and Deploy run `30112526214` passed and GitHub Pages returned HTTP 200
+  for the live case study.
+- Release verification: 292 unit tests passed; deterministic eval passed 15/15;
+  public final-result, field, decision, and cost sync passed;
+  `git diff --check` passed; desktop and mobile checks of the production page
+  found no page overflow or console errors.
 
 ## Recommended Next Step
 
