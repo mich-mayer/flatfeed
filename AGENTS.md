@@ -11,6 +11,8 @@ Before changing code or docs, read:
   terminology, accessibility, and case-study system
 - `docs/PROJECT_CONTEXT.md` — product semantics (filters, listing card, parsing,
   AI QA boundaries, data model)
+- `docs/CURRENT_STATUS.md` — changing experiment status, consumed evidence,
+  current decision, and recommended next step
 - `docs/agent-workflow.md` — the single rulebook: guardrails, Phase 1
   boundaries, build/verify, working style, and collaboration rules
 

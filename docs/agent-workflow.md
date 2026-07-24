@@ -17,6 +17,8 @@ Project context lives in repository files, not in chat threads or local notes:
   §0 "Quick Start for Agents" to find the touched surface and its invariants;
 - `docs/PROJECT_CONTEXT.md` for durable product semantics (filters, listing
   card, parsing rules, AI QA boundaries, data model, reliability decisions);
+- `docs/CURRENT_STATUS.md` for concise changing state (completed experiments,
+  consumed evidence, current decision, publication state, and next step);
 - `CLAUDE.md` for Claude entry context;
 - `AGENTS.md` for Codex and other coding agents.
 
@@ -94,6 +96,9 @@ instead of shipping silently.
   together — no surface drifts out of sync (`DESIGN_CONTENT_SYSTEM.md` §27).
 - Keep durable context in `docs/` (or `DESIGN_CONTENT_SYSTEM.md`) instead of
   duplicating long context in `CLAUDE.md`/`AGENTS.md`.
+- Keep `docs/CURRENT_STATUS.md` current when a material result, decision,
+  product boundary, public evidence state, or recommended next step changes.
+  Do not update it after every prompt or turn it into a chat log.
 - Record any new/changed rule through Change Governance
   (`DESIGN_CONTENT_SYSTEM.md` §34), and update the relevant `docs/` file when
   behavior, scope, or agent expectations change.
@@ -122,4 +127,5 @@ A change is done when:
   across every surface the change touches, and nothing from `LOCAL_CONTEXT.md`
   leaked onto a committed surface;
 - any changed scope, architecture, or workflow expectation is documented in
-  `docs/`.
+  `docs/`, and material changing state is reflected in
+  `docs/CURRENT_STATUS.md`.

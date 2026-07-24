@@ -11,6 +11,8 @@ Read these files before making project changes:
   accessibility, and case-study standard.
 - `docs/PROJECT_CONTEXT.md` for product semantics: filters, listing card,
   parsing rules, AI QA boundaries, data model, and reliability decisions.
+- `docs/CURRENT_STATUS.md` for changing experiment status, consumed evidence,
+  the current decision, and the recommended next step.
 - `docs/agent-workflow.md` — the single rulebook: required response context,
   guardrails, Phase 1 boundaries, build/verify, working style, and collaboration
   rules.

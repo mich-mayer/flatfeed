@@ -1,7 +1,7 @@
 # FlatFeed — Design & Content System
 
 **Status:** Normative. Single source of truth for UI, layout, components, copy, terminology, and case-study content.
-**Date:** 2026-07-24 (hero limitation copy tightened; see §34 history for earlier decisions).
+**Date:** 2026-07-24 (durable current-status handoff added; see §34 history for earlier decisions).
 **Basis:** source code inspection (`main.py`, `flatfeed/`, `synthetic/`, `eval/`), an evidence/claim audit, desktop and mobile browser renders of the case-study page, and the project docs (`README.md`, `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`). No renter research or usability study has been run; product-value statements remain hypotheses.
 
 **Rule keywords.** MUST = mandatory project rule. SHOULD = default; deviate only for a stated reason. MAY = permitted option. MUST NOT = prohibited. Rules without a keyword are descriptive context.
@@ -773,6 +773,27 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-24 durable current-status handoff
+
+- **Problem:** stable product rules and the full evaluation plan were durable,
+  but a new thread had no short mandatory artifact stating the latest
+  experiment decision, consumed datasets, publication state, and next step.
+  Reconstructing that state from chat or thousands of lines of experiment
+  history is slow and risks reopening consumed evidence.
+- **Rationale:** add one concise changing-state file beside the stable project
+  context and make both Codex and Claude entry points require it. Update it only
+  for material state changes, not after every prompt, so it remains a reliable
+  handoff rather than a chat diary.
+- **Affected surfaces:** new `docs/CURRENT_STATUS.md`, `AGENTS.md`, `CLAUDE.md`,
+  `README.md`, `docs/agent-workflow.md`, and this document.
+- **Compatibility impact:** future agents must read the current-status handoff
+  before proposing work and must update it when a material result, decision,
+  public evidence state, or recommended next step changes. Stable rules remain
+  in their existing canonical files.
+- **Migration consideration:** current Terra-high and product state migrated
+  now. Future updates replace stale status and link to detailed artifacts
+  instead of appending conversational history.
 
 ### 2026-07-24 Terra-high locked-holdout result
 
