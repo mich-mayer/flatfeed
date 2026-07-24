@@ -31,6 +31,8 @@ the same source of truth:
   accessibility, and case-study standard.
 - `docs/PROJECT_CONTEXT.md`: product semantics — filters, listing card, parsing
   rules, AI QA boundaries, data model, and reliability decisions.
+- `docs/CURRENT_STATUS.md`: concise current handoff — experiment result,
+  consumed evidence, current decision, and recommended next step.
 - `docs/agent-workflow.md`: the single rulebook for humans and AI agents —
   required response context, guardrails, Phase 1 boundaries, build/verify,
   working style, and collaboration rules.
