@@ -23,9 +23,12 @@ the full experiment history and contracts belong in
   dashboard, public admin panel, unfiltered catalog browser, and mock QA tour
   have been removed from the prototype scope.
 - `/start` now reaches a real matching result in two guided steps: a temporary
-  four-field filter, then one card produced by the same deterministic matching
-  and activity-check path as saved-filter requests. The filter remains
-  ephemeral until the visitor explicitly saves it.
+  four-field filter, then a short match explanation followed by one canonical
+  card produced by the same deterministic matching, activity-check, and card
+  formatter path as saved-filter requests. Tour actions are sent separately,
+  and the filter remains ephemeral until the visitor explicitly saves it.
+- Custom filters can return no results in the limited synthetic catalog. The
+  empty state states that boundary and does not imply live-market coverage.
 - The public Telegram demo makes no model call. Optional runtime AI QA remains
   bounded to direct admin alerts when explicitly enabled; it cannot mutate
   parsed listings, matching, or user-facing cards. No hosted model from the
@@ -115,7 +118,7 @@ history. They are not current public evidence.
   measured production cost.
 - The new final result is published at the public GitHub Pages URL and was
   verified there on 2026-07-31.
-- Local verification of the bot-only simplification passed: 342 unit tests,
+- Local verification of the bot-only simplification passed: 344 unit tests,
   deterministic parser eval 15/15, final configuration-freeze verification,
   public number synchronization, and `git diff --check`. The public case-study
   HTML and CSS were not changed in this pass.

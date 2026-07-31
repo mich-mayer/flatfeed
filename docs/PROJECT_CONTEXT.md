@@ -109,9 +109,13 @@ filter/matches flow:
 2. **Matching result** — runs the same matching predicate as the main
    product path (`is_listing_match`) over the synthetic catalog, then the
    synthetic adapter's local activity check (`_verified_active_matches`). It
-   shows one standardized card plus field-level match reasons. From the result,
-   the visitor can save the temporary filter, create a custom filter, open the
-   optional `How matching works` explanation, or read the case study.
+   sends a short explanation with the active match count and field-level
+   reasons, then one canonical card using the same `format_match_message`
+   output as `Show matches`. A separate follow-up message offers saving the
+   temporary filter, creating a custom filter, opening the optional `How
+   matching works` explanation, or reading the case study. The walkthrough
+   explicitly says it shows one example while the regular flow can return up
+   to three cards.
 
 The tour listing is selected deterministically from the active catalog (2
 rooms, a WBS requirement including 140, a WBS phrase in the raw text, and
@@ -129,6 +133,9 @@ Rules that keep the tour safe and honest to run in front of any visitor:
 - **No model call.** The guided demo exercises only collection, deterministic
   parsing, enrichment, matching, and the adapter activity check. Hosted-model
   results are documented on the case-study surface, not replayed in Telegram.
+- **Limited-catalog empty state.** A custom filter may have no match among the
+  authored synthetic listings. The bot names that demo-data boundary and does
+  not present an empty result as evidence about the live Berlin market.
 
 ## Parsing Semantics
 

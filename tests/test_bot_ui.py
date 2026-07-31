@@ -1,6 +1,6 @@
 import unittest
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 from main import (
     BTN_MATCHES,
@@ -25,6 +25,7 @@ from main import (
     handle_rooms_choice,
     handle_wbs_choice,
     main_menu_keyboard,
+    send_active_filtered_matches,
 )
 from flatfeed.schemas import UserPreferences
 
@@ -211,6 +212,28 @@ class BotUITests(unittest.TestCase):
 
 
 class FilterPromptLifecycleTests(unittest.IsolatedAsyncioTestCase):
+    async def test_no_matches_names_the_limited_catalog_boundary(self) -> None:
+        message = _FakeMessage()
+        with patch(
+            "main.load_user_preferences",
+            return_value=UserPreferences(wbs_type="WBS 140"),
+        ), patch("main.enrich_missing_transport_walk"), patch(
+            "main.load_active_filtered_match_candidates",
+            return_value=[],
+        ), patch(
+            "main._verified_active_matches",
+            new=AsyncMock(return_value=[]),
+        ):
+            await send_active_filtered_matches(message, _FakeBot(), user_id=123)
+
+        text, markup = message.answered[-1]
+        self.assertIn("limited synthetic demo catalog", text)
+        self.assertIn("does not describe the live Berlin housing market", text)
+        self.assertEqual(
+            [button.text for row in markup.inline_keyboard for button in row],
+            ["Edit filter", "Try the demo filter"],
+        )
+
     async def test_filter_prompt_is_edited_in_place(self) -> None:
         callback = _FakeCallback()
         state = _FakeState()

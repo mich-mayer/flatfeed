@@ -273,9 +273,11 @@ The reply keyboard and command menu expose no admin, QA, refresh, backfill, or m
 Listing actions have bounded candidate counts and user-facing failure messages. Renter-facing failures never expose internals; they state the outcome and that the user can retry or use the temporary demo filter. Apologies, exclamation marks, and blame are out of register (§17).
 
 ### 7.6 Guided tour — ADOPT
-`/start` (plain, or via the `?start=tour` deep link) offers `Try the demo` and `Set up my filter`. The demo reaches a result in two taps: **Demo 1/2** shows a temporary four-field filter; **Demo 2/2** runs `is_listing_match` over the synthetic catalog, applies the synthetic adapter's local activity check, and sends one canonical card with field-level match reasons. Nothing is written to `users` until the visitor taps `Use this demo filter` after the result.
+`/start` (plain, or via the `?start=tour` deep link) offers `Try the demo` and `Set up my filter`. The demo reaches a result in two taps: **Demo 1/2** shows a temporary four-field filter; **Demo 2/2** runs `is_listing_match` over the synthetic catalog and applies the synthetic adapter's local activity check. Step 2 then sends three single-purpose messages in order: (1) active match count, field-level reasons, and the explicit one-example/up-to-three boundary; (2) one canonical card with no tour prefix or tour keyboard; (3) the follow-up actions. Nothing is written to `users` until the visitor taps `Use this demo filter` after the result.
 
 The result offers `Use this demo filter`, `Set up my own filter`, `How matching works`, and `Read the case study`. The pipeline explainer is optional and does not interrupt the main path. The public tour contains no evidence scorecard, model call, mock QA, fault injection, triage, or admin view; `/start` restarts it at any time.
+
+A custom filter may legitimately return no result from the limited authored synthetic catalog. The empty state MUST name that catalog boundary and MUST NOT imply that no matching listing exists in the live Berlin market.
 
 ---
 
@@ -333,6 +335,7 @@ Rules:
 - **WBS line:** rendered through `display_wbs_requirement` from `flatfeed/wbs_rules.py` — allowed percentage list, `WBS required, type unknown` for generic requirements, `No WBS required` otherwise. Never re-implement WBS display logic elsewhere.
 - **Rooms:** integer when whole, decimal comma otherwise; filter value 5 means "5 or more".
 - The blank-line grouping (facts / prices / link) is part of the contract; `Open listing` is always the last line and the only link.
+- The tour card uses this exact formatter output. Tour explanation and actions are separate messages; do not prepend tour copy or attach the tour keyboard to the card.
 - The photo (when present) is a deterministic demo asset. The guided-tour showcase is the only address-aligned exception: its photo, displayed address, district, and coordinates refer to the same real location, while availability and apartment terms remain explicitly synthetic. Other catalog photos MUST NOT imply that they depict their listing address.
 
 ---
@@ -816,6 +819,14 @@ Update this file in the same change. External references inform; project needs d
 - **Affected surfaces:** `main.py`; `flatfeed/config.py`; `flatfeed/ai_qa.py`; removed `flatfeed/dashboard/`; `.env.example`; `requirements.txt`; `tests/test_bot_ui.py`; `tests/test_guided_tour.py`; `tests/test_ai_qa.py`; removed `tests/test_admin_ui.py` and `tests/test_dashboard.py`; `README.md`; `CASE_STUDY.md`; `docs/PROJECT_CONTEXT.md`; `docs/CURRENT_STATUS.md`; `docs/agent-workflow.md`; this file.
 - **Compatibility impact:** old keyboards carrying `tour:4`, `tour:5`, `tour:inject`, `tour_fb:*`, `settings:catalog`, `settings:dashboard`, or `settings:ai_qa_*` no longer have handlers. `/listings` and `/aiqa_status` are removed. The guided path changes from three required steps plus optional QA to `Try the demo` → `Find matches`; `How matching works` becomes optional after the result. Saved-filter requests return at most three cards instead of ten.
 - **Migration consideration:** completed in this change. Dashboard code, configuration, dependencies, and tests are deleted; active docs now describe the bot-only boundary. Historical §34 entries remain unchanged as decision history and MUST NOT be read as current behavior. Public evaluation numbers and frozen run artifacts are unchanged.
+
+### 2026-07-31 canonical tour card and one-way listing disclosure
+
+- **Problem:** Demo 2/2 prepended matching explanation to the listing caption and attached tour actions to that same message, so the portfolio visitor did not see the product's canonical listing card as a normal renter would. Its `1 of N` wording also failed to explain that the walkthrough intentionally shows one example while `Show matches` can return up to three. The static synthetic-listing disclosure then linked back into the Telegram tour even though the visitor had just arrived from a Telegram card.
+- **Rationale:** one message now has one purpose. Step 2 explains the count and deterministic reasons, sends the exact canonical card, then sends follow-up actions. The disclosure page remains a one-way honesty surface with one useful next action: the case study. Empty custom-filter results explicitly belong to the limited synthetic catalog, not the live Berlin market. The authored catalog is not expanded to fabricate coverage of every possible filter combination.
+- **Affected surfaces:** `main.py`; `docs/demo-listing.html`; `tests/test_guided_tour.py`; `tests/test_bot_ui.py`; `tests/test_demo_listing_page.py`; `README.md`; `docs/PROJECT_CONTEXT.md`; `docs/CURRENT_STATUS.md`; this file.
+- **Compatibility impact:** `send_match_to_chat` no longer accepts `text_prefix`; Demo 2/2 now emits explanation, card, and actions as separate messages. The synthetic-listing page no longer contains `Try the guided tour` or a `t.me` link. Matching rules, the three-card regular limit, the 15-case parser regression set, and evaluation numbers are unchanged.
+- **Migration consideration:** completed in this change. Tests enforce the canonical-card separation, limited-catalog empty-state wording, and removal of the circular bot CTA. Historical §34 entries remain unchanged.
 
 ### 2026-07-30 feasible next-test boundary
 

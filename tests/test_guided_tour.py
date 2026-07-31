@@ -314,9 +314,8 @@ class TourCandidateMatchesTests(unittest.TestCase):
 
 
 class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
-    """Each tour step should land as one new message, not several — a burst
-    of messages pushes the Telegram client's scroll position to the bottom
-    of the chat on every single one, forcing the reader to scroll back up."""
+    """Each message in the tour has one purpose: explanation, canonical card,
+    or the actions that follow the result."""
 
     def setUp(self) -> None:
         engine = _in_memory_engine()
@@ -368,7 +367,7 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(next_button.text, "Find matches")
         self.assertEqual(next_button.callback_data, "tour:2")
 
-    async def test_screen_2_uses_real_matching_and_sends_one_card(self) -> None:
+    async def test_screen_2_separates_explanation_canonical_card_and_actions(self) -> None:
         callback = _FakeCallback("tour:2")
         bot = _FakeBot()
 
@@ -385,18 +384,36 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
                     )
                 )
                 session.commit()
+            selected_listing = M._select_tour_listing()
+            preferences, _ = M._tour_filter_summary(selected_listing)
+            expected_match = next(
+                match
+                for match in M._tour_candidate_matches(preferences)
+                if match.listing_id == selected_listing.listing_id
+            )
+            expected_card_text = M.format_match_message(expected_match)
             await M._send_tour_screen_2(callback, bot)
 
-        # One tap = one message: the step framing, the "1 of N" result, and
-        # the result actions all ride in the card's own caption.
-        self.assertEqual(len(callback.message.answered), 0)
+        self.assertEqual(len(callback.message.answered), 2)
+        explanation_text, explanation_markup = callback.message.answered[0]
+        self.assertIn("Demo 2/2 · Why this matched", explanation_text)
+        self.assertIn("found 2 active matches", explanation_text)
+        self.assertIn("one example card below", explanation_text)
+        self.assertIn("up to three active listings", explanation_text)
+        self.assertIn("• WBS matches", explanation_text)
+        self.assertIsNone(explanation_markup)
+
         self.assertEqual(len(bot.sent_messages), 1)
         card_message = bot.sent_messages[0]
-        self.assertIn("Demo 2/2", card_message["text"])
-        self.assertIn("1 of 2 matching listings", card_message["text"])
-        self.assertIn("Why it matched", card_message["text"])
+        self.assertEqual(card_message["text"], expected_card_text)
+        self.assertNotIn("Demo 2/2", card_message["text"])
+        self.assertNotIn("Why this matched", card_message["text"])
         self.assertIn("District:", card_message["text"])
-        keyboard = card_message["reply_markup"].inline_keyboard
+        self.assertIsNone(card_message["reply_markup"])
+
+        follow_up_text, follow_up_markup = callback.message.answered[1]
+        self.assertEqual(follow_up_text, "Choose what to do next.")
+        keyboard = follow_up_markup.inline_keyboard
         button_texts = [button.text for row in keyboard for button in row]
         self.assertEqual(
             button_texts,

@@ -107,10 +107,14 @@ demo has two steps:
 
 1. A four-field demo filter is shown without saving it.
 2. The same matching predicate as the main product path runs against the
-   synthetic catalog and returns one standardized card with match reasons.
+   synthetic catalog. A short explanation gives the active match count and
+   field-level reasons, followed by one listing card that is identical to the
+   card in the regular `Show matches` flow.
 
 Only `Use this demo filter` writes the temporary filter to the user record.
-`How matching works` is an optional explanation after the result; model-eval
+The walkthrough shows one example card; the regular flow can return up to
+three. Tour actions arrive in a separate follow-up message, so they do not
+change the product card itself. `How matching works` is optional; model-eval
 evidence and prototype limits live in the public case study instead of being
 duplicated inside the bot.
 
@@ -122,7 +126,8 @@ The persistent chat keyboard keeps the main story visible:
 ```
 
 Filtered requests return at most three cards, keeping the Telegram demo short
-and scannable.
+and scannable. An empty result names the limited synthetic catalog boundary; it
+is not presented as evidence about the live Berlin housing market.
 
 The Telegram command menu publishes `/start`, `/filter`, `/matches`, `/help`,
 and `/delete`. `/delete` (data removal) is also available as a `🗑 Delete my
