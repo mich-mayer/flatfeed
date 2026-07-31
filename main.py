@@ -1384,12 +1384,8 @@ async def send_match_to_chat(
     chat_id: int,
     match: ListingMatch,
     reply_markup: Optional[InlineKeyboardMarkup] = None,
-    text_prefix: str = "",
 ) -> None:
-    # text_prefix lets the tour frame the card inside the same message (one
-    # tap = one message); the card contract itself (field order, labels,
-    # grouping) stays byte-identical below the prefix.
-    text = text_prefix + format_match_message(match)
+    text = format_match_message(match)
     photo_path = _local_listing_photo_path(match.image_url)
     if photo_path is not None:
         try:
@@ -1450,7 +1446,8 @@ async def send_active_filtered_matches(message: Message, bot: Bot, *, user_id: i
 
     if not matches:
         await message.answer(
-            "There are no active listings matching your filter right now.\n\n"
+            "The limited synthetic demo catalog has no active listing matching "
+            "this filter. This does not describe the live Berlin housing market.\n\n"
             "Try loosening the filter, or run the temporary demo filter.",
             reply_markup=_no_matches_keyboard(),
         )
@@ -1741,25 +1738,27 @@ async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
         )
         return
 
-    reasons_label = (
-        " · ".join(tour_match.reasons) if tour_match.reasons else "all four criteria match"
-    )
-    plural = "s" if match_count != 1 else ""
-    step_text = (
-        "<b>Demo 2/2 · Matching result</b>\n\n"
-        "FlatFeed applied four fixed matching rules to its synthetic catalog. This "
-        f"card is 1 of {match_count} matching listing{plural}. Why it matched: "
-        f"{reasons_label}.\n\n"
-        "The listing summary also adds estimated walking times to the nearest "
-        "S-Bahn and U-Bahn stations.\n\n"
+    match_label = "match" if match_count == 1 else "matches"
+    reason_lines = "\n".join(
+        f"• {escape(reason)}" for reason in tour_match.reasons
+    ) or "• All four filter criteria match"
+    await callback.message.answer(
+        "<b>Demo 2/2 · Why this matched</b>\n\n"
+        "FlatFeed applied four fixed rules to the temporary filter. "
+        f"It found {match_count} active {match_label} in the synthetic demo catalog.\n\n"
+        f"{reason_lines}\n\n"
+        "The walkthrough shows one example card below. In the regular flow, "
+        "Show matches can return up to three active listings."
     )
 
     await send_match_to_chat(
         bot,
         chat_id=callback.message.chat.id,
         match=tour_match,
+    )
+    await callback.message.answer(
+        "Choose what to do next.",
         reply_markup=_tour_result_keyboard(),
-        text_prefix=step_text,
     )
 
 
