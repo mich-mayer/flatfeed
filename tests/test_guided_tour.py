@@ -7,14 +7,8 @@ from sqlalchemy import create_engine, select, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from flatfeed.ai_qa import (
-    AI_QA_FEEDBACK_PARSER_CORRECT,
-    AI_QA_FEEDBACK_PARSER_ERROR,
-    AI_QA_FEEDBACK_UNSURE,
-)
-from flatfeed.db.models import AIQAReview, Base, Listing, User
+from flatfeed.db.models import Base, Listing, User
 from synthetic.generator import SYNTHETIC_BASE_URL
-from synthetic.golden_set import load_golden_set
 
 import main as M
 
@@ -319,81 +313,6 @@ class TourCandidateMatchesTests(unittest.TestCase):
         self.assertTrue(matches[0].reasons)
 
 
-class TourEphemeralTriageTests(unittest.IsolatedAsyncioTestCase):
-    """The core Variant-B guarantee: nothing a tour visitor taps is persisted."""
-
-    def setUp(self) -> None:
-        # The handlers under test call asyncio.to_thread(...), which runs the
-        # query on a different thread. A plain sqlite:///:memory: engine
-        # hands that thread a brand-new, empty database, so this needs
-        # StaticPool (one shared connection) + check_same_thread=False.
-        engine = _in_memory_engine()
-        Base.metadata.create_all(engine)
-        self.test_session = sessionmaker(bind=engine, expire_on_commit=False, future=True)
-        self.addCleanup(engine.dispose)
-
-        with self.test_session() as session:
-            session.add(
-                _make_listing(
-                    suffix="tour-fixture",
-                    rooms=2,
-                    district="Lichtenberg",
-                    raw_text="WBS 100-140 erforderlich. Kaltmiete: 512,40 Euro.",
-                    rent_kalt=512,
-                    first_seen_at=datetime(2026, 1, 1),
-                )
-            )
-            session.commit()
-
-    def _review_count(self) -> int:
-        with self.test_session() as session:
-            return len(list(session.scalars(select(AIQAReview))))
-
-    async def test_inject_then_all_three_triage_outcomes_write_zero_reviews(self) -> None:
-        with patch("main.SessionLocal", self.test_session):
-            self.assertEqual(self._review_count(), 0)
-
-            inject_callback = _FakeCallback("tour:inject")
-            await M._send_tour_inject(inject_callback)
-            self.assertEqual(self._review_count(), 0)
-
-            # Exactly one message: the fault note, the alert, and the triage
-            # keyboard all land together, so a single button tap produces a
-            # single new message (no scroll-away avalanche in the client).
-            self.assertEqual(len(inject_callback.message.answered), 1)
-            alert_text, alert_markup = inject_callback.message.answered[-1]
-            self.assertIn("Simulated parser fault", alert_text)
-            self.assertIn("AI QA alert", alert_text)
-            # Cost and confidence read as production/model-calibrated
-            # numbers; the tour must not imply either.
-            self.assertNotIn("Check cost", alert_text)
-            self.assertNotIn("AI confidence", alert_text)
-            triage_labels = [
-                button.text for row in alert_markup.inline_keyboard for button in row
-            ]
-            self.assertEqual(triage_labels, ["Parser error", "Parser correct", "Borderline / unsure"])
-
-            for status in (
-                AI_QA_FEEDBACK_PARSER_ERROR,
-                AI_QA_FEEDBACK_PARSER_CORRECT,
-                AI_QA_FEEDBACK_UNSURE,
-            ):
-                feedback_callback = _FakeCallback(f"tour_fb:{status}")
-                await M._send_tour_feedback_response(feedback_callback, status)
-                self.assertEqual(self._review_count(), 0)
-                # The tour must not grade the visitor's choice — every label
-                # gets the same neutral, fact-revealing response.
-                response_text = feedback_callback.message.answered[-1][0]
-                self.assertIn("Recorded for this demo only", response_text)
-                self.assertIn("nothing you tap is stored", response_text)
-                self.assertIn(
-                    "<b>Parser error</b> is the label an admin would confirm",
-                    response_text,
-                )
-                self.assertNotIn("Correct —", response_text)
-                self.assertNotIn("Noted.", response_text)
-
-
 class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
     """Each tour step should land as one new message, not several — a burst
     of messages pushes the Telegram client's scroll position to the bottom
@@ -441,7 +360,7 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(len(callback.message.answered), 1)
         text, markup = callback.message.answered[0]
-        self.assertIn("Step 1/3", text)
+        self.assertIn("Demo 1/2", text)
         self.assertIn("<b>WBS:</b> 140", text)
         self.assertIn("<b>District:</b> Lichtenberg", text)
         self.assertIn("temporary", text)
@@ -469,19 +388,25 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
             await M._send_tour_screen_2(callback, bot)
 
         # One tap = one message: the step framing, the "1 of N" result, and
-        # the Next button all ride in the card's own caption.
+        # the result actions all ride in the card's own caption.
         self.assertEqual(len(callback.message.answered), 0)
         self.assertEqual(len(bot.sent_messages), 1)
         card_message = bot.sent_messages[0]
-        self.assertIn("Step 2/3", card_message["text"])
+        self.assertIn("Demo 2/2", card_message["text"])
         self.assertIn("1 of 2 matching listings", card_message["text"])
         self.assertIn("Why it matched", card_message["text"])
         self.assertIn("District:", card_message["text"])
         keyboard = card_message["reply_markup"].inline_keyboard
-        self.assertEqual(keyboard[0][0].text, "See what is proven")
-        self.assertEqual(keyboard[0][0].callback_data, "tour:5")
-        self.assertEqual(keyboard[1][0].text, "How matching works")
-        self.assertEqual(keyboard[1][0].callback_data, "tour:3")
+        button_texts = [button.text for row in keyboard for button in row]
+        self.assertEqual(
+            button_texts,
+            [
+                "Use this demo filter",
+                "Set up my own filter",
+                "How matching works",
+                "Read the case study",
+            ],
+        )
 
     async def test_screen_3_explains_the_pipeline_and_privacy(self) -> None:
         callback = _FakeCallback("tour:3")
@@ -494,42 +419,9 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         for word in ("Collect:", "Normalize:", "Enrich:", "Match:", "Deliver:"):
             self.assertIn(word, text)
         self.assertIn("/delete", text)
-        next_button = markup.inline_keyboard[0][0]
-        self.assertEqual(next_button.text, "See what is proven")
-        self.assertEqual(next_button.callback_data, "tour:5")
-
-    async def test_screen_4_introduces_the_ai_layer(self) -> None:
-        callback = _FakeCallback("tour:4")
-
-        await M._send_tour_screen_4(callback)
-
-        self.assertEqual(len(callback.message.answered), 1)
-        text, markup = callback.message.answered[0]
-        self.assertIn("Optional · QA check", text)
-        self.assertIn("cannot change a listing, matching rule or renter-facing card", text)
-        next_button = markup.inline_keyboard[0][0]
-        self.assertEqual(next_button.text, "Simulate a parser fault")
-        self.assertEqual(next_button.callback_data, "tour:inject")
-
-    async def test_screen_5_shows_evidence_not_a_funnel(self) -> None:
-        callback = _FakeCallback("tour:5")
-
-        await M._send_tour_screen_5(callback)
-
-        self.assertEqual(len(callback.message.answered), 1)
-        text, markup = callback.message.answered[0]
-        self.assertIn("Step 3/3", text)
-        self.assertIn("Implemented", text)
-        self.assertIn("Measured on synthetic data", text)
-        self.assertIn("Not validated", text)
-        self.assertIn(f"{len(load_golden_set())} authored regression cases", text)
-        self.assertNotIn("Checked by AI", text)
-        self.assertNotIn("Flagged as risky", text)
-
         button_texts = [b.text for row in markup.inline_keyboard for b in row]
         self.assertIn("Use this demo filter", button_texts)
         self.assertIn("Set up my own filter", button_texts)
-        self.assertIn("Optional: try the QA check", button_texts)
         self.assertIn("Read the case study", button_texts)
 
 
@@ -593,7 +485,8 @@ class TourEntryPointTests(unittest.IsolatedAsyncioTestCase):
         tour_buttons = [
             button.text for row in pitch_markup.inline_keyboard for button in row
         ]
-        self.assertEqual(tour_buttons, ["Start the tour", "Skip the tour"])
+        self.assertIn("Two steps, no typing", pitch_text)
+        self.assertEqual(tour_buttons, ["Try the demo", "Set up my filter"])
 
 
 if __name__ == "__main__":

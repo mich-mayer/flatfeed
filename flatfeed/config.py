@@ -58,15 +58,11 @@ class Settings:
     openai_input_price_per_1m: float
     openai_output_price_per_1m: float
     telegram_bot_token: Optional[str]
-    dashboard_url: Optional[str]
-    dashboard_port: int
-    dashboard_autostart: bool
     bot_scan_interval_seconds: int
     bot_scan_min_seconds: int
     bot_scan_max_seconds: int
     bot_background_enabled: bool
     bot_notification_limit_per_user: int
-    manual_refresh_timeout_seconds: int
     admin_telegram_user_ids: Tuple[int, ...]
     source_failure_alert_threshold: int
     source_alert_cooldown_seconds: int
@@ -78,7 +74,6 @@ class Settings:
     ai_qa_alert_risk_threshold: int
     ai_qa_daily_max_cost_usd: float
     ai_qa_max_listing_chars: int
-    ai_qa_backfill_batch_size: int
     ai_qa_concurrency: int
 
 
@@ -109,9 +104,6 @@ def get_settings() -> Settings:
             4.50,
         ),
         telegram_bot_token=os.getenv("TELEGRAM_BOT_TOKEN"),
-        dashboard_url=(os.getenv("DASHBOARD_URL") or "").strip() or None,
-        dashboard_port=_as_int(os.getenv("DASHBOARD_PORT"), 8502),
-        dashboard_autostart=_as_bool(os.getenv("DASHBOARD_AUTOSTART"), True),
         bot_scan_interval_seconds=bot_scan_interval_seconds,
         bot_scan_min_seconds=bot_scan_min_seconds,
         bot_scan_max_seconds=bot_scan_max_seconds,
@@ -119,10 +111,6 @@ def get_settings() -> Settings:
         bot_notification_limit_per_user=_as_int(
             os.getenv("BOT_NOTIFICATION_LIMIT_PER_USER"),
             10,
-        ),
-        manual_refresh_timeout_seconds=_as_int(
-            os.getenv("MANUAL_REFRESH_TIMEOUT_SECONDS"),
-            120,
         ),
         admin_telegram_user_ids=_as_int_csv(os.getenv("ADMIN_TELEGRAM_USER_IDS")),
         source_failure_alert_threshold=_as_int(
@@ -147,6 +135,5 @@ def get_settings() -> Settings:
             0.25,
         ),
         ai_qa_max_listing_chars=_as_int(os.getenv("AI_QA_MAX_LISTING_CHARS"), 6000),
-        ai_qa_backfill_batch_size=_as_int(os.getenv("AI_QA_BACKFILL_BATCH_SIZE"), 10),
         ai_qa_concurrency=max(1, _as_int(os.getenv("AI_QA_CONCURRENCY"), 3)),
     )

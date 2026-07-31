@@ -11,9 +11,9 @@ reliability controls, not live housing coverage or renter outcomes.
 - Deterministic parsing and matching with fail-closed unknown values.
 - Consistent Telegram listing summaries with estimated walks to the nearest
   S- and U-Bahn stations.
+- Two-step guided demo that runs the real matching and activity-check path
+  without saving the temporary filter.
 - 15 authored synthetic cases currently pass the parser regression check.
-- Optional admin QA workflow; the public demo uses a deterministic mock and QA
-  cannot mutate listings or matching rules.
 
 No real source scraping, image reuploading, Google Maps, Photon geocoding, or
 server deployment scripts are part of the current demo product. The collection
@@ -62,8 +62,6 @@ duplicated across them.
 │   ├── matching.py
 │   ├── parser.py
 │   ├── wbs_rules.py
-│   ├── dashboard/
-│   │   └── streamlit_app.py
 │   ├── db/
 │   ├── ingestion/
 │   │   └── synthetic.py
@@ -86,9 +84,7 @@ Set at least:
 
 ```env
 TELEGRAM_BOT_TOKEN=123456:your-test-bot-token
-ADMIN_TELEGRAM_USER_IDS=123456789
 BOT_BACKGROUND_ENABLED=false
-AI_QA_PROVIDER=mock
 ```
 
 Initialize the database:
@@ -104,34 +100,29 @@ Run the bot:
 ENV_FILE=.env.local python main.py
 ```
 
-Run the dashboard:
-
-```bash
-ENV_FILE=.env.local streamlit run flatfeed/dashboard/streamlit_app.py
-```
-
 ## Guided Demo
 
 Send `/start`, or open `https://t.me/FlatFeedBot?start=tour` directly. The core
-tour has three steps:
+demo has two steps:
 
 1. A four-field demo filter is shown without saving it.
 2. The same matching predicate as the main product path runs against the
    synthetic catalog and returns one standardized card with match reasons.
-3. The bot separates what is implemented and regression-checked from what has
-   not been validated with live sources or renters.
 
-Only `Use this demo filter` writes the temporary filter to the user record. The
-AI QA fault simulation remains available as an optional branch after the core
-tour; it uses a deterministic mock and stores no tour feedback.
+Only `Use this demo filter` writes the temporary filter to the user record.
+`How matching works` is an optional explanation after the result; model-eval
+evidence and prototype limits live in the public case study instead of being
+duplicated inside the bot.
 
 The persistent chat keyboard keeps the main story visible:
 
 ```text
 🔎 Show matches
-⚙ Filter    📂 All listings
-🛠 Admin
+⚙ Filter
 ```
+
+Filtered requests return at most three cards, keeping the Telegram demo short
+and scannable.
 
 The Telegram command menu publishes `/start`, `/filter`, `/matches`, `/help`,
 and `/delete`. `/delete` (data removal) is also available as a `🗑 Delete my
@@ -179,12 +170,9 @@ See `.env.example` for the full list. The main product-specific settings are:
 
 ```env
 DATABASE_URL=sqlite:///./data/flatfeed.db
-AI_QA_PROVIDER=mock
 BOT_BACKGROUND_ENABLED=false
-DASHBOARD_URL=
 SYNTHETIC_SEED=20260623
 SYNTHETIC_LISTING_COUNT=15
-MANUAL_REFRESH_TIMEOUT_SECONDS=120
 SOURCE_FAILURE_ALERT_THRESHOLD=3
 SOURCE_ALERT_COOLDOWN_SECONDS=3600
 ```
@@ -214,7 +202,8 @@ git diff --check
 - WBS remains a legitimate domain term: do not remove WBS parsing, labels, or
   matching semantics.
 - Synthetic case tags and ground truth must stay out of parser/AI QA prompts.
-- AI QA findings are admin-only and require human feedback.
+- Optional runtime AI QA findings go only to configured admins and require
+  human feedback; the public bot has no QA controls or metrics.
 - User-facing listing cards are formatted in `flatfeed/matching.py`.
 - Listing photos are third-party Wikimedia Commons demo assets with separate
   attribution and license details in `assets/listing_photos/LICENSES.md`. The

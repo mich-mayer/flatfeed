@@ -36,31 +36,10 @@ AI_QA_FEEDBACK_PARSER_ERROR = "parser_error"
 AI_QA_FEEDBACK_PARSER_CORRECT = "parser_correct"
 AI_QA_FEEDBACK_UNSURE = "unsure"
 
-AI_QA_TRIGGER_INITIAL_BACKFILL = "initial_backfill"
 AI_QA_TRIGGER_NEW_LISTING = "new_listing"
-AI_QA_TRIGGER_DEMO_FAULT = "demo_fault_injection"
-AI_QA_TRIGGER_TOUR_FAULT = "tour_fault_injection"
 
 AI_QA_ENDPOINT_TYPE = "ai_qa"
 CURRENT_AI_QA_PROMPT_VERSION = "v8"
-AI_QA_DEMO_FAULT_TYPES = ("wbs", "rooms", "rent_kalt", "rent_warm")
-
-# The bot's tour and the dashboard both cite the same curated AI QA history
-# (current prompt version only, never live visitor taps) and must agree on
-# whether it came from a real model run. Flip this to True after running
-# scripts/build_qa_history.py against a real provider, in the same change
-# that flips AI_QA_HISTORY_SOURCE_CAPTION below.
-AI_QA_HISTORY_IS_REAL_MODEL_RUN = False
-AI_QA_HISTORY_SOURCE_CAPTION = (
-    "This history comes from the deterministic mock QA provider — the "
-    "structure is real, model cost is zero. A real GPT-5.4-mini run over "
-    "the full catalog is the next step."
-    if not AI_QA_HISTORY_IS_REAL_MODEL_RUN
-    else (
-        "This history comes from a real GPT-5.4-mini run over the "
-        "synthetic catalog, with human triage of flagged reviews."
-    )
-)
 
 AI_QA_SYSTEM_MESSAGE = (
     "You are an AI QA validator for a Berlin rental listing parser. "
@@ -159,17 +138,6 @@ class _AIQACallResult:
     total_cost_usd: float
 
 
-@dataclass(frozen=True)
-class AIQADemoResult:
-    listing: Listing
-    parser_snapshot: Dict[str, Any]
-    ai_result: Dict[str, Any]
-    prompt_tokens: int
-    completion_tokens: int
-    total_cost_usd: float
-    fault: Dict[str, Any]
-
-
 def _safe_usage_value(usage: Any, field_name: str) -> int:
     value = getattr(usage, field_name, 0) if usage is not None else 0
     return int(value or 0)
@@ -259,88 +227,6 @@ def _values_match(left: Any, right: Any, *, tolerance: float = 0.01) -> bool:
     if left_number is not None and right_number is not None:
         return abs(left_number - right_number) <= tolerance
     return str(left or "").strip().lower() == str(right or "").strip().lower()
-
-
-def _bump_numeric_value(value: Any, *, delta: float) -> float:
-    number = _numeric_value(value)
-    if number is None:
-        return delta
-    bumped = number + delta
-    if bumped <= 0:
-        bumped = number + abs(delta)
-    return bumped
-
-
-def _format_demo_rent(value: Any) -> str:
-    bumped = round(_bump_numeric_value(value, delta=111), 2)
-    if float(bumped).is_integer():
-        return f"{int(bumped)} EUR"
-    return f"{bumped:.2f}".replace(".", ",") + " EUR"
-
-
-def build_demo_fault_parser_snapshot(
-    listing: Listing,
-    *,
-    fault_type: str = "auto",
-) -> tuple[Dict[str, Any], Dict[str, Any]]:
-    """Return a parser snapshot with one explicit demo-only mistake injected."""
-    snapshot = build_parser_snapshot(listing)
-    requested = (fault_type or "auto").strip().lower()
-    candidates = AI_QA_DEMO_FAULT_TYPES if requested == "auto" else (requested,)
-    applied = None
-
-    for candidate in candidates:
-        if candidate not in AI_QA_DEMO_FAULT_TYPES:
-            continue
-        if candidate == "wbs":
-            original = snapshot.get("display_wbs")
-            injected = "No WBS required" if not _is_no_wbs_display(original) else "100, 140"
-            snapshot["display_wbs"] = injected
-            snapshot["required_wbs"] = None if injected == "No WBS required" else "WBS 100-140"
-        elif candidate == "rooms":
-            original = snapshot.get("rooms")
-            if original is None:
-                continue
-            injected = _bump_numeric_value(original, delta=1)
-            if float(injected).is_integer():
-                injected = int(injected)
-            snapshot["rooms"] = injected
-        elif candidate in {"rent_kalt", "rent_warm"}:
-            original = snapshot.get(candidate)
-            if original is None:
-                continue
-            injected = _format_demo_rent(original)
-            snapshot[candidate] = injected
-        else:
-            continue
-
-        applied = {
-            "field": candidate,
-            "original_value": original,
-            "injected_value": injected,
-        }
-        break
-
-    if applied is None:
-        original = snapshot.get("display_wbs")
-        injected = "100, 140" if _is_no_wbs_display(original) else "No WBS required"
-        snapshot["display_wbs"] = injected
-        snapshot["required_wbs"] = None if injected == "No WBS required" else "WBS 100-140"
-        applied = {
-            "field": "wbs",
-            "original_value": original,
-            "injected_value": injected,
-        }
-
-    fault = {
-        "demo_fault_injection": True,
-        "fault_type": applied["field"],
-        "field": applied["field"],
-        "original_value": applied["original_value"],
-        "injected_value": applied["injected_value"],
-        "note": "Synthetic demo only. The listing and saved parser output were not changed.",
-    }
-    return snapshot, fault
 
 
 def _user_message(listing: Listing, parser_snapshot: Dict[str, Any]) -> str:
@@ -712,50 +598,6 @@ def run_ai_qa_check_for_listing(
             parser_snapshot=parser_snapshot,
         )
     raise ValueError(f"Unsupported AI_QA_PROVIDER={qa_provider!r}.")
-
-
-def run_ai_qa_demo_check_for_listing(
-    listing: Listing,
-    *,
-    provider: Optional[str] = None,
-    fault_type: str = "auto",
-) -> AIQADemoResult:
-    settings = get_settings()
-    qa_provider = (provider or settings.ai_qa_provider or "mock").strip().lower()
-    parser_snapshot, fault = build_demo_fault_parser_snapshot(
-        listing,
-        fault_type=fault_type,
-    )
-    if qa_provider == "mock":
-        ai_result, prompt_tokens, completion_tokens, total_cost_usd = (
-            _mock_ai_qa_result(
-                listing=listing,
-                parser_snapshot=parser_snapshot,
-                alert_threshold=settings.ai_qa_alert_risk_threshold,
-            ),
-            0,
-            0,
-            0.0,
-        )
-    elif qa_provider == "openai":
-        ai_result, prompt_tokens, completion_tokens, total_cost_usd = _call_openai_ai_qa(
-            listing=listing,
-            parser_snapshot=parser_snapshot,
-        )
-    else:
-        raise ValueError(f"Unsupported AI_QA_PROVIDER={qa_provider!r}.")
-
-    ai_result = dict(ai_result)
-    ai_result["demo_fault_injection"] = fault
-    return AIQADemoResult(
-        listing=listing,
-        parser_snapshot=parser_snapshot,
-        ai_result=ai_result,
-        prompt_tokens=prompt_tokens,
-        completion_tokens=completion_tokens,
-        total_cost_usd=total_cost_usd,
-        fault=fault,
-    )
 
 
 def _call_configured_ai_qa(
