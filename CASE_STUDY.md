@@ -51,10 +51,9 @@ still verify complete eligibility and application details on the source page.
 ### Rules decide which listings appear
 
 Parsing and matching follow fixed rules, so the reason for each match can be
-traced to the saved filter. The repository also contains an optional admin QA
-workflow that can flag a suspected parsing error. The public demo uses a
-deterministic mock provider. QA findings cannot automatically change the
-listing or the match.
+traced to the saved filter. Separately, I evaluated a hosted model as an
+admin-only parser check. That experiment is not integrated into the Telegram
+runtime, and its findings cannot automatically change the listing or the match.
 
 ### One product flow across sources
 

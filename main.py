@@ -1,9 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import socket
-import subprocess
-import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from html import escape
@@ -37,24 +34,12 @@ from aiogram.types import (
 from sqlalchemy import delete, select
 
 from flatfeed.ai_qa import (
-    AIQADemoResult,
     AIQARunResult,
-    AIQAStatus,
-    AI_QA_DEMO_FAULT_TYPES,
-    AI_QA_FEEDBACK_PENDING,
     AI_QA_FEEDBACK_PARSER_CORRECT,
     AI_QA_FEEDBACK_PARSER_ERROR,
     AI_QA_FEEDBACK_UNSURE,
-    AI_QA_TRIGGER_DEMO_FAULT,
-    AI_QA_TRIGGER_INITIAL_BACKFILL,
-    AI_QA_TRIGGER_TOUR_FAULT,
     AI_QA_TRIGGER_NEW_LISTING,
-    CURRENT_AI_QA_PROMPT_VERSION,
-    build_demo_fault_parser_snapshot,
-    get_ai_qa_status,
-    load_flagged_ai_qa_reviews,
     load_ai_qa_reviews_for_alert,
-    run_ai_qa_demo_check_for_listing,
     run_ai_qa_for_unreviewed_active_listings,
     update_ai_qa_feedback,
 )
@@ -95,7 +80,6 @@ from flatfeed.monitoring import (
     record_ingestion_success,
 )
 from flatfeed.schemas import ListingConstraints, UserPreferences
-from synthetic.golden_set import load_golden_set
 
 
 logger = logging.getLogger(__name__)
@@ -103,27 +87,17 @@ router = Router()
 
 BTN_SETTINGS = "⚙ Filter"
 BTN_MATCHES = "🔎 Show matches"
-BTN_CATALOG = "📂 All listings"
-BTN_ADMIN = "🛠 Admin"
-BTN_DASHBOARD = "📊 Effectiveness dashboard"
 
 CASE_STUDY_URL = "https://mich-mayer.github.io/flatfeed/case-study.html"
 
-CURRENT_LISTINGS_LIMIT = 10
+CURRENT_LISTINGS_LIMIT = 3
 ACTIVE_LISTING_CANDIDATE_LIMIT = 120
 LIVE_CHECK_BATCH_SIZE = 8
 TELEGRAM_PHOTO_CAPTION_LIMIT = 1024
 PRIMARY_SOURCE_COMPANY = "FlatFeed Synthetic"
 ACTIVE_SOURCE_COMPANIES = ENABLED_SOURCE_COMPANIES
 SOURCE_TRIGGER_BACKGROUND = "background"
-SOURCE_TRIGGER_RANDOM_LISTINGS = "random_listings"
 SOURCE_TRIGGER_FILTERED_MATCHES = "filtered_matches"
-SOURCE_TRIGGER_ADMIN_REFRESH = "admin_refresh"
-SOURCE_TRIGGER_AI_QA_BACKFILL = "ai_qa_backfill"
-
-_manual_source_refresh_task: Optional[asyncio.Task[Any]] = None
-_manual_ai_qa_task: Optional[asyncio.Task[Any]] = None
-_dashboard_process: Optional[subprocess.Popen[Any]] = None
 
 
 @dataclass(frozen=True)
@@ -217,12 +191,9 @@ class FilterSetup(StatesGroup):
 
 
 def main_menu_keyboard() -> ReplyKeyboardMarkup:
-    # The admin panel is visible to every visitor as a demo view (individual
-    # admin actions inside stay gated by _is_admin_user); see DESIGN_CONTENT_SYSTEM.md §34.
     keyboard = [
         [KeyboardButton(text=BTN_MATCHES)],
-        [KeyboardButton(text=BTN_SETTINGS), KeyboardButton(text=BTN_CATALOG)],
-        [KeyboardButton(text=BTN_ADMIN)],
+        [KeyboardButton(text=BTN_SETTINGS)],
     ]
     return ReplyKeyboardMarkup(
         keyboard=keyboard,
@@ -366,19 +337,11 @@ def _delete_confirm_keyboard() -> InlineKeyboardMarkup:
     )
 
 
-def _qa_budget_confirm_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="Yes, run catalog QA", callback_data="settings:ai_qa_backfill_confirm")],
-            [InlineKeyboardButton(text="Cancel", callback_data="settings:admin_cancel")],
-        ]
-    )
-
-
 def _no_filter_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="Set up filter", callback_data="settings:filter")],
+            [InlineKeyboardButton(text="Try the demo", callback_data="tour:1")],
         ]
     )
 
@@ -387,7 +350,7 @@ def _no_matches_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="Edit filter", callback_data="settings:edit_menu")],
-            [InlineKeyboardButton(text="📂 All listings", callback_data="settings:catalog")],
+            [InlineKeyboardButton(text="Try the demo filter", callback_data="tour:1")],
         ]
     )
 
@@ -404,94 +367,6 @@ def _edit_filter_keyboard() -> InlineKeyboardMarkup:
                 InlineKeyboardButton(text="Rooms", callback_data="settings:edit:rooms"),
             ],
             [InlineKeyboardButton(text="Back to filter", callback_data="settings:back")],
-        ]
-    )
-
-
-def _dashboard_button() -> InlineKeyboardButton:
-    url = get_settings().dashboard_url
-    if url and url.lower().startswith(("http://", "https://")):
-        return InlineKeyboardButton(text=BTN_DASHBOARD, url=url)
-    return InlineKeyboardButton(text=BTN_DASHBOARD, callback_data="settings:dashboard")
-
-
-def _local_dashboard_url() -> str:
-    return f"http://127.0.0.1:{get_settings().dashboard_port}"
-
-
-def _dashboard_url() -> str:
-    configured_url = get_settings().dashboard_url
-    if configured_url and configured_url.lower().startswith(("http://", "https://")):
-        return configured_url
-    return _local_dashboard_url()
-
-
-def _is_tcp_port_open(*, host: str, port: int, timeout_seconds: float = 0.3) -> bool:
-    try:
-        with socket.create_connection((host, port), timeout=timeout_seconds):
-            return True
-    except OSError:
-        return False
-
-
-def _ensure_local_dashboard_running() -> bool:
-    global _dashboard_process
-
-    settings = get_settings()
-    port = settings.dashboard_port
-    if _is_tcp_port_open(host="127.0.0.1", port=port):
-        return True
-    if not settings.dashboard_autostart:
-        return False
-
-    env = os.environ.copy()
-    env.setdefault("ENV_FILE", os.getenv("ENV_FILE", ".env.local"))
-    env["HOME"] = str(PROJECT_ROOT)
-    command = [
-        sys.executable,
-        "-m",
-        "streamlit",
-        "run",
-        str(PROJECT_ROOT / "flatfeed" / "dashboard" / "streamlit_app.py"),
-        "--server.address",
-        "127.0.0.1",
-        "--server.port",
-        str(port),
-        "--server.headless",
-        "true",
-        "--browser.gatherUsageStats",
-        "false",
-    ]
-    _dashboard_process = subprocess.Popen(
-        command,
-        cwd=PROJECT_ROOT,
-        env=env,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    return _is_tcp_port_open(host="127.0.0.1", port=port, timeout_seconds=1.5)
-
-
-def _dashboard_link_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="Open dashboard", url=_dashboard_url())],
-        ]
-    )
-
-
-def _admin_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="Replay the tour", callback_data="tour:replay")],
-            [InlineKeyboardButton(text="Run QA demo", callback_data="settings:ai_qa_demo")],
-            [
-                InlineKeyboardButton(text="Review flagged issues", callback_data="settings:ai_qa_reports"),
-                InlineKeyboardButton(text="View QA metrics", callback_data="settings:ai_qa_status"),
-            ],
-            [_dashboard_button()],
-            [InlineKeyboardButton(text="Refresh catalog", callback_data="settings:admin_refresh")],
-            [InlineKeyboardButton(text="Run catalog QA", callback_data="settings:ai_qa_backfill")],
         ]
     )
 
@@ -520,14 +395,6 @@ def _display_wbs(value: Optional[str]) -> str:
 
 def _settings_card(preferences: Optional[UserPreferences]) -> str:
     settings = get_settings()
-    if settings.bot_scan_min_seconds == settings.bot_scan_max_seconds:
-        scan_label = f"every {round(settings.bot_scan_min_seconds / 60)} min"
-    else:
-        scan_label = (
-            f"every {round(settings.bot_scan_min_seconds / 60)}-"
-            f"{round(settings.bot_scan_max_seconds / 60)} min"
-        )
-
     if preferences is None:
         return (
             "<b>Your filter</b>\n\n"
@@ -536,13 +403,18 @@ def _settings_card(preferences: Optional[UserPreferences]) -> str:
         )
 
     rent = f"up to {preferences.max_rent} EUR" if preferences.max_rent is not None else "no limit"
+    delivery_label = (
+        "<b>Notifications:</b> ON"
+        if settings.bot_background_enabled
+        else "<b>Demo mode:</b> matches on demand"
+    )
     return (
         "<b>Your filter</b>\n\n"
         f"<b>WBS:</b> {_display_wbs(preferences.wbs_type)}\n"
         f"<b>District:</b> {_display(preferences.location, fallback='any district')}\n"
         f"<b>Kaltmiete:</b> {rent}\n"
         f"<b>Rooms:</b> {_display_rooms(preferences.rooms)}\n\n"
-        "<b>Notifications:</b> ON"
+        f"{delivery_label}"
     )
 
 
@@ -578,14 +450,20 @@ def _preferences_from_state_data(data: Dict[str, Any]) -> UserPreferences:
 
 def _filter_summary(preferences: UserPreferences) -> str:
     rent = f"up to {preferences.max_rent} EUR" if preferences.max_rent is not None else "no limit"
+    if get_settings().bot_background_enabled:
+        next_step = (
+            "I will send new matching listings here automatically, each one only once. "
+            "To check the catalog right now, tap Show matches."
+        )
+    else:
+        next_step = "Tap Show matches to check the synthetic catalog now."
     return (
         "Filter saved.\n\n"
         f"<b>WBS:</b> {_display_wbs(preferences.wbs_type)}\n"
         f"<b>District:</b> {_display(preferences.location, fallback='any district')}\n"
         f"<b>Kaltmiete:</b> {rent}\n"
         f"<b>Rooms:</b> {_display_rooms(preferences.rooms)}\n\n"
-        "I will send new matching listings here automatically, each one only once. "
-        "To check the catalog right now, tap Show matches."
+        f"{next_step}"
     )
 
 
@@ -739,43 +617,6 @@ def load_user_matches(*, user_id: int, limit: int = 10) -> List[ListingMatch]:
         return matches
 
 
-RU_MONTHS_GENITIVE = (
-    "",
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-)
-
-
-def _format_berlin_timestamp(value: Optional[datetime]) -> str:
-    if value is None:
-        return "no data"
-    timestamp = value
-    if timestamp.tzinfo is None:
-        timestamp = timestamp.replace(tzinfo=timezone.utc)
-    berlin_time = timestamp.astimezone(ZoneInfo("Europe/Berlin"))
-    month_name = RU_MONTHS_GENITIVE[berlin_time.month]
-    return f"{berlin_time:%H:%M}, {berlin_time.day} {month_name} {berlin_time.year}"
-
-
-def _latest_completed_sources_sync_label() -> str:
-    timestamps = [
-        load_ingestion_health_summary(source_company=source_company).latest_finished_at
-        for source_company in ACTIVE_SOURCE_COMPANIES
-    ]
-    completed = [value for value in timestamps if value is not None]
-    return _format_berlin_timestamp(max(completed) if completed else None)
-
-
 def _update_listing_activity_from_live_check(
     *,
     active_listing_ids: Iterable[int] = (),
@@ -872,27 +713,6 @@ def load_active_filtered_match_candidates(
             require_parsed_status=False,
             active_only=True,
         )
-
-
-def load_random_listing_candidates(
-    *,
-    candidate_limit: int = ACTIVE_LISTING_CANDIDATE_LIMIT,
-) -> List[ListingMatch]:
-    with SessionLocal() as session:
-        listings = list(
-            session.scalars(
-                select(Listing)
-                .where(Listing.source_company.in_(ACTIVE_SOURCE_COMPANIES))
-                .where(Listing.source_active.is_(True))
-                .where(Listing.status != REMOVED_STATUS)
-                .order_by(Listing.first_seen_at.desc(), Listing.listing_id.desc())
-            )
-        )
-        random.shuffle(listings)
-        return [
-            _listing_match_from_model(listing)
-            for listing in listings[:candidate_limit]
-        ]
 
 
 async def _check_match_source_active(
@@ -1036,14 +856,6 @@ def _risk_label(risk_score: int) -> str:
     if risk_score >= 75:
         return "high"
     if risk_score >= 41:
-        return "medium"
-    return "low"
-
-
-def _confidence_label(confidence: float) -> str:
-    if confidence >= 0.75:
-        return "high"
-    if confidence >= 0.5:
         return "medium"
     return "low"
 
@@ -1350,31 +1162,6 @@ def _ai_qa_feedback_keyboard(review_id: int) -> InlineKeyboardMarkup:
     )
 
 
-def _ai_qa_demo_feedback_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Parser error",
-                    callback_data=f"aiqa:demo_feedback:{AI_QA_FEEDBACK_PARSER_ERROR}",
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text="Parser correct",
-                    callback_data=f"aiqa:demo_feedback:{AI_QA_FEEDBACK_PARSER_CORRECT}",
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text="Borderline / unsure",
-                    callback_data=f"aiqa:demo_feedback:{AI_QA_FEEDBACK_UNSURE}",
-                ),
-            ],
-        ]
-    )
-
-
 def _format_ai_qa_review(
     review: AIQAReview,
     *,
@@ -1482,330 +1269,9 @@ def _run_ai_qa_for_urls(
         return result
 
 
-def run_ai_qa_backfill() -> AIQARunResult:
-    settings = get_settings()
-    results: List[AIQARunResult] = []
-    remaining_limit = settings.ai_qa_backfill_batch_size
-    with SessionLocal() as session:
-        total_unreviewed_before = sum(
-            get_ai_qa_status(
-                session,
-                source_company=source_company,
-                removed_status=REMOVED_STATUS,
-            ).unreviewed_active_count
-            for source_company in ACTIVE_SOURCE_COMPANIES
-        )
-        for source_company in ACTIVE_SOURCE_COMPANIES:
-            if remaining_limit <= 0:
-                break
-            result = run_ai_qa_for_unreviewed_active_listings(
-                session,
-                source_company=source_company,
-                removed_status=REMOVED_STATUS,
-                trigger_type=AI_QA_TRIGGER_INITIAL_BACKFILL,
-                limit=remaining_limit,
-            )
-            results.append(result)
-            remaining_limit -= result.checked_count
-            if result.skipped_reason is not None:
-                break
-        remaining_unreviewed_count = sum(
-            get_ai_qa_status(
-                session,
-                source_company=source_company,
-                removed_status=REMOVED_STATUS,
-            ).unreviewed_active_count
-            for source_company in ACTIVE_SOURCE_COMPANIES
-        )
-        session.commit()
-
-    if not results:
-        return AIQARunResult(checked_count=0, alert_review_ids=())
-    return AIQARunResult(
-        checked_count=sum(result.checked_count for result in results),
-        alert_review_ids=tuple(
-            review_id
-            for result in results
-            for review_id in result.alert_review_ids
-        ),
-        skipped_reason=next(
-            (result.skipped_reason for result in results if result.skipped_reason),
-            None,
-        ),
-        stop_reason=results[-1].stop_reason,
-        total_unreviewed_before=total_unreviewed_before,
-        remaining_unreviewed_count=remaining_unreviewed_count,
-        total_cost_usd=sum(result.total_cost_usd for result in results),
-        limit_reached=any(result.limit_reached for result in results),
-    )
-
-
-# Human-readable labels for AIQARunResult stop/skip reason codes.
-AI_QA_REASON_LABELS = {
-    "completed": "completed",
-    "no_urls": "no active listings to check",
-    "disabled": "AI QA is disabled in settings",
-    "missing_openai_api_key": "OpenAI API key is not configured",
-    "daily_cost_limit_reached": "daily cost limit reached",
-    "batch_limit_reached": "batch limit reached",
-    "remaining_unreviewed": "batch finished; unreviewed listings remain",
-}
-
-
-def _ai_qa_reason_label(reason: Optional[str]) -> str:
-    if not reason:
-        return "none"
-    return AI_QA_REASON_LABELS.get(reason, reason)
-
-
-def _format_ai_qa_backfill_result(
-    result: AIQARunResult,
-    *,
-    status: Optional[AIQAStatus] = None,
-) -> str:
-    text = (
-        "<b>Catalog QA completed.</b>\n\n"
-        f"AI QA version: <b>{CURRENT_AI_QA_PROMPT_VERSION}</b>\n"
-        f"Unreviewed before this run: {result.total_unreviewed_before}\n"
-        f"Listings checked: {result.checked_count}\n"
-        f"Still unreviewed: {result.remaining_unreviewed_count}\n"
-        f"Flagged reports: {len(result.alert_review_ids)}\n"
-        f"Stopped because: {escape(_ai_qa_reason_label(result.stop_reason))}\n"
-        f"Cost: ${result.total_cost_usd:.6f}\n"
-        f"Skipped: {escape(_ai_qa_reason_label(result.skipped_reason))}"
-    )
-    if status is None:
-        return text
-    return (
-        f"{text}\n\n"
-        "<b>Current AI QA coverage:</b>\n"
-        f"Active listings: {status.active_listings_count}\n"
-        f"Reviewed by current AI QA version: {status.reviewed_active_count}\n"
-        f"Still to review: {status.unreviewed_active_count}"
-    )
-
-
-def _format_ai_qa_status(status: AIQAStatus) -> str:
-    enabled_label = "yes" if status.enabled else "no"
-    provider = get_settings().ai_qa_provider
-    latest_review = _format_berlin_timestamp(status.latest_review_at)
-    cost_limit = (
-        f"${status.cost_today_usd:.6f}/${status.daily_max_cost_usd:.2f}"
-        if status.daily_max_cost_usd
-        else f"${status.cost_today_usd:.6f}"
-    )
-    return (
-        "<b>AI QA status</b>\n\n"
-        f"AI QA version: <b>{escape(status.qa_prompt_version)}</b>\n"
-        f"Provider: {escape(provider)}\n"
-        f"Model: {escape(status.model)}\n"
-        f"AI QA enabled: {enabled_label}\n\n"
-        f"Active listings: <b>{status.active_listings_count}</b>\n"
-        f"Reviewed by current AI QA version: <b>{status.reviewed_active_count}</b>\n"
-        f"Still to review: <b>{status.unreviewed_active_count}</b>\n\n"
-        f"Reviews in current version: {status.total_reviews_count}\n"
-        f"Flagged reports pending review: {status.pending_alerts_count}\n"
-        f"Confirmed errors: {status.parser_error_feedback_count}\n"
-        f"False alarms: {status.parser_correct_feedback_count}\n"
-        f"Borderline / unsure: {status.unsure_feedback_count}\n\n"
-        f"Checks today: {status.checks_today}\n"
-        f"Cost today: {cost_limit}\n"
-        f"Latest review: {latest_review}"
-    )
-
-
-def load_ai_qa_status() -> AIQAStatus:
-    with SessionLocal() as session:
-        statuses = [
-            get_ai_qa_status(
-                session,
-                source_company=source_company,
-                removed_status=REMOVED_STATUS,
-            )
-            for source_company in ACTIVE_SOURCE_COMPANIES
-        ]
-    first = statuses[0]
-    return AIQAStatus(
-        qa_prompt_version=first.qa_prompt_version,
-        enabled=first.enabled,
-        model=first.model,
-        daily_max_cost_usd=first.daily_max_cost_usd,
-        checks_today=first.checks_today,
-        cost_today_usd=first.cost_today_usd,
-        active_listings_count=sum(status.active_listings_count for status in statuses),
-        reviewed_active_count=sum(status.reviewed_active_count for status in statuses),
-        unreviewed_active_count=sum(status.unreviewed_active_count for status in statuses),
-        pending_alerts_count=first.pending_alerts_count,
-        parser_error_feedback_count=first.parser_error_feedback_count,
-        parser_correct_feedback_count=first.parser_correct_feedback_count,
-        unsure_feedback_count=first.unsure_feedback_count,
-        total_reviews_count=first.total_reviews_count,
-        latest_review_at=first.latest_review_at,
-    )
-
-
-def _ephemeral_ai_qa_review_from_result(
-    listing: Listing,
-    result: AIQADemoResult,
-    *,
-    trigger_type: str,
-) -> AIQAReview:
-    """Build an AIQAReview-shaped object for display only.
-
-    This object is never added to a session or committed — reusing the
-    review_id=0 in-memory object lets demo/tour call sites render findings
-    with the exact same formatter (_format_ai_qa_review) a real admin alert
-    uses, without writing anything to ai_qa_reviews.
-    """
-    return AIQAReview(
-        review_id=0,
-        listing_id=listing.listing_id,
-        listing_url=listing.url,
-        source_company=listing.source_company,
-        trigger_type=trigger_type,
-        qa_prompt_version=f"{CURRENT_AI_QA_PROMPT_VERSION}-demo",
-        raw_text_hash="demo",
-        parser_snapshot_hash="demo",
-        parser_snapshot=result.parser_snapshot,
-        ai_result=result.ai_result,
-        risk_score=int(result.ai_result["risk_score"]),
-        confidence=float(result.ai_result["confidence"]),
-        parser_result_correct=bool(result.ai_result["parser_result_correct"]),
-        should_alert_admin=bool(result.ai_result["should_alert_admin"]),
-        feedback_status=AI_QA_FEEDBACK_PENDING,
-        prompt_tokens=result.prompt_tokens,
-        completion_tokens=result.completion_tokens,
-        total_cost_usd=result.total_cost_usd,
-    )
-
-
-def run_ai_qa_demo_reviews(*, limit: int = 3) -> List[AIQAReview]:
-    with SessionLocal() as session:
-        listings = list(
-            session.scalars(
-                select(Listing)
-                .where(Listing.source_company.in_(ACTIVE_SOURCE_COMPANIES))
-                .where(Listing.source_active.is_(True))
-                .where(Listing.status != REMOVED_STATUS)
-                .order_by(Listing.first_seen_at.asc(), Listing.listing_id.asc())
-                .limit(limit)
-            )
-        )
-
-    reviews: List[AIQAReview] = []
-    for index, listing in enumerate(listings):
-        fault_type = AI_QA_DEMO_FAULT_TYPES[index % len(AI_QA_DEMO_FAULT_TYPES)]
-        result = run_ai_qa_demo_check_for_listing(
-            listing,
-            fault_type=fault_type,
-        )
-        reviews.append(
-            _ephemeral_ai_qa_review_from_result(
-                listing,
-                result,
-                trigger_type=AI_QA_TRIGGER_DEMO_FAULT,
-            )
-        )
-    return reviews
-
-
-async def _send_ai_qa_backfill_result_when_done(
-    *,
-    task: asyncio.Task[AIQARunResult],
-    bot: Bot,
-    chat_id: int,
-) -> None:
-    try:
-        result = await task
-    except Exception:
-        logger.exception("Background AI QA backfill failed.")
-        try:
-            await bot.send_message(
-                chat_id=chat_id,
-                text="Catalog QA failed. Check the logs.",
-            )
-        except TelegramAPIError:
-            logger.exception("Failed to send background AI QA backfill failure message.")
-        return
-
-    try:
-        status = await asyncio.to_thread(load_ai_qa_status)
-        await bot.send_message(
-            chat_id=chat_id,
-            text=_format_ai_qa_backfill_result(result, status=status),
-        )
-        await send_ai_qa_alerts(bot, result.alert_review_ids)
-    except TelegramAPIError:
-        logger.exception("Failed to send background AI QA backfill result.")
-
-
-def _clear_manual_source_refresh_task(task: asyncio.Task[Any]) -> None:
-    global _manual_source_refresh_task
-    with suppress(BaseException):
-        task.exception()
-    if _manual_source_refresh_task is task:
-        _manual_source_refresh_task = None
-
-
-def _clear_manual_ai_qa_task(task: asyncio.Task[Any]) -> None:
-    global _manual_ai_qa_task
-    with suppress(BaseException):
-        task.exception()
-    if _manual_ai_qa_task is task:
-        _manual_ai_qa_task = None
-
-
-async def _run_manual_source_refresh(
-    *,
-    message: Message,
-    bot: Bot,
-    trigger_type: str,
-    refresh_func: Callable[..., Any],
-    **kwargs: Any,
-) -> Optional[Any]:
-    global _manual_source_refresh_task
-
-    if _manual_source_refresh_task is not None and not _manual_source_refresh_task.done():
-        await message.answer(
-            "A source refresh is already running. Wait for the current result and do not start "
-            "another refresh yet."
-        )
-        return None
-
-    settings = get_settings()
-    task = asyncio.create_task(asyncio.to_thread(refresh_func, **kwargs))
-    _manual_source_refresh_task = task
-    task.add_done_callback(_clear_manual_source_refresh_task)
-
-    try:
-        return await asyncio.wait_for(
-            asyncio.shield(task),
-            timeout=settings.manual_refresh_timeout_seconds,
-        )
-    except asyncio.TimeoutError:
-        logger.warning(
-            "Manual source refresh exceeded timeout=%s seconds trigger=%s",
-            settings.manual_refresh_timeout_seconds,
-            trigger_type,
-        )
-        await message.answer(
-            "Sources are taking too long, so I stopped waiting in chat. "
-            "The refresh will continue in the background; each source status will be recorded separately."
-        )
-        return None
-    except Exception:
-        logger.exception("Manual source refresh failed trigger=%s", trigger_type)
-        await message.answer(
-            "Could not refresh sources right now. "
-            "One or more sources may have returned an error or timed out."
-        )
-        await maybe_send_source_alerts(bot)
-        return None
-
-
 def refresh_listing_database(
     *,
-    trigger_type: str = SOURCE_TRIGGER_ADMIN_REFRESH,
+    trigger_type: str = SOURCE_TRIGGER_BACKGROUND,
 ) -> RefreshResult:
     listings_found = 0
     created_count = 0
@@ -1954,37 +1420,6 @@ async def send_match_to_chat(
     )
 
 
-async def send_current_listings(message: Message, bot: Bot) -> None:
-    await asyncio.to_thread(enrich_missing_transport_walk, limit=None)
-    candidates = await asyncio.to_thread(
-        load_random_listing_candidates,
-        candidate_limit=ACTIVE_LISTING_CANDIDATE_LIMIT,
-    )
-    listings = await _verified_active_matches(
-        candidates,
-        target_limit=CURRENT_LISTINGS_LIMIT,
-    )
-
-    logger.info(
-        "Random listing request finished: candidates=%s displayed=%s",
-        len(candidates),
-        len(listings),
-    )
-
-    if not listings:
-        await message.answer(
-            "There are no verified active listings in the catalog right now. "
-            "If you are an admin, refresh the synthetic catalog from the admin panel."
-        )
-        return
-
-    await message.answer(
-        "Showing up to 10 random active listings from the demo catalog."
-    )
-    for listing in listings:
-        await send_match_to_chat(bot, chat_id=message.chat.id, match=listing)
-
-
 async def send_active_filtered_matches(message: Message, bot: Bot, *, user_id: int) -> None:
     if await asyncio.to_thread(load_user_preferences, user_id) is None:
         await message.answer(
@@ -2016,34 +1451,16 @@ async def send_active_filtered_matches(message: Message, bot: Bot, *, user_id: i
     if not matches:
         await message.answer(
             "There are no active listings matching your filter right now.\n\n"
-            "Try loosening the filter, or browse the whole demo catalog.",
+            "Try loosening the filter, or run the temporary demo filter.",
             reply_markup=_no_matches_keyboard(),
         )
         return
 
     await message.answer(
-        "Showing up to 10 active listings that match your filter."
+        f"Showing up to {CURRENT_LISTINGS_LIMIT} active listings that match your filter."
     )
     for match in matches:
         await send_match_to_chat(bot, chat_id=message.chat.id, match=match)
-
-
-async def send_admin_panel(message: Message) -> None:
-    if message.from_user is None:
-        return
-    is_admin = _is_admin_user(message.from_user.id)
-    intro = (
-        "<b>FlatFeed admin panel</b>\n\n"
-        "Demo flow: run a QA demo, review flagged parser issues, then check the metrics."
-    )
-    if not is_admin:
-        intro = (
-            "<b>FlatFeed admin panel</b> — demo view\n\n"
-            "In production this panel is restricted to configured admins. You can open it "
-            "here to see how it works; buttons that change catalog data or spend budget "
-            "stay admin-only and will say so."
-        )
-    await message.answer(intro, reply_markup=_admin_keyboard())
 
 
 async def send_settings_card(message: Message, *, user_id: int) -> None:
@@ -2093,23 +1510,18 @@ async def _clear_markup(callback: CallbackQuery) -> None:
 # ---------------------------------------------------------------------------
 # Guided tour
 #
-# A 3-step, button-only walkthrough for a first-time visitor with no
-# context: (1) a temporary four-field filter, (2) a result from the real
-# matching predicate over the synthetic catalog, (3) evidence and limitations.
-# The AI QA fault simulation remains available as an optional branch after
-# the core product story; it is not part of the renter path. Step 2 also
-# offers the optional "How matching works" pipeline explainer (tour:3),
-# which doubles as the compatibility target for old inline keyboards.
+# A 2-step, button-only walkthrough for a first-time visitor with no
+# context: (1) a temporary four-field filter, then (2) a result from the real
+# matching predicate over the synthetic catalog. The optional "How matching
+# works" explainer is available from the result without interrupting the core
+# path.
 # Every dynamic value (listing, district, prices, WBS phrasing, match count)
 # is read from the tour listing and the demo catalog at runtime.
 #
 # The demo filter stays ephemeral (never written to `users`) until the
-# visitor explicitly taps "Use this demo filter" on step 3. Step 2 runs the
+# visitor explicitly taps "Use this demo filter" on the result. Step 2 runs the
 # real matching predicate (is_listing_match) and the synthetic adapter's local
 # activity check over the demo catalog.
-#
-# Tour fault-injection results and triage taps are never persisted — no
-# AIQAReview is added to a session or committed anywhere in this section.
 # ---------------------------------------------------------------------------
 
 
@@ -2211,52 +1623,35 @@ def _tour_next_keyboard(label: str, callback_data: str) -> InlineKeyboardMarkup:
 def _tour_intro_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Start the tour", callback_data="tour:1")],
-            [InlineKeyboardButton(text="Skip the tour", callback_data="tour:skip")],
+            [InlineKeyboardButton(text="Try the demo", callback_data="tour:1")],
+            [InlineKeyboardButton(text="Set up my filter", callback_data="settings:filter")],
         ]
     )
 
 
 def _tour_start_keyboard() -> InlineKeyboardMarkup:
-    return _tour_next_keyboard("Start the tour", "tour:1")
+    return _tour_next_keyboard("Try the demo", "tour:1")
 
 
-def _tour_triage_keyboard() -> InlineKeyboardMarkup:
+def _tour_result_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Parser error",
-                    callback_data=f"tour_fb:{AI_QA_FEEDBACK_PARSER_ERROR}",
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text="Parser correct",
-                    callback_data=f"tour_fb:{AI_QA_FEEDBACK_PARSER_CORRECT}",
-                ),
-            ],
-            [
-                InlineKeyboardButton(
-                    text="Borderline / unsure",
-                    callback_data=f"tour_fb:{AI_QA_FEEDBACK_UNSURE}",
-                ),
-            ],
+            [InlineKeyboardButton(text="Use this demo filter", callback_data="tour:save_filter")],
+            [InlineKeyboardButton(text="Set up my own filter", callback_data="settings:filter")],
+            [InlineKeyboardButton(text="How matching works", callback_data="tour:3")],
+            [InlineKeyboardButton(text="Read the case study", url=CASE_STUDY_URL)],
         ]
     )
 
 
-def _tour_result_keyboard() -> InlineKeyboardMarkup:
-    rows: List[List[InlineKeyboardButton]] = [
-        [InlineKeyboardButton(text="Use this demo filter", callback_data="tour:save_filter")],
-        [InlineKeyboardButton(text="Set up my own filter", callback_data="settings:filter")],
-        [InlineKeyboardButton(text="Optional: try the QA check", callback_data="tour:4")],
-    ]
-    dashboard_url = get_settings().dashboard_url
-    if dashboard_url and dashboard_url.lower().startswith(("http://", "https://")):
-        rows.append([InlineKeyboardButton(text=BTN_DASHBOARD, url=dashboard_url)])
-    rows.append([InlineKeyboardButton(text="Read the case study", url=CASE_STUDY_URL)])
-    return InlineKeyboardMarkup(inline_keyboard=rows)
+def _tour_explainer_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Use this demo filter", callback_data="tour:save_filter")],
+            [InlineKeyboardButton(text="Set up my own filter", callback_data="settings:filter")],
+            [InlineKeyboardButton(text="Read the case study", url=CASE_STUDY_URL)],
+        ]
+    )
 
 
 async def _send_tour_screen_0(message: Message) -> None:
@@ -2272,11 +1667,11 @@ async def _send_tour_screen_0(message: Message) -> None:
         reply_markup=main_menu_keyboard(),
     )
     await message.answer(
-        "<b>Take a short guided tour?</b>\n\n"
+        "<b>See a working match?</b>\n\n"
         "FlatFeed tests a narrow product hypothesis: one saved filter can make "
         "scattered, inconsistent WBS listings easier to check.\n\n"
-        "Three steps, no typing: a temporary filter, one match from the demo "
-        "catalog, then what is proven and what is not.",
+        "Two steps, no typing: inspect a temporary filter, then run it against "
+        "the demo catalog.",
         reply_markup=_tour_intro_keyboard(),
     )
 
@@ -2286,16 +1681,16 @@ async def _send_tour_screen_1(callback: CallbackQuery) -> None:
         return
     # _select_tour_listing() requires transit data; a freshly ingested
     # catalog (e.g. right after scripts/ingest_synthetic.py) has none yet,
-    # since enrichment normally happens lazily on the first matches/listings
-    # command. The tour is often that first interaction, so it must trigger
+    # since enrichment normally happens lazily on the first matching request.
+    # The tour is often that first interaction, so it must trigger
     # enrichment itself instead of assuming it already ran.
     await asyncio.to_thread(enrich_missing_transport_walk, limit=None)
     listing = await asyncio.to_thread(_select_tour_listing)
     if listing is None:
         await callback.message.answer(
             "The tour needs at least one active synthetic listing with a WBS 140 "
-            "requirement, and none is available right now. Try /matches or 📂 All "
-            "listings instead."
+            "requirement, and none is available right now. Set up your own filter "
+            "or try again later."
         )
         return
 
@@ -2306,7 +1701,7 @@ async def _send_tour_screen_1(callback: CallbackQuery) -> None:
     district_label = listing.district or "any district"
     rooms_label = _display_rooms(listing.rooms)
     await callback.message.answer(
-        "<b>Step 1/3 · One renter job</b>\n\n"
+        "<b>Demo 1/2 · Temporary filter</b>\n\n"
         f"Say you hold a WBS-{wbs_percent} certificate — Berlin's housing-eligibility "
         f"document — and need a {escape(rooms_label)}-room flat in "
         f"{escape(district_label)} under {rent_label} Kaltmiete (base rent before "
@@ -2316,7 +1711,7 @@ async def _send_tour_screen_1(callback: CallbackQuery) -> None:
         f"<b>Kaltmiete:</b> up to {rent_label}\n"
         f"<b>Rooms:</b> {escape(rooms_label)}\n\n"
         "This demo filter is temporary — it is not saved unless you choose to "
-        "keep it at the end.",
+        "keep it after seeing the result.",
         reply_markup=_tour_next_keyboard("Find matches", "tour:2"),
     )
 
@@ -2351,7 +1746,7 @@ async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
     )
     plural = "s" if match_count != 1 else ""
     step_text = (
-        "<b>Step 2/3 · One match from the demo catalog</b>\n\n"
+        "<b>Demo 2/2 · Matching result</b>\n\n"
         "FlatFeed applied four fixed matching rules to its synthetic catalog. This "
         f"card is 1 of {match_count} matching listing{plural}. Why it matched: "
         f"{reasons_label}.\n\n"
@@ -2363,12 +1758,7 @@ async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
         bot,
         chat_id=callback.message.chat.id,
         match=tour_match,
-        reply_markup=InlineKeyboardMarkup(
-            inline_keyboard=[
-                [InlineKeyboardButton(text="See what is proven", callback_data="tour:5")],
-                [InlineKeyboardButton(text="How matching works", callback_data="tour:3")],
-            ]
-        ),
+        reply_markup=_tour_result_keyboard(),
         text_prefix=step_text,
     )
 
@@ -2389,110 +1779,7 @@ async def _send_tour_screen_3(callback: CallbackQuery) -> None:
         "No AI sits in this matching path. If you save a filter, FlatFeed stores your "
         "Telegram ID, filter and notification history; /delete removes those records "
         "from FlatFeed's database.",
-        reply_markup=_tour_next_keyboard("See what is proven", "tour:5"),
-    )
-
-
-async def _send_tour_screen_4(callback: CallbackQuery) -> None:
-    if callback.message is None:
-        return
-    await callback.message.answer(
-        "<b>Optional · QA check</b>\n\n"
-        "Fixed parsing rules can drift when a source format changes. FlatFeed also "
-        "has a separate admin review step that can flag a suspected parsing mistake, "
-        "but it cannot change a listing, matching rule or renter-facing card.\n\n"
-        "This simulation corrupts the WBS field only in a temporary copy of the "
-        "parsed fields. The public demo uses a deterministic mock checker — no "
-        "hosted model is called, and your taps are not stored.",
-        reply_markup=_tour_next_keyboard("Simulate a parser fault", "tour:inject"),
-    )
-
-
-async def _send_tour_inject(callback: CallbackQuery) -> None:
-    if callback.message is None:
-        return
-    listing = await asyncio.to_thread(_select_tour_listing)
-    if listing is None:
-        return
-
-    result = await asyncio.to_thread(
-        run_ai_qa_demo_check_for_listing,
-        listing,
-        fault_type="wbs",
-    )
-    fault = result.fault
-    original_label = escape(str(fault.get("original_value") or "not specified"))
-    injected_label = escape(str(fault.get("injected_value") or "not specified"))
-    fault_note = (
-        "<b>Simulated parser fault</b>\n\n"
-        f"WBS changed from “{original_label}” to “{injected_label}” in the parser "
-        "snapshot only. The saved listing and the real parser output are untouched.\n\n"
-    )
-
-    review = _ephemeral_ai_qa_review_from_result(
-        listing,
-        result,
-        trigger_type=AI_QA_TRIGGER_TOUR_FAULT,
-    )
-    await callback.message.answer(
-        fault_note
-        + _format_ai_qa_review(
-            review, alert=True, include_cost=False, include_confidence=False
-        ),
-        reply_markup=_tour_triage_keyboard(),
-        disable_web_page_preview=False,
-    )
-
-
-async def _send_tour_feedback_response(callback: CallbackQuery, feedback_status: str) -> None:
-    if callback.message is None:
-        return
-
-    listing = await asyncio.to_thread(_select_tour_listing)
-    if listing is not None:
-        _, fault = await asyncio.to_thread(
-            lambda: build_demo_fault_parser_snapshot(listing, fault_type="wbs")
-        )
-        original_label = escape(str(fault.get("original_value") or "not specified"))
-        fault_fact = (
-            f"The injected snapshot really did contradict the listing text (WBS "
-            f"{original_label})"
-        )
-    else:
-        fault_fact = "The injected snapshot really did contradict the listing text"
-
-    label = _feedback_decision_label(feedback_status)
-    await callback.answer(f"Recorded for this demo only: {label}.")
-
-    await _clear_markup(callback)
-    await callback.message.answer(
-        "Recorded for this demo only — nothing you tap is stored.\n\n"
-        f"{fault_fact}, so <b>Parser error</b> is the label an admin would confirm "
-        "here. In the real admin workflow the label is stored for review; parser "
-        "code and matching rules never change automatically.",
-        reply_markup=_tour_next_keyboard("Back to the summary", "tour:5"),
-    )
-
-
-async def _send_tour_screen_5(callback: CallbackQuery) -> None:
-    if callback.message is None:
-        return
-    await _clear_markup(callback)
-    golden_set_size = len(load_golden_set())
-
-    await callback.message.answer(
-        "<b>Step 3/3 · Evidence and limits</b>\n\n"
-        "<b>Implemented:</b> a four-field filter, deterministic matching, one "
-        "standard card format, an activity re-check before delivery, deduplicated "
-        "background notifications, and /delete for saved data.\n\n"
-        "<b>Measured on synthetic data:</b> all "
-        f"{golden_set_size} authored regression cases currently parse as expected — "
-        "a check of covered cases, not production accuracy.\n\n"
-        "<b>Not validated:</b> renter demand and outcomes, live-source coverage and "
-        "freshness, and whether AI QA is useful with a real model.\n\n"
-        "You can keep the temporary demo filter, set up your own, or try the "
-        "optional QA check.",
-        reply_markup=_tour_result_keyboard(),
+        reply_markup=_tour_explainer_keyboard(),
     )
 
 
@@ -2512,38 +1799,6 @@ async def handle_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
 async def handle_tour_screen_3(callback: CallbackQuery) -> None:
     await callback.answer()
     await _send_tour_screen_3(callback)
-
-
-@router.callback_query(F.data == "tour:4")
-async def handle_tour_screen_4(callback: CallbackQuery) -> None:
-    await callback.answer()
-    await _send_tour_screen_4(callback)
-
-
-@router.callback_query(F.data == "tour:inject")
-async def handle_tour_inject(callback: CallbackQuery) -> None:
-    await callback.answer()
-    await _send_tour_inject(callback)
-
-
-@router.callback_query(F.data.startswith("tour_fb:"))
-async def handle_tour_feedback(callback: CallbackQuery) -> None:
-    parts = (callback.data or "").split(":")
-    feedback_status = parts[1] if len(parts) == 2 else ""
-    if feedback_status not in {
-        AI_QA_FEEDBACK_PARSER_ERROR,
-        AI_QA_FEEDBACK_PARSER_CORRECT,
-        AI_QA_FEEDBACK_UNSURE,
-    }:
-        await callback.answer("Invalid button.", show_alert=True)
-        return
-    await _send_tour_feedback_response(callback, feedback_status)
-
-
-@router.callback_query(F.data == "tour:5")
-async def handle_tour_screen_5(callback: CallbackQuery) -> None:
-    await callback.answer()
-    await _send_tour_screen_5(callback)
 
 
 @router.callback_query(F.data == "tour:save_filter")
@@ -2571,20 +1826,6 @@ async def handle_tour_save_filter(callback: CallbackQuery) -> None:
     )
 
 
-@router.callback_query(F.data == "tour:skip")
-async def handle_tour_skip(callback: CallbackQuery) -> None:
-    await callback.answer()
-    await _clear_markup(callback)
-    await send_settings_card_from_callback(callback)
-
-
-@router.callback_query(F.data == "tour:replay")
-async def handle_tour_replay(callback: CallbackQuery) -> None:
-    await callback.answer()
-    if callback.message is not None:
-        await _send_tour_screen_0(callback.message)
-
-
 def _help_text() -> str:
     return (
         "<b>How FlatFeed works</b>\n\n"
@@ -2596,8 +1837,8 @@ def _help_text() -> str:
         "• Kaltmiete: base rent without utilities (Nebenkosten).\n\n"
         "<b>What you can do</b>\n"
         "• ⚙ Filter — set up or edit WBS type, district, rent, and rooms.\n"
-        "• 🔎 Show matches — listings that match your saved filter.\n"
-        "• 📂 All listings — browse the whole demo catalog (ignores your filter).\n\n"
+        "• 🔎 Show matches — up to three listings that match your saved filter.\n"
+        "• Try the demo — run a temporary filter without saving it.\n\n"
         "<b>Commands</b>\n"
         "/filter — set up or edit your filter\n"
         "/matches — show matching listings\n"
@@ -2624,17 +1865,6 @@ async def handle_settings_command(message: Message) -> None:
     if message.from_user is None:
         return
     await send_settings_card(message, user_id=message.from_user.id)
-
-
-@router.message(Command("aiqa_status"))
-async def handle_ai_qa_status_command(message: Message) -> None:
-    if message.from_user is None:
-        return
-    if not _is_admin_user(message.from_user.id):
-        await message.answer("This command is only available to admins.")
-        return
-    status = await asyncio.to_thread(load_ai_qa_status)
-    await message.answer(_format_ai_qa_status(status))
 
 
 @router.message(Command("filter"))
@@ -2679,11 +1909,6 @@ async def handle_matches_command(message: Message, bot: Bot) -> None:
     await send_active_filtered_matches(message, bot, user_id=message.from_user.id)
 
 
-@router.message(Command("listings"))
-async def handle_listings_command(message: Message, bot: Bot) -> None:
-    await send_current_listings(message, bot)
-
-
 @router.message(F.text == BTN_SETTINGS)
 async def handle_settings_button(message: Message, state: FSMContext) -> None:
     if message.from_user is None:
@@ -2698,18 +1923,6 @@ async def handle_matches_button(message: Message, state: FSMContext, bot: Bot) -
         return
     await state.clear()
     await send_active_filtered_matches(message, bot, user_id=message.from_user.id)
-
-
-@router.message(F.text == BTN_CATALOG)
-async def handle_catalog_button(message: Message, state: FSMContext, bot: Bot) -> None:
-    await state.clear()
-    await send_current_listings(message, bot)
-
-
-@router.message(F.text == BTN_ADMIN)
-async def handle_admin_button(message: Message, state: FSMContext) -> None:
-    await state.clear()
-    await send_admin_panel(message)
 
 
 async def _finish_edit_if_needed(callback: CallbackQuery, state: FSMContext) -> bool:
@@ -2823,236 +2036,6 @@ async def handle_settings_matches(callback: CallbackQuery, bot: Bot) -> None:
     await send_active_filtered_matches(callback.message, bot, user_id=callback.from_user.id)
 
 
-@router.callback_query(F.data == "settings:admin_refresh")
-async def handle_settings_admin_refresh(callback: CallbackQuery, bot: Bot) -> None:
-    if not _is_admin_user(callback.from_user.id):
-        await callback.answer("This button is only available to admins.", show_alert=True)
-        return
-    await callback.answer()
-    if callback.message is None:
-        return
-
-    await callback.message.answer(
-        "Refreshing the FlatFeed synthetic catalog. This usually takes a few seconds."
-    )
-    result = await _run_manual_source_refresh(
-        message=callback.message,
-        bot=bot,
-        trigger_type=SOURCE_TRIGGER_ADMIN_REFRESH,
-        refresh_func=lambda: refresh_listing_database(
-            trigger_type=SOURCE_TRIGGER_ADMIN_REFRESH,
-        ),
-    )
-    if result is None:
-        return
-
-    partial_notice = (
-        "\n\n"
-        "<b>Warning:</b> some sources refreshed partially or returned an error. "
-        "Removed listings were not marked for problematic sources.\n"
-        f"Collection errors: {result.collection_error_count}"
-        if result.is_partial
-        else ""
-    )
-    await callback.message.answer(
-        "<b>Synthetic catalog refreshed.</b>\n\n"
-        f"Active listings found: {result.listings_found}\n"
-        f"Created: {result.created_count}\n"
-        f"Updated: {result.updated_count}\n"
-        f"Marked removed: {result.removed_count}\n"
-        f"Transit updated: {result.transport_count}\n\n"
-        f"AI QA checked: {result.ai_qa_checked_count}\n"
-        f"AI QA alerts: {len(result.ai_qa_alert_review_ids)}\n\n"
-        f"Refresh time: {_latest_completed_sources_sync_label()}."
-        f"{partial_notice}"
-    )
-    await send_ai_qa_alerts(bot, result.ai_qa_alert_review_ids)
-
-
-@router.callback_query(F.data == "settings:ai_qa_reports")
-async def handle_ai_qa_reports(callback: CallbackQuery) -> None:
-    if not _is_admin_user(callback.from_user.id):
-        await callback.answer("This button is only available to admins.", show_alert=True)
-        return
-    await callback.answer()
-    if callback.message is None:
-        return
-
-    with SessionLocal() as session:
-        reviews = load_flagged_ai_qa_reviews(session, limit=10)
-
-    if not reviews:
-        await callback.message.answer("There are no flagged reports yet.")
-        return
-
-    await callback.message.answer(f"Flagged reports ready for review: {len(reviews)}.")
-    for review in reviews:
-        await callback.message.answer(
-            _format_ai_qa_review(review, alert=False),
-            reply_markup=_ai_qa_feedback_keyboard(review.review_id),
-            disable_web_page_preview=False,
-        )
-
-
-@router.callback_query(F.data == "settings:ai_qa_status")
-async def handle_ai_qa_status(callback: CallbackQuery) -> None:
-    if not _is_admin_user(callback.from_user.id):
-        await callback.answer("This button is only available to admins.", show_alert=True)
-        return
-    await callback.answer()
-    if callback.message is None:
-        return
-
-    status = await asyncio.to_thread(load_ai_qa_status)
-    await callback.message.answer(_format_ai_qa_status(status))
-
-
-@router.callback_query(F.data == "settings:admin_cancel")
-async def handle_admin_cancel(callback: CallbackQuery) -> None:
-    await callback.answer("Cancelled.")
-    await _clear_markup(callback)
-
-
-@router.callback_query(F.data == "settings:ai_qa_backfill")
-async def handle_ai_qa_backfill(callback: CallbackQuery, bot: Bot) -> None:
-    if not _is_admin_user(callback.from_user.id):
-        await callback.answer("This button is only available to admins.", show_alert=True)
-        return
-    settings = get_settings()
-    # A paid provider can spend the OpenAI budget, so confirm before running.
-    if settings.ai_qa_provider != "mock":
-        await callback.answer()
-        if callback.message is not None:
-            with suppress(TelegramAPIError):
-                await callback.message.edit_text(
-                    "Catalog QA uses a paid provider and may spend the daily OpenAI budget.\n\n"
-                    f"Provider: {escape(settings.ai_qa_provider)}\n"
-                    f"Daily cap: ${settings.ai_qa_daily_max_cost_usd:.2f}\n\n"
-                    "Continue?",
-                    reply_markup=_qa_budget_confirm_keyboard(),
-                )
-        return
-    await _run_ai_qa_backfill_flow(callback, bot)
-
-
-@router.callback_query(F.data == "settings:ai_qa_backfill_confirm")
-async def handle_ai_qa_backfill_confirm(callback: CallbackQuery, bot: Bot) -> None:
-    if not _is_admin_user(callback.from_user.id):
-        await callback.answer("This button is only available to admins.", show_alert=True)
-        return
-    await _run_ai_qa_backfill_flow(callback, bot)
-
-
-async def _run_ai_qa_backfill_flow(callback: CallbackQuery, bot: Bot) -> None:
-    global _manual_ai_qa_task
-    await callback.answer()
-    if callback.message is None:
-        return
-
-    if _manual_ai_qa_task is not None and not _manual_ai_qa_task.done():
-        await callback.message.answer("Catalog QA is already running. Wait for the result.")
-        return
-
-    await callback.message.answer(
-        "Starting catalog QA for active listings without a review.\n"
-        f"Batch size: {get_settings().ai_qa_backfill_batch_size}."
-    )
-    _manual_ai_qa_task = asyncio.create_task(asyncio.to_thread(run_ai_qa_backfill))
-    _manual_ai_qa_task.add_done_callback(_clear_manual_ai_qa_task)
-    try:
-        result = await asyncio.wait_for(
-            asyncio.shield(_manual_ai_qa_task),
-            timeout=get_settings().manual_refresh_timeout_seconds,
-        )
-    except asyncio.TimeoutError:
-        asyncio.create_task(
-            _send_ai_qa_backfill_result_when_done(
-                task=_manual_ai_qa_task,
-                bot=bot,
-                chat_id=callback.message.chat.id,
-            )
-        )
-        await callback.message.answer(
-            "Catalog QA is taking longer than usual. I will continue it in the background "
-            "and send the final report here when it finishes."
-        )
-        return
-    except Exception:
-        logger.exception("AI QA backfill failed.")
-        await callback.message.answer("Catalog QA failed. Check the logs.")
-        return
-
-    status = await asyncio.to_thread(load_ai_qa_status)
-    await callback.message.answer(_format_ai_qa_backfill_result(result, status=status))
-    await send_ai_qa_alerts(bot, result.alert_review_ids)
-
-
-@router.callback_query(F.data == "settings:ai_qa_demo")
-async def handle_ai_qa_demo(callback: CallbackQuery) -> None:
-    if not _is_admin_user(callback.from_user.id):
-        await callback.answer("This button is only available to admins.", show_alert=True)
-        return
-    await callback.answer()
-    if callback.message is None:
-        return
-
-    provider = get_settings().ai_qa_provider
-    await callback.message.answer(
-        "Starting the QA demo: I will corrupt one parser field in each of up to "
-        "3 active synthetic listings, then let AI QA check them against the listing text.\n"
-        f"Provider: {escape(provider)}. Demo responses are not saved to metrics."
-    )
-    try:
-        reviews = await asyncio.to_thread(run_ai_qa_demo_reviews, limit=3)
-    except Exception:
-        logger.exception("AI QA demo failed.")
-        await callback.message.answer("QA demo failed. Check the logs.")
-        return
-
-    if not reviews:
-        await callback.message.answer("There are no active synthetic listings for the QA demo.")
-        return
-
-    total_cost = sum(float(review.total_cost_usd or 0.0) for review in reviews)
-    await callback.message.answer(
-        f"QA demo complete. Reports: {len(reviews)}. Cost: ${total_cost:.6f}."
-    )
-    for review in reviews:
-        await callback.message.answer(
-            _format_ai_qa_review(review, alert=bool(review.should_alert_admin)),
-            reply_markup=_ai_qa_demo_feedback_keyboard(),
-            disable_web_page_preview=False,
-        )
-
-
-@router.callback_query(F.data.startswith("aiqa:demo_feedback:"))
-async def handle_ai_qa_demo_feedback(callback: CallbackQuery) -> None:
-    if not _is_admin_user(callback.from_user.id):
-        await callback.answer("This button is only available to admins.", show_alert=True)
-        return
-
-    parts = (callback.data or "").split(":")
-    if len(parts) != 3:
-        await callback.answer("Invalid button.", show_alert=True)
-        return
-    feedback_status = parts[2]
-    if feedback_status not in {
-        AI_QA_FEEDBACK_PARSER_ERROR,
-        AI_QA_FEEDBACK_PARSER_CORRECT,
-        AI_QA_FEEDBACK_UNSURE,
-    }:
-        await callback.answer("Invalid status.", show_alert=True)
-        return
-
-    await callback.answer(
-        f"Demo: selected {_feedback_decision_label(feedback_status)}. "
-        "Not saved to metrics.",
-    )
-    if callback.message is not None:
-        with suppress(TelegramAPIError):
-            await callback.message.edit_reply_markup(reply_markup=None)
-
-
 @router.callback_query(F.data.startswith("aiqa:feedback:"))
 async def handle_ai_qa_feedback(callback: CallbackQuery) -> None:
     if not _is_admin_user(callback.from_user.id):
@@ -3143,36 +2126,6 @@ async def handle_settings_delete_confirm(callback: CallbackQuery, state: FSMCont
             else "I had no saved data for your Telegram ID.",
             reply_markup=main_menu_keyboard(),
         )
-
-
-@router.callback_query(F.data == "settings:catalog")
-async def handle_settings_catalog(callback: CallbackQuery, state: FSMContext, bot: Bot) -> None:
-    await callback.answer()
-    await state.clear()
-    if callback.message is not None:
-        await send_current_listings(callback.message, bot)
-
-
-@router.callback_query(F.data == "settings:dashboard")
-async def handle_settings_dashboard(callback: CallbackQuery) -> None:
-    if not _is_admin_user(callback.from_user.id):
-        await callback.answer("This button is only available to admins.", show_alert=True)
-        return
-    await callback.answer()
-    if callback.message is None:
-        return
-    dashboard_ready = await asyncio.to_thread(_ensure_local_dashboard_running)
-    if not dashboard_ready:
-        await callback.message.answer(
-            "<b>AI QA effectiveness dashboard</b>\n\n"
-            "Dashboard autostart is disabled or the local Streamlit server could not start.",
-        )
-        return
-    await callback.message.answer(
-        "<b>AI QA effectiveness dashboard</b>\n\n"
-        "Dashboard is running locally.",
-        reply_markup=_dashboard_link_keyboard(),
-    )
 
 
 @router.callback_query(F.data == NAV_CANCEL)

@@ -13,11 +13,9 @@ from flatfeed.ai_qa import (
     CURRENT_AI_QA_PROMPT_VERSION,
     _apply_deterministic_guardrails,
     _normalize_ai_result,
-    build_demo_fault_parser_snapshot,
     build_parser_snapshot,
     get_ai_qa_status,
     load_flagged_ai_qa_reviews,
-    run_ai_qa_demo_check_for_listing,
     run_ai_qa_for_unreviewed_active_listings,
     update_ai_qa_feedback,
 )
@@ -36,7 +34,6 @@ class FakeSettings:
     ai_qa_daily_max_cost_usd: float = 1.0
     ai_qa_alert_risk_threshold: int = 75
     ai_qa_max_listing_chars: int = 6000
-    ai_qa_backfill_batch_size: int = 10
     ai_qa_concurrency: int = 3
     ai_qa_model: str = "gpt-5.4-mini"
     openai_input_price_per_1m: float = 0.75
@@ -462,54 +459,6 @@ class AIQAServiceTests(unittest.TestCase):
             self.assertEqual(listing.rent_kalt, 650)
             self.assertEqual(listing.rent_warm, 800)
 
-    def test_demo_fault_snapshot_does_not_leak_demo_marker_to_model_input(self) -> None:
-        listing = self.make_listing()
-
-        snapshot, fault = build_demo_fault_parser_snapshot(
-            listing,
-            fault_type="rooms",
-        )
-
-        self.assertEqual(fault["field"], "rooms")
-        self.assertNotIn("demo_fault_injection", snapshot)
-        self.assertNotEqual(snapshot["rooms"], build_parser_snapshot(listing)["rooms"])
-
-    def test_mock_ai_qa_catches_demo_room_fault(self) -> None:
-        listing = self.make_listing()
-
-        with patch(
-            "flatfeed.ai_qa.get_settings",
-            return_value=FakeSettings(ai_qa_provider="mock"),
-        ):
-            result = run_ai_qa_demo_check_for_listing(
-                listing,
-                provider="mock",
-                fault_type="rooms",
-            )
-
-        fields = {issue["field"] for issue in result.ai_result["issues"]}
-        self.assertIn("rooms", fields)
-        self.assertTrue(result.ai_result["should_alert_admin"])
-        self.assertTrue(result.ai_result["demo_fault_injection"]["demo_fault_injection"])
-        self.assertEqual(result.total_cost_usd, 0.0)
-
-    def test_mock_ai_qa_catches_demo_rent_fault(self) -> None:
-        listing = self.make_listing()
-
-        with patch(
-            "flatfeed.ai_qa.get_settings",
-            return_value=FakeSettings(ai_qa_provider="mock"),
-        ):
-            result = run_ai_qa_demo_check_for_listing(
-                listing,
-                provider="mock",
-                fault_type="rent_kalt",
-            )
-
-        fields = {issue["field"] for issue in result.ai_result["issues"]}
-        self.assertIn("rent_kalt", fields)
-        self.assertTrue(result.ai_result["should_alert_admin"])
-
     def test_string_ai_qa_issues_are_displayed(self) -> None:
         review = AIQAReview(
             ai_result={
@@ -523,55 +472,6 @@ class AIQAServiceTests(unittest.TestCase):
             _issue_lines(review),
             ["AI did not identify a specific field. Manual review is needed."],
         )
-
-    def test_ai_qa_review_text_hides_demo_injection_details(self) -> None:
-        listing = self.make_listing()
-
-        class FakeSession:
-            def __enter__(self):
-                return self
-
-            def __exit__(self, *args):
-                return None
-
-            def get(self, model, listing_id):
-                return listing
-
-        with patch(
-            "flatfeed.ai_qa.get_settings",
-            return_value=FakeSettings(ai_qa_provider="mock"),
-        ):
-            result = run_ai_qa_demo_check_for_listing(
-                listing,
-                provider="mock",
-                fault_type="wbs",
-            )
-        review = AIQAReview(
-            listing_id=1,
-            listing_url=listing.url,
-            qa_prompt_version=f"{CURRENT_AI_QA_PROMPT_VERSION}-demo",
-            parser_snapshot=result.parser_snapshot,
-            ai_result=result.ai_result,
-            risk_score=result.ai_result["risk_score"],
-            confidence=result.ai_result["confidence"],
-            parser_result_correct=result.ai_result["parser_result_correct"],
-            should_alert_admin=result.ai_result["should_alert_admin"],
-            feedback_status=AI_QA_FEEDBACK_PENDING,
-            total_cost_usd=0.0,
-        )
-
-        with patch("main.SessionLocal", return_value=FakeSession()):
-            text = _format_ai_qa_review(review, alert=True)
-
-        self.assertNotIn("Demo fault injection", text)
-        self.assertNotIn("transient demo", text)
-        self.assertNotIn("Mock QA re-read", text)
-        self.assertNotIn("Parser is likely correct", text)
-        self.assertIn("<b>Possible mismatch</b>", text)
-        self.assertIn("In listing: WBS 100-140", text)
-        self.assertIn("Parser: No WBS required", text)
-        self.assertIn("Why: The text states a different WBS condition.", text)
-        self.assertIn("Choose a decision with the buttons below.", text)
 
     def test_wbs_source_interpretation_is_normalized_and_displayed(self) -> None:
         result = _normalize_ai_result(

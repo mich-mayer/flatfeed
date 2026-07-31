@@ -19,11 +19,17 @@ the full experiment history and contracts belong in
   coverage or renter outcomes.
 - Parsing and matching are deterministic and fail closed on unknown critical
   values.
-- AI QA is a bounded, admin-only parser check. It may flag a suspected parser
-  error for human review, but it cannot mutate parsed listings, matching, or
-  user-facing cards.
-- The public Telegram demo still uses the deterministic mock provider. No
-  hosted model from the offline experiment is integrated into product runtime.
+- The public product surface is the Telegram bot. The separate Streamlit
+  dashboard, public admin panel, unfiltered catalog browser, and mock QA tour
+  have been removed from the prototype scope.
+- `/start` now reaches a real matching result in two guided steps: a temporary
+  four-field filter, then one card produced by the same deterministic matching
+  and activity-check path as saved-filter requests. The filter remains
+  ephemeral until the visitor explicitly saves it.
+- The public Telegram demo makes no model call. Optional runtime AI QA remains
+  bounded to direct admin alerts when explicitly enabled; it cannot mutate
+  parsed listings, matching, or user-facing cards. No hosted model from the
+  offline experiment is integrated into product runtime.
 
 ## Final AI QA Evaluation
 
@@ -109,10 +115,10 @@ history. They are not current public evidence.
   measured production cost.
 - The new final result is published at the public GitHub Pages URL and was
   verified there on 2026-07-31.
-- Local verification passed: 361 unit tests, deterministic parser eval 15/15,
-  final configuration-freeze verification, public number synchronization,
-  `git diff --check`, and desktop/mobile browser QA with no console warnings or
-  horizontal overflow.
+- Local verification of the bot-only simplification passed: 342 unit tests,
+  deterministic parser eval 15/15, final configuration-freeze verification,
+  public number synchronization, and `git diff --check`. The public case-study
+  HTML and CSS were not changed in this pass.
 
 ## Recommended Next Step
 

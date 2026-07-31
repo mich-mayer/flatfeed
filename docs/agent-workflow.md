@@ -33,17 +33,19 @@ used for the task.
 
 ## Project Guardrails
 
-- FlatFeed is a portfolio prototype: a Telegram bot and Streamlit dashboard that
-  collect Berlin WBS listings and match them to user filters. Preserve this
-  Phase 1 scope unless the user explicitly asks for a new phase.
+- FlatFeed is a portfolio prototype: a focused Telegram bot that collects
+  synthetic Berlin WBS listings and matches them to user filters. The public
+  case study carries model-evaluation evidence; there is no separate dashboard
+  or public admin console. Preserve this Phase 1 scope unless the user
+  explicitly asks for a new phase.
 - Keep the demo synthetic and deterministic. Listings come from the synthetic
   catalog in `synthetic/` through the synthetic source adapter; SQLite
   (`flatfeed/db/`) accelerates selection and preserves history. There is no real
   scraping, no network geocoding (Photon/Google Maps), no image reuploading, and
   no live-source capability claims — multi-source collection and source health
   are exercised through the synthetic adapter only.
-- Preserve both public surfaces: the Telegram/dashboard prototype and the case
-  study at `docs/case-study.html`.
+- Preserve both public surfaces: the Telegram prototype and the case study at
+  `docs/case-study.html`.
 - Deterministic parsing and matching own all user-facing decisions and fail
   closed on unknown values. AI QA never mutates listings, matching, or cards; it
   is admin-only, budgeted, versioned, and non-mutating. No backend beyond
@@ -92,8 +94,9 @@ instead of shipping silently.
 - Prefer existing UI, data, and naming patterns over introducing new
   abstractions or tooling; when the standard is silent, follow the closest
   approved pattern in `DESIGN_CONTENT_SYSTEM.md` §28.
-- Propagate copy and eval-number changes across bot, dashboard, tests, and docs
-  together — no surface drifts out of sync (`DESIGN_CONTENT_SYSTEM.md` §27).
+- Propagate copy and eval-number changes across bot, tests, case-study surfaces,
+  and docs together — no surface drifts out of sync
+  (`DESIGN_CONTENT_SYSTEM.md` §27).
 - Keep durable context in `docs/` (or `DESIGN_CONTENT_SYSTEM.md`) instead of
   duplicating long context in `CLAUDE.md`/`AGENTS.md`.
 - Keep `docs/CURRENT_STATUS.md` current when a material result, decision,

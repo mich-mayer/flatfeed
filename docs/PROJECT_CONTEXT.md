@@ -6,8 +6,9 @@ FlatFeed is a portfolio prototype for Berlin WBS apartment collection and
 matching. It demonstrates how a bot can collect listings through source
 adapters, normalize them into one trusted catalog, and match them to user
 filters. The prototype emphasizes reliable parsing, deterministic matching,
-AI-assisted QA, cost controls, and measurable evaluation without scraping or
-redistributing real housing-company listings.
+and measurable offline AI evaluation without scraping or redistributing real
+housing-company listings. The Telegram runtime stays focused on the renter
+flow; model-evaluation evidence lives in the case study and `eval/` artifacts.
 
 The target portfolio role is AI Product Manager in a corporate environment.
 Reliability, explainability, privacy, defensibility, measurable AI quality, and
@@ -89,11 +90,8 @@ polling/scanning unless explicitly requested.
 ### User-requested listings
 
 - Show matches: select newest candidates matching the saved filter, check
-  activity through the synthetic adapter, and send at most 10 valid cards. This
+  activity through the synthetic adapter, and send at most 3 valid cards. This
   is the primary user-facing listing action.
-- Browse demo catalog: load active candidates from SQLite, randomize, check
-  activity through the synthetic adapter, and send at most 10 valid cards. This
-  is a secondary demo action and ignores the saved filter.
 - A failed activity check marks the local listing inactive and excludes it from
   delivery.
 
@@ -103,59 +101,34 @@ demo source of truth.
 ### Guided tour
 
 `/start` (plain or via the `https://t.me/FlatFeedBot?start=tour` deep link)
-leads every visitor into a 3-step, button-only tour before the regular
+leads every visitor into a 2-step, button-only demo before the regular
 filter/matches flow:
 
-1. **One renter job** — shows the demo filter as plain text (WBS type, district,
+1. **Temporary filter** — shows the demo filter as plain text (WBS type, district,
    Kaltmiete, rooms). Held ephemeral: nothing is written to `users` yet.
-2. **One match from the demo catalog** — runs the same matching predicate as the main
+2. **Matching result** — runs the same matching predicate as the main
    product path (`is_listing_match`) over the synthetic catalog, then the
    synthetic adapter's local activity check (`_verified_active_matches`). It
-   shows one standardized card plus field-level match reasons, and offers an
-   optional `How matching works` pipeline explainer as a side branch.
-3. **Evidence and limits** — separates implemented behavior and the live
-   golden-set count from unvalidated renter demand, live-source coverage, and
-   AI QA performance on live-source listings. `Use this demo filter` saves the
-   filter only now, on explicit request.
-
-The parser-fault and triage simulation is an optional branch after step 3. It
-is not part of the renter flow and the public demo uses a deterministic mock
-provider, not a hosted model.
+   shows one standardized card plus field-level match reasons. From the result,
+   the visitor can save the temporary filter, create a custom filter, open the
+   optional `How matching works` explanation, or read the case study.
 
 The tour listing is selected deterministically from the active catalog (2
 rooms, a WBS requirement including 140, a WBS phrase in the raw text, and
-transit data) — see `_select_tour_listing` in `main.py`. `Skip the tour` and
-`🛠 Admin` -> `Replay the tour` are always available.
+transit data) — see `_select_tour_listing` in `main.py`. `/start` restarts the
+demo at any time.
 
 Rules that keep the tour safe and honest to run in front of any visitor:
 
 - **Ephemeral filter.** The demo filter is derived from the tour listing on
   every screen and is never persisted until the visitor explicitly taps
-  `Use this demo filter` on step 3 (`tour:save_filter` ->
+  `Use this demo filter` after the result (`tour:save_filter` ->
   `save_fixed_preferences`).
-- **Ephemeral fault injection and triage.** The tour's fault injection
-  (`_send_tour_inject`) and its triage responses (`_send_tour_feedback_response`)
-  never add or commit an `AIQAReview` row. They reuse the real admin alert
-  formatter (`_format_ai_qa_review`, with `include_cost=False` and
-  `include_confidence=False` for the tour) and the real triage keyboard, so
-  a visitor sees the same message format and buttons a real admin alert
-  uses, without ever writing to the table the dashboard reads from. Every
-  triage label gets the same neutral response — the tour states the fact
-  (what the text says) without grading the visitor's choice. The dashboard's
-  AI QA queries only count reviews whose `qa_prompt_version` exactly equals
-  `CURRENT_AI_QA_PROMPT_VERSION` and additionally exclude any
-  `-demo`-suffixed version as defense in depth, even though nothing writes
-  rows shaped that way.
-- **Demo admin view.** `🛠 Admin` is visible to every visitor
-  (`main_menu_keyboard` no longer gates it), with a caption stating this is a
-  demo view for non-admins. Every individual admin action inside keeps its
-  existing `_is_admin_user` gate unchanged — a non-admin tapping `Run QA
-  demo`, `Refresh catalog`, `Run catalog QA`, `Review flagged issues` (which
-  writes real feedback), `View QA metrics`, or the dashboard auto-start
-  button gets the existing "only available to admins" response. Only opening
-  the panel itself and `Replay the tour` are open to everyone — the tour's
-  own step 4 is the actual open-to-all ephemeral demo entry point, not the
-  admin panel's `Run QA demo` button.
+- **Synthetic disclosure.** The intro names the synthetic catalog before the
+  first action, and the result card names `FlatFeed Synthetic` as its source.
+- **No model call.** The guided demo exercises only collection, deterministic
+  parsing, enrichment, matching, and the adapter activity check. Hosted-model
+  results are documented on the case-study surface, not replayed in Telegram.
 
 ## Parsing Semantics
 
@@ -246,10 +219,12 @@ makes no LLM calls.
   constant rather than trusting this document for the latest version.
 - Each listing receives at most one review per prompt version.
 - New listings are eligible for AI QA when enabled.
-- Backfill covers active listings missing the current review version.
 - Daily count and dollar budgets stop excessive usage.
 - Risk at or above the configured threshold creates an admin-only alert.
 - The admin labels the finding parser error, parser correct, or unsure.
+- The public bot has no admin panel, dashboard, QA demo, backfill control, or
+  model metrics. Configured admins can only receive and triage direct runtime
+  alerts when optional runtime QA is explicitly enabled.
 - AI output never alters listing data, matching, or user-facing cards
   automatically.
 - A separate synthetic offline hosted-model feasibility experiment is recorded
@@ -259,14 +234,8 @@ makes no LLM calls.
   600-case synthetic evaluation it found and localized 300/300 planted errors,
   raised 0/300 false alerts, and returned 599/600 valid checks. All
   predeclared synthetic gates passed. Live-source accuracy remains unmeasured
-  and the experiment was not integrated into product runtime.
-
-The Streamlit dashboard ("FlatFeed product operations") leads with the
-product pipeline and deterministic-parsing accuracy — AI QA is one section
-among five, not the whole page. See `DESIGN_CONTENT_SYSTEM.md` §8 for the
-exact section order and rules (live `eval.run_eval` numbers, the `-demo`
-exclusion, the small-number `fmt_share` rule, and the mock-confidence
-label).
+  and the experiment was not integrated into product runtime. Its public
+  evidence lives in `docs/case-study.html` and `CASE_STUDY.md`.
 
 ## Data Model
 
@@ -293,7 +262,7 @@ explicit confirmation before deleting.
 - Three consecutive failures trigger an admin alert by default; cooldown avoids
   alert spam.
 - Partial collection must not mass-mark unseen listings removed.
-- Manual refresh and user listing actions have timeouts and user-facing failure
+- User listing actions have bounded candidate counts and user-facing failure
   messages.
 - Removed listings remain in history but are excluded from active delivery.
 
@@ -301,4 +270,4 @@ explicit confirmation before deleting.
 
 - SQLite is appropriate for this local portfolio prototype.
 - The codebase is English-facing. Keep future copy changes consistent across
-  bot UI, dashboard UI, tests, and documentation.
+  bot UI, tests, case-study surfaces, and documentation.
