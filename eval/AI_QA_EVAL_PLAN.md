@@ -1,11 +1,11 @@
 # Offline AI QA Evaluation Contract
 
-**Status:** Terra-v1 high passed frozen validation, but its one 600-case locked
-holdout failed the predeclared rooms guardrail at 43/50. All four simple
-Product Scorecard metrics passed; the configuration is not finally accepted
-and the holdout is consumed
+**Status:** The final `extraction-v1` 600-case synthetic evaluation passed every
+predeclared acceptance gate: 300/300 planted errors found and localized,
+0/300 false alerts, and 599/600 usable checks. The final synthetic result is
+accepted; product-runtime integration is not authorized.
 
-**Date:** 2026-07-24
+**Date:** 2026-07-30
 
 **Scope:** Synthetic, offline feasibility evaluation only
 
@@ -2191,3 +2191,195 @@ Final decision:
 - the result does not measure live housing-provider formats, natural
   parser-error prevalence, missing listings, or renter outcomes;
 - any public-copy change remains a separate evidence-governance decision.
+
+## 13. Review-v1 follow-up development screen
+
+After the failed locked holdout, failure analysis identified seven neighboring
+rooms misses and two postal-code substitutions. A bounded follow-up tested
+whether making each alert inspectable would improve detection without creating
+false alerts.
+
+The `review-v1` candidate preserved the `terra-v1` comparison instructions but
+replaced the binary output with:
+
+- one admin-routing decision, `review_required`;
+- `direct_mismatch` or `unclear_source` as a diagnostic reason;
+- the suspected field, source value, snapshot value, and an exact source quote.
+
+Both reasons route to the same admin queue. Local validation rejects invented
+quotes or snapshot values that do not match the challenged parser field.
+
+A fresh development set contained 120 cases: 50 clean and 70 with one planted
+error. It included 20 rooms errors and 10 address/postal-code errors, of which
+six were postal-code substitutions. It had no exact input, raw-text, or case-ID
+overlap with 21 prior model-input artifacts.
+
+The paired comparison was frozen before execution. The baseline and candidate
+used the same cases, `gpt-5.6-terra`, high reasoning, strict Structured Outputs,
+zero retries, and default service tier. Current standard pricing was verified
+on 2026-07-30. Each profile was run once.
+
+| Result | `terra-v1` baseline | `review-v1` candidate |
+|---|---:|---:|
+| Successful checks | 120/120 | 120/120 |
+| Parser errors detected | 66/70 | 66/70 |
+| Correct fields | 66/70 | 66/70 |
+| False alerts | 0/50 | 0/50 |
+| Rooms | 16/20 | 17/20 |
+| District | 8/8 | 7/8 |
+| Recorded cost | `$0.194043` | `$0.272532` |
+
+The candidate recovered one rooms error but introduced one district miss. It
+failed its predeclared aggregate, rooms, and district gates. The combined run
+cost `$0.466575` and had no technical failures.
+
+Decision:
+
+- reject `review-v1` for a new 600-case final evaluation;
+- do not generate or run that final dataset yet;
+- retain the richer alert evidence as a useful contract idea, not as proof of
+  improved detection;
+- test the next hypothesis locally first: model extraction of all seven source
+  values followed by deterministic comparison with the parser snapshot.
+
+The canonical analysis is `eval/AI_QA_FAILURE_ANALYSIS.md`; frozen configuration
+and machine-readable results are under
+`eval/runs/review-v1-development-*`.
+
+## 14. Extraction-v1 local readiness
+
+The next candidate separates two jobs that the earlier prompts combined:
+
+1. the model reads the raw listing and returns exact evidence for WBS,
+   Kaltmiete, rooms, address, postal code, district, floor, and Warmmiete;
+2. deterministic code normalizes those values and compares them with the
+   parser snapshot.
+
+The model request contains raw listing text only. It does not contain the case
+ID, parser snapshot, planted error, or hidden answer. For each field the model
+returns one short exact quote or `null`; it does not classify the quote with a
+second set of statuses. A direct mismatch or an unreadable value creates the
+same `review_required` result. The reason remains diagnostic information in the
+report, not a separate product status or queue.
+
+Local tests verify strict structured output, exact-quote validation, all seven
+comparison groups, named and numeric floor normalization, German rent formats,
+and the full 120-case development set. The full-set test injects
+known-correct evidence into the comparator. It proves the deterministic layer
+can find the planted differences when extraction is correct, but it is not a
+model-quality result.
+
+The no-network plan in
+`eval/runs/extraction-v1-development-dry-run.json` freezes the intended
+development configuration:
+
+- reused 120-case development set, explicitly not a new holdout;
+- `gpt-5.6-terra`, high reasoning, strict Structured Outputs;
+- prompt `extraction-v1`, 768 maximum output tokens, zero retries;
+- 120 case requests plus one model-availability check;
+- conservative `$1.91` hard budget after pricing was refreshed against the
+  official OpenAI pricing page on 2026-07-30.
+
+The development candidate must achieve at least 68/70 detected errors and
+correct fields, 19/20 rooms, 8/8 district, no more than one false alert, and
+the unchanged perfect targets for the other five groups. It must also improve
+on the previous best of 66/70 total and 17/20 rooms without a false-alert
+regression.
+
+The separate configuration freeze and execution/scoring module were added, and
+the development run was executed once. All 120 requests completed without a
+retry or technical failure for `$0.369260`.
+
+The original report failed because the deterministic normalizer did not accept
+three valid evidence formats returned by the model: whitespace-separated
+labels and values, bare Berlin postal codes, and `Stockwerk` floor labels. It
+recorded 70/70 detected errors but only 33/70 correct fields and 38/50 false
+alerts. The original report remains unchanged.
+
+After adding general normalization rules and regression tests, the same saved
+outputs were rescored without an API call or additional cost. The corrected
+development result was 120/120 successful checks, 70/70 detected errors,
+70/70 correct fields, 0/50 false alerts, rooms 20/20, and district 8/8. All
+predeclared development gates passed.
+
+This rescore is development tuning because the comparator changed after the
+development outputs were inspected. It authorizes generation and one frozen
+run of a fresh 600-case synthetic dataset; it is not final evidence. The
+original consumed 600-case holdout remains untouched and must not be reused.
+
+## 15. Extraction-v1 final 600-case evaluation
+
+After the development comparator passed its frozen gates, a new final dataset
+was generated with seed `20261001`. It contains 600 synthetic listings: 300
+clean and 300 with exactly one planted parser error. The error distribution is
+75 WBS, 60 Kaltmiete, 50 rooms, 40 address/postal-code, 30 district, 25 floor,
+and 20 Warmmiete cases.
+
+The final model-input hash, truth hash, dataset manifest, prompt, schema,
+comparator, scorer, runner, request count, thresholds, and budget were frozen
+before the model run. The dataset has no exact model-input, raw-text, or case-ID
+overlap with 22 prior input artifacts.
+
+The frozen configuration was:
+
+- `gpt-5.6-terra`, high reasoning;
+- prompt `extraction-v1`;
+- strict Structured Outputs;
+- 768 maximum output tokens;
+- zero retries;
+- one final run with no post-run tuning or rescoring;
+- expected cost `$1.477040` and conservative hard limit `$7.61`.
+
+The strict prototype gates were:
+
+| Metric | Gate |
+|---|---:|
+| Successful checks | at least 597/600 |
+| Parser errors detected | at least 294/300 |
+| Correct fields | at least 294/300 |
+| Clean false alerts | at most 3/300 |
+| WBS | at least 74/75 |
+| Kaltmiete | at least 59/60 |
+| Rooms | at least 49/50 |
+| Address / postal code | at least 39/40 |
+| District | 30/30 |
+| Floor | 25/25 |
+| Warmmiete | 20/20 |
+
+The final run produced:
+
+| Metric | Result | Outcome |
+|---|---:|---|
+| Successful checks | 599/600, 99.8% | Pass |
+| Parser errors detected | 300/300, 100.0% | Pass |
+| Correct fields | 300/300, 100.0% | Pass |
+| Clean false alerts | 0/300, 0.0% | Pass |
+
+Every field result was 100%: WBS 75/75, Kaltmiete 60/60, rooms 50/50,
+address/postal code 40/40, district 30/30, floor 25/25, and Warmmiete 20/20.
+
+One clean listing returned a Kaltmiete evidence quote that was not present in
+the raw text. Local validation rejected the output. It was not retried, did not
+create a false alert, and remains the single unsuccessful check.
+
+The run cost `$1.412906`:
+
+- input tokens: 302,377;
+- output tokens: 67,346;
+- reasoning tokens: 6,802;
+- median latency: 1,708.89 ms;
+- 95th-percentile latency: 4,276.15 ms.
+
+**Decision:** accept `extraction-v1` as the final synthetic feasibility result
+and stop synthetic tuning. Do not integrate the hosted model into product
+runtime. The next meaningful test is a manually labelled sample of permitted
+real listing formats, because the balanced challenge set does not measure
+production accuracy, natural parser-error prevalence, or real-source transfer.
+
+Canonical artifacts:
+
+- `eval/runs/extraction-v1-final-600-configuration-freeze.json`;
+- `eval/runs/extraction-v1-final-600/report.json`;
+- `eval/runs/extraction-v1-final-600/report.md`;
+- `eval/runs/extraction-v1-final-600/run_manifest.json`;
+- `eval/runs/extraction-v1-final-600/predictions.jsonl`.

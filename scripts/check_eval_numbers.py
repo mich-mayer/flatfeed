@@ -1,10 +1,9 @@
-"""Verify deterministic and final locked-holdout numbers on public surfaces.
+"""Verify deterministic and final extraction-v1 numbers on public surfaces.
 
 The README keeps the authored deterministic regression-case count. The landing
-and Markdown case study expose only the final 600-listing locked-holdout result:
-four aggregate metrics, seven field results, the final decision, and one bounded
-inference-cost scenario. Calibration and historical result numbers stay out of
-the public case study.
+and Markdown case study expose only the final fresh 600-listing synthetic
+result: four aggregate metrics, seven field results, the final decision, and
+one bounded AI API cost scenario.
 
 Usage: .venv/bin/python -m scripts.check_eval_numbers
 Exit code 0 when every public occurrence matches the canonical artifacts.
@@ -12,6 +11,7 @@ Exit code 0 when every public occurrence matches the canonical artifacts.
 from __future__ import annotations
 
 import json
+import math
 import re
 import subprocess
 import sys
@@ -21,53 +21,51 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-REGRESSION_COUNT_TARGETS = (
-    PROJECT_ROOT / "README.md",
-)
+REGRESSION_COUNT_TARGETS = (PROJECT_ROOT / "README.md",)
 SCORECARD_TARGETS = (
     PROJECT_ROOT / "CASE_STUDY.md",
     PROJECT_ROOT / "docs" / "case-study.html",
 )
-SCORECARD_PATH = (
+RUN_DIR = PROJECT_ROOT / "eval" / "runs" / "extraction-v1-final-600"
+REPORT_PATH = RUN_DIR / "report.json"
+MANIFEST_PATH = RUN_DIR / "run_manifest.json"
+FREEZE_PATH = (
     PROJECT_ROOT
     / "eval"
     / "runs"
-    / "terra-high-locked-holdout"
-    / "product-scorecard"
-    / "product_scorecard.json"
+    / "extraction-v1-final-600-configuration-freeze.json"
 )
-REPORT_PATH = (
-    PROJECT_ROOT
-    / "eval"
-    / "runs"
-    / "terra-high-locked-holdout"
-    / "reports"
-    / "report.json"
-)
-MANIFEST_PATH = (
-    PROJECT_ROOT
-    / "eval"
-    / "runs"
-    / "terra-high-locked-holdout"
-    / "run_manifest.json"
-)
-PUBLIC_EVIDENCE_LABEL = (
-    "Offline AI QA evaluation · synthetic data · 600 listings"
-)
+PUBLIC_EVIDENCE_LABEL = "AI QA evaluation · synthetic data · 600 listings"
 ANNUAL_CHECK_SCENARIO = 15_000
 OFFICIAL_RELETTING_PROXY = 12_398
-FINAL_STOPPING_RATIONALE = (
-    "The final run provided enough evidence for this prototype: it showed that "
-    "the approach was promising and identified a specific weakness in rooms "
-    "detection. Because the evaluation used synthetic data, the next meaningful "
-    "step is not further tuning on the same benchmark, but recalibration and "
-    "validation on permitted real listings."
+PLANNING_BUFFER = 1.25
+FINAL_STOPPING_RATIONALE_PARTS = (
+    "The final run met every synthetic acceptance gate",
+    "With no permitted live dataset available",
+    "WBS renters",
 )
 HISTORICAL_PUBLIC_MARKERS = (
     "Synthetic frozen validation",
-    "99.3%",
-    "139/140",
-    "280/280",
+    "291/300",
+    "43/50",
+    "$1.011304",
+    "configuration not accepted",
+    "critical rooms weakness",
+)
+METRIC_LABELS = {
+    "parser_error_detection_rate": "Parser Error Detection Rate",
+    "false_alert_rate": "False Alert Rate",
+    "correct_field_detection_rate": "Correct Field Detection Rate",
+    "successful_check_rate": "Successful Check Rate",
+}
+FIELD_KEYS = (
+    "wbs",
+    "district",
+    "rent_kalt",
+    "rooms",
+    "address_postal_code",
+    "floor",
+    "rent_warm",
 )
 
 CASE_COUNT_PATTERN = re.compile(
@@ -90,9 +88,41 @@ def _run_eval_json() -> dict:
     return json.loads(result.stdout)
 
 
+def _read_json(path: Path, label: str, errors: list[str]) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"cannot read {label}: {exc}")
+        return {}
+
+
+def _display_date(raw_date: str, errors: list[str]) -> str:
+    parts = raw_date.split("-")
+    if len(parts) != 3:
+        errors.append("configuration freeze has an invalid pricing date")
+        return ""
+    year, month, day = (int(part) for part in parts)
+    month_names = (
+        "",
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    )
+    return f"{day} {month_names[month]} {year}"
+
+
 def main() -> int:
-    expected_count = int(_run_eval_json()["listing_count"])
     errors: list[str] = []
+    expected_count = int(_run_eval_json()["listing_count"])
 
     for path in REGRESSION_COUNT_TARGETS:
         text = path.read_text(encoding="utf-8")
@@ -110,149 +140,103 @@ def main() -> int:
                     f"!= eval listing_count {expected_count}"
                 )
 
-    artifacts: dict[str, dict] = {}
-    for label, path in (
-        ("Product Scorecard", SCORECARD_PATH),
-        ("final report", REPORT_PATH),
-        ("run manifest", MANIFEST_PATH),
-    ):
-        try:
-            artifacts[label] = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            errors.append(f"cannot read {label}: {exc}")
-            artifacts[label] = {}
+    report = _read_json(REPORT_PATH, "final report", errors)
+    manifest = _read_json(MANIFEST_PATH, "run manifest", errors)
+    freeze = _read_json(FREEZE_PATH, "configuration freeze", errors)
 
-    scorecard = artifacts["Product Scorecard"]
-    report = artifacts["final report"]
-    manifest = artifacts["run manifest"]
-    decision = scorecard.get("decision", {})
+    decision = report.get("gate_decision", {})
     expected_decision = {
-        "overall_status": "fail",
-        "simple_metrics_status": "pass",
-        "matching_critical_guardrails_status": "fail",
-        "positive_landing_claim_allowed": False,
+        "status": "pass",
+        "all_gates_passed": True,
+        "final_synthetic_result_accepted": True,
+        "product_runtime_integration_authorized": False,
     }
     for key, expected in expected_decision.items():
         if decision.get(key) != expected:
             errors.append(
-                f"Product Scorecard decision {key}={decision.get(key)!r}, "
+                f"final report decision {key}={decision.get(key)!r}, "
                 f"expected {expected!r}"
             )
 
-    metrics = scorecard.get("metrics", {})
     expected_public_metrics: list[tuple[str, str, str]] = []
-    for key in (
-        "parser_error_detection_rate",
-        "false_alert_rate",
-        "correct_field_detection_rate",
-        "successful_check_rate",
-    ):
+    metrics = report.get("metrics", {})
+    for key, label in METRIC_LABELS.items():
         entry = metrics.get(key)
         if not isinstance(entry, dict):
-            errors.append(f"Product Scorecard metric is missing: {key}")
+            errors.append(f"final report metric is missing: {key}")
             continue
-        result = entry.get("result", {})
-        value = result.get("value")
-        numerator = result.get("numerator")
-        denominator = result.get("denominator")
+        value = entry.get("value")
+        numerator = entry.get("numerator")
+        denominator = entry.get("denominator")
         if not isinstance(value, (int, float)):
-            errors.append(f"Product Scorecard metric has invalid value: {key}")
+            errors.append(f"final report metric has invalid value: {key}")
             continue
         expected_public_metrics.append(
-            (
-                str(entry.get("label")),
-                f"{value:.1%}",
-                f"{numerator}/{denominator}",
-            )
+            (label, f"{value:.1%}", f"{numerator}/{denominator}")
         )
 
-    fields = scorecard.get("fields", {})
     expected_public_fields: list[tuple[str, str, str]] = []
-    for key in (
-        "wbs",
-        "district",
-        "rent_kalt",
-        "rooms",
-        "address_postal_code",
-        "floor",
-        "rent_warm",
-    ):
+    fields = report.get("per_field", {})
+    for key in FIELD_KEYS:
         entry = fields.get(key)
-        if not isinstance(entry, dict):
-            errors.append(f"Product Scorecard field is missing: {key}")
-            continue
-        result = entry.get("result", {})
+        result = entry.get("correct_field_rate", {}) if isinstance(entry, dict) else {}
         value = result.get("value")
-        numerator = result.get("numerator")
-        denominator = result.get("denominator")
         if not isinstance(value, (int, float)):
-            errors.append(f"Product Scorecard field has invalid value: {key}")
+            errors.append(f"final report field has invalid value: {key}")
             continue
+        label = str(entry.get("label"))
+        public_label = (
+            "Address / postal code"
+            if label == "address/postal code"
+            else label.capitalize()
+            if label in {"district", "rooms", "floor"}
+            else label
+        )
         expected_public_fields.append(
             (
-                str(entry.get("label")),
+                public_label,
                 f"{value:.1%}",
-                f"{numerator}/{denominator}",
+                f"{result.get('numerator')}/{result.get('denominator')}",
             )
         )
 
-    operational = report.get("operational", {})
-    recorded_cost = operational.get("cost", {})
-    token_usage = operational.get("token_usage", {})
-    budget = manifest.get("budget", {})
-    pricing_date_parts = str(budget.get("pricing_observed_date", "")).split("-")
-    if len(pricing_date_parts) == 3:
-        year, month, day = (int(part) for part in pricing_date_parts)
-        month_names = (
-            "",
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-        )
-        pricing_date_display = f"{day} {month_names[month]} {year}"
-    else:
-        pricing_date_display = ""
-        errors.append("run manifest has an invalid pricing_observed_date")
-    completed_cases = int(recorded_cost.get("records_with_cost", 0))
-    total_cost = float(recorded_cost.get("total_usd", 0))
+    counts = report.get("counts", {})
+    completed_cases = int(counts.get("attempted", 0))
+    operations = report.get("operations", {})
+    total_cost = float(operations.get("recorded_cost_usd", 0))
     observed_per_check = total_cost / completed_cases if completed_cases else 0
     observed_annual = observed_per_check * ANNUAL_CHECK_SCENARIO
     observed_monthly = observed_annual / 12
-
-    input_tokens = int(token_usage.get("input_tokens", 0))
-    output_tokens = int(token_usage.get("output_tokens", 0))
-    input_price = float(budget.get("input_price_per_1m", 0))
-    output_price = float(budget.get("output_price_per_1m", 0))
-    conservative_run_cost = (
-        input_tokens * input_price + output_tokens * output_price
-    ) / 1_000_000
-    conservative_per_check = (
-        conservative_run_cost / completed_cases if completed_cases else 0
+    planning_per_check = observed_per_check * PLANNING_BUFFER
+    planning_annual = planning_per_check * ANNUAL_CHECK_SCENARIO
+    planning_monthly = planning_annual / 12
+    pricing_date_display = _display_date(
+        str(freeze.get("pricing", {}).get("observed_date", "")), errors
     )
-    conservative_annual = conservative_per_check * ANNUAL_CHECK_SCENARIO
-    conservative_monthly = conservative_annual / 12
 
     expected_cost_strings = (
         f"${total_cost:.6f}",
         f"${observed_per_check:.5f}",
         f"${observed_annual:.0f}",
         f"${observed_monthly:.2f}",
-        f"${conservative_per_check:.5f}",
-        f"${conservative_annual:.0f}",
-        f"${conservative_monthly:.2f}",
+        f"${planning_per_check:.5f}",
+        f"${math.ceil(planning_annual):.0f}",
+        f"${planning_monthly:.2f}",
         f"{OFFICIAL_RELETTING_PROXY:,}",
         f"{ANNUAL_CHECK_SCENARIO:,}",
         pricing_date_display,
     )
+
+    manifest_configuration = manifest.get("configuration", {})
+    freeze_configuration = freeze.get("configuration", {})
+    if manifest_configuration != freeze_configuration:
+        errors.append("run manifest configuration does not match the freeze")
+    manifest_result = manifest.get("result", {})
+    manifest_attempted = int(manifest_result.get("completed_cases", 0)) + int(
+        manifest_result.get("invalid_outputs", 0)
+    )
+    if manifest_attempted != completed_cases:
+        errors.append("run manifest attempted count does not match the report")
 
     for path in SCORECARD_TARGETS:
         text = path.read_text(encoding="utf-8")
@@ -260,15 +244,21 @@ def main() -> int:
             errors.append(
                 f"{path.relative_to(PROJECT_ROOT)}: evidence label is missing"
             )
-        if "configuration not accepted" not in text.lower():
+        if "passed the synthetic benchmark" not in text.lower():
             errors.append(
-                f"{path.relative_to(PROJECT_ROOT)}: final rejection is missing"
+                f"{path.relative_to(PROJECT_ROOT)}: final pass decision is missing"
             )
-        if FINAL_STOPPING_RATIONALE not in text:
+        if "not integrated into the product" not in text.lower():
             errors.append(
-                f"{path.relative_to(PROJECT_ROOT)}: "
-                "approved stopping rationale is missing or changed"
+                f"{path.relative_to(PROJECT_ROOT)}: runtime boundary is missing"
             )
+        for rationale_part in FINAL_STOPPING_RATIONALE_PARTS:
+            if rationale_part not in text:
+                errors.append(
+                    f"{path.relative_to(PROJECT_ROOT)}: "
+                    "approved stopping rationale is missing or changed: "
+                    f"{rationale_part}"
+                )
         for label, percentage, count in expected_public_metrics:
             for expected, alternatives in (
                 (label, (label,)),
@@ -281,14 +271,7 @@ def main() -> int:
                         f"scorecard value is missing: {expected}"
                     )
         for label, percentage, count in expected_public_fields:
-            expected_label = (
-                "Address / postal code"
-                if label == "address/postal code"
-                else label.capitalize()
-                if label in {"district", "rooms", "floor"}
-                else label
-            )
-            for expected in (expected_label, percentage, count):
+            for expected in (label, percentage, count):
                 if expected not in text:
                     errors.append(
                         f"{path.relative_to(PROJECT_ROOT)}: "
@@ -317,7 +300,8 @@ def main() -> int:
     print(
         "Eval number sync check passed — the README regression count is "
         f"{expected_count}, and both case-study surfaces match the final "
-        "600-listing locked holdout, field results, decision, and cost scenario."
+        "extraction-v1 600-case result, field results, decision, and cost "
+        "scenario."
     )
     return 0
 

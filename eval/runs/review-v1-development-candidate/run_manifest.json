@@ -1,0 +1,54 @@
+{
+  "budget": {
+    "cached_input_price_per_1m": "0.25",
+    "hard_limit_usd": "2.84",
+    "input_price_per_1m": "2.50",
+    "output_price_per_1m": "15.00",
+    "preflight_worst_case_usd": "2.831808",
+    "pricing_observed_date": "2026-07-30",
+    "pricing_source": "https://developers.openai.com/api/docs/pricing"
+  },
+  "case_count": 120,
+  "completed_at": "2026-07-30T16:34:09.974129+00:00",
+  "configuration": {
+    "max_output_tokens": 512,
+    "model": "gpt-5.6-terra",
+    "prompt_version": "review-v1",
+    "reasoning_effort": "high",
+    "retries": 0,
+    "service_tier": "default",
+    "store": false,
+    "strict_structured_outputs": true,
+    "timeout_seconds": 60.0
+  },
+  "configuration_freeze_sha256": "16fb7baa9d23bf8d9b6d5e56ee7dfc66c335bb64364b41f0ca191086ef992fe8",
+  "credential": {
+    "source": ".env.eval.local",
+    "value_persisted": false,
+    "variable": "OPENAI_API_KEY"
+  },
+  "execution_version": "review-execution-v1",
+  "hashes": {
+    "output_schema_sha256": "27c7d4b93418927434c0f56788c5293d78779f6a7f11296cd7bb0b67503bf2fd",
+    "prompt_sha256": "66cfff3e6e49cd0e0fcdde59590d08e0c92d26e9a199d47da2282c2092d7a5ef",
+    "rendered_inputs_sha256": "433a5dabce3923d5c1267e19884b90c2607b9fbb079439c1ffd67ac43fb3c7e3"
+  },
+  "input": {
+    "dataset_manifest_sha256": "0f71b7c048cd59c90ad14938afe60f4ff57bda90ddb7b34edeefde2d1ee2eafa",
+    "file": "model_inputs.jsonl",
+    "sha256": "2d24ea3a969e738eed6892dc2f8a31288d870c0facbb11d5f0e7c5fa8fc22a1a"
+  },
+  "product_boundary": "Development eval only; no product-runtime integration.",
+  "profile": "candidate",
+  "result": {
+    "completed_cases": 120,
+    "predictions_file": "predictions.jsonl",
+    "predictions_sha256": "ff3980cc89afe1fedd04dbe9cdf97c7a58c9d3924ed26e0b5a32a8336b67736a",
+    "recorded_cost_usd": 0.272532,
+    "technical_failures": 0
+  },
+  "schema_version": "1.0",
+  "split": "review_v1_development",
+  "started_at": "2026-07-30T16:29:58.415899+00:00",
+  "status": "completed"
+}

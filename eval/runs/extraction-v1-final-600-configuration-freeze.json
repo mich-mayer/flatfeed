@@ -1,0 +1,97 @@
+{
+  "authorization": {
+    "case_requests": 600,
+    "final_runs": 1,
+    "post_run_tuning_or_rescore": false,
+    "resume_or_overwrite": false,
+    "retries": 0
+  },
+  "boundaries": {
+    "natural_error_prevalence": false,
+    "product_runtime_modified": false,
+    "production_accuracy": false,
+    "synthetic_challenge_set": true
+  },
+  "budget": {
+    "expected_from_repriced_development_usage_usd": "1.477040",
+    "hard_limit_usd": "7.61",
+    "input_token_upper_bound": 830924,
+    "method": "Expected cost scales the recorded 120-case token usage by five at current prices. The hard limit prices UTF-8 bytes as input tokens, reserves maximum output for every case, and prices all input at the higher cache-write rate.",
+    "output_token_upper_bound": 460800,
+    "worst_case_cost_usd": "7.606910"
+  },
+  "configuration": {
+    "max_output_tokens": 768,
+    "model": "gpt-5.6-terra",
+    "model_receives_parser_snapshot": false,
+    "prompt_version": "extraction-v1",
+    "reasoning_effort": "high",
+    "retries": 0,
+    "service_tier": "default",
+    "store": false,
+    "strict_structured_outputs": true,
+    "timeout_seconds": 60.0
+  },
+  "created_on": "2026-07-30",
+  "dataset": {
+    "case_count": 600,
+    "clean": 300,
+    "corrupted": 300,
+    "error_distribution": {
+      "address_postal_code": 40,
+      "district": 30,
+      "floor": 25,
+      "rent_kalt": 60,
+      "rent_warm": 20,
+      "rooms": 50,
+      "wbs": 75
+    },
+    "manifest_sha256": "f0fce3a1edf07b93d0e9beb8b5050ce300c34fc5ae8cf63df4f032cf9103fd09",
+    "model_inputs_sha256": "49ce0f1d77a43286dfca90f3e11132357fb960da67a86fbd309f90c975e5d345",
+    "prior_artifact_count": 22,
+    "split": "extraction_v1_final_600",
+    "truth_sha256": "a7b2c2e0ad0bf21263ce7c76851cec3850c12b3b654473ee4a476401db8fb7a7",
+    "zero_overlap_with_prior_inputs": true
+  },
+  "hashes": {
+    "comparator_sha256": "af44c63ea695346ff8fb078dc39a182910c65cdcd49fae009597f8383d2f816c",
+    "contract_sha256": "37658d13f8e08a07425c18cffbb0bf1cc831e544ac8a1055e92c8d58010e0d40",
+    "final_runner_sha256": "6a33cb157530525b19c427b1bb4f1620dd4e01d06d2156de7c1f508b33aa6b28",
+    "output_schema_sha256": "282d33d4da832313d0f2e65b56b46ebc0210663adea53fba769e92be1dbc6588",
+    "prompt_sha256": "f5e405ea26ebb7dbff8433b18b2f131f186d3e349ef5c5a17361748487dc624c",
+    "scorer_and_execution_sha256": "1774220d7c77d7e998feba246bceb98e87282627baca20cb4503cae344043a48"
+  },
+  "pricing": {
+    "cache_write_per_1m_usd": "2.50",
+    "cached_input_per_1m_usd": "0.20",
+    "input_per_1m_usd": "2.00",
+    "observed_date": "2026-07-30",
+    "output_per_1m_usd": "12.00",
+    "source": "https://developers.openai.com/api/docs/pricing",
+    "verified_against_official_docs": true
+  },
+  "release_gates": {
+    "all_gates_must_pass": true,
+    "clean_false_alerts": "at most 3/300",
+    "correct_fields": "at least 294/300",
+    "errors_detected": "at least 294/300",
+    "field_minimums": {
+      "address_postal_code": 39,
+      "district": 30,
+      "floor": 25,
+      "rent_kalt": 59,
+      "rent_warm": 20,
+      "rooms": 49,
+      "wbs": 74
+    },
+    "successful_checks": "at least 597/600"
+  },
+  "requests": {
+    "case_requests": 600,
+    "maximum_total_api_calls": 601,
+    "model_availability_checks": 1,
+    "retries": 0
+  },
+  "schema_version": "1.0",
+  "status": "final_600_authorized_once"
+}

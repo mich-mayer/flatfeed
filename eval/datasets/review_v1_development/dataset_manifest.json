@@ -1,0 +1,233 @@
+{
+  "boundaries": {
+    "api_execution_authorized_by_manifest": false,
+    "development_only": true,
+    "final_600_case_evidence": false,
+    "hidden_truth_separate_from_model_inputs": true,
+    "openai_called_during_generation": false,
+    "prior_cases_reused": false,
+    "product_runtime_modified": false
+  },
+  "composition": {
+    "corruption_types": {
+      "address_house_number_shift": 4,
+      "district_neighbor_substitution": 8,
+      "floor_neighbor_value": 6,
+      "kaltmiete_amount_shift": 3,
+      "kaltmiete_label_swap": 7,
+      "postal_code_substitution": 6,
+      "rooms_neighbor_value": 20,
+      "warmmiete_amount_shift": 4,
+      "warmmiete_label_swap": 2,
+      "wbs_range_boundary_shift": 4,
+      "wbs_requirement_added": 1,
+      "wbs_requirement_dropped": 4,
+      "wbs_specificity_confusion": 1
+    },
+    "source": {
+      "districts": {
+        "Charlottenburg-Wilmersdorf": 10,
+        "Friedrichshain-Kreuzberg": 10,
+        "Lichtenberg": 10,
+        "Marzahn-Hellersdorf": 10,
+        "Mitte": 10,
+        "Neukölln": 10,
+        "Pankow": 10,
+        "Reinickendorf": 10,
+        "Spandau": 10,
+        "Steglitz-Zehlendorf": 10,
+        "Tempelhof-Schöneberg": 10,
+        "Treptow-Köpenick": 10
+      },
+      "format_variants": {
+        "compact_block": 20,
+        "costs_first": 20,
+        "label_table": 20,
+        "portal_lines": 20,
+        "prose_first": 20,
+        "sectioned": 20
+      },
+      "rooms": {
+        "1.0": 15,
+        "1.5": 15,
+        "2.0": 15,
+        "2.5": 15,
+        "3.0": 15,
+        "3.5": 15,
+        "4.0": 15,
+        "5.0": 15
+      },
+      "wbs_values": {
+        "100": 13,
+        "100, 140": 13,
+        "100, 140, 160, 180": 14,
+        "140, 160, 180, 220": 14,
+        "160, 180, 220": 26,
+        "No WBS required": 27,
+        "WBS required, type unknown": 13
+      }
+    }
+  },
+  "counts": {
+    "clean": 50,
+    "corrupted": 70,
+    "total": 120
+  },
+  "derived_seeds": {
+    "source_cases": 6204832850760756233
+  },
+  "error_distribution": {
+    "address_postal_code": 10,
+    "district": 8,
+    "floor": 6,
+    "rent_kalt": 10,
+    "rent_warm": 6,
+    "rooms": 20,
+    "wbs": 10
+  },
+  "experiment": "synthetic offline AI QA review-contract development",
+  "isolation": {
+    "comparison_basis": [
+      "raw_text plus parser_snapshot",
+      "raw_text",
+      "case_id"
+    ],
+    "overlaps": {
+      "ai_qa/development_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "ai_qa/locked_holdout_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_calibration/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_calibration/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_effort_screen/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_low_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_low_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v3_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v3_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v4_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v4_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v5_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v5_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_calibration_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_calibration_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_effort_screen/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_high_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_high_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_high_reasoning_screen/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_prompt_reasoning_screen/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_v2_prompt_screen/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      }
+    },
+    "prior_artifact_count": 21
+  },
+  "model_inputs": {
+    "bytes": 61963,
+    "file": "model_inputs.jsonl",
+    "lines": 120,
+    "sha256": "2d24ea3a969e738eed6892dc2f8a31288d870c0facbb11d5f0e7c5fa8fc22a1a"
+  },
+  "planned_comparison": {
+    "baseline": {
+      "model": "gpt-5.6-terra",
+      "prompt_version": "terra-v1",
+      "reasoning_effort": "high"
+    },
+    "candidate": {
+      "model": "gpt-5.6-terra",
+      "prompt_version": "review-v1",
+      "reasoning_effort": "high"
+    },
+    "same_cases_for_both_profiles": true
+  },
+  "purpose": "Develop and compare an evidence-grounded admin-review output contract before any new final 600-case evaluation.",
+  "schema_version": "1.0",
+  "seed": 20260901,
+  "split": "review_v1_development",
+  "truth": {
+    "bytes": 20967,
+    "file": "truth.jsonl",
+    "lines": 120,
+    "sha256": "345a2b92d32f740050bdb51edb108b488747524db989ca92cf7c044328ab9091"
+  }
+}

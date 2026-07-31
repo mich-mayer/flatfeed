@@ -1,0 +1,54 @@
+{
+  "budget": {
+    "cached_input_price_per_1m": "0.25",
+    "hard_limit_usd": "2.08",
+    "input_price_per_1m": "2.50",
+    "output_price_per_1m": "15.00",
+    "preflight_worst_case_usd": "2.077008",
+    "pricing_observed_date": "2026-07-30",
+    "pricing_source": "https://developers.openai.com/api/docs/pricing"
+  },
+  "case_count": 120,
+  "completed_at": "2026-07-30T16:29:58.405376+00:00",
+  "configuration": {
+    "max_output_tokens": 256,
+    "model": "gpt-5.6-terra",
+    "prompt_version": "terra-v1",
+    "reasoning_effort": "high",
+    "retries": 0,
+    "service_tier": "default",
+    "store": false,
+    "strict_structured_outputs": true,
+    "timeout_seconds": 60.0
+  },
+  "configuration_freeze_sha256": "16fb7baa9d23bf8d9b6d5e56ee7dfc66c335bb64364b41f0ca191086ef992fe8",
+  "credential": {
+    "source": ".env.eval.local",
+    "value_persisted": false,
+    "variable": "OPENAI_API_KEY"
+  },
+  "execution_version": "review-execution-v1",
+  "hashes": {
+    "output_schema_sha256": "f7c5d21b7ee06ff3647c4726253c74eeccecd250ec96c7275d07f70d24989945",
+    "prompt_sha256": "672629d914d73cde056968c0249ae14b522703987d632f967eee866496d8f6c9",
+    "rendered_inputs_sha256": "433a5dabce3923d5c1267e19884b90c2607b9fbb079439c1ffd67ac43fb3c7e3"
+  },
+  "input": {
+    "dataset_manifest_sha256": "0f71b7c048cd59c90ad14938afe60f4ff57bda90ddb7b34edeefde2d1ee2eafa",
+    "file": "model_inputs.jsonl",
+    "sha256": "2d24ea3a969e738eed6892dc2f8a31288d870c0facbb11d5f0e7c5fa8fc22a1a"
+  },
+  "product_boundary": "Development eval only; no product-runtime integration.",
+  "profile": "baseline",
+  "result": {
+    "completed_cases": 120,
+    "predictions_file": "predictions.jsonl",
+    "predictions_sha256": "e3622803bb468bc3b1e0e31b591c52a95d96a6b82b3cffa3b4355bc18c88ef88",
+    "recorded_cost_usd": 0.194043,
+    "technical_failures": 0
+  },
+  "schema_version": "1.0",
+  "split": "review_v1_development",
+  "started_at": "2026-07-30T16:26:16.649885+00:00",
+  "status": "completed"
+}

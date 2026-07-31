@@ -420,7 +420,7 @@ img {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
   gap: 1.5rem 4rem;
-  align-items: end;
+  align-items: start;
 }
 
 .section-heading .kicker {

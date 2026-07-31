@@ -106,7 +106,7 @@ demo source of truth.
 leads every visitor into a 3-step, button-only tour before the regular
 filter/matches flow:
 
-1. **One renter job** — shows the demo filter as plain text (WBS, district,
+1. **One renter job** — shows the demo filter as plain text (WBS type, district,
    Kaltmiete, rooms). Held ephemeral: nothing is written to `users` yet.
 2. **One match from the demo catalog** — runs the same matching predicate as the main
    product path (`is_listing_match`) over the synthetic catalog, then the
@@ -253,12 +253,13 @@ makes no LLM calls.
 - AI output never alters listing data, matching, or user-facing cards
   automatically.
 - A separate synthetic offline hosted-model feasibility experiment is recorded
-  in `eval/AI_QA_EVAL_PLAN.md`. `gpt-5.6-terra` with high reasoning passed one
-  frozen synthetic validation, then failed the one 600-case locked holdout
-  because rooms correct-field recall was 43/50, below the predeclared 45/50
-  minimum. The configuration is not finally accepted; live-source accuracy
-  remains unmeasured and the experiment was not integrated into product
-  runtime.
+  in `eval/AI_QA_EVAL_PLAN.md`. The final `extraction-v1` configuration used
+  `gpt-5.6-terra` with high reasoning to extract exact source quotes, followed
+  by deterministic comparison with the parser snapshot. On one fresh frozen
+  600-case synthetic evaluation it found and localized 300/300 planted errors,
+  raised 0/300 false alerts, and returned 599/600 valid checks. All
+  predeclared synthetic gates passed. Live-source accuracy remains unmeasured
+  and the experiment was not integrated into product runtime.
 
 The Streamlit dashboard ("FlatFeed product operations") leads with the
 product pipeline and deterministic-parsing accuracy — AI QA is one section

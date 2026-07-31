@@ -1,0 +1,149 @@
+{
+  "counts": {
+    "attempted": 120,
+    "clean": 50,
+    "corrupted": 70
+  },
+  "diagnostics": {
+    "false_negatives": [
+      {
+        "case_id": "aqa-899b4f5b13bd2c79d63d",
+        "covered": true,
+        "expected_field": "rooms",
+        "failure_type": null
+      },
+      {
+        "case_id": "aqa-cc6f10fc2b3bb6fb6839",
+        "covered": true,
+        "expected_field": "district",
+        "failure_type": null
+      },
+      {
+        "case_id": "aqa-093d96a19d2bd0f00d68",
+        "covered": true,
+        "expected_field": "rooms",
+        "failure_type": null
+      },
+      {
+        "case_id": "aqa-33003b1120fd0e2a733a",
+        "covered": true,
+        "expected_field": "rooms",
+        "failure_type": null
+      }
+    ],
+    "false_positives": [],
+    "wrong_fields": []
+  },
+  "failure_types": {},
+  "metrics": {
+    "case_accuracy": {
+      "denominator": 120,
+      "numerator": 116,
+      "value": 0.9666666666666667
+    },
+    "correct_field_detection_rate": {
+      "denominator": 70,
+      "numerator": 66,
+      "value": 0.9428571428571428
+    },
+    "false_alert_rate": {
+      "denominator": 50,
+      "numerator": 0,
+      "value": 0.0
+    },
+    "parser_error_detection_rate": {
+      "denominator": 70,
+      "numerator": 66,
+      "value": 0.9428571428571428
+    },
+    "successful_check_rate": {
+      "denominator": 120,
+      "numerator": 120,
+      "value": 1.0
+    }
+  },
+  "per_field": {
+    "address_postal_code": {
+      "correct_field": 10,
+      "correct_field_rate": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0
+      },
+      "detected": 10,
+      "label": "address/postal code",
+      "total": 10
+    },
+    "district": {
+      "correct_field": 7,
+      "correct_field_rate": {
+        "denominator": 8,
+        "numerator": 7,
+        "value": 0.875
+      },
+      "detected": 7,
+      "label": "district",
+      "total": 8
+    },
+    "floor": {
+      "correct_field": 6,
+      "correct_field_rate": {
+        "denominator": 6,
+        "numerator": 6,
+        "value": 1.0
+      },
+      "detected": 6,
+      "label": "floor",
+      "total": 6
+    },
+    "rent_kalt": {
+      "correct_field": 10,
+      "correct_field_rate": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0
+      },
+      "detected": 10,
+      "label": "Kaltmiete",
+      "total": 10
+    },
+    "rent_warm": {
+      "correct_field": 6,
+      "correct_field_rate": {
+        "denominator": 6,
+        "numerator": 6,
+        "value": 1.0
+      },
+      "detected": 6,
+      "label": "Warmmiete",
+      "total": 6
+    },
+    "rooms": {
+      "correct_field": 17,
+      "correct_field_rate": {
+        "denominator": 20,
+        "numerator": 17,
+        "value": 0.85
+      },
+      "detected": 17,
+      "label": "rooms",
+      "total": 20
+    },
+    "wbs": {
+      "correct_field": 10,
+      "correct_field_rate": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0
+      },
+      "detected": 10,
+      "label": "WBS",
+      "total": 10
+    }
+  },
+  "profile": "candidate",
+  "review_reasons": {
+    "direct_mismatch": 66
+  },
+  "scorer_version": "review-v1"
+}

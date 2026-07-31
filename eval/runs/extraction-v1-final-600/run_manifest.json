@@ -1,0 +1,78 @@
+{
+  "budget": {
+    "expected_from_repriced_development_usage_usd": "1.477040",
+    "hard_limit_usd": "7.61",
+    "input_token_upper_bound": 830924,
+    "method": "Expected cost scales the recorded 120-case token usage by five at current prices. The hard limit prices UTF-8 bytes as input tokens, reserves maximum output for every case, and prices all input at the higher cache-write rate.",
+    "output_token_upper_bound": 460800,
+    "worst_case_cost_usd": "7.606910"
+  },
+  "completed_at": "2026-07-30T17:43:11.106225+00:00",
+  "configuration": {
+    "max_output_tokens": 768,
+    "model": "gpt-5.6-terra",
+    "model_receives_parser_snapshot": false,
+    "prompt_version": "extraction-v1",
+    "reasoning_effort": "high",
+    "retries": 0,
+    "service_tier": "default",
+    "store": false,
+    "strict_structured_outputs": true,
+    "timeout_seconds": 60.0
+  },
+  "configuration_freeze_sha256": "3923c7011c6345b6730785c4ce408816cbf4383c20e5baec649a48b2cfec85d6",
+  "credential": {
+    "source": ".env.eval.local",
+    "value_persisted": false,
+    "variable": "OPENAI_API_KEY"
+  },
+  "dataset": {
+    "case_count": 600,
+    "clean": 300,
+    "corrupted": 300,
+    "error_distribution": {
+      "address_postal_code": 40,
+      "district": 30,
+      "floor": 25,
+      "rent_kalt": 60,
+      "rent_warm": 20,
+      "rooms": 50,
+      "wbs": 75
+    },
+    "manifest_sha256": "f0fce3a1edf07b93d0e9beb8b5050ce300c34fc5ae8cf63df4f032cf9103fd09",
+    "model_inputs_sha256": "49ce0f1d77a43286dfca90f3e11132357fb960da67a86fbd309f90c975e5d345",
+    "prior_artifact_count": 22,
+    "split": "extraction_v1_final_600",
+    "truth_sha256": "a7b2c2e0ad0bf21263ce7c76851cec3850c12b3b654473ee4a476401db8fb7a7",
+    "zero_overlap_with_prior_inputs": true
+  },
+  "release_gates": {
+    "all_gates_must_pass": true,
+    "clean_false_alerts": "at most 3/300",
+    "correct_fields": "at least 294/300",
+    "errors_detected": "at least 294/300",
+    "field_minimums": {
+      "address_postal_code": 39,
+      "district": 30,
+      "floor": 25,
+      "rent_kalt": 59,
+      "rent_warm": 20,
+      "rooms": 49,
+      "wbs": 74
+    },
+    "successful_checks": "at least 597/600"
+  },
+  "result": {
+    "completed_cases": 599,
+    "final_synthetic_result_accepted": true,
+    "gate_status": "pass",
+    "invalid_outputs": 1,
+    "predictions_sha256": "9df650a813d71e52169dd5bcfa1a817861e6629906b5ea07b85a9f7c15504865",
+    "recorded_cost_usd": 1.412906,
+    "report_sha256": "5d4e3c87fd3490ede024c8193995d9f0e73889581509b03f3e66aaf4de5b48c3",
+    "technical_failures": 0
+  },
+  "schema_version": "1.0",
+  "started_at": "2026-07-30T17:21:27.562237+00:00",
+  "status": "completed"
+}

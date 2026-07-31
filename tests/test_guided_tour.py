@@ -491,7 +491,7 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(callback.message.answered), 1)
         text, markup = callback.message.answered[0]
         self.assertIn("How the matching path works", text)
-        for word in ("Collect:", "Normalize:", "Check:", "Match:", "Deliver:"):
+        for word in ("Collect:", "Normalize:", "Enrich:", "Match:", "Deliver:"):
             self.assertIn(word, text)
         self.assertIn("/delete", text)
         next_button = markup.inline_keyboard[0][0]

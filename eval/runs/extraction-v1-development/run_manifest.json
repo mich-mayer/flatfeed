@@ -1,0 +1,58 @@
+{
+  "budget": {
+    "hard_limit_usd": "1.91",
+    "pricing": {
+      "cache_write_per_1m_usd": "3.125",
+      "cached_input_per_1m_usd": "0.25",
+      "input_per_1m_usd": "2.50",
+      "must_refresh_before_execute": false,
+      "observed_date": "2026-07-30",
+      "output_per_1m_usd": "15.00",
+      "source": "https://developers.openai.com/api/docs/pricing",
+      "verified_against_official_docs": true
+    }
+  },
+  "completed_at": "2026-07-30T17:10:10.625446+00:00",
+  "configuration": {
+    "max_output_tokens": 768,
+    "model": "gpt-5.6-terra",
+    "model_receives_parser_snapshot": false,
+    "prompt_version": "extraction-v1",
+    "reasoning_effort": "high",
+    "retries": 0,
+    "service_tier": "default",
+    "store": false,
+    "strict_structured_outputs": true,
+    "timeout_seconds": 60.0
+  },
+  "configuration_freeze_sha256": "28dbd970eeb4164db78a2bda719fd744ae9584a0a60cce28c0cd87ad191ef49a",
+  "credential": {
+    "source": ".env.eval.local",
+    "value_persisted": false,
+    "variable": "OPENAI_API_KEY"
+  },
+  "dataset": {
+    "case_count": 120,
+    "manifest_file": "dataset_manifest.json",
+    "manifest_sha256": "0f71b7c048cd59c90ad14938afe60f4ff57bda90ddb7b34edeefde2d1ee2eafa",
+    "model_inputs_file": "model_inputs.jsonl",
+    "model_inputs_sha256": "2d24ea3a969e738eed6892dc2f8a31288d870c0facbb11d5f0e7c5fa8fc22a1a",
+    "reused_development_set": true,
+    "split": "review_v1_development",
+    "truth_file": "truth.jsonl",
+    "truth_sha256": "345a2b92d32f740050bdb51edb108b488747524db989ca92cf7c044328ab9091"
+  },
+  "execution_version": "extraction-execution-v1",
+  "result": {
+    "completed_cases": 120,
+    "gate_status": "fail",
+    "invalid_outputs": 0,
+    "predictions_sha256": "7de6e5b305652e0807cdb7b5081d899b1d9016ce333ab87fae3312d2ad6bf375",
+    "recorded_cost_usd": 0.36926,
+    "report_sha256": "101805ca1ea12af53a062acf6e36ac5ef36d7b9167ee482e05caa404bbc1dc9d",
+    "technical_failures": 0
+  },
+  "schema_version": "1.0",
+  "started_at": "2026-07-30T17:06:04.880610+00:00",
+  "status": "completed"
+}

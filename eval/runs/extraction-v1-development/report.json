@@ -1,0 +1,674 @@
+{
+  "counts": {
+    "attempted": 120,
+    "clean": 50,
+    "corrupted": 70
+  },
+  "diagnostics": {
+    "false_negatives": [],
+    "false_positives": [
+      {
+        "case_id": "aqa-186f6654782b42491979",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-f1922f1d5e79d411b50b",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-2ae1d717c727db3b75ee",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-a2b7a9e180ddd9b7e523",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-2f2b16172a7498c0844b",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-53c21ea00eba81139094",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-d72f4597c0e27286c9f4",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-47558201719722666347",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-e0e95cca2eb0be09ccd6",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-03505f9510cd3808dfad",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-568e48e5b8fe7db04876",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-2b2b6872994360de418f",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-12c7c82ccd3fc731c47d",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-591007d1dfd93b2cefff",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-4e70b7763d60bc482c1a",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-43f426237663fb7e3b53",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-c5b30bce63d51a6b83ed",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-7276cdc6cfe13c789c1d",
+        "issue_fields": [
+          "floor"
+        ]
+      },
+      {
+        "case_id": "aqa-4dd778d8dde5f3c016d6",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-9d6e6641945912cdfc54",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-68fc3c5016965428b067",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-c489a0cbcb17c052b794",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-c28ef8900f9e8815e8a9",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-db736564853f7f358cad",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-95171fa423f1c2ab6968",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-244d83b34a27107919c8",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-cdd357ce1d73256d5d14",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-a6f4152b6205f48de70f",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-8f3c57d06dd6a5892c4d",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-ffbfe4881ed5bbf781f9",
+        "issue_fields": [
+          "address_postal_code",
+          "floor"
+        ]
+      },
+      {
+        "case_id": "aqa-b13e47c6dde612094d4b",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-f5bae007a9bafdec8629",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-308992234faff5a81d9a",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-d06d2027c4252ba1b1f9",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-3c2f63bb916773682707",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-65f3147920664522a6e4",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-d3ba4e476d0f2b4481d5",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-e8013252cc110cf70594",
+        "issue_fields": [
+          "address_postal_code"
+        ]
+      }
+    ],
+    "wrong_fields": [
+      {
+        "case_id": "aqa-eaa9ccbd895d22299c90",
+        "expected_field": "wbs",
+        "issue_fields": [
+          "wbs",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-bb8d1c71f4a80bf8c7c6",
+        "expected_field": "rent_warm",
+        "issue_fields": [
+          "address_postal_code",
+          "rent_warm"
+        ]
+      },
+      {
+        "case_id": "aqa-899b4f5b13bd2c79d63d",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-c0fcb8c5ef3b4f9b73f5",
+        "expected_field": "rent_warm",
+        "issue_fields": [
+          "address_postal_code",
+          "rent_warm"
+        ]
+      },
+      {
+        "case_id": "aqa-64574e38451de5e78418",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-27ddf54b5cb4120e784c",
+        "expected_field": "rent_kalt",
+        "issue_fields": [
+          "rent_kalt",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-8a8897643ce871a0c675",
+        "expected_field": "district",
+        "issue_fields": [
+          "address_postal_code",
+          "district"
+        ]
+      },
+      {
+        "case_id": "aqa-250d141c5beec77a4b13",
+        "expected_field": "rent_kalt",
+        "issue_fields": [
+          "rent_kalt",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-9d00bfe390718daf53f9",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-e493197d6c60f49fab82",
+        "expected_field": "rent_kalt",
+        "issue_fields": [
+          "rent_kalt",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-593afb77b2282f8d5bd3",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-ceda527856135decebfd",
+        "expected_field": "floor",
+        "issue_fields": [
+          "address_postal_code",
+          "floor"
+        ]
+      },
+      {
+        "case_id": "aqa-89d8eb0cd06f91d37a39",
+        "expected_field": "wbs",
+        "issue_fields": [
+          "wbs",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-cc6f10fc2b3bb6fb6839",
+        "expected_field": "district",
+        "issue_fields": [
+          "address_postal_code",
+          "district"
+        ]
+      },
+      {
+        "case_id": "aqa-3b5684c8f6cf8b5ef8b9",
+        "expected_field": "floor",
+        "issue_fields": [
+          "address_postal_code",
+          "floor"
+        ]
+      },
+      {
+        "case_id": "aqa-6403204a8a7d7690f2d8",
+        "expected_field": "rent_kalt",
+        "issue_fields": [
+          "rent_kalt",
+          "address_postal_code",
+          "floor"
+        ]
+      },
+      {
+        "case_id": "aqa-26301bb343e72cad7693",
+        "expected_field": "rent_kalt",
+        "issue_fields": [
+          "rent_kalt",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-6afdf2d7ed7bfe301cf4",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-88db122108a16596e834",
+        "expected_field": "rent_kalt",
+        "issue_fields": [
+          "rent_kalt",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-2156f893bf6a9d13a57f",
+        "expected_field": "district",
+        "issue_fields": [
+          "address_postal_code",
+          "district"
+        ]
+      },
+      {
+        "case_id": "aqa-7affce6a25ccdfbf9722",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-b7079f698e7f4bb46623",
+        "expected_field": "rent_warm",
+        "issue_fields": [
+          "address_postal_code",
+          "rent_warm"
+        ]
+      },
+      {
+        "case_id": "aqa-c3821ca11a2ea39dc7fa",
+        "expected_field": "district",
+        "issue_fields": [
+          "address_postal_code",
+          "district"
+        ]
+      },
+      {
+        "case_id": "aqa-10cc136664302510ec20",
+        "expected_field": "address_postal_code",
+        "issue_fields": [
+          "address_postal_code",
+          "floor"
+        ]
+      },
+      {
+        "case_id": "aqa-a956178a64b9d372a729",
+        "expected_field": "district",
+        "issue_fields": [
+          "address_postal_code",
+          "district",
+          "floor"
+        ]
+      },
+      {
+        "case_id": "aqa-c28a0e6ea44330447433",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-62f9bdc5eb5d08d65356",
+        "expected_field": "rent_kalt",
+        "issue_fields": [
+          "rent_kalt",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-093d96a19d2bd0f00d68",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-c66ee5878cac6f3d0488",
+        "expected_field": "floor",
+        "issue_fields": [
+          "address_postal_code",
+          "floor"
+        ]
+      },
+      {
+        "case_id": "aqa-30ade94ad13847cbc71f",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-33003b1120fd0e2a733a",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-6e49629161e4e97ae910",
+        "expected_field": "rent_warm",
+        "issue_fields": [
+          "address_postal_code",
+          "rent_warm"
+        ]
+      },
+      {
+        "case_id": "aqa-d47d12393e399c4d0145",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-3fefea5dd294b5912713",
+        "expected_field": "rooms",
+        "issue_fields": [
+          "rooms",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-730b04c33fecc854c4da",
+        "expected_field": "wbs",
+        "issue_fields": [
+          "wbs",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-3da26344c2d8e93323fe",
+        "expected_field": "rent_kalt",
+        "issue_fields": [
+          "rent_kalt",
+          "address_postal_code"
+        ]
+      },
+      {
+        "case_id": "aqa-a7fe8d54c7499f0a6792",
+        "expected_field": "wbs",
+        "issue_fields": [
+          "wbs",
+          "address_postal_code"
+        ]
+      }
+    ]
+  },
+  "failure_types": {},
+  "gate_decision": {
+    "all_gates_passed": false,
+    "gates": {
+      "address_postal_code_10_of_10": false,
+      "clean_false_alerts_at_most_1_of_50": false,
+      "correct_fields_at_least_68_of_70": false,
+      "district_8_of_8": false,
+      "errors_detected_at_least_68_of_70": true,
+      "floor_6_of_6": false,
+      "improves_previous_17_of_20_rooms": false,
+      "improves_previous_66_of_70_correct_fields": false,
+      "no_false_alert_regression_from_previous_0_of_50": false,
+      "rent_kalt_10_of_10": false,
+      "rent_warm_6_of_6": false,
+      "rooms_at_least_19_of_20": false,
+      "successful_checks_at_least_119_of_120": true,
+      "wbs_10_of_10": false
+    },
+    "new_600_case_evaluation_authorized": false,
+    "status": "fail"
+  },
+  "metrics": {
+    "case_accuracy": {
+      "denominator": 120,
+      "numerator": 45,
+      "value": 0.375
+    },
+    "correct_field_detection_rate": {
+      "denominator": 70,
+      "numerator": 33,
+      "value": 0.4714285714285714
+    },
+    "false_alert_rate": {
+      "denominator": 50,
+      "numerator": 38,
+      "value": 0.76
+    },
+    "parser_error_detection_rate": {
+      "denominator": 70,
+      "numerator": 70,
+      "value": 1.0
+    },
+    "successful_check_rate": {
+      "denominator": 120,
+      "numerator": 120,
+      "value": 1.0
+    }
+  },
+  "per_field": {
+    "address_postal_code": {
+      "correct_field": 9,
+      "correct_field_rate": {
+        "denominator": 10,
+        "numerator": 9,
+        "value": 0.9
+      },
+      "detected": 10,
+      "label": "address/postal code",
+      "total": 10
+    },
+    "district": {
+      "correct_field": 3,
+      "correct_field_rate": {
+        "denominator": 8,
+        "numerator": 3,
+        "value": 0.375
+      },
+      "detected": 8,
+      "label": "district",
+      "total": 8
+    },
+    "floor": {
+      "correct_field": 3,
+      "correct_field_rate": {
+        "denominator": 6,
+        "numerator": 3,
+        "value": 0.5
+      },
+      "detected": 6,
+      "label": "floor",
+      "total": 6
+    },
+    "rent_kalt": {
+      "correct_field": 2,
+      "correct_field_rate": {
+        "denominator": 10,
+        "numerator": 2,
+        "value": 0.2
+      },
+      "detected": 10,
+      "label": "Kaltmiete",
+      "total": 10
+    },
+    "rent_warm": {
+      "correct_field": 2,
+      "correct_field_rate": {
+        "denominator": 6,
+        "numerator": 2,
+        "value": 0.3333333333333333
+      },
+      "detected": 6,
+      "label": "Warmmiete",
+      "total": 6
+    },
+    "rooms": {
+      "correct_field": 8,
+      "correct_field_rate": {
+        "denominator": 20,
+        "numerator": 8,
+        "value": 0.4
+      },
+      "detected": 20,
+      "label": "rooms",
+      "total": 20
+    },
+    "wbs": {
+      "correct_field": 6,
+      "correct_field_rate": {
+        "denominator": 10,
+        "numerator": 6,
+        "value": 0.6
+      },
+      "detected": 10,
+      "label": "WBS",
+      "total": 10
+    }
+  },
+  "review_reasons": {
+    "direct_mismatch": 76,
+    "unclear_source": 72
+  },
+  "scorer_version": "extraction-v1"
+}

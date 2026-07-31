@@ -1,0 +1,144 @@
+{
+  "counts": {
+    "attempted": 120,
+    "clean": 50,
+    "corrupted": 70
+  },
+  "diagnostics": {
+    "false_negatives": [],
+    "false_positives": [],
+    "wrong_fields": []
+  },
+  "failure_types": {},
+  "gate_decision": {
+    "all_gates_passed": true,
+    "gates": {
+      "address_postal_code_10_of_10": true,
+      "clean_false_alerts_at_most_1_of_50": true,
+      "correct_fields_at_least_68_of_70": true,
+      "district_8_of_8": true,
+      "errors_detected_at_least_68_of_70": true,
+      "floor_6_of_6": true,
+      "improves_previous_17_of_20_rooms": true,
+      "improves_previous_66_of_70_correct_fields": true,
+      "no_false_alert_regression_from_previous_0_of_50": true,
+      "rent_kalt_10_of_10": true,
+      "rent_warm_6_of_6": true,
+      "rooms_at_least_19_of_20": true,
+      "successful_checks_at_least_119_of_120": true,
+      "wbs_10_of_10": true
+    },
+    "new_600_case_evaluation_authorized": true,
+    "status": "pass"
+  },
+  "metrics": {
+    "case_accuracy": {
+      "denominator": 120,
+      "numerator": 120,
+      "value": 1.0
+    },
+    "correct_field_detection_rate": {
+      "denominator": 70,
+      "numerator": 70,
+      "value": 1.0
+    },
+    "false_alert_rate": {
+      "denominator": 50,
+      "numerator": 0,
+      "value": 0.0
+    },
+    "parser_error_detection_rate": {
+      "denominator": 70,
+      "numerator": 70,
+      "value": 1.0
+    },
+    "successful_check_rate": {
+      "denominator": 120,
+      "numerator": 120,
+      "value": 1.0
+    }
+  },
+  "per_field": {
+    "address_postal_code": {
+      "correct_field": 10,
+      "correct_field_rate": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0
+      },
+      "detected": 10,
+      "label": "address/postal code",
+      "total": 10
+    },
+    "district": {
+      "correct_field": 8,
+      "correct_field_rate": {
+        "denominator": 8,
+        "numerator": 8,
+        "value": 1.0
+      },
+      "detected": 8,
+      "label": "district",
+      "total": 8
+    },
+    "floor": {
+      "correct_field": 6,
+      "correct_field_rate": {
+        "denominator": 6,
+        "numerator": 6,
+        "value": 1.0
+      },
+      "detected": 6,
+      "label": "floor",
+      "total": 6
+    },
+    "rent_kalt": {
+      "correct_field": 10,
+      "correct_field_rate": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0
+      },
+      "detected": 10,
+      "label": "Kaltmiete",
+      "total": 10
+    },
+    "rent_warm": {
+      "correct_field": 6,
+      "correct_field_rate": {
+        "denominator": 6,
+        "numerator": 6,
+        "value": 1.0
+      },
+      "detected": 6,
+      "label": "Warmmiete",
+      "total": 6
+    },
+    "rooms": {
+      "correct_field": 20,
+      "correct_field_rate": {
+        "denominator": 20,
+        "numerator": 20,
+        "value": 1.0
+      },
+      "detected": 20,
+      "label": "rooms",
+      "total": 20
+    },
+    "wbs": {
+      "correct_field": 10,
+      "correct_field_rate": {
+        "denominator": 10,
+        "numerator": 10,
+        "value": 1.0
+      },
+      "detected": 10,
+      "label": "WBS",
+      "total": 10
+    }
+  },
+  "review_reasons": {
+    "direct_mismatch": 70
+  },
+  "scorer_version": "extraction-v1"
+}

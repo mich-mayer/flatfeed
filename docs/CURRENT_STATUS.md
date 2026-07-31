@@ -1,6 +1,6 @@
 # FlatFeed Current Status
 
-**Last verified:** 2026-07-24  
+**Last verified:** 2026-07-31
 **Purpose:** short handoff for a new human or AI work session. Read this after
 `AGENTS.md` / `CLAUDE.md` and before proposing the next experiment.
 
@@ -12,7 +12,7 @@ the full experiment history and contracts belong in
 ## Product State
 
 - FlatFeed is a product-first portfolio prototype that gives renters one
-  Telegram feed for Berlin WBS listings matching four saved criteria: WBS,
+  Telegram feed for Berlin WBS listings matching four saved criteria: WBS type,
   district, maximum Kaltmiete, and rooms.
 - The implemented demo uses one synthetic source adapter. It does not scrape or
   redistribute real housing-company listings and does not claim live source
@@ -25,81 +25,53 @@ the full experiment history and contracts belong in
 - The public Telegram demo still uses the deterministic mock provider. No
   hosted model from the offline experiment is integrated into product runtime.
 
-## What The Offline AI QA Experiment Tested
+## Final AI QA Evaluation
 
-The experiment used synthetic listing text with hidden ground truth to test
-whether a hosted model could compare the raw listing with deterministic parser
-output and identify:
-
-1. whether the parser made an error;
-2. which field was wrong;
-3. whether a clean parse could pass without a false alert;
-4. whether every attempted check returned a valid structured response.
-
-The seven evaluated fields were WBS, district, Kaltmiete, rooms,
-address/postal code, floor, and Warmmiete. The matching-critical fields were
-WBS, district, Kaltmiete, and rooms.
-
-The four simple product-facing metrics are:
-
-- **Parser Error Detection Rate:** detected corrupted listings divided by all
-  corrupted listings.
-- **False Alert Rate:** clean listings incorrectly flagged divided by all clean
-  listings.
-- **Correct Field Detection Rate:** corrupted listings where the model named
-  the correct field divided by all corrupted listings.
-- **Successful Check Rate:** schema-conforming responses divided by all
-  attempted checks.
-
-Per-field results remain necessary guardrails because a strong aggregate can
-hide a weakness in one matching-critical field.
-
-## Final Selected Configuration And Result
-
-The final selected configuration was:
+The accepted synthetic configuration is:
 
 - model: `gpt-5.6-terra`;
 - reasoning effort: `high`;
-- prompt: `terra-v1`;
+- prompt: `extraction-v1`;
 - strict Structured Outputs;
-- `max_output_tokens=256`;
-- retries: `0`;
-- service tier: `default`.
+- `max_output_tokens=768`;
+- zero retries and no post-run tuning or rescoring.
 
-It passed a fresh 280-case frozen synthetic validation. It was then run exactly
-once on the original independent 600-case locked holdout: 300 clean cases and
-300 cases with exactly one planted parser error.
+The model receives only raw listing text and returns exact source quotes for
+eight values. Deterministic code compares those values with the parser
+snapshot. A mismatch or unreadable value produces one admin-facing outcome:
+`review_required`. The model does not decide what renters see.
 
-The four aggregate holdout metrics passed:
+The final dataset was newly generated and frozen before the API run. It
+contains 600 synthetic listings: 300 clean and 300 with one planted parser
+error. Its inputs have no overlap with 22 prior input artifacts.
 
-| Metric | Result | Gate |
-|---|---:|---:|
-| Parser Error Detection Rate | 291/300, 97.0% | at least 285/300 |
-| False Alert Rate | 0/300, 0.0% | at most 9/300 |
-| Correct Field Detection Rate | 291/300, 97.0% | at least 270/300 |
-| Successful Check Rate | 600/600, 100.0% | at least 597/600 |
-
-The matching-critical field guardrails were:
-
-| Field | Result | Gate | Status |
+| Metric | Result | Gate | Status |
 |---|---:|---:|---|
-| WBS | 75/75, 100.0% | at least 68/75 | Pass |
-| district | 30/30, 100.0% | at least 27/30 | Pass |
-| Kaltmiete | 60/60, 100.0% | at least 54/60 | Pass |
-| rooms | 43/50, 86.0% | at least 45/50 | **Fail** |
+| Parser Error Detection Rate | 300/300, 100.0% | at least 294/300 | Pass |
+| False Alert Rate | 0/300, 0.0% | at most 3/300 | Pass |
+| Correct Field Detection Rate | 300/300, 100.0% | at least 294/300 | Pass |
+| Successful Check Rate | 599/600, 99.8% | at least 597/600 | Pass |
 
-The nine silent misses were seven neighboring-value rooms errors and two
-postal-code substitutions. There were no false alerts and no technical
-failures. The run cost `$1.011304`.
+Every field gate passed: WBS 75/75, Kaltmiete 60/60, rooms 50/50,
+address/postal code 40/40, district 30/30, floor 25/25, and Warmmiete 20/20.
 
-**Decision:** the overall result is a fail because the matching-critical rooms
-guardrail failed. Terra high is not finally accepted. The stronger aggregate
-metrics must not be used to override that decision.
+One clean listing returned an evidence quote that was not present verbatim in
+the raw text. Local validation rejected it; the case was not retried and did
+not create a false alert. The run cost `$1.412906`.
+
+**Decision:** accept this as the final synthetic feasibility result. Stop
+synthetic tuning. Do not integrate the hosted model into product runtime yet;
+with no permitted live dataset available, the next useful test is the current
+synthetic Telegram flow with WBS renters.
+
+The earlier `terra-v1`, `review-v1`, and extraction-development results remain
+in `eval/AI_QA_EVAL_PLAN.md` and `eval/AI_QA_FAILURE_ANALYSIS.md` as experiment
+history. They are not current public evidence.
 
 ## Experiment Boundaries
 
-- The locked holdout is consumed. Do not rerun it, tune against it, regenerate
-  it, or use its cases in another development set.
+- The original locked holdout and the new extraction-v1 final dataset are both
+  consumed. Do not rerun, tune against, regenerate, or rescore either one.
 - Do not rerun the consumed calibration or frozen-validation datasets as a new
   acceptance attempt.
 - Do not present balanced synthetic challenge-set metrics as production
@@ -119,47 +91,40 @@ metrics must not be used to override that decision.
 - Full protocol and experiment history:
   `eval/AI_QA_EVAL_PLAN.md`.
 - Final run artifacts:
-  `eval/runs/terra-high-locked-holdout/`.
+  `eval/runs/extraction-v1-final-600/`.
+- Human-readable final report:
+  `eval/runs/extraction-v1-final-600/report.md`.
 - Public case study:
   `https://mich-mayer.github.io/flatfeed/case-study.html`.
-- The public HTML and Markdown case-study surfaces now report only the final
-  600-listing result. They explain the experiment setup, metric formulas and
-  purpose, all seven field results, the failed rooms guardrail, the stopping
-  decision, and a clearly bounded 15,000-check inference-cost scenario.
+- The public HTML and Markdown case-study sources report only the new final
+  600-listing result. They explain the experiment setup, all seven field
+  results, the one invalid output, the stopping decision, and a bounded
+  15,000-check AI API cost scenario.
 - Earlier model-iteration scores are not shown on those public case-study
   surfaces.
 - The cost scenario uses the official 12,398 re-lettings reported for Berlin's
   six state-owned housing companies excluding Berlinovo as an order-of-magnitude
-  proxy, not as a count of online ads. The rounded 15,000-check workload and
-  about `$65/year` conservative inference estimate are estimates, not measured
-  production cost.
-- Commit `2837a54279a7761788ebc3ef9990b45f67917c9b` was pushed to `main`;
-  Verify and Deploy run `30112526214` passed and GitHub Pages returned HTTP 200
-  for the live case study.
-- Release verification: 292 unit tests passed; deterministic eval passed 15/15;
-  public final-result, field, decision, and cost sync passed;
-  `git diff --check` passed; desktop and mobile checks of the production page
-  found no page overflow or console errors.
+  proxy, not as a count of online ads. The rounded 15,000-check workload,
+  measured `$35/year` pattern, and buffered `$45/year` scenario are not
+  measured production cost.
+- The new final result is published at the public GitHub Pages URL and was
+  verified there on 2026-07-31.
+- Local verification passed: 361 unit tests, deterministic parser eval 15/15,
+  final configuration-freeze verification, public number synchronization,
+  `git diff --check`, and desktop/mobile browser QA with no console warnings or
+  horizontal overflow.
 
 ## Recommended Next Step
 
-Do not spend more API budget merely to produce a passing model result. The final
-run provided enough evidence for this prototype: it showed that the approach
-was promising and identified a specific weakness in rooms detection. Because
-the evaluation used synthetic data, the next meaningful step is not further
-tuning on the same benchmark, but recalibration and validation on permitted
-real listings.
+Do not spend more API budget on another synthetic tuning cycle. The prototype
+has no permitted live dataset, so a real-format evaluation is not currently
+available.
 
-The product-level next step, if permission and terms allow it, is a small pilot
-with one permitted live source plus manual review of a sample. This would test
-the largest remaining uncertainty: transfer from synthetic listing formats to
-real source data.
-
-If the explicit goal is instead to continue model research, create a completely
-fresh development-only comparison for `gpt-5.6-sol` without reusing any
-consumed Terra/Luna or holdout cases. Predeclare the hypothesis, budget, gates,
-and stopping rule before any API call. A fresh calibration and validation
-would be justified only if that screen advances.
+The next useful test is a small moderated walkthrough of the existing synthetic
+Telegram flow with WBS renters. Measure whether participants can set a filter,
+understand why a listing appeared, find a relevant result, and identify unclear
+or untrustworthy parts of the flow. Treat access to real sources as a separate
+feasibility risk, not as a current product capability.
 
 ## Maintenance Rule
 

@@ -1,7 +1,7 @@
 # FlatFeed — Design & Content System
 
 **Status:** Normative. Single source of truth for UI, layout, components, copy, terminology, and case-study content.
-**Date:** 2026-07-24 (durable current-status handoff added; see §34 history for earlier decisions).
+**Date:** 2026-07-29 (product-flow and evidence clarity pass; see §34 history for earlier decisions).
 **Basis:** source code inspection (`main.py`, `flatfeed/`, `synthetic/`, `eval/`), an evidence/claim audit, desktop and mobile browser renders of the case-study page, and the project docs (`README.md`, `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`). No renter research or usability study has been run; product-value statements remain hypotheses.
 
 **Rule keywords.** MUST = mandatory project rule. SHOULD = default; deviate only for a stated reason. MAY = permitted option. MUST NOT = prohibited. Rules without a keyword are descriptive context.
@@ -81,7 +81,7 @@ Derived from the product's actual behavior — not imported from external system
 
 **P3 — Public evidence stays proportional to what was tested.**
 *Why:* portfolio credibility rests on never implying live systems or production impact.
-*Implications:* before a frozen hosted-model validation exists, the public case quotes only the authored synthetic regression-case count and explains that it covers designed cases. After one exact frozen validation passes the predeclared engineering and Product Scorecard gates, the landing may replace that numerical result with exactly four simple AI QA metrics under the same-depth label `Synthetic frozen validation`; §13 and §23 define the narrow exception. Detailed field diagnostics remain in the case study or runnable eval artifacts; transit minutes are geometric estimates; demo photos disclose whether they are illustrative or location-aligned, while apartment terms remain synthetic.
+*Implications:* the authored synthetic regression-case count stays in README and runnable eval artifacts as development evidence; the public HTML and Markdown case studies do not present it as a product outcome. After a frozen hosted-model evaluation completes and passes the evidence-review contract, the landing may report the permitted result under the same-depth synthetic label defined in §13 and §23. Detailed field diagnostics remain in the case study or runnable eval artifacts; transit minutes are geometric estimates; demo photos disclose whether they are illustrative or location-aligned, while apartment terms remain synthetic.
 *Anti-pattern:* turning 100% on authored cases, zero mock cost, or zero false alerts into a product result.
 
 **P4 — Ground truth is eval-only.**
@@ -241,7 +241,7 @@ Rules:
 `/start` and `/filter` show the user's filter card (`<b>Your filter</b>` + current values) with contextual inline actions: `Set up filter` (empty filter) or `Show matches` / `Edit filter` / `Reset filter` / `🗑 Delete my data` (saved filter). The privacy action stays on the card — discoverable, not buried in `/help`.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → sticky top bar (brand; 4-item nav: Product · Decisions · Evidence · Next test; Repository + Try the demo) → split hero (plain-language proposition, WBS/Kaltmiete gloss, role/status metadata, one real Telegram demo screenshot in a macOS-style evidence frame) → **four-question framework**: 01 Product · 02 Decisions · 03 Evidence · 04 Next test → dark CTA → sibling case cross-link → footer.
+Skip link → sticky top bar (brand; 4-item nav: Product · Decisions · Evidence · Next test; Repository + Try the demo) → split hero (plain-language proposition, WBS/Kaltmiete gloss, audience/status/AI-boundary metadata, one real Telegram demo screenshot in a macOS-style evidence frame) → **four-question framework**: 01 Product · 02 Decisions · 03 Evidence · 04 Next test → dark CTA → sibling case cross-link → footer.
 
 The page MUST answer in order: what is the user flow, what did the candidate decide, what is actually demonstrated, and what should be tested next. AI QA appears only as one bounded decision/limitation; dashboard mockups, mock-cost, legal analysis, and detailed eval tables do not belong in the main public narrative. At ≤56rem the nav may hide because the four sections remain a single linear scroll and the two primary header actions remain visible.
 
@@ -389,17 +389,17 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 
 - Dashboard charts confirm the adjacent metric blocks (coverage over time, cost, version comparison). If a metric answers the question, don't add a chart.
 - The case page has no charts. Evidence remains a labeled Demonstrated / Not demonstrated split.
-- Before frozen hosted-model validation, the only public eval number is the authored regression-case count, verified by `scripts/check_eval_numbers.py`.
+- Before frozen hosted-model validation, the public HTML and Markdown case studies show no quantitative AI result. The authored regression-case count remains a technical README/eval check, verified by `scripts/check_eval_numbers.py`.
 - After the one-time final locked holdout completes and passes a separate
   evidence review, the Evidence section MAY report its result whether the
   configuration passed or failed. It MUST show the final decision, the four
   aggregate product metrics, and all seven field results under the same-depth
-  label `Offline AI QA evaluation · synthetic data · 600 listings`.
+  label `AI QA evaluation · synthetic data · 600 listings`.
 - The landing reports only the final independent 600-listing result; development
   and earlier validation scores stay out of public surfaces. The four aggregate
   metrics explain overall behavior. The field table separately distinguishes
   the four matching-critical filters from the three diagnostic listing fields
-  so the rejected rooms result cannot be hidden by the aggregate.
+  so an aggregate cannot hide a weak matching-critical field.
 - One clearly labeled inference-cost scenario MAY follow the final result. It
   MUST name its volume proxy, formula, pricing date, assumptions, and exclusions
   and MUST NOT read as measured production cost. Historical engineering
@@ -433,7 +433,7 @@ Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids)
 2. **Concrete over abstract.** "sends at most 10 valid cards", "three consecutive failures trigger an admin alert" — numbers with units and denominators, mechanisms over adjectives.
 3. **State facts, not self-praise.** Surfaces never grade themselves ("robust", "seamless" do not appear — protect this). Quality is demonstrated by the eval, the boundary, and the confirmations.
 4. **Precision is credibility.** WBS semantics are exact (`WBS 141-220` excludes 140); "estimates" stay estimates ("walking-time estimates", "not calculated"); one imprecise claim taxes every accurate one.
-5. **Explain domain terms at first use, keep the term.** "WBS (Wohnberechtigungsschein) is a Berlin eligibility certificate…", "Kaltmiete is the base rent without utilities (Nebenkosten)." Don't translate the term away; gloss it (P6).
+5. **Explain domain terms at first use, keep the term.** "WBS (Wohnberechtigungsschein) is a Berlin eligibility certificate…", "Kaltmiete is the base rent, excluding operating and heating costs." Don't translate the term away; gloss it (P6).
 6. **Every claim carries its evidence status.** "These are synthetic evaluation metrics, not production user-impact numbers" — the qualifier is part of the sentence, not a footnote (§23).
 7. **Write for the working reader.** The renter wants the next apartment; the admin wants the next parser fix; the recruiter wants the judgment. No filler serving the author.
 
@@ -513,10 +513,10 @@ Actions that have no product function (subscribe, bookmark, share, export, langu
 |---|---|---|---|---|---|
 | Unit of work | listing | One apartment offer normalized into the catalog | listing | listing | "ad", "flat" (as the entity), "object" |
 | Eligibility certificate | WBS | Wohnberechtigungsschein; tiers 100/140/160/180/220 | WBS (+ wizard gloss) | WBS (glossed at first use) | Translating it; removing tiers |
-| Rent basis | Kaltmiete | Base rent without utilities; the only matching basis | Kaltmiete / card `Kalt:` | Kaltmiete (glossed) | "cold rent", matching on Warmmiete |
+| Rent basis | Kaltmiete | Base rent excluding operating and heating costs; the only matching basis | Kaltmiete / card `Kalt:` | Kaltmiete (glossed) | "cold rent", matching on Warmmiete |
 | Total rent | Warmmiete | Rent incl. utilities; display only | card `Warm:` | Warmmiete | Using it for matching |
 | Location unit | Bezirk | One of the 12 Berlin Bezirke | label `District` | Bezirk / district | Treating Ortsteil/Kiez as the unit |
-| Saved criteria | filter | The fixed 4-field user filter (WBS, district, max Kaltmiete, rooms) | Your filter | user filter | "preferences", "profile", "subscription" |
+| Saved criteria | filter | The fixed 4-field user filter (WBS type, district, max Kaltmiete, rooms) | Your filter | user filter | "preferences", "profile", "subscription" |
 | Getting results | matches / matching | Deterministic rule comparison of listings vs filter | Show matches | deterministic matching | "recommendations", "AI matching" |
 | Collection layer | source adapter | Per-source ingestion module with activity checks and health | Source (card field) | source-adapter architecture | "scraper" (the demo doesn't scrape) |
 | Demo source | FlatFeed Synthetic | The synthetic catalog adapter | Source: FlatFeed Synthetic | synthetic source adapter | Implying live sources exist |
@@ -554,25 +554,43 @@ Audience adaptation is allowed (gloss depth, sentence length) — mechanical wor
 
 The page serves three reading depths; every depth must independently answer its questions.
 
-**10-second scan** (kicker + H1 + lede + meta + product preview) must answer: What is this, who is it for, what did the candidate own, and what is the prototype boundary?
-Mechanics: the kicker states `working prototype` and `synthetic catalog` once. The H1 names one filter, Berlin WBS listings, and one consistent Telegram feed. The lede explains the save-once, normalize, and deterministic-match mechanism without repeating the prototype boundary. Metadata identifies the candidate's role, audience, status, and bounded admin-only AI QA role. Live-source and renter-outcome limitations stay in Evidence and the deeper case-study text instead of weakening the opening proposition. The product preview shows one current synthetic match in a real Telegram demo session; it does not show internal QA metrics.
+**10-second scan** (brand label + kicker + H1 + lede + meta + product preview) must answer: What is this, who is it for, and what is the prototype boundary?
+Mechanics: the header brand label states `Product case study`; the kicker states `working prototype` and `synthetic catalog` once. The H1 names one filter, Berlin WBS listings, and one consistent Telegram feed. The lede explains the save-once, normalize, and deterministic-match mechanism without repeating the prototype boundary. Metadata identifies the audience, status, and says that AI flags suspected parser errors for admin review. Candidate ownership is explained in the Decisions contribution note and the deeper Markdown case instead of being compressed into a hero label. Live-source and renter-outcome limitations stay in Evidence and the deeper case-study text instead of weakening the opening proposition. The product preview shows one current synthetic match in a real Telegram demo session; it does not show internal QA metrics.
 
 **30-second scan** (+ section headings, workflow, decision cards, evidence split) must answer: what the core flow is, which three decisions matter, and what is demonstrated versus unvalidated.
-Mechanics: the four H2s state Product / Decisions / Evidence / Next test as takeaway sentences. Decision cards explain the rationale and trade-off, not experiment outcomes. Evidence records implemented proof, measured synthetic results, and specific unknowns without repeating the decision rationale. Next test maps those unknowns to Learn / Measure / Decide signals. Evidence keeps the Demonstrated / Not demonstrated split, followed by one plain-language final-evaluation narrative: experiment setup, decision, aggregate metrics with formulas and focus, field-level results, failure analysis, stopping rationale, and a bounded cost scenario. Only the final 600-listing run may appear; the synthetic qualifier and rejected-configuration decision stay visible at the same depth as its strongest metrics.
+Mechanics: the four H2s state Product / Decisions / Evidence / Next test as takeaway sentences. Decision cards explain the rationale and trade-off, not experiment outcomes. Evidence records implemented proof, measured synthetic results, and specific unknowns without repeating the decision rationale. Next test maps those unknowns to Learn / Measure / Decide signals. Evidence keeps the Demonstrated / Not demonstrated split, followed by one plain-language final-evaluation narrative: experiment setup, decision, aggregate metrics with formulas and focus, field-level results, the one invalid check, stopping rationale, and a bounded cost scenario. Only the final 600-listing run may appear; the synthetic qualifier, accepted synthetic decision, one unusable check, and no-runtime-integration boundary stay visible at the same depth as its strongest metrics.
 
 **Deep read** must answer: problem hypothesis, product flow, ownership, three trade-offs, evidence limits, and next validation. Keep the four-question framework in §6.3 and the concise Markdown equivalent in `CASE_STUDY.md`.
 
 Element rules:
-- **Hero:** boundary-aware kicker → plain proposition H1 → product-mechanism lede → term gloss → CTAs → four-item meta `dl`. Every value is decodable without insider context.
+- **Hero:** boundary-aware kicker → plain proposition H1 → product-mechanism lede → term gloss → CTAs → three-item meta `dl` for audience, status, and AI role. Every value is decodable without insider context.
 - **Product preview:** one real Telegram demo-session screenshot only, presented inside a clearly external macOS-style evidence frame. Values come from the current synthetic catalog; the caption states that apartment terms are synthetic and carries the photo attribution. Location coherence remains documented in `assets/listing_photos/LICENSES.md`. The screenshot may be cropped to exclude Telegram's empty composer, but its card content MUST NOT be edited. No fake dashboard, product-internal browser chrome, or mock metrics.
-- **Workflow:** Filter → Normalize → Check → Match → Notify. "Check" is explicitly the synthetic adapter's local catalog state; "Notify" is optional background delivery with deduplication.
-- **Decisions:** exactly three public decisions: four-field scope, deterministic matching/optional QA boundary, reliability controls before live-source breadth. Each card explains why the boundary exists; measured outcomes belong in Evidence.
-- **Evidence:** Demonstrated now vs Not demonstrated yet. Implemented proof and
-  synthetic results appear once. The final-evaluation block carries the hosted
-  model outcome, explains why each metric exists, and shows both aggregate and
-  field-level results. Field values are evaluation evidence, never renter or
-  production outcomes. No score from an earlier model iteration appears.
-- **Next test:** one permitted live source and a small renter observation, with Learn / Measure / Decide signals covering renter adoption, source freshness, human review of every AI alert, and a random sample of listings with no alert. It is a plan, not a claim.
+- **Workflow:** Filter → Collect → Prepare → Match → Deliver. Collection states
+  that the current source is synthetic; Prepare names deterministic field
+  normalization and S-/U-Bahn walking-time estimates; Deliver describes
+  Telegram results rather than elevating activity checks or deduplication into
+  user value.
+- **Decisions:** exactly three public decisions: a first-pass saved filter,
+  deterministic matching/optional QA boundary, and one normalized product flow
+  across source adapters. The first card says that renters still verify full
+  eligibility and application details at the source. Each card explains why
+  the boundary exists; measured outcomes belong in Evidence.
+- **Evidence:** Demonstrated now vs Not demonstrated yet. Demonstrated names the
+  synthetic Telegram flow, S-/U-Bahn walking-time estimates, and the final
+  hosted-model result with its synthetic qualifier and 599/600 usable-check
+  limitation in the same bullet.
+  Technical controls such as fail-closed matching, activity checks, and
+  notification deduplication stay in technical documentation instead of being
+  presented as achievements. The final-evaluation block explains why each
+  metric exists and shows both aggregate and field-level results. Field values
+  are evaluation evidence, never renter or production outcomes. No score from
+  an earlier model iteration appears.
+- **Next test:** a small moderated walkthrough of the existing synthetic
+  Telegram flow with WBS renters. Learn / Measure / Decide signals cover filter
+  completion, understanding why a listing appeared, finding and opening a
+  relevant result, and repeated usability or trust problems. The page states
+  that no permitted live source is currently available and treats source
+  access as a separate feasibility risk. It is a plan, not a claim.
 
 ---
 
@@ -597,7 +615,7 @@ Hard constraints (non-negotiable):
 - Synthetic eval numbers MUST NOT read as production evidence at any reading depth.
 - Eval numbers MUST come from an actual run and update **all** their occurrences together (§27); never round 99.x to 100, never keep stale numbers because they look better.
 - A hosted-model result MUST come only from the final one-time locked holdout and
-  MUST show `Offline AI QA evaluation · synthetic data · 600 listings`, absolute
+  MUST show `AI QA evaluation · synthetic data · 600 listings`, absolute
   counts, the final accept/reject decision, and the real-world manual-audit
   limitation at the same reading depth. Calibration, development-screen, and
   earlier frozen-validation scores MUST NOT appear on the landing or public
@@ -616,7 +634,7 @@ Hard constraints (non-negotiable):
 
 ## 24. Candidate Ownership Language
 
-- The canonical ownership statement says: "I defined the renter problem, product scope, matching and AI guardrails, reliability trade-offs, and evaluation contract. I implemented the bot, dashboard, and test harness with Claude Code and Codex as coding collaborators." Keep the HTML and Markdown versions in sync in *meaning*.
+- The canonical ownership statement says: "I defined the WBS renter problem and product scope; chose which fields determine a match and how missing data is handled; set the AI boundary; and designed the evaluation plan and acceptance criteria. I implemented the Telegram prototype with Claude Code and Codex as coding collaborators." Keep the HTML and Markdown versions in sync in *meaning*.
 - Verb discipline: **defined/designed/scoped/chose** = candidate judgment; **implemented/built/wrote** = delivery; **the bot/the parser/the eval does X** = system behavior; **demo/mock/synthetic** = illustrative outcome. Do not swap categories.
 - The author approved the agent-collaboration disclosure; it lives in the Decisions contribution note and `CASE_STUDY.md` §2 and MUST NOT be removed or softened without the author.
 - First person ("I", "my") is correct on the case study and in CASE_STUDY.md. In the bot, "I" is the *bot* speaking about bot actions (§17) — never the candidate. The dashboard and README use no first person for ownership except CASE_STUDY-quoted material.
@@ -625,13 +643,13 @@ Hard constraints (non-negotiable):
 
 ## 25. Professional Language Rules
 
-**Prefer:** concrete mechanisms tied to artifacts — "four-field filter", "synthetic-adapter state check", "background notification deduplication", "15 authored regression cases". State whether each mechanism is in the main user path, optional, synthetic, or unvalidated.
+**Prefer:** concrete user-visible mechanisms tied to artifacts — "four-field filter", "source adapter", "estimated walks to the nearest S- and U-Bahn stations", and "Telegram listing summary". State whether each mechanism is in the main user path, optional, synthetic, or unvalidated. Keep authored regression-case counts, activity checks, fail-closed behavior, and notification deduplication in technical documentation unless they explain a specific reader-facing risk.
 
 **Buzzword register.** Current status: *leverage, seamless, robust, cutting-edge, intelligent, actionable insights, AI-powered, end-to-end (as a boast), scalable, production-ready, enterprise-grade* appear on no surface as self-praise. Protect this. Rules rather than blanket bans:
 - *production-ready / enterprise-grade*: MUST NOT appear — the demo explicitly is neither.
 - *end-to-end*: acceptable only in the literal sense already used ("an end-to-end AI PM case: problem framing, trade-off definition, prototype delivery, evaluation, and honest documentation") — a scoped list, not a boast.
 - *scalable*: only about a specific mechanism with its limit stated (e.g. "SQLite is appropriate for this local portfolio prototype" is the model — a fitness claim, not a scale claim).
-- Self-praise adjectives about our own output ("reliable", "trusted", "honest") SHOULD NOT be used as feature labels. Name the control instead: state check, fail-closed unknown value, or notification deduplication.
+- Self-praise adjectives about our own output ("reliable", "trusted", "honest") SHOULD NOT be used as feature labels. Name the user job or the concrete mechanism instead.
 
 ---
 
@@ -655,13 +673,13 @@ Hard constraints (non-negotiable):
 **MUST remain consistent (meaning-identical) across bot, dashboard, case page, and docs:**
 - The meaning of listing, filter, WBS tiers, Kaltmiete-only matching, district/Bezirk, golden set, risk score, triage labels (§20).
 - The AI boundary sentence pattern: parsing/matching deterministic; AI QA admin-only, budgeted, never mutating (§2, §12).
-- **Public eval numbers.** Before hosted-model validation, the only public result
-  number is the authored synthetic regression-case count. After the §13
-  final-result review, `docs/case-study.html` and `CASE_STUDY.md` contain only
-  the final 600-listing holdout numbers: four aggregate metrics, seven field
-  results, the recorded run cost, and the explicitly estimated 15,000-check
-  cost scenario. Historical model-iteration numbers, confidence intervals, and
-  latency stay in runnable engineering artifacts.
+- **Public eval numbers.** The authored synthetic regression-case count remains
+  in README and runnable eval artifacts, not in `docs/case-study.html` or
+  `CASE_STUDY.md`. After the §13 final-result review, those two case-study
+  surfaces contain only the final 600-listing holdout numbers: four aggregate
+  metrics, seven field results, the recorded run cost, and the explicitly
+  estimated 15,000-check cost scenario. Historical model-iteration numbers,
+  confidence intervals, and latency stay in runnable engineering artifacts.
 - **Eval sync check.** `scripts/check_eval_numbers.py` re-runs
   `eval.run_eval --json`, verifies the authored-case count in `README.md`, and
   checks both public case-study surfaces against the final locked-holdout
@@ -697,7 +715,7 @@ Working well; reuse as-is; do not "improve" for uniformity's sake.
 | Worked example on the dashboard ("parser made a mistake, AI checked it") | dashboard | Shows the loop, not just aggregates | Keep one concrete example per new metric family |
 | Ground-truth quarantine | `synthetic/` ↔ prompts | Makes the eval meaningful | Absolute; no exceptions |
 | Version-stamped QA reviews (one per listing per version) | `flatfeed/ai_qa.py` | Enables version comparison, caps cost | Any new AI artifact gets a version field |
-| Three concise decision cards | case study §02 | Shows prioritization without a separate AI essay | Keep four-field scope, deterministic boundary, reliability-before-breadth |
+| Three concise decision cards | case study §02 | Shows prioritization without a separate AI essay | Keep first-pass filter, deterministic boundary, and one normalized flow across sources |
 | Demonstrated / Not demonstrated split | case study §03 | Prevents prototype completion from reading as market validation | Every future evidence claim |
 | Teal-only structure accent | case page | Keeps weak evidence from gaining visual weight | Use labels and filled/outlined markers for evidence status |
 | Licensed demo photos with attribution file | `assets/listing_photos/` | Defensibility | Any new third-party asset gets the same treatment |
@@ -812,6 +830,148 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-07-30 feasible next-test boundary
+
+- **Problem:** the public Next test proposed a permitted live-source pilot even
+  though the prototype has no permitted live dataset or source integration.
+- **Rationale:** stop synthetic AI tuning after the accepted 600-case result
+  and test the renter-flow hypothesis with the existing synthetic Telegram
+  demo. Keep real-source access visible as a separate feasibility risk instead
+  of presenting it as the next executable step.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`,
+  `docs/CURRENT_STATUS.md`, and this document (§§22, 34).
+- **Compatibility impact:** Next test no longer includes real-source freshness,
+  notification timing, or live AI review metrics. It measures understanding and
+  usability of the current synthetic flow.
+- **Migration consideration:** updated now across both case-study surfaces and
+  the current-status handoff. Product code and evaluation artifacts are
+  unchanged.
+
+### 2026-07-30 extraction-v1 final evidence update
+
+- **Problem:** the public case and current-status docs still described the
+  earlier failed rooms result after a new frozen 600-case extraction-v1
+  evaluation completed.
+- **Rationale:** replace stale public evidence with the latest final run while
+  preserving its limits. Show the accepted synthetic decision, every aggregate
+  and field result, the one invalid check, exact run cost, and the explicit
+  boundary that no product integration or real-source accuracy was proven.
+- **Affected surfaces:** `README.md`, `CASE_STUDY.md`,
+  `docs/case-study.html`, `docs/CURRENT_STATUS.md`,
+  `docs/PROJECT_CONTEXT.md`, `eval/AI_QA_EVAL_PLAN.md`,
+  `eval/AI_QA_FAILURE_ANALYSIS.md`, `scripts/check_eval_numbers.py`, and this
+  document (§§13, 22, 34).
+- **Compatibility impact:** the canonical public result is now 300/300 planted
+  errors found and localized, 0/300 false alerts, and 599/600 usable checks.
+  Earlier rooms-failure results remain only as experiment history.
+- **Migration consideration:** local public and technical sources were updated
+  together and are verified from the final run artifacts. Deployment remains a
+  separate action.
+
+### 2026-07-29 product-flow and evidence clarity pass
+
+- **Problem:** the public workflow elevated activity checks and notification
+  deduplication—expected delivery controls—above the actual renter value. The
+  Decisions heading claimed trust without source-completeness evidence, the
+  first decision framed missing data as a product achievement, and the
+  Demonstrated list omitted both the synthetic qualifier and the strongest
+  hosted-model result. The next-test signals mixed several unexplained metrics.
+- **Rationale:** describe the intended flow as Filter → Collect → Prepare →
+  Match → Deliver, while stating the current source is synthetic at the same
+  reading depth. Surface the implemented S-/U-Bahn walking-time estimates,
+  frame the saved filter as an initial shortlist rather than a final
+  eligibility decision, and summarize the strong overall AI result together
+  with its failed rooms target. Explain the pilot through direct value and
+  measurable timings instead of abstract trust language.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, `README.md`,
+  the guided-tour copy in `main.py`, `tests/test_guided_tour.py`, and this
+  document (§§20, 22, 25, 28, 34).
+- **Compatibility impact:** public filter lists use `WBS type`; hero metadata
+  says that AI flags suspected parser errors for admin review; the public
+  workflow no longer presents activity checks or notification deduplication as
+  features. Those controls remain implemented and documented in
+  `docs/PROJECT_CONTEXT.md`.
+- **Migration consideration:** updated now across the case page, Markdown case,
+  README summary, and guided tour. Parser, matching, source-activity, delivery
+  deduplication, transit calculations, datasets, and final evaluation numbers
+  are unchanged.
+
+### 2026-07-29 public regression-count removal
+
+- **Problem:** the Demonstrated block presented the 15 authored synthetic
+  parser cases as product evidence. The count describes a development safety
+  check, but does not establish performance on real listing formats or value
+  for renters.
+- **Rationale:** retain the deterministic regression suite because it catches
+  parser regressions cheaply, but keep its authored-case count in technical
+  documentation. Public case-study evidence should focus on the runnable user
+  flow, explicit limitations, and the separately labelled final AI evaluation.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, `README.md`,
+  and this document (§§3, 13, 25, 27, 34).
+- **Compatibility impact:** the HTML and Markdown Demonstrated lists no longer
+  mention the authored regression count. README and the runnable eval remain
+  responsible for recording and checking that count.
+- **Migration consideration:** fixed now across the two public case-study
+  surfaces and their governing copy rules. Parser code, synthetic fixtures,
+  tests, and eval behavior are unchanged.
+
+### 2026-07-29 hero role-metadata removal
+
+- **Problem:** the hero metadata value `Product lead & builder` did not explain
+  a concrete responsibility, repeated ownership information available deeper
+  in the case, and implied team leadership in a solo prototype.
+- **Rationale:** keep the hero metadata limited to facts that help a reader
+  decode the product immediately: audience, prototype status, and the bounded
+  AI role. Preserve the detailed, artifact-linked ownership statement in the
+  Decisions contribution note and `CASE_STUDY.md`.
+- **Affected surfaces:** `docs/case-study.html` and this document (§§6, 22,
+  34).
+- **Compatibility impact:** the hero metadata now contains three items and no
+  candidate-role label. Candidate ownership language itself is unchanged.
+- **Migration consideration:** fixed now on the public case page. The Telegram
+  prototype, dashboard, Markdown case, eval artifacts, and numerical evidence
+  are unchanged.
+
+### 2026-07-27 reader-language and source-aggregation narrative pass
+
+- **Problem:** browser comments from the author identified public copy that was
+  technically defensible but hard to understand without repository context:
+  `fail closed`, `evaluation contract`, `test harness`, `field-level
+  guardrails`, and `model inference only`. The hero repeated `Product case
+  study`, the secondary CTA skipped Product, the Product heading and its
+  explanation were bottom-aligned, and the third decision elevated
+  notification deduplication from a baseline control into a portfolio-level
+  product choice. The unvalidated list also framed source risk as one-source
+  performance even though the product ambition is a complete Berlin WBS feed.
+- **Rationale:** keep the four-question Product / Decisions / Evidence / Next
+  test structure, but explain mechanisms in reader language. Move `Product case
+  study` beside the brand and keep the prototype boundary in the hero kicker;
+  route the secondary CTA to Product; top-align section-heading columns; use
+  `user` for a generic product action and `WBS renters` when naming the target
+  group. Replace the weak reliability decision with the more material choice
+  of one normalized renter flow across permitted source adapters, while stating
+  that only one synthetic adapter is implemented. Replace public `cards` jargon
+  with listings, summaries, or a consistent Telegram format. The AI result
+  remains a separate synthetic evaluation with the same final rejection,
+  counts, thresholds, and stopping decision.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`,
+  `CASE_STUDY.md`, `scripts/check_eval_numbers.py`, and this document (§§13,
+  16, 20, 22–24, 28, 34).
+- **Compatibility impact:** the current canonical evidence label is `AI QA
+  evaluation · synthetic data · 600 listings`; `Offline` is no longer part of
+  the public label, while the adjacent text explicitly says the model was not
+  integrated into the product. The ownership note no longer lists the
+  supporting dashboard or test harness as primary product outputs, but keeps
+  the approved Claude Code and Codex collaborator disclosure. The canonical
+  third public decision is now one normalized product flow across sources, not
+  reliability-before-source-count.
+- **Migration consideration:** HTML and Markdown were updated together. The
+  eval-number checker accepts either direct rejection wording (`configuration
+  not accepted`) or the equivalent sentence (`did not accept the
+  configuration`) and still verifies every final metric, field result, cost,
+  and stopping rationale. Product runtime, dashboard code, datasets, eval
+  artifacts, and numerical evidence are unchanged.
 
 ### 2026-07-24 final-result public case-study narrative
 

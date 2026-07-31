@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
-      content="FlatFeed product case study: a Telegram prototype that matches Berlin WBS listings against one saved four-field filter. Runs end to end on a synthetic catalog."
+      content="FlatFeed product case study: a Telegram prototype that matches Berlin WBS listings against one saved filter. Runs end to end on a synthetic catalog."
     >
     <title>FlatFeed | Product case study</title>
     <link rel="icon" href="favicon.ico" sizes="any">
@@ -16,7 +16,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260724-final-evidence">
+    <link rel="stylesheet" href="styles.css?v=20260727-reader-copy">
   </head>
   <body>
     <div class="case">
@@ -26,7 +26,7 @@
         <a class="brand" href="case-study.html" aria-label="FlatFeed case study">
           <img class="brand-mark" src="assets/flatfeed-logo-mark.png" alt="">
           <strong>FlatFeed</strong>
-          <span class="brand-sub">Case study</span>
+          <span class="brand-sub">Product case study</span>
         </a>
         <nav aria-label="Case study sections">
           <a href="#product">Product</a>
@@ -43,17 +43,17 @@
       <main id="case-main">
         <section class="case-hero" aria-labelledby="case-title">
           <div class="hero-copy">
-            <p class="kicker">Product case study · working prototype · synthetic catalog</p>
+            <p class="kicker">Working prototype · synthetic catalog</p>
             <h1 id="case-title">One filter for Berlin WBS listings in one consistent Telegram feed.</h1>
             <p class="case-lede">
-              A renter saves four criteria once — WBS, district, maximum Kaltmiete and rooms.
-              FlatFeed normalizes inconsistent listing text, applies the same matching rules to
-              every result and presents matching apartments as standardized cards.
+              A user saves one filter — WBS type, district, maximum Kaltmiete and rooms.
+              FlatFeed normalizes inconsistent listing text, applies the same rules to every
+              listing and presents matches in a consistent Telegram format.
             </p>
 
             <p class="term-note">
               <span><strong>WBS</strong> (Wohnberechtigungsschein) is a certificate used to qualify for subsidized housing in Berlin.</span>
-              <span><strong>Kaltmiete</strong> is rent before utilities.</span>
+              <span><strong>Kaltmiete</strong> is the base rent, excluding operating and heating costs.</span>
             </p>
 
             <div class="case-actions">
@@ -61,14 +61,13 @@
                 Try the demo
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
               </a>
-              <a class="btn btn--ghost" href="#decisions">See the decisions</a>
+              <a class="btn btn--ghost" href="#product">See how it works</a>
             </div>
 
             <dl class="case-meta">
-              <div><dt>Role</dt><dd>Product, UX, evaluation, implementation</dd></div>
               <div><dt>Audience</dt><dd>Berlin WBS renters</dd></div>
               <div><dt>Status</dt><dd>Working prototype</dd></div>
-              <div><dt>AI role</dt><dd>Admin-only parser QA</dd></div>
+              <div><dt>AI role</dt><dd>Flags suspected parser errors for admin review</dd></div>
             </dl>
           </div>
 
@@ -103,53 +102,53 @@
             <h2>Set one filter. See matching listings.</h2>
             <p>
               The working hypothesis: WBS renters lose time re-reading fragmented listings and
-              re-checking the same four criteria on each one. FlatFeed tests one narrow job:
+              re-checking the same criteria on each one. FlatFeed tests one narrow job:
               set a filter once, then see active matches in one consistent format.
             </p>
           </header>
 
           <ol class="workflow" aria-label="FlatFeed product workflow">
-            <li><span>01</span><h3>Filter</h3><p>WBS, district, maximum Kaltmiete and rooms.</p></li>
-            <li><span>02</span><h3>Normalize</h3><p>Fixed rules turn listing text into comparable fields.</p></li>
-            <li><span>03</span><h3>Check</h3><p>The synthetic adapter re-checks that the listing is still active in its local catalog.</p></li>
-            <li><span>04</span><h3>Match</h3><p>Explicit rules compare all four saved criteria.</p></li>
-            <li><span>05</span><h3>Notify</h3><p>Optional background notifications skip matches already recorded as delivered.</p></li>
+            <li><span>01</span><h3>Filter</h3><p>Save WBS type, district, maximum Kaltmiete and rooms.</p></li>
+            <li><span>02</span><h3>Collect</h3><p>A source adapter adds newly found listings to one catalog.</p></li>
+            <li><span>03</span><h3>Prepare</h3><p>Rules normalize fields and estimate walks to the nearest S- and U-Bahn stations.</p></li>
+            <li><span>04</span><h3>Match</h3><p>Each new listing is compared with the saved filter.</p></li>
+            <li><span>05</span><h3>Deliver</h3><p>Matching listings are sent to Telegram so renters can open the source and apply.</p></li>
           </ol>
         </section>
 
         <section class="case-section" id="decisions">
           <header class="section-heading">
             <p class="kicker"><span>02</span>Decisions</p>
-            <h2>I prioritized trust in the core loop over feature breadth.</h2>
+            <h2>I kept the renter flow focused and the AI role bounded.</h2>
           </header>
 
           <div class="decision-list">
             <article>
               <p class="decision-number">01</p>
-              <h3>Four fields, not a generic search</h3>
+              <h3>A first-pass filter, not a final eligibility decision</h3>
               <p>
-                The prototype keeps only criteria used in its match decision. Unknown
-                rent or room values fail closed instead of producing a confident-looking match.
+                I chose WBS type, district, maximum Kaltmiete and rooms to reduce the listings a
+                renter must review. FlatFeed uses them to create an initial shortlist; renters
+                still verify complete eligibility and application details on the source page.
               </p>
             </article>
             <article>
               <p class="decision-number">02</p>
-              <h3>Rules decide what renters see</h3>
+              <h3>Rules decide which listings appear</h3>
               <p>
-                Parsing and matching are deterministic, so every renter-facing match can be
-                explained field by field. AI QA is a separate admin-only review: it can flag a
-                suspected parsing mistake, but it cannot change listings, matching rules or
-                renter-facing results.
+                Parsing and matching follow fixed rules, so the reason for each match can be
+                traced to the saved filter. AI QA is a separate admin-only check: it may flag a
+                suspected parsing error for review, but it cannot change the listing or the match.
               </p>
             </article>
             <article>
               <p class="decision-number">03</p>
-              <h3>Reliability before source count</h3>
+              <h3>One product flow across sources</h3>
               <p>
-                Before adding sources, I protected the core loop against stale and duplicate
-                results. Every card is re-checked against the catalog before delivery, background
-                notifications skip matches already recorded as delivered, and renters can delete
-                their saved data.
+                Each permitted source would be normalized into the same listing format before
+                matching, so users keep one filter and one feed. The current prototype exercises
+                this design with one synthetic source; completeness and freshness across real
+                sources are still untested.
               </p>
             </article>
           </div>
@@ -157,9 +156,10 @@
           <aside class="role-note" aria-label="Role and implementation note">
             <p class="preview-label">My contribution</p>
             <p>
-              I defined the renter problem, product scope, matching and AI guardrails, reliability
-              trade-offs and evaluation contract. I implemented the bot, dashboard and test
-              harness with Claude Code and Codex as coding collaborators.
+              I defined the WBS renter problem and product scope; chose which fields determine a
+              match and how missing data is handled; set the AI boundary; and designed the
+              evaluation plan and acceptance criteria. I implemented the Telegram prototype with
+              Claude Code and Codex as coding collaborators.
             </p>
           </aside>
         </section>
@@ -167,11 +167,11 @@
         <section class="case-section" id="evidence">
           <header class="section-heading">
             <p class="kicker"><span>03</span>Evidence</p>
-            <h2>The final AI test found one weakness before real-data validation.</h2>
+            <h2>The final AI test passed every synthetic acceptance gate.</h2>
             <p>
-              The evidence below separates what runs in the prototype, what the final synthetic
-              model test measured, and what still requires permitted real listings and renter
-              observation.
+              The evidence below separates what runs in the prototype, what a real model measured
+              on planted synthetic errors, and what still requires permitted real listings and
+              renter observation.
             </p>
           </header>
 
@@ -179,33 +179,36 @@
             <article class="evidence-card evidence-card--shown">
               <p class="evidence-status"><i aria-hidden="true"></i> Demonstrated now</p>
               <ul>
-                <li>A renter can save a four-field filter and receive matching Telegram cards</li>
-                <li>Deterministic matching applies all four criteria and fails closed on unknown rent or rooms</li>
-                <li>The synthetic catalog checks activity before delivery; background notifications deduplicate previously delivered matches</li>
-                <li>The deterministic synthetic regression suite passes; live-source accuracy is not measured</li>
+                <li>A user can save a filter and receive matches from a synthetic catalog in Telegram</li>
+                <li>Telegram listing summaries include estimated walks to the nearest S- and U-Bahn stations, calculated from synthetic coordinates in the demo</li>
+                <li>On 600 new synthetic listings, a hosted model plus deterministic comparison found and localized all 300 planted parser errors, raised no false alerts on 300 clean listings and returned 599 valid checks</li>
               </ul>
             </article>
             <article class="evidence-card evidence-card--open">
               <p class="evidence-status"><i aria-hidden="true"></i> Not demonstrated yet</p>
               <ul>
                 <li>Whether real WBS renters adopt and trust the feed</li>
-                <li>Whether one permitted live source can stay complete and fresh</li>
-                <li>Whether the feed saves time or improves application outcomes</li>
-                <li>Whether the synthetic AI QA result transfers to real listing formats and error rates</li>
+                <li>Whether permitted Berlin WBS sources can be combined into one complete, fresh feed</li>
+                <li>Whether the feed reduces monitoring time and helps renters apply sooner</li>
+                <li>How often real source formats cause FlatFeed to miss a suitable listing</li>
+                <li>Whether a real model tested on planted synthetic errors can detect naturally occurring parser errors in permitted live listings</li>
               </ul>
             </article>
           </div>
 
           <section class="qa-scorecard" aria-labelledby="qa-scorecard-title">
             <div class="qa-scorecard__heading">
-              <p class="preview-label">Offline AI QA evaluation · synthetic data · 600 listings</p>
+              <p class="preview-label">AI QA evaluation · synthetic data · 600 listings</p>
               <div>
-                <h3 id="qa-scorecard-title">Could an AI checker catch parser mistakes before they affected apartment matching?</h3>
+                <h3 id="qa-scorecard-title">Could an AI checker reliably identify parser errors for admin review?</h3>
                 <p>
                   FlatFeed uses deterministic rules to parse listings and match them to renter
-                  filters. I tested a hosted model as an admin-only second check—not as part of
-                  renter matching. The final evaluation used 600 synthetic listings: 300 clean
-                  listings and 300 listings containing exactly one planted parser error.
+                  filters. I tested a hosted model as an admin-only second check, not as part of
+                  renter matching. A finding does not alter the current listing; an admin can use
+                  it to decide whether parsing rules should change for future listings. This was
+                  a separate evaluation, and the model was not integrated into the product. The
+                  final test used 600 synthetic listings: 300 clean listings and 300 listings
+                  containing exactly one planted parser error.
                 </p>
               </div>
             </div>
@@ -213,20 +216,19 @@
             <aside class="qa-outcome" aria-label="Final evaluation decision">
               <p class="preview-label">Decision</p>
               <p>
-                <strong>Promising result; configuration not accepted.</strong> The checker detected
-                291 of 300 planted errors and raised no false alerts on 300 clean listings.
-                However, it correctly detected only 43 of 50 rooms errors, below the predeclared
-                minimum of 45. I therefore did not accept the configuration.
+                <strong>Passed the synthetic benchmark; not integrated into the product.</strong>
+                The checker found and localized all 300 planted errors and raised no false alerts
+                on 300 clean listings. One clean listing produced an invalid evidence quote, so
+                599 of 600 checks returned a usable result. Every predeclared gate passed.
               </p>
             </aside>
 
             <div class="qa-explainer">
-              <h4>Why measure the model at two levels?</h4>
+              <h4>Why show both overall and field results?</h4>
               <p>
-                Overall metrics tested whether the checker could find errors without creating
-                unnecessary admin work. Field-level guardrails tested whether a strong average
-                was hiding a weakness in one of the four fields that directly controls apartment
-                matching.
+                Overall results show how often the checker found an error, whether it named the
+                right field and how often it wrongly flagged a clean listing. Results by field
+                make sure a strong average does not hide a weak matching-critical field.
               </p>
             </div>
 
@@ -234,11 +236,11 @@
               <div>
                 <dt>Parser Error Detection Rate</dt>
                 <dd>
-                  <strong>97.0%</strong>
-                  <span>291 of 300 planted errors detected</span>
+                  <strong>100.0%</strong>
+                  <span>300 of 300 planted errors detected</span>
                   <p>Calculation: corrupted listings that produced an alert ÷ 300 corrupted listings.</p>
                   <p><b>Focus:</b> how many parser mistakes reach admin review.</p>
-                  <p><b>Prototype target:</b> at least 95% (285/300). Target met.</p>
+                  <p><b>Prototype target:</b> at least 98% (294/300). Target met.</p>
                 </dd>
               </div>
               <div>
@@ -248,24 +250,24 @@
                   <span>0 of 300 clean listings flagged</span>
                   <p>Calculation: clean listings that produced an alert ÷ 300 clean listings.</p>
                   <p><b>Focus:</b> unnecessary admin reviews caused by the checker.</p>
-                  <p><b>Prototype target:</b> at most 3% (9/300). Target met.</p>
+                  <p><b>Prototype target:</b> at most 1% (3/300). Target met.</p>
                 </dd>
               </div>
               <div>
                 <dt>Correct Field Detection Rate</dt>
                 <dd>
-                  <strong>97.0%</strong>
-                  <span>291 of 300 errors found and field named</span>
+                  <strong>100.0%</strong>
+                  <span>300 of 300 errors found and field named</span>
                   <p>Calculation: corrupted listings where the wrong field was correctly named ÷ 300 corrupted listings.</p>
                   <p><b>Focus:</b> whether an alert tells an admin where to investigate.</p>
-                  <p><b>Prototype target:</b> at least 90% (270/300). Target met.</p>
+                  <p><b>Prototype target:</b> at least 98% (294/300). Target met.</p>
                 </dd>
               </div>
               <div>
                 <dt>Successful Check Rate</dt>
                 <dd>
-                  <strong>100.0%</strong>
-                  <span>600 of 600 checks returned a valid result</span>
+                  <strong>99.8%</strong>
+                  <span>599 of 600 checks returned a valid result</span>
                   <p>Calculation: valid structured model responses ÷ 600 attempted checks.</p>
                   <p><b>Focus:</b> whether the check completes in a form the system can use.</p>
                   <p><b>Prototype target:</b> at least 99.5% (597/600). Target met.</p>
@@ -280,14 +282,14 @@
 
             <div class="qa-field-results">
               <div class="qa-subheading">
-                <p class="preview-label">Field-level guardrails</p>
+                <p class="preview-label">Results by field</p>
                 <div>
-                  <h4>Did the overall result hide a weakness in one type of data?</h4>
+                  <h4>Did performance hold across every field?</h4>
                   <p>
-                    Each corrupted listing contained one planted error. A field result counts how
-                    often the checker both raised an alert and correctly named that field.
-                    Matching-critical fields control the renter’s filter; diagnostic fields help
-                    inspect the listing but do not decide the four-field match.
+                    Each test listing contained one planted error. The table groups results by the
+                    field that was wrong. The checker found every planted error in every field.
+                    WBS, district, Kaltmiete and rooms affect matching; the other fields help an
+                    admin diagnose the listing.
                   </p>
                 </div>
               </div>
@@ -308,50 +310,50 @@
                       <th scope="row">WBS</th>
                       <td>Matching-critical filter</td>
                       <td>75/75 · 100.0%</td>
-                      <td>At least 68/75</td>
+                      <td>At least 74/75</td>
                       <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">District</th>
                       <td>Matching-critical filter</td>
                       <td>30/30 · 100.0%</td>
-                      <td>At least 27/30</td>
+                      <td>30/30</td>
                       <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">Kaltmiete</th>
                       <td>Matching-critical filter</td>
                       <td>60/60 · 100.0%</td>
-                      <td>At least 54/60</td>
+                      <td>At least 59/60</td>
                       <td>Target met</td>
                     </tr>
-                    <tr class="qa-table__miss">
+                    <tr>
                       <th scope="row">Rooms</th>
                       <td>Matching-critical filter</td>
-                      <td>43/50 · 86.0%</td>
-                      <td>At least 45/50</td>
-                      <td>Target missed</td>
+                      <td>50/50 · 100.0%</td>
+                      <td>At least 49/50</td>
+                      <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">Address / postal code</th>
                       <td>Diagnostic listing field</td>
-                      <td>38/40 · 95.0%</td>
-                      <td>Diagnostic only</td>
-                      <td>2 misses recorded</td>
+                      <td>40/40 · 100.0%</td>
+                      <td>At least 39/40</td>
+                      <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">Floor</th>
                       <td>Diagnostic listing field</td>
                       <td>25/25 · 100.0%</td>
-                      <td>Diagnostic only</td>
-                      <td>No misses</td>
+                      <td>25/25</td>
+                      <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">Warmmiete</th>
                       <td>Diagnostic listing field</td>
                       <td>20/20 · 100.0%</td>
-                      <td>Diagnostic only</td>
-                      <td>No misses</td>
+                      <td>20/20</td>
+                      <td>Target met</td>
                     </tr>
                   </tbody>
                 </table>
@@ -360,23 +362,24 @@
 
             <div class="qa-findings">
               <article>
-                <p class="preview-label">What failed</p>
-                <h4>Nine planted errors were missed.</h4>
+                <p class="preview-label">What remained imperfect</p>
+                <h4>One check returned no usable result.</h4>
                 <p>
-                  Seven were neighboring-value rooms errors and two were postal-code
-                  substitutions. Rooms directly determine whether a listing matches a renter’s
-                  filter, so a miss could wrongly include or exclude an apartment. That is why
-                  the configuration failed even though all four overall metrics met their targets.
+                  One clean listing returned an evidence quote that was not present verbatim in
+                  its raw text. Local validation rejected the output. It did not create a false
+                  alert, was not retried and remains the single unsuccessful check. No planted
+                  parser error was missed.
                 </p>
               </article>
               <article>
                 <p class="preview-label">How I reached the stopping point</p>
-                <h4>Increase model effort only when the evidence justifies it.</h4>
+                <h4>Separate reading from the final comparison.</h4>
                 <p>
                   The final configuration used gpt-5.6-terra with high reasoning effort and strict
-                  structured outputs. During development, I increased the model’s reasoning effort
-                  only when lower-effort configurations were insufficient. This page reports only
-                  the final independent 600-listing run.
+                  structured outputs. The model saw only raw listing text and returned exact source
+                  quotes. Deterministic code compared those values with the parser snapshot and
+                  created the single admin decision <code>review_required</code>. The model did not
+                  change parsing, matching or renter-facing listing summaries.
                 </p>
                 <p>
                   Within the prototype’s planned budget for real-model testing, I used the final
@@ -386,12 +389,14 @@
             </div>
 
             <blockquote class="qa-stop">
-              The final run provided enough evidence for this prototype: it showed that the approach was promising and identified a specific weakness in rooms detection. Because the evaluation used synthetic data, the next meaningful step is not further tuning on the same benchmark, but recalibration and validation on permitted real listings.
+              The final run met every synthetic acceptance gate, so I stopped synthetic tuning.
+              With no permitted live dataset available, the next useful test is the current
+              synthetic Telegram flow with WBS renters.
             </blockquote>
 
             <section class="qa-cost" aria-labelledby="qa-cost-title">
               <div class="qa-subheading">
-                <p class="preview-label">Cost scenario · model inference only</p>
+                <p class="preview-label">Cost scenario · AI API calls only</p>
                 <div>
                   <h4 id="qa-cost-title">Would this checker be affordable at Berlin municipal-listing scale?</h4>
                   <p>
@@ -407,22 +412,22 @@
 
               <div class="qa-cost__calculation">
                 <div>
-                  <p class="preview-label">Conservative planning case</p>
-                  <strong>About $65/year</strong>
-                  <span>$5.38/month · 15,000 × $0.00430 per check</span>
-                  <p>Uses the final run’s token volume without relying on a prompt-cache discount.</p>
+                  <p class="preview-label">Measured run pattern</p>
+                  <strong>About $35/year</strong>
+                  <span>$2.94/month · 15,000 × $0.00235 per check</span>
+                  <p>The final 600-check run cost $1.412906.</p>
                 </div>
                 <div>
-                  <p class="preview-label">Observed run pattern</p>
-                  <strong>About $25/year</strong>
-                  <span>$2.11/month · 15,000 × $0.00169 per check</span>
-                  <p>The final 600-check run cost $1.011304 with its observed caching pattern.</p>
+                  <p class="preview-label">Planning case with a 25% buffer</p>
+                  <strong>About $45/year</strong>
+                  <span>$3.68/month · 15,000 × $0.00294 per check</span>
+                  <p>Adds a simple buffer for variation in listing length and model output.</p>
                 </div>
               </div>
 
               <p class="evidence-footnote">
                 Estimate based on one check per unique listing per prompt version and the prices
-                recorded on 21 July 2026. It excludes source access, hosting, monitoring,
+                recorded on 30 July 2026. It excludes source access, hosting, monitoring,
                 duplicate listings, price changes, differences in real-listing length, and human
                 review. The 12,398 re-lettings establish an order of magnitude, not the exact number
                 of ads that a live system would process.
@@ -431,14 +436,13 @@
 
             <p class="evidence-footnote">
               The evaluation used balanced synthetic cases, not live listings or natural
-              production error rates. With permitted real data, an admin would still review every
-              alert and a random sample of listings with no alert so missed parser errors can be
-              measured.
+              production error rates. The prototype has no permitted live dataset, so accuracy on
+              real listing formats and naturally occurring parser errors remains unmeasured.
             </p>
 
             <nav class="qa-evidence-links" aria-label="AI evaluation evidence">
               <a href="https://github.com/mich-mayer/flatfeed/blob/main/eval/AI_QA_EVAL_PLAN.md">Evaluation contract</a>
-              <a href="https://github.com/mich-mayer/flatfeed/blob/main/eval/runs/terra-high-locked-holdout/reports/report.md">Final 600-listing report</a>
+              <a href="https://github.com/mich-mayer/flatfeed/blob/main/eval/runs/extraction-v1-final-600/report.md">Final 600-listing report</a>
               <a href="https://github.com/mich-mayer/flatfeed">Repository</a>
             </nav>
           </section>
@@ -452,14 +456,15 @@
           </div>
           <div class="next-test-copy">
             <p>
-              Next, I would test the complete flow with one permitted live source and a small
-              group of WBS renters. Alongside the renter test, a manually labelled sample would
-              check whether the synthetic AI QA result transfers to real listing formats.
+              The synthetic evaluation answered the technical feasibility question for this
+              prototype. With no permitted live source available, the next useful test is a
+              moderated walkthrough of the current synthetic Telegram flow with a small group of
+              WBS renters—not another generated benchmark.
             </p>
             <dl>
-              <div><dt>Learn</dt><dd>Do renters understand why each listing appears and trust the standardized cards?</dd></div>
-              <div><dt>Measure</dt><dd>Filter completion, listing opens, stale-open rate, plus human review of every AI alert and a random sample of listings with no alert.</dd></div>
-              <div><dt>Decide</dt><dd>Add sources only if renters use the feed, source freshness is manageable and the AI checker works on real listing formats without excessive misses or false alerts.</dd></div>
+              <div><dt>Learn</dt><dd>Do renters understand the one-filter feed and see how it could reduce repeated monitoring?</dd></div>
+              <div><dt>Measure</dt><dd>Filter setup completion; whether participants can explain why a listing appeared; time to find and open a relevant listing in the demo; and the points where the flow feels unclear or untrustworthy.</dd></div>
+              <div><dt>Decide</dt><dd>Keep or revise the renter flow based on repeated usability problems. Treat access to real sources as a separate feasibility risk, not as a capability of this prototype.</dd></div>
             </dl>
           </div>
         </section>

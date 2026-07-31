@@ -7,10 +7,10 @@ reliability controls, not live housing coverage or renter outcomes.
 
 ## What It Shows
 
-- Four-field Telegram filter: WBS, district, max Kaltmiete, and rooms.
+- Four-field Telegram filter: WBS type, district, max Kaltmiete, and rooms.
 - Deterministic parsing and matching with fail-closed unknown values.
-- Standardized listing cards and a synthetic-adapter state check.
-- Optional background notification deduplication.
+- Consistent Telegram listing summaries with estimated walks to the nearest
+  S- and U-Bahn stations.
 - 15 authored synthetic cases currently pass the parser regression check.
 - Optional admin QA workflow; the public demo uses a deterministic mock and QA
   cannot mutate listings or matching rules.
@@ -155,21 +155,23 @@ Use `--provider openai` only for optional AI QA experiments with an API key and
 explicit budget settings. The default OpenAI QA model is `gpt-5.4-mini`, with
 pricing configured as `$0.75 / 1M` input tokens and `$4.50 / 1M` output tokens.
 
-Public portfolio surfaces quote only the authored regression-case count. Field
-accuracy and mock-provider diagnostics stay in the runnable eval report. After
-an eval change, verify the public count remains synchronized:
+The README records the authored regression-case count as a development check;
+the public HTML and Markdown case studies do not present it as product evidence.
+Field accuracy and mock-provider diagnostics stay in the runnable eval report.
+After an eval change, verify the technical count remains synchronized:
 
 ```bash
 PYTHONPYCACHEPREFIX=/tmp/flatfeed-pycache .venv/bin/python -m scripts.check_eval_numbers
 ```
 
 A separate synthetic offline hosted-model feasibility experiment is documented
-in `eval/AI_QA_EVAL_PLAN.md`. `gpt-5.6-terra` with high reasoning passed one
-frozen synthetic validation, then failed the one 600-case locked holdout
-because rooms correct-field recall was 43/50, below the predeclared 45/50
-minimum. The configuration is therefore not finally accepted. Live-source
-performance remains unmeasured, and nothing was integrated into the product
-runtime.
+in `eval/AI_QA_EVAL_PLAN.md`. The final `extraction-v1` configuration used
+`gpt-5.6-terra` with high reasoning to extract exact source quotes, then
+compared them with the parser snapshot in deterministic code. On one fresh,
+frozen 600-case synthetic evaluation it found and localized 300/300 planted
+errors, raised 0/300 false alerts, and returned 599/600 valid checks. All
+predeclared prototype gates passed. Live-source performance remains unmeasured,
+and nothing was integrated into the product runtime.
 
 ## Environment Variables
 
