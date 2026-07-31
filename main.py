@@ -532,7 +532,7 @@ def _settings_card(preferences: Optional[UserPreferences]) -> str:
         return (
             "<b>Your filter</b>\n\n"
             "The filter is not set up yet.\n\n"
-            "Tap the button below and I will guide you through WBS, district, rent, and rooms."
+            "Tap the button below and I will guide you through WBS type, district, rent, and rooms."
         )
 
     rent = f"up to {preferences.max_rent} EUR" if preferences.max_rent is not None else "no limit"
@@ -2355,9 +2355,8 @@ async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
         "FlatFeed applied four fixed matching rules to its synthetic catalog. This "
         f"card is 1 of {match_count} matching listing{plural}. Why it matched: "
         f"{reasons_label}.\n\n"
-        "FlatFeed re-checked that this listing is still active in the demo catalog "
-        "before showing it. With background notifications on, FlatFeed skips "
-        "matches it has already recorded as delivered.\n\n"
+        "The listing summary also adds estimated walking times to the nearest "
+        "S-Bahn and U-Bahn stations.\n\n"
     )
 
     await send_match_to_chat(
@@ -2379,15 +2378,14 @@ async def _send_tour_screen_3(callback: CallbackQuery) -> None:
         return
     await callback.message.answer(
         "<b>How the matching path works</b>\n\n"
-        "<b>Collect:</b> one synthetic adapter loads the demo catalog.\n"
+        "<b>Collect:</b> one synthetic adapter adds new demo listings to the catalog.\n"
         "<b>Normalize:</b> fixed parsing rules turn free-form text into the fields "
         "you saw on the card.\n"
-        "<b>Check:</b> the synthetic adapter confirms the listing remains active in "
-        "its local catalog.\n"
-        "<b>Match:</b> fixed rules compare WBS, district, Kaltmiete and rooms — "
-        "unknown values never match.\n"
-        "<b>Deliver:</b> optional background notifications deduplicate newly seen "
-        "matches against stored delivery history.\n\n"
+        "<b>Enrich:</b> local station data estimates walking times to the nearest "
+        "S-Bahn and U-Bahn stations.\n"
+        "<b>Match:</b> fixed rules compare WBS type, district, Kaltmiete and rooms.\n"
+        "<b>Deliver:</b> the demo shows matches on request; optional background mode "
+        "sends newly found matches automatically.\n\n"
         "No AI sits in this matching path. If you save a filter, FlatFeed stores your "
         "Telegram ID, filter and notification history; /delete removes those records "
         "from FlatFeed's database.",
@@ -2597,7 +2595,7 @@ def _help_text() -> str:
         "the income tier (higher number = higher allowed income).\n"
         "• Kaltmiete: base rent without utilities (Nebenkosten).\n\n"
         "<b>What you can do</b>\n"
-        "• ⚙ Filter — set up or edit WBS, district, rent, and rooms.\n"
+        "• ⚙ Filter — set up or edit WBS type, district, rent, and rooms.\n"
         "• 🔎 Show matches — listings that match your saved filter.\n"
         "• 📂 All listings — browse the whole demo catalog (ignores your filter).\n\n"
         "<b>Commands</b>\n"
@@ -3100,7 +3098,7 @@ async def handle_settings_reset(callback: CallbackQuery) -> None:
         return
     with suppress(TelegramAPIError):
         await callback.message.edit_text(
-            "Reset the filter? This clears WBS, district, rent, and rooms.",
+            "Reset the filter? This clears WBS type, district, rent, and rooms.",
             reply_markup=_reset_confirm_keyboard(),
         )
 

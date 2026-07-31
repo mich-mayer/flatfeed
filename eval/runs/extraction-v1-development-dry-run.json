@@ -1,0 +1,82 @@
+{
+  "boundaries": {
+    "consumed_holdout_reused": false,
+    "development_only": true,
+    "final_600_case_evidence": false,
+    "product_runtime_modified": false
+  },
+  "configuration": {
+    "max_output_tokens": 768,
+    "model": "gpt-5.6-terra",
+    "model_receives_parser_snapshot": false,
+    "prompt_version": "extraction-v1",
+    "reasoning_effort": "high",
+    "retries": 0,
+    "service_tier": "default",
+    "store": false,
+    "strict_structured_outputs": true,
+    "timeout_seconds": 60.0
+  },
+  "credential_read": false,
+  "dataset": {
+    "case_count": 120,
+    "manifest_file": "dataset_manifest.json",
+    "manifest_sha256": "0f71b7c048cd59c90ad14938afe60f4ff57bda90ddb7b34edeefde2d1ee2eafa",
+    "model_inputs_file": "model_inputs.jsonl",
+    "model_inputs_sha256": "2d24ea3a969e738eed6892dc2f8a31288d870c0facbb11d5f0e7c5fa8fc22a1a",
+    "reused_development_set": true,
+    "split": "review_v1_development",
+    "truth_file": "truth.jsonl",
+    "truth_sha256": "345a2b92d32f740050bdb51edb108b488747524db989ca92cf7c044328ab9091"
+  },
+  "development_targets": {
+    "address_postal_code_correct_field": "10/10",
+    "clean_false_alerts": "at most 1/50",
+    "correct_fields": "at least 68/70",
+    "district_correct_field": "8/8",
+    "errors_detected": "at least 68/70",
+    "floor_correct_field": "6/6",
+    "must_improve_previous_best": "more than 66/70 correct fields and more than 17/20 rooms, with 8/8 district and no false-alert regression",
+    "rent_kalt_correct_field": "10/10",
+    "rent_warm_correct_field": "6/6",
+    "rooms_correct_field": "at least 19/20",
+    "successful_checks": "at least 119/120",
+    "wbs_correct_field": "10/10"
+  },
+  "execution_guard": {
+    "next_required_artifact": "eval/runs/extraction-v1-development-configuration-freeze.json",
+    "reason": "This artifact only proves local readiness. It does not authorize an API call.",
+    "status": "blocked"
+  },
+  "hashes": {
+    "output_schema_sha256": "282d33d4da832313d0f2e65b56b46ebc0210663adea53fba769e92be1dbc6588",
+    "prompt_sha256": "f5e405ea26ebb7dbff8433b18b2f131f186d3e349ef5c5a17361748487dc624c",
+    "rendered_inputs_sha256": "0f4bc6affe52dc64b5cadcdf4ab5a9cfc048397bc7d7c63cae6dc9dfecf4cb82"
+  },
+  "mode": "dry_run",
+  "network_calls_made": 0,
+  "preflight": {
+    "hard_budget_limit_usd": "1.91",
+    "input_token_upper_bound": 166184,
+    "method": "UTF-8 bytes as a conservative input-token upper bound; maximum output tokens reserved for every case; no cache discount assumed; all input priced at the higher cache-write rate",
+    "output_token_upper_bound": 92160,
+    "worst_case_cost_usd": "1.901725"
+  },
+  "pricing": {
+    "cache_write_per_1m_usd": "3.125",
+    "cached_input_per_1m_usd": "0.25",
+    "input_per_1m_usd": "2.50",
+    "must_refresh_before_execute": true,
+    "observed_date": "2026-07-30",
+    "output_per_1m_usd": "15.00",
+    "source": "https://developers.openai.com/api/docs/pricing"
+  },
+  "requests": {
+    "case_requests": 120,
+    "maximum_responses_api_requests": 120,
+    "maximum_total_api_calls": 121,
+    "model_availability_checks": 1,
+    "retry_requests_reserved": 0
+  },
+  "runner_version": "extraction-plan-v2"
+}

@@ -1,0 +1,194 @@
+{
+  "boundaries": {
+    "hidden_truth_separate_from_model_inputs": true,
+    "new_cases": true,
+    "openai_called_during_generation": false,
+    "prior_cases_reused": false,
+    "product_runtime_modified": false,
+    "production_accuracy_claim": false
+  },
+  "composition": {
+    "case_types": {
+      "clean": 300,
+      "corrupted": 300
+    },
+    "corrupted_fields": {
+      "address": 20,
+      "display_wbs": 75,
+      "district": 30,
+      "floor": 25,
+      "postal_code": 20,
+      "rent_kalt": 60,
+      "rent_warm": 20,
+      "rooms": 50
+    },
+    "corruption_types": {
+      "address_house_number_shift": 20,
+      "district_neighbor_substitution": 30,
+      "floor_neighbor_value": 25,
+      "kaltmiete_amount_shift": 28,
+      "kaltmiete_label_swap": 32,
+      "postal_code_substitution": 20,
+      "rooms_neighbor_value": 50,
+      "warmmiete_amount_shift": 12,
+      "warmmiete_label_swap": 8,
+      "wbs_range_boundary_shift": 50,
+      "wbs_requirement_added": 14,
+      "wbs_requirement_dropped": 7,
+      "wbs_specificity_confusion": 4
+    }
+  },
+  "counts": {
+    "clean": 300,
+    "corrupted": 300,
+    "total": 600
+  },
+  "error_distribution": {
+    "address_postal_code": 40,
+    "district": 30,
+    "floor": 25,
+    "rent_kalt": 60,
+    "rent_warm": 20,
+    "rooms": 50,
+    "wbs": 75
+  },
+  "experiment": "extraction-v1 final synthetic evaluation",
+  "isolation": {
+    "comparison_basis": [
+      "raw_text plus parser_snapshot",
+      "raw_text",
+      "case_id"
+    ],
+    "overlaps": {
+      "ai_qa/development_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "ai_qa/locked_holdout_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_calibration/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_calibration/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_effort_screen/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_low_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_low_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v3_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v3_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v4_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v4_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v5_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "luna_v5_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "review_v1_development/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_calibration_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_calibration_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_effort_screen/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_high_cycle/calibration_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_high_cycle/validation_model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_high_reasoning_screen/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_prompt_reasoning_screen/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      },
+      "terra_v2_prompt_screen/model_inputs.jsonl": {
+        "case_id": 0,
+        "model_input": 0,
+        "raw_text": 0
+      }
+    },
+    "prior_artifact_count": 22
+  },
+  "locked": true,
+  "model_inputs": {
+    "bytes": 309564,
+    "file": "model_inputs.jsonl",
+    "lines": 600,
+    "sha256": "49ce0f1d77a43286dfca90f3e11132357fb960da67a86fbd309f90c975e5d345"
+  },
+  "permitted_use": "one frozen final evaluation only",
+  "purpose": "One fresh 600-case test after development tuning; not a production-accuracy estimate.",
+  "schema_version": "1.0",
+  "seed": 20261001,
+  "split": "extraction_v1_final_600",
+  "truth": {
+    "bytes": 103734,
+    "file": "truth.jsonl",
+    "lines": 600,
+    "sha256": "a7b2c2e0ad0bf21263ce7c76851cec3850c12b3b654473ee4a476401db8fb7a7"
+  }
+}

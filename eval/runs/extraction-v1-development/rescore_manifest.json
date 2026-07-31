@@ -1,0 +1,24 @@
+{
+  "additional_cost_usd": 0,
+  "api_calls_made": 0,
+  "boundary": "This development rescore reuses saved model outputs and is not final 600-case evidence.",
+  "created_at": "2026-07-30T17:12:41.528104+00:00",
+  "development_tuning": true,
+  "reason": "The original scorer did not normalize valid exact quotes with whitespace-separated labels, bare Berlin postal codes, or Stockwerk floor labels.",
+  "result": {
+    "gate_status": "pass",
+    "new_600_case_evaluation_authorized": true,
+    "report_sha256": "1d5a2fcf91a36f19626d91813827e2a0a565b803791471177b1bddc344e0ea00"
+  },
+  "schema_version": "1.0",
+  "scorer": {
+    "comparator_sha256": "af44c63ea695346ff8fb078dc39a182910c65cdcd49fae009597f8383d2f816c",
+    "version": "extraction-v1"
+  },
+  "source_artifacts": {
+    "original_report_sha256": "101805ca1ea12af53a062acf6e36ac5ef36d7b9167ee482e05caa404bbc1dc9d",
+    "original_run_manifest_sha256": "ffc6c4dc016b436a151d9642dc66341b28181bcff65bc559bb3cb84737c7bc38",
+    "predictions_sha256": "7de6e5b305652e0807cdb7b5081d899b1d9016ce333ab87fae3312d2ad6bf375"
+  },
+  "status": "completed"
+}
