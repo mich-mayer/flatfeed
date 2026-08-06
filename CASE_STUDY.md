@@ -1,12 +1,12 @@
 # FlatFeed Case Study
 
-FlatFeed is a guided Telegram prototype for reducing repeated checks across
+FlatFeed is a working Telegram prototype for reducing repeated checks across
 Berlin WBS listings. The product concept is one four-criterion filter—WBS type,
 district, maximum Kaltmiete and room count—followed by matching listings with
-clear reasons in one consistent feed. The bot runs one synthetic scenario
-through the implemented matching path. It demonstrates the workflow and its reliability
-controls; it does not provide a usable feed or demonstrate live source coverage
-or user outcomes.
+clear reasons in one consistent feed. A user can save that filter, request
+matches and review the fixed-rule reasons before each result card. The catalog
+is synthetic; the prototype does not demonstrate live source coverage or user
+outcomes.
 
 WBS (Wohnberechtigungsschein) is a certificate used to qualify for subsidized
 housing in Berlin. Kaltmiete is the base rent, excluding operating and heating
@@ -15,10 +15,10 @@ costs.
 ## 1. Product Hypothesis
 
 The premise: WBS users re-read fragmented listings and repeat the same basic
-checks on each one. The product concept is one saved filter followed by matching
-listings in one consistent Telegram format. The current prototype demonstrates
-that concept through one guided scenario instead of pretending its synthetic
-catalog is a usable housing feed.
+checks on each one. The implemented product is one saved filter followed by
+on-demand matching listings in one consistent Telegram format. Its synthetic
+catalog makes the interaction runnable without pretending to be a usable live
+housing feed.
 
 This portfolio prototype is complete at its intended scope. It demonstrates the
 user experience and the bounded AI quality-control role without implying a
@@ -29,15 +29,15 @@ launched housing service.
 The main path is:
 
 ```text
-Example filter → Collect → Prepare → Match → Explain
+Save filter → Collect → Prepare → Match → Explain
 ```
 
-- The demo shows one example with WBS type, district, maximum Kaltmiete, and rooms.
+- The user saves WBS type, district, maximum Kaltmiete, and rooms.
 - A source adapter adds newly found listings to one catalog.
 - Fixed rules normalize listing fields and estimate walks to the nearest S- and
   U-Bahn stations.
-- Deterministic rules compare each listing with the example criteria.
-- The demo explains one match and shows the canonical Telegram listing card.
+- Deterministic rules compare each listing with the saved criteria.
+- The product explains each on-demand match and shows the canonical Telegram listing card.
 
 I defined the WBS user problem and product scope; chose which fields determine
 a match and how missing data is handled; set the AI boundary; and designed the
@@ -54,8 +54,8 @@ still verify complete eligibility and application details on the source page.
 
 ### Rules decide which listings appear
 
-Parsing and matching follow fixed rules, so the reason for the demonstrated
-match can be traced to the example filter. Separately, I evaluated a hosted model as an
+Parsing and matching follow fixed rules, so every result can be traced to the
+saved filter. Separately, I evaluated a hosted model as an
 admin-only parser check. That experiment is not integrated into the Telegram
 runtime, and its findings cannot automatically change the listing or the match.
 
@@ -63,16 +63,16 @@ runtime, and its findings cannot automatically change the listing or the match.
 
 Each permitted source would be normalized into the same listing format before
 matching, so a future product could support one filter and one feed. The current
-prototype exercises this design with one synthetic source and one guided
-scenario. Completeness and freshness across real sources are still untested,
+prototype exercises this design with one synthetic source and a working
+saved-filter flow. Completeness and freshness across real sources are still untested,
 and there is no live housing-company ingestion in this version.
 
 ## 4. Evidence and Limits
 
 Implemented and evaluated:
 
-- the guided Telegram demo runs one example filter through the implemented
-  deterministic matching and activity-check path;
+- a user can save a four-field filter, request matches and see fixed-rule
+  reasons before each synthetic listing card;
 - Telegram listing summaries include estimated walks to the nearest S- and
   U-Bahn stations, calculated from synthetic coordinates in the demo;
 - on 600 new synthetic listings, a hosted model plus deterministic comparison
@@ -139,8 +139,8 @@ Within the prototype's planned budget for real-model testing, I used the final
 benchmark once and kept its result unchanged.
 
 > The final run met every synthetic acceptance gate, so I stopped synthetic
-> tuning. The prototype is complete at its intended scope: a functional
-> Telegram experience, deterministic matching and a bounded AI quality-control
+> tuning. The prototype is complete at its intended scope: a working
+> saved-filter Telegram flow, deterministic matching and a bounded AI quality-control
 > role.
 
 ### Model-cost scenario at Berlin municipal-listing scale

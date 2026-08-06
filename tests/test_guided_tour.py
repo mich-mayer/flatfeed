@@ -456,7 +456,7 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(button_texts, ["Replay the demo", "Read the case study"])
 
 
-class RetiredTourSaveFilterTests(unittest.IsolatedAsyncioTestCase):
+class RetiredTourCompatibilityTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self) -> None:
         engine = _in_memory_engine()
         Base.metadata.create_all(engine)
@@ -476,48 +476,51 @@ class RetiredTourSaveFilterTests(unittest.IsolatedAsyncioTestCase):
             )
             session.commit()
 
-    async def test_old_save_filter_button_cannot_write_user_state(self) -> None:
+    async def test_old_tour_button_cannot_write_user_state(self) -> None:
         callback = _FakeCallback("tour:save_filter")
 
         with patch("main.SessionLocal", self.test_session):
             with self.test_session() as session:
                 self.assertIsNone(session.get(User, 999))
 
-            await M.handle_tour_save_filter(callback)
+            with patch("main.load_user_preferences", return_value=None):
+                await M.handle_legacy_tour_callback(callback, _FakeState())
 
             with self.test_session() as session:
                 self.assertIsNone(session.get(User, 999))
 
-        self.assertEqual(callback.message.answered, [])
+        self.assertIn("filter is not set up yet", callback.message.answered[-1][0])
         self.assertEqual(
             callback.answered,
-            [("Saving filters is not part of this guided prototype.", True)],
+            [("FlatFeed now uses your own saved filter.", True)],
         )
 
 
-class TourEntryPointTests(unittest.IsolatedAsyncioTestCase):
-    async def test_start_command_leads_into_the_tour(self) -> None:
-        # Plain /start and the ?start=tour deep link both resolve to the
-        # same CommandStart() handler and must produce the same screen 0.
+class ProductEntryPointTests(unittest.IsolatedAsyncioTestCase):
+    async def test_start_command_opens_the_saved_filter_product(self) -> None:
         message = _FakeMessage()
         message.from_user = SimpleNamespace(id=999)
 
-        await M.handle_start(message, _FakeState())
+        with patch("main.load_user_preferences", return_value=None):
+            await M.handle_start(message, _FakeState())
 
         self.assertEqual(len(message.answered), 2)
         intro_text, intro_markup = message.answered[0]
-        pitch_text, pitch_markup = message.answered[1]
+        filter_text, filter_markup = message.answered[1]
 
-        self.assertIn("Without FlatFeed", intro_text)
-        self.assertIn("With FlatFeed", intro_text)
-        self.assertIn("synthetic scenario", intro_text)
-        self.assertTrue(intro_markup.remove_keyboard)
+        self.assertIn("one saved filter", intro_text)
+        self.assertIn("synthetic listings", intro_text)
+        self.assertIn("does not monitor live housing sources", intro_text)
+        self.assertEqual(
+            [button.text for row in intro_markup.keyboard for button in row],
+            [M.BTN_MATCHES, M.BTN_SETTINGS],
+        )
 
-        tour_buttons = [
-            button.text for row in pitch_markup.inline_keyboard for button in row
+        filter_buttons = [
+            button.text for row in filter_markup.inline_keyboard for button in row
         ]
-        self.assertIn("Two steps, no typing", pitch_text)
-        self.assertEqual(tour_buttons, ["See the product flow"])
+        self.assertIn("filter is not set up yet", filter_text)
+        self.assertEqual(filter_buttons, ["Set up filter"])
 
 
 if __name__ == "__main__":

@@ -416,11 +416,12 @@ img {
 
 .telegram-shot-crop {
   overflow: hidden;
-  aspect-ratio: 904 / 1435;
+  aspect-ratio: 910 / 1415;
   background: var(--wash);
 }
 
 .telegram-shot {
+  display: block;
   width: 100%;
   height: auto;
 }
@@ -431,6 +432,84 @@ img {
   color: var(--ink-3);
   font-size: 0.6875rem;
   line-height: 1.5;
+}
+
+.walkthrough-evidence {
+  grid-column: 1 / -1;
+  padding-top: 3.5rem;
+  border-top: 1px solid var(--ink);
+}
+
+.walkthrough-evidence__heading {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.55fr) minmax(0, 1.45fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.walkthrough-evidence__heading h2 {
+  max-width: 46rem;
+  font: 600 clamp(1.75rem, 3.4vw, 2.75rem)/1.08 var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.walkthrough-evidence__heading div > p {
+  max-width: 39rem;
+  margin-top: 0.85rem;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.walkthrough-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  margin-top: 2.5rem;
+}
+
+.walkthrough-frame {
+  min-width: 0;
+  border: 1px solid var(--ink);
+  background: var(--surface);
+}
+
+.walkthrough-shot-crop {
+  overflow: hidden;
+  aspect-ratio: 910 / 1415;
+  background: var(--wash);
+}
+
+.walkthrough-shot {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.walkthrough-frame figcaption {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.4rem 0.8rem;
+  padding: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.walkthrough-frame figcaption span {
+  color: var(--accent-deep);
+  font: 600 0.625rem/1.4 var(--font-mono);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.walkthrough-frame figcaption strong {
+  font: 600 1rem/1.25 var(--font-display);
+}
+
+.walkthrough-frame figcaption p {
+  grid-column: 2;
+  color: var(--ink-2);
+  font-size: 0.78125rem;
+  line-height: 1.55;
 }
 
 .case-section {
@@ -1047,6 +1126,16 @@ img {
 
   .product-preview {
     width: min(100%, 37rem);
+  }
+
+  .walkthrough-evidence__heading,
+  .walkthrough-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .walkthrough-frame {
+    width: min(100%, 34rem);
+    margin-inline: auto;
   }
 
   .section-heading {
