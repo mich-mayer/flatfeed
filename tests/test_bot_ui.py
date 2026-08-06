@@ -11,9 +11,11 @@ from main import (
     _edit_filter_keyboard,
     _edit_filter_prompt,
     _filter_summary,
+    _help_text,
     _location_keyboard,
     _no_filter_keyboard,
     _no_matches_keyboard,
+    _public_bot_commands,
     _rent_keyboard,
     _rent_prompt,
     _rooms_keyboard,
@@ -21,6 +23,7 @@ from main import (
     _settings_keyboard,
     _wbs_keyboard,
     handle_location_choice,
+    handle_legacy_product_callback,
     handle_rent_choice,
     handle_rooms_choice,
     handle_wbs_choice,
@@ -89,6 +92,11 @@ class _FakeBot:
 
 
 class BotUITests(unittest.TestCase):
+    def test_public_command_menu_is_demo_only(self):
+        commands = _public_bot_commands()
+
+        self.assertEqual([item.command for item in commands], ["start", "help"])
+
     @staticmethod
     def _reply_button_texts(keyboard) -> list[str]:
         return [button.text for row in keyboard.keyboard for button in row]
@@ -109,11 +117,11 @@ class BotUITests(unittest.TestCase):
     def test_empty_and_no_match_states_return_to_core_paths(self) -> None:
         self.assertEqual(
             self._inline_button_texts(_no_filter_keyboard()),
-            ["Set up filter", "Try the demo"],
+            ["Set up filter", "See the product flow"],
         )
         self.assertEqual(
             self._inline_button_texts(_no_matches_keyboard()),
-            ["Edit filter", "Try the demo filter"],
+            ["Edit filter", "See the product flow"],
         )
 
     def test_settings_keyboard_contains_only_filter_actions(self) -> None:
@@ -145,6 +153,15 @@ class BotUITests(unittest.TestCase):
             get_settings.return_value = SimpleNamespace(bot_background_enabled=True)
             self.assertIn("Notifications:</b> ON", _settings_card(preferences))
             self.assertIn("send new matching listings", _filter_summary(preferences))
+
+    def test_help_names_the_prototype_notification_boundary(self) -> None:
+        text = _help_text()
+
+        self.assertIn("does not monitor live housing sources", text)
+        self.assertIn("notifications about real new listings", text)
+        self.assertIn("/start — start or replay the demo", text)
+        for retired_action in ("Show matches", "Set up my filter", "/filter", "/matches"):
+            self.assertNotIn(retired_action, text)
 
     def test_edit_filter_keyboard_reuses_field_edit_callbacks(self) -> None:
         buttons = [
@@ -212,6 +229,22 @@ class BotUITests(unittest.TestCase):
 
 
 class FilterPromptLifecycleTests(unittest.IsolatedAsyncioTestCase):
+    async def test_legacy_filter_callback_redirects_without_reopening_setup(self) -> None:
+        callback = _FakeCallback("settings:filter")
+        state = _FakeState()
+        await state.update_data(existing_preferences={"wbs_type": "WBS 140"})
+
+        await handle_legacy_product_callback(callback, state)
+
+        self.assertEqual(state.data, {})
+        self.assertEqual(
+            callback.answered,
+            [("This prototype now uses one guided demo.", True)],
+        )
+        text, markup = callback.message.answered[-1]
+        self.assertIn("Replay the guided scenario", text)
+        self.assertEqual(markup.inline_keyboard[0][0].text, "See the product flow")
+
     async def test_no_matches_names_the_limited_catalog_boundary(self) -> None:
         message = _FakeMessage()
         with patch(
@@ -231,7 +264,7 @@ class FilterPromptLifecycleTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("does not describe the live Berlin housing market", text)
         self.assertEqual(
             [button.text for row in markup.inline_keyboard for button in row],
-            ["Edit filter", "Try the demo filter"],
+            ["Edit filter", "See the product flow"],
         )
 
     async def test_filter_prompt_is_edited_in_place(self) -> None:

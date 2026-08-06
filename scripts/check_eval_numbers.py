@@ -41,8 +41,8 @@ OFFICIAL_RELETTING_PROXY = 12_398
 PLANNING_BUFFER = 1.25
 FINAL_STOPPING_RATIONALE_PARTS = (
     "The final run met every synthetic acceptance gate",
-    "With no permitted live dataset available",
-    "WBS renters",
+    "The prototype is complete at its intended scope",
+    "bounded AI quality-control role",
 )
 HISTORICAL_PUBLIC_MARKERS = (
     "Synthetic frozen validation",
@@ -53,11 +53,15 @@ HISTORICAL_PUBLIC_MARKERS = (
     "critical rooms weakness",
 )
 METRIC_LABELS = {
-    "parser_error_detection_rate": "Parser Error Detection Rate",
-    "false_alert_rate": "False Alert Rate",
-    "correct_field_detection_rate": "Correct Field Detection Rate",
-    "successful_check_rate": "Successful Check Rate",
+    "parser_error_detection_rate": "Errors detected",
+    "false_alert_rate": "False alerts",
+    "correct_field_detection_rate": "Correct data point identified",
+    "successful_check_rate": "Usable AI responses",
 }
+RUNTIME_BOUNDARY_MARKERS = (
+    "not part of the user-facing product flow",
+    "not integrated into the product",
+)
 FIELD_KEYS = (
     "wbs",
     "district",
@@ -248,7 +252,7 @@ def main() -> int:
             errors.append(
                 f"{path.relative_to(PROJECT_ROOT)}: final pass decision is missing"
             )
-        if "not integrated into the product" not in text.lower():
+        if not any(marker in text.lower() for marker in RUNTIME_BOUNDARY_MARKERS):
             errors.append(
                 f"{path.relative_to(PROJECT_ROOT)}: runtime boundary is missing"
             )

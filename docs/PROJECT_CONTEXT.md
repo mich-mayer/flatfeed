@@ -2,13 +2,14 @@
 
 ## Purpose
 
-FlatFeed is a portfolio prototype for Berlin WBS apartment collection and
-matching. It demonstrates how a bot can collect listings through source
-adapters, normalize them into one trusted catalog, and match them to user
-filters. The prototype emphasizes reliable parsing, deterministic matching,
-and measurable offline AI evaluation without scraping or redistributing real
-housing-company listings. The Telegram runtime stays focused on the renter
-flow; model-evaluation evidence lives in the case study and `eval/` artifacts.
+FlatFeed is a guided portfolio prototype for reducing repeated checks across
+Berlin WBS listings. One synthetic scenario demonstrates how a bot can collect
+listings through a source adapter, normalize them into one catalog, and compare
+them with four user criteria. The prototype emphasizes reliable parsing,
+deterministic matching, and measurable offline AI evaluation without scraping
+or redistributing real housing-company listings. The Telegram runtime is an
+interactive demonstration, not a usable housing feed; model-evaluation evidence
+lives in the case study and `eval/` artifacts.
 
 The target portfolio role is AI Product Manager in a corporate environment.
 Reliability, explainability, privacy, defensibility, measurable AI quality, and
@@ -20,32 +21,31 @@ cost control matter more than feature count.
 
 - `FlatFeed Synthetic`: generated local listings from `synthetic/`.
 - No real housing-company source adapters are enabled or present.
-- Synthetic listing URLs point at the static explainer page
+- Synthetic listing URLs point at the static disclosure page
   `docs/demo-listing.html` (published on GitHub Pages as
   `https://mich-mayer.github.io/flatfeed/demo-listing.html?id=<id>`) so the
   card's `Open listing` link resolves to something real for an external
   viewer. Activity is still checked locally by the source adapter via a
   string-prefix match on the URL; no network request is made for the check
-  itself, and the demo page is a static, honest disclosure, not a per-listing
-  detail page.
+  itself. The page makes clear that it is not a real offer or application flow.
 - The product positioning should still mention collection from different
   sources: the codebase has a source-adapter registry, ingestion history,
   per-source activity checks, and per-source health monitoring. In the demo,
   those capabilities are exercised through the synthetic adapter rather than
   live external catalogs.
 
-### User filter
+### Guided demo scenario
 
-The fixed Telegram filter asks for:
+The public bot shows one temporary example containing:
 
 1. WBS: any WBS, 100, 140, 160, 180, 220, or no WBS required.
 2. Berlin Bezirk: one of the 12 Bezirke or any.
 3. Maximum Kaltmiete: user-entered amount.
 4. Rooms: 1, 2, 3, 4, 5+, or any.
 
-The visible label is `District`. Internally and semantically it is a Bezirk.
-Ortsteil/Kiez names in synthetic text are normalized to one of the 12 Berlin
-Bezirke.
+The demo does not ask visitors to create or save a personal filter. The visible
+label is `District`. Internally and semantically it is a Bezirk. Ortsteil/Kiez
+names in synthetic text are normalized to one of the 12 Berlin Bezirke.
 
 ### Listing card
 
@@ -72,7 +72,7 @@ Wohnberechtigungsschein and should not be translated away.
 
 ## Main Flows
 
-### Synthetic ingestion and notifications
+### Synthetic demo pipeline
 
 ```text
 Synthetic catalog generation
@@ -80,20 +80,15 @@ Synthetic catalog generation
   -> deterministic listing parsing at ingestion (no LLM)
   -> local transit enrichment from embedded coordinates
   -> optional AI QA for newly discovered listings
-  -> match new listings against saved filters
-  -> optional background notification with delivery-history deduplication
+  -> compare listings with the temporary demo criteria
+  -> show one verified synthetic match in Telegram
 ```
 
-`BOT_BACKGROUND_ENABLED` defaults to `false` so local demo runs do not start
-polling/scanning unless explicitly requested.
-
-### User-requested listings
-
-- Show matches: select newest candidates matching the saved filter, check
-  activity through the synthetic adapter, and send at most 3 valid cards. This
-  is the primary user-facing listing action.
-- A failed activity check marks the local listing inactive and excludes it from
-  delivery.
+The public runtime never starts background collection or user notifications.
+Legacy storage and notification helpers remain in the repository for migration
+compatibility, but they are not reachable from the current demo. The prototype
+does not monitor live housing sources or send notifications about real new
+listings.
 
 SQLite accelerates selection and preserves history. The synthetic catalog is the
 demo source of truth.
@@ -101,21 +96,19 @@ demo source of truth.
 ### Guided tour
 
 `/start` (plain or via the `https://t.me/FlatFeedBot?start=tour` deep link)
-leads every visitor into a 2-step, button-only demo before the regular
-filter/matches flow:
+leads every visitor into a 2-step, button-only demo:
 
-1. **Temporary filter** — shows the demo filter as plain text (WBS type, district,
-   Kaltmiete, rooms). Held ephemeral: nothing is written to `users` yet.
+1. **Example filter** — shows the demo criteria as plain text (WBS type,
+   district, Kaltmiete, rooms). Nothing is written to `users`.
 2. **Matching result** — runs the same matching predicate as the main
    product path (`is_listing_match`) over the synthetic catalog, then the
    synthetic adapter's local activity check (`_verified_active_matches`). It
-   sends a short explanation with the active match count and field-level
-   reasons, then one canonical card using the same `format_match_message`
-   output as `Show matches`. A separate follow-up message offers saving the
-   temporary filter, creating a custom filter, opening the optional `How
-   matching works` explanation, or reading the case study. The walkthrough
-   explicitly says it shows one example while the regular flow can return up
-   to three cards.
+   sends a short explanation with field-level reasons, then one canonical card using the same `format_match_message`
+   card formatter. A separate follow-up message offers replaying the demo,
+   opening the optional `How reliability works` explanation, or reading the case
+   study. The walkthrough explicitly says that its example is synthetic and
+   that the prototype does not monitor live housing sources or send
+   notifications about real new listings.
 
 The tour listing is selected deterministically from the active catalog (2
 rooms, a WBS requirement including 140, a WBS phrase in the raw text, and
@@ -124,18 +117,17 @@ demo at any time.
 
 Rules that keep the tour safe and honest to run in front of any visitor:
 
-- **Ephemeral filter.** The demo filter is derived from the tour listing on
-  every screen and is never persisted until the visitor explicitly taps
-  `Use this demo filter` after the result (`tour:save_filter` ->
-  `save_fixed_preferences`).
+- **No personal state.** The demo criteria are derived from the tour listing on
+  every screen and are never persisted. A compatibility handler rejects the
+  retired `tour:save_filter` callback from older Telegram messages.
 - **Synthetic disclosure.** The intro names the synthetic catalog before the
   first action, and the result card names `FlatFeed Synthetic` as its source.
-- **No model call.** The guided demo exercises only collection, deterministic
-  parsing, enrichment, matching, and the adapter activity check. Hosted-model
-  results are documented on the case-study surface, not replayed in Telegram.
-- **Limited-catalog empty state.** A custom filter may have no match among the
-  authored synthetic listings. The bot names that demo-data boundary and does
-  not present an empty result as evidence about the live Berlin market.
+- **AI boundary.** The user-facing path is deterministic. The optional
+  reliability explanation names the separately evaluated, admin-only AI parser
+  check; it cannot change listing fields, matching decisions or user-facing cards.
+- **Guaranteed scenario.** The authored demo selects a compatible active
+  synthetic listing so the visitor sees one complete matching result. It does
+  not imply coverage of other filters or the live Berlin market.
 
 ## Parsing Semantics
 
@@ -248,7 +240,8 @@ makes no LLM calls.
 
 Important tables:
 
-- `users`: Telegram ID, saved filter, filter update timestamp.
+- `users`: legacy Telegram ID and saved-filter records from earlier versions;
+  the current demo does not create or update them.
 - `listings`: parsed listing, raw text, activity, first/last seen state.
 - `sent_listing_notifications`: notification deduplication.
 - `ingestion_runs`: source health and alert history.
@@ -259,9 +252,9 @@ Important tables:
 Schema evolution uses the idempotent compatibility logic in
 `flatfeed/db/session.py`, not a full Alembic migration stack.
 
-Users can remove their saved filter and notification dedupe history with
-`/delete` or the `🗑 Delete my data` button on the filter card. Both ask for an
-explicit confirmation before deleting.
+`/delete` remains as an unadvertised compatibility command so returning users
+can remove saved-filter and notification-dedupe records created by an earlier
+version. The current demo stores no personal filter or delivery history.
 
 ## Reliability Decisions
 

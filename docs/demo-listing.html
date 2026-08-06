@@ -3,38 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="FlatFeed synthetic demo listing — a placeholder page for the Telegram demo catalog, not a real housing listing.">
+    <meta name="description" content="FlatFeed synthetic demo listing — not a real housing offer.">
     <title>FlatFeed | Synthetic demo listing</title>
     <link rel="icon" href="favicon.ico" sizes="any">
     <link rel="icon" href="flatfeed-favicon.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=20260715-crop">
-    <style>
-      .demo-listing-page {
-        max-width: 42.5rem;
-        margin: 0 auto;
-        padding: 3rem 1.5rem 4rem;
-      }
-
-      .demo-listing-page .brand {
-        margin-bottom: 2.5rem;
-      }
-
-      .demo-listing-page h1 {
-        font: 700 1.75rem/1.25 var(--font-display);
-        letter-spacing: -0.01em;
-        margin: 0 0 1.25rem;
-      }
-
-      .demo-listing-actions {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        margin-top: 2rem;
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css?v=20260805-product-story">
   </head>
   <body>
     <div class="demo-listing-page">
@@ -44,34 +20,21 @@
         <span class="brand-sub">Synthetic demo listing</span>
       </a>
 
-      <h1>This listing exists only in FlatFeed's demo catalog.</h1>
-
-      <div class="case-prose">
-        <p>
-          You followed an <strong>Open listing</strong> link from a FlatFeed Telegram
-          card. FlatFeed is a portfolio prototype: every listing it shows — including
-          this one — comes from a local synthetic catalog, not a live housing company.
-          There is no real apartment, availability, or landlord behind this page. The
-          Schlangenbader Straße 91 showcase card uses a photo of the same real building;
-          its rent, floor, rooms, and WBS eligibility are synthetic. Photos on other
-          demo cards are illustrative.
-        </p>
-        <p>
-          Building photo: <a href="https://commons.wikimedia.org/wiki/File:Binger_Stra%C3%9Fe_10_Berlin-Wilmersdorf.jpg">Bodo Kubrak / Wikimedia Commons</a>,
-          released under <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>.
-        </p>
-        <p>
-          For the product decisions, evaluation results, and prototype limitations,
-          read the case study.
-        </p>
-      </div>
-
-      <div class="demo-listing-actions">
-        <a class="btn btn--primary" href="case-study.html">
-          Read the case study
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-        </a>
-      </div>
+      <main>
+        <h1>This listing exists only in FlatFeed's synthetic demo catalog.</h1>
+        <div class="case-prose">
+          <p>
+            You followed an <strong>Open listing</strong> link from a FlatFeed card.
+            There is no real apartment, availability, landlord or application flow behind this
+            page. FlatFeed uses one authored synthetic scenario to demonstrate how a user could
+            receive one explained match in a consistent format.
+          </p>
+          <p>Read the case study for product decisions, evaluation results and prototype limitations.</p>
+        </div>
+        <div class="demo-listing-actions">
+          <a class="btn btn--primary" href="case-study.html">Read the case study</a>
+        </div>
+      </main>
     </div>
   </body>
 </html>

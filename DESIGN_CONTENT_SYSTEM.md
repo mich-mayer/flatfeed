@@ -1,7 +1,7 @@
 # FlatFeed — Design & Content System
 
 **Status:** Normative. Single source of truth for UI, layout, components, copy, terminology, and case-study content.
-**Date:** 2026-07-31 (bot-only prototype simplification; see §34 history for earlier decisions).
+**Date:** 2026-08-05 (Telegram evidence primary; see §34 history for earlier decisions).
 **Basis:** source code inspection (`main.py`, `flatfeed/`, `synthetic/`, `eval/`), an evidence/claim audit, desktop and mobile browser renders of the case-study page, and the project docs (`README.md`, `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`). No renter research or usability study has been run; product-value statements remain hypotheses.
 
 **Rule keywords.** MUST = mandatory project rule. SHOULD = default; deviate only for a stated reason. MAY = permitted option. MUST NOT = prohibited. Rules without a keyword are descriptive context.
@@ -40,8 +40,8 @@ This document answers: *exactly how should interface elements and texts in this 
 **Who uses it:** AI coding agents (Claude/Fable, Codex), human developers, and anyone doing design, code, or content review on FlatFeed.
 
 **Surfaces covered:**
-1. **Telegram bot UI** — `main.py` (aiogram): commands, the two-step guided demo, persistent reply keyboard, the 4-step filter wizard, and listing cards (formatted in `flatfeed/matching.py`).
-2. **Case-study landing page** — `docs/case-study.html` + `docs/styles.css`: the public AI PM portfolio and model-evaluation evidence page.
+1. **Telegram bot UI** — `main.py` (aiogram): the two-step guided demo, optional pipeline explanation, compatibility handling for retired controls, and listing cards (formatted in `flatfeed/matching.py`).
+2. **Case-study landing page** — `docs/case-study.html` + `docs/styles.css`: the public AI PM portfolio, captured Telegram evidence, and model-evaluation evidence page.
 3. **Public repo docs** — `README.md`, `CASE_STUDY.md`, `docs/PROJECT_CONTEXT.md`: reader-facing evidence; they follow the content rules in §§16–26.
 
 **Not covered:** `LOCAL_CONTEXT.md` (local-only, git-ignored — operational server/bot details MUST NOT leak into any covered surface); test internals; build tooling; future live source adapters (out of current demo scope).
@@ -54,13 +54,13 @@ This document answers: *exactly how should interface elements and texts in this 
 
 Confirmed by `README.md`, `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`:
 
-- **Category:** Telegram prototype for matching Berlin WBS apartment listings against a saved four-field filter. One synthetic source adapter is implemented; model evaluation is documented separately in the case study and `eval/` artifacts.
-- **Primary users:** (a) a renter setting a filter and receiving matching listings in Telegram; (b) case-study readers — recruiters, hiring managers, AI PMs. Configured admins may receive direct monitoring or QA alerts, but there is no public admin surface. The target portfolio role is **AI Product Manager in a corporate environment**: reliability, explainability, privacy, defensibility, measurable AI quality, and cost control matter more than feature count.
-- **Unit of work:** the *listing*. It flows through: source adapter → deterministic parsing → local transit enrichment → deterministic matching; optional QA and optional background notification are separate branches.
+- **Category:** guided Telegram prototype showing one Berlin WBS matching scenario. One synthetic source adapter is implemented; model evaluation is documented separately in the case study and `eval/` artifacts.
+- **Primary users:** (a) a visitor evaluating the renter concept through one synthetic scenario; (b) case-study readers — recruiters, hiring managers, AI PMs. Configured admins may receive direct QA alerts outside the public demo, but there is no public admin surface. The target portfolio role is **AI Product Manager in a corporate environment**: reliability, explainability, privacy, defensibility, measurable AI quality, and cost control matter more than feature count.
+- **Unit of work:** the *listing*. In the demo it flows through: synthetic source adapter → deterministic parsing → local transit enrichment → deterministic matching → one explained Telegram card. Optional QA is a separate branch; background user notifications are disabled in the public runtime.
 - **Role of AI:** the accepted hosted-model result is an offline evaluation surface, not part of the public Telegram runtime. Optional runtime AI QA can be enabled only for direct admin alerts. Listing parsing, matching, and the guided demo are fully deterministic and make no LLM calls. AI findings cannot replace or mutate parsing rules, listing data, matching, or user-facing cards automatically.
 - **Role of the human:** the admin triages every alerted finding as `Parser error` / `Parser correct` / `Borderline / unsure`; parser improvements are made by a human editing `flatfeed/parser.py` / `flatfeed/wbs_rules.py`.
 - **Honesty constraint (product-level):** everything measurable is a *synthetic/demo* result unless a real production measurement exists. Demo metrics MUST be visibly labeled as synthetic evaluation metrics, never as production user-impact numbers.
-- **Privacy constraint:** the renter path stores a Telegram ID, saved filter, and notification-dedupe history. `/delete` removes those FlatFeed database records after confirmation; it does not delete Telegram chat history or unrelated admin-review records. No real listings are scraped or redistributed; listing photos are licensed demo assets (`assets/listing_photos/LICENSES.md`).
+- **Privacy constraint:** the current guided path stores no personal filter or delivery history. `/delete` remains unadvertised only so returning users can remove legacy records after confirmation; it does not delete Telegram chat history or unrelated admin-review records. No real listings are scraped or redistributed; listing photos are licensed demo assets (`assets/listing_photos/LICENSES.md`).
 
 ---
 
@@ -88,9 +88,9 @@ Derived from the product's actual behavior — not imported from external system
 *Implications:* synthetic case tags and hidden truth fields MUST never appear in listing text, listing URLs, parser input, or AI QA prompts. They live in `synthetic/case_catalog.py` / `synthetic/golden_set.py` and are read only by `eval/run_eval.py`.
 *Anti-pattern:* "helpfully" enriching a prompt with golden-set metadata.
 
-**P5 — The user's cost of a wrong send is high; fail quiet, fail closed.**
-*Why:* a notification about a stale or mismatched listing burns trust in one message.
-*Implications:* candidates pass the current adapter's activity check before card delivery; the implemented synthetic adapter checks local catalog state, not a live network source. Optional background notifications are deduplicated (`sent_listing_notifications`); manual `/matches` may be requested repeatedly; at most 3 cards per action.
+**P5 — The cost of a misleading demo result is high; fail quiet, fail closed.**
+*Why:* presenting an inactive or mismatched synthetic listing as proof weakens trust in the whole case.
+*Implications:* the guided candidate passes the current adapter's activity check before card delivery; the implemented synthetic adapter checks local catalog state, not a live network source. The public runtime sends one card on request and never starts background user notifications.
 *Anti-pattern:* sending unverified candidates to hit a count.
 
 **P6 — Domain terms are kept, glossed, never translated away.**
@@ -99,8 +99,8 @@ Derived from the product's actual behavior — not imported from external system
 *Anti-pattern:* renaming WBS to "housing certificate"; translating Kaltmiete to "cold rent" in UI.
 
 **P7 — Destructive actions confirm; everything else flows.**
-*Why:* the bot holds personal filter data; deletion is a privacy feature and must be both discoverable and safe.
-*Implications:* `Reset filter` and `🗑 Delete my data` always ask an explicit Yes/No with unambiguous labels ("Yes, delete saved data" / "No, keep my data"); the wizard always offers `⬅ Back` / `✖ Cancel`.
+*Why:* returning users may still have records created by an older saved-filter version.
+*Implications:* the unadvertised `/delete` compatibility command asks for explicit confirmation with `Yes, delete saved data` / `No, keep my data`; the current demo writes no personal filter.
 *Anti-pattern:* one-tap destructive actions; trapping the user in a setup flow.
 
 **P8 — Product interaction and evaluation evidence stay separate.**
@@ -117,7 +117,7 @@ References inform rules; they are never templates. Deviation from a reference is
 | Area | Primary reference | Project-specific rule |
 |---|---|---|
 | Bot conversation UX | Telegram Bot API / official bot design conventions | Persistent reply keyboard for the main story; inline keyboards for choices; commands published in the menu (§7) |
-| Wizard flows | GOV.UK "one thing per page" | 4 fixed steps, `Step N/4` prefix, Back/Cancel on every step, hint at the point of the question (§7.3) |
+| Guided demo | GOV.UK "one thing per page" | Two numbered steps, one purpose per message, optional explanation after proof (§7.6) |
 | Listing card | Project (`flatfeed/matching.py`) | Fixed field order, bold HTML labels, canonical fallback strings (§10) |
 | Case-study page | Repo-local "Swiss International" rules in §5; the sibling Opsqora landing is a comparison example when available, not a required dependency | Hand-written HTML/CSS, token palette in `docs/styles.css`, four-question case framework (§6.3, §22); accent split: FlatFeed teal, Opsqora ultramarine |
 | Product copy | GOV.UK/GDS principles | §§16–19 |
@@ -137,7 +137,7 @@ Never choose "more impressive" over "more accurate".
 
 These tokens apply to `docs/case-study.html` / `docs/styles.css` only. The bot has no visual tokens (§7).
 
-The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, four numbered sections, one real Telegram product screenshot, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine.
+The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, four numbered sections, one inspectable guided replay, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine.
 
 ### 5.1 Color — ADOPT
 
@@ -215,7 +215,7 @@ Rules:
 
 - Icons are inline hand-written SVG strokes, stroke `currentColor`, width 2: 14px inside buttons (arrows, git-branch), 16px in panel headers. No icon library at runtime, no emoji on the page.
 - Brand: `assets/flatfeed-logo-mark.png` at 26px in the header/footer wordmark, `alt=""` (decorative next to the visible name).
-- Imagery: `assets/flatfeed-telegram-showcase.png` is the sole hero product image. It is a real Telegram demo-session screenshot whose building photo and address refer to the same location; the caption and alt text state that apartment terms remain synthetic. The surrounding macOS-style bar is presentation chrome, not a claim that Telegram was captured in macOS. Do not add dashboard mockups or decorative illustrations.
+- Imagery: `assets/flatfeed-telegram-showcase.png` is the hero product image. It is a real Telegram demo-session screenshot; the caption states that its listing result is synthetic. The surrounding macOS-style bar is presentation chrome, not a claim that Telegram was captured in macOS. Do not add dashboard mockups or decorative illustrations.
 - Any photo of a building MUST keep alt text disclosing its demo context. Source, author, license, and modifications stay documented in `assets/listing_photos/LICENSES.md`; attribution for a licensed public-preview image also appears in the adjacent figcaption.
 
 ---
@@ -223,27 +223,20 @@ Rules:
 ## 6. Layout Systems per Surface
 
 ### 6.1 Telegram bot shell — ADOPT
-**Purpose:** keep the main story reachable in one tap at all times.
-**Anatomy:** persistent reply keyboard —
+**Purpose:** give every visitor one unambiguous path through the implemented proof.
+**Anatomy:** no persistent reply keyboard. `/start` removes keyboards left by older versions and presents one inline `Try the demo` action. The published command menu contains only `/start` and `/help`; contextual inline buttons carry the remaining demo actions.
+**Rules:** the public bot MUST NOT expose saved-filter setup, arbitrary matching, catalog browsing, user notifications, admin controls, or model metrics. Retired commands and callbacks redirect to the guided demo; `/delete` remains unadvertised only for removal of legacy records.
 
-```text
-🔎 Show matches
-⚙ Filter
-```
-
-— plus the published command menu: `/start`, `/filter`, `/matches`, `/help`, `/delete`. Inline keyboards carry contextual choices under the message they belong to.
-**Rules:** the reply keyboard is the main navigation and MUST keep `Show matches` alone on the top row (it is the primary action). `Filter` occupies the second row. New global entries need a §34 justification; catalog browsing, admin controls, model metrics, and evaluation demos do not belong in this keyboard.
-
-### 6.2 Filter card — ADOPT
-`/start` and `/filter` show the user's filter card (`<b>Your filter</b>` + current values) with contextual inline actions: `Set up filter` (empty filter) or `Show matches` / `Edit filter` / `Reset filter` / `🗑 Delete my data` (saved filter). The privacy action stays on the card — discoverable, not buried in `/help`.
+### 6.2 No public filter card — ADOPT
+The guided scenario displays four example criteria as explanatory text, not as saved user state. The public bot has no filter home, setup wizard, edit/reset actions, or general match-request mode.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → sticky top bar (brand; 4-item nav: Product · Decisions · Evidence · Next test; Repository + Try the demo) → split hero (plain-language proposition, WBS/Kaltmiete gloss, audience/status/AI-boundary metadata, one real Telegram demo screenshot in a macOS-style evidence frame) → **four-question framework**: 01 Product · 02 Decisions · 03 Evidence · 04 Next test → dark CTA → sibling case cross-link → footer.
+Skip link → sticky top bar (brand; 3-item nav: Product · Decisions · Evidence; Repository + See the product flow) → split Product hero (plain-language proposition, WBS gloss, audience/status/AI-role metadata, compact Telegram evidence in a macOS-style frame, and a visual Without/With comparison) → **three-section framework**: 01 Product · 02 Decisions · 03 Evidence → dark summary CTA → sibling case cross-link → footer.
 
-The page MUST answer in order: what is the user flow, what did the candidate decide, what is actually demonstrated, and what should be tested next. AI QA appears as one bounded decision and one evidence block; dashboard mockups, mock-cost, legal analysis, and historical iteration tables do not belong in the main public narrative. At ≤56rem the nav may hide because the four sections remain a single linear scroll and the two primary header actions remain visible.
+The page MUST answer in order: what user problem the product simplifies, what the candidate decided, and what is implemented or evaluated. AI QA appears after the user-value story as one bounded decision and one evidence block; dashboard mockups, mock-cost, legal analysis, historical iteration tables, and future-test plans do not belong in the main public narrative. At ≤56rem the nav may hide because the three sections remain a single linear scroll and the two primary header actions remain visible.
 
 ### 6.4 No separate dashboard — ADOPT
-The prototype has no dashboard or public operations console. Product interaction lives in Telegram; final hosted-model evidence lives in the case study and frozen `eval/` artifacts. A new stats command, admin page, or dashboard would be a new phase and requires an explicit product decision rather than a replacement implementation.
+The prototype has no dashboard or public operations console. Product interaction lives in Telegram; the case study remains available without a running bot by using captured evidence. Final hosted-model evidence lives in the case study and frozen `eval/` artifacts. A new stats command, admin page, or dashboard would be a new phase and requires an explicit product decision rather than a replacement implementation.
 
 ---
 
@@ -253,37 +246,37 @@ The bot's "design system" is message structure, keyboards, and formatting discip
 
 ### 7.1 Message formatting — ADOPT
 - Parse mode is HTML. Allowed tags: `<b>` for labels and step prefixes, `<i>` for hints/explainers, `<a>` for the single `Open listing` link. No other markup, no code blocks in user-facing messages.
-- One message = one purpose. A question message contains: optional `<b>Step N/4</b>` prefix → the question → optional one `<i>` hint. Listing cards are separate messages, one per listing, at most 3 per action.
-- Emoji policy: emoji appear **only** as button-label prefixes from the existing set — 🔎 ⚙ 🗑 ⬅ ✖ — never inside message prose, never decoratively. Inline choice buttons are plain text. New emoji require a §34 entry.
+- One message = one purpose. Listing cards are separate messages; the guided demo sends exactly one canonical card after its explanation.
+- Emoji do not appear in current public demo prose or buttons. Retired compatibility copy may contain earlier button labels but MUST NOT make them reachable again.
 
 ### 7.2 Keyboards — ADOPT
-- **Reply keyboard** = global navigation (§6.1). **Inline keyboards** = choices about the message above them.
-- Choice grids: options flow in rows (districts 2–3 per row); mutually exclusive values are separate buttons, not toggles.
-- Rent step: four `≤ N EUR` presets + `No limit` + free-text entry accepted.
-- Every wizard step's last row is the nav row: `⬅ Back` (steps 2+) + `✖ Cancel`.
-- Confirmation keyboards state the consequence in the label: `Yes, reset filter` / `No, keep it`; `Yes, delete saved data` / `No, keep my data`. A bare `Yes`/`No` pair MUST NOT be used for destructive actions.
+- Reply keyboards are removed on `/start`; inline keyboards carry all current actions.
+- Entry: `See the product flow`.
+- Result: `Replay the demo`, `How reliability works`, `Read the case study`.
+- Explanation: `Replay the demo`, `Read the case study`.
+- The legacy `/delete` compatibility path keeps consequence-named confirmation labels.
 
-### 7.3 Filter wizard — ADOPT
-Four fixed steps, always in this order: **1 WBS → 2 District → 3 Max Kaltmiete → 4 Rooms.** Each shows `Step N/4`. Steps 1 and 3 carry the plain-language explainers (`WBS_HINT`, `KALTMIETE_HINT` in `main.py`) — the gloss lives at the point of the question, not in `/help`. The wizard is entered only by explicit user action (`Set up filter`, `Edit filter`, `/filter`); `/start` never forces it. If the bot restarted mid-setup, `SETUP_EXPIRED_TEXT` states what happened and restarts cleanly — never silently resume with lost state.
+### 7.3 No public filter wizard — ADOPT
+The earlier four-step WBS → District → Max Kaltmiete → Rooms wizard is retired from the public product. Old commands and inline callbacks MUST redirect to `/start` without writing user state. The four fields remain visible in Demo 1/2 so visitors can understand the intended filter contract without mistaking the synthetic catalog for a usable personalized feed.
 
 ### 7.4 No public admin panel — ADOPT
 The reply keyboard and command menu expose no admin, QA, refresh, backfill, or metrics controls. Optional runtime QA may send a direct private alert to configured `ADMIN_TELEGRAM_USER_IDS`; that alert keeps the three triage labels `Parser error` / `Parser correct` / `Borderline / unsure`. These labels are operational vocabulary, never a public-demo interaction.
 
 ### 7.5 Failure and timeout messages — ADOPT principle
-Listing actions have bounded candidate counts and user-facing failure messages. Renter-facing failures never expose internals; they state the outcome and that the user can retry or use the temporary demo filter. Apologies, exclamation marks, and blame are out of register (§17).
+Demo failures never expose internals; they state that the synthetic scenario is unavailable and invite the visitor to retry. Apologies, exclamation marks, and blame are out of register (§17).
 
 ### 7.6 Guided tour — ADOPT
-`/start` (plain, or via the `?start=tour` deep link) offers `Try the demo` and `Set up my filter`. The demo reaches a result in two taps: **Demo 1/2** shows a temporary four-field filter; **Demo 2/2** runs `is_listing_match` over the synthetic catalog and applies the synthetic adapter's local activity check. Step 2 then sends three single-purpose messages in order: (1) active match count, field-level reasons, and the explicit one-example/up-to-three boundary; (2) one canonical card with no tour prefix or tour keyboard; (3) the follow-up actions. Nothing is written to `users` until the visitor taps `Use this demo filter` after the result.
+`/start` (plain, or via the `?start=tour` deep link) starts with the user-value contrast `Without FlatFeed` / `With FlatFeed`, then offers `See the product flow`. The demo reaches a result in two taps: **Demo 1/2** shows the four criteria a user would set once; **Demo 2/2** runs `is_listing_match` over the synthetic catalog and applies the synthetic adapter's local activity check. Step 2 then sends three single-purpose messages in order: (1) field-level reasons and the manual work the user avoids; (2) one canonical card with no tour prefix or tour keyboard; (3) the synthetic and no-live-monitoring boundary with follow-up actions. The demo stores no personal data.
 
-The result offers `Use this demo filter`, `Set up my own filter`, `How matching works`, and `Read the case study`. The pipeline explainer is optional and does not interrupt the main path. The public tour contains no evidence scorecard, model call, mock QA, fault injection, triage, or admin view; `/start` restarts it at any time.
+The result offers `Replay the demo`, `How reliability works`, and `Read the case study`. The reliability explanation is optional and does not interrupt the main path; it distinguishes deterministic user-facing matching from separately evaluated, admin-only AI parser QA. The public tour contains no filter persistence, arbitrary catalog query, evidence scorecard, model call, mock QA, fault injection, triage, or admin view; `/start` restarts it at any time.
 
-A custom filter may legitimately return no result from the limited authored synthetic catalog. The empty state MUST name that catalog boundary and MUST NOT imply that no matching listing exists in the live Berlin market.
+The scenario is authored to produce one verified result. This guarantee belongs only to the synthetic walkthrough and MUST NOT imply coverage of other filters or the live Berlin market.
 
 ---
 
 ## 8. Evidence Surface Boundary
 
-- Telegram proves the product interaction: temporary filter → deterministic match → canonical listing card.
+- Telegram proves the interaction: example filter → deterministic match → reasons → canonical listing card.
 - The case study proves the product decisions and reports the accepted synthetic hosted-model experiment.
 - Frozen `eval/` artifacts hold detailed protocol, field diagnostics, cost, and reproducibility evidence.
 - Do not reintroduce a dashboard, Telegram stats command, mock QA interaction, or hand-typed runtime metrics. A new operational surface is a new product phase.
@@ -294,14 +287,13 @@ A custom filter may legitimately return no result from the limited authored synt
 
 | Level | Treatment | Placement | Wording |
 |---|---|---|---|
-| Global primary | Top row of the reply keyboard, alone | `🔎 Show matches` | Verb + object |
-| Global secondary | Second reply-keyboard row | `⚙ Filter` | Noun + object |
-| Contextual | Inline buttons under the message they affect | `Set up filter`, `Edit filter`, choice values | The choice itself |
-| Destructive | Inline + mandatory confirmation step | `Reset filter`, `🗑 Delete my data` | Consequence named in the confirm labels |
-| Case-study CTAs | `.btn--primary` (ink, teal hover) / `.btn--ghost` (outline); dark CTA block: `.btn--accent` (teal) / `.btn--inverse` | Top bar + hero + final CTA | `Try the demo`, `View repository`, `Read the Markdown version` |
+| Demo entry | Inline button under the intro/help message | `Try the demo` | Verb + object |
+| Demo continuation | Inline buttons after result/explanation | `Replay the demo`, `How matching works`, `Read the case study` | One clear destination |
+| Legacy destructive | Unadvertised `/delete` compatibility path | `Yes, delete saved data` | Consequence named in the confirm labels |
+| Case-study CTAs | `.btn--primary` (ink, teal hover) / `.btn--ghost` (outline); dark CTA block: `.btn--accent` (teal) / `.btn--inverse` | Top bar + hero + final CTA | `Explore the replay`, `Open in Telegram`, `View repository` |
 
 Rules:
-- One primary action per surface: the bot's is `Show matches`; the case page's is `Try the demo`.
+- One primary action per surface: both the bot and case page use `Try the demo`.
 - Catalog browsing, admin controls, model metrics, and QA simulation are intentionally absent from the public bot.
 - Actions that do not exist (subscribe/unsubscribe toggles, listing bookmarking, export, language switch) MUST NOT be referenced in copy as if they did.
 
@@ -422,7 +414,7 @@ Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids)
 ## 16. Content Principles
 
 1. **Frontload the point.** The first clause carries the message ("Finding WBS-eligible apartments in Berlin is fragmented and time-sensitive: …").
-2. **Concrete over abstract.** "sends at most 3 valid cards", "three consecutive failures trigger an admin alert" — numbers with units and denominators, mechanisms over adjectives.
+2. **Concrete over abstract.** "shows one verified synthetic card", "three consecutive failures trigger an admin alert" — numbers with units and denominators, mechanisms over adjectives.
 3. **State facts, not self-praise.** Surfaces never grade themselves ("robust", "seamless" do not appear — protect this). Quality is demonstrated by the eval, the boundary, and the confirmations.
 4. **Precision is credibility.** WBS semantics are exact (`WBS 141-220` excludes 140); "estimates" stay estimates ("walking-time estimates", "not calculated"); one imprecise claim taxes every accurate one.
 5. **Explain domain terms at first use, keep the term.** "WBS (Wohnberechtigungsschein) is a Berlin eligibility certificate…", "Kaltmiete is the base rent, excluding operating and heating costs." Don't translate the term away; gloss it (P6).
@@ -433,7 +425,7 @@ Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids)
 
 ## 17. Voice and Tone
 
-**Bot voice (ADOPT):** a competent first-person assistant — plain, brief, helpful, never cute. The bot says "I" about its own actions ("I found active listings that match your saved WBS filter.", "Which district should I search in?") and "you/your" for the user's data ("Your filter"). No exclamation marks, no small talk, no personality bits.
+**Bot voice (ADOPT):** a competent first-person guide — plain, brief, helpful, never cute. It describes the scenario and its own actions without implying that a visitor has saved data or received a live-market result. No exclamation marks, no small talk, no personality bits.
 
 **Case study / docs voice (ADOPT):** professional, evidence-led, first person where ownership is claimed ("I defined the product scope…"), never salesy. Judgment is shown by trade-offs ("I deliberately limited live source coverage to make the demo privacy-safe, defensible, and measurable"), not by adjectives.
 
@@ -442,7 +434,7 @@ Voice is stable; tone flexes by context:
 | Context | Tone | Example / rule |
 |---|---|---|
 | Normal bot flow | Plain, task-forward | "Which WBS should match?" |
-| Success | Plain confirmation, no celebration | "I found active listings that match your saved WBS filter." |
+| Success | Plain explanation, no celebration | "FlatFeed applied four fixed rules to the temporary filter." |
 | No results | Honest + what the filter was | State that nothing active matches; never pad with near-misses |
 | Destructive confirm | Consequence named, neutral | "Yes, delete saved data" / "No, keep my data" |
 | Session loss | Own the cause, restart cleanly | "Your setup session expired (the bot restarted), so I lost the earlier answers. Let's start again." |
@@ -456,16 +448,16 @@ Voice is stable; tone flexes by context:
 
 | Category | Pattern | Length | Examples (current, approved) | Anti-pattern |
 |---|---|---|---|---|
-| Reply-keyboard buttons | Emoji + verb/noun | ≤3 words | `🔎 Show matches`, `⚙ Filter` | Emoji-only; clever names |
-| Inline action buttons | Verb + object, plain text | 2–5 words | `Try the demo`, `Set up filter`, `Edit filter`, `How matching works` | "OK", "Click here" |
+| Demo entry button | Verb + object | 3 words | `Try the demo` | "Start tour", "Try it" |
+| Inline action buttons | Verb + object, plain text | 2–5 words | `Try the demo`, `Replay the demo`, `How matching works` | "OK", "Click here" |
 | Confirmation buttons | Consequence in the label | ≤5 words | `Yes, delete saved data` / `No, keep my data` | Bare Yes/No for destructive actions |
 | Wizard questions | Direct question, one thing | 1 sentence | "How many rooms do you need?" | Multi-question messages |
 | Wizard hints | `<i>` gloss at the point of use | 1–2 sentences | the WBS and Kaltmiete explainers | Glossary dumps in /help |
 | Card labels | `<b>Label:</b>` fixed vocabulary | 1 word | `District:`, `Kalt:`, `Warm:` | Renaming card fields |
 | Unknowns | Canonical fallback strings | — | `not specified`, `not calculated` | "n/a", "—", "unknown" |
-| Bot statements | First-person, one purpose | 1–2 sentences | "I found active listings that match your saved WBS filter." | Paragraph messages |
+| Bot statements | One purpose | 1–2 sentences | "This is an example scenario for the guided demo." | Paragraph messages; implying saved personal state |
 | Failure copy | Outcome + retry | 1–2 clauses | "Try loosening the filter, or run the temporary demo filter." | Apologies, exclamations, stack traces |
-| Commands | Single lowercase words | 1 word | `/start /filter /matches /help /delete` | Compound commands |
+| Commands | Single lowercase words | 1 word | `/start /help` | Advertising retired product commands |
 
 Capitalization: sentence case everywhere; card labels and proper/domain nouns (WBS, Kaltmiete, S-Bahn, U-Bahn, Bezirk names) keep their canonical forms. Terminal periods on sentences, none on button labels.
 
@@ -475,17 +467,14 @@ Capitalization: sentence case everywhere; card labels and proper/domain nouns (W
 
 | Action | Canonical wording | Prohibited alternatives | Scope |
 |---|---|---|---|
-| Get matching listings | **🔎 Show matches** / `Show matches` (inline) / `/matches` | "Find flats", "Search" | Reply keyboard, filter card, command |
-| Open filter | **⚙ Filter** / `/filter` | "Settings", "Preferences" | Reply keyboard, command |
-| Start setup | **Set up filter** | "Start wizard", "Configure" | Empty filter card |
-| Change one field | **Edit filter** → `WBS` / `District` / `Rent` / `Rooms` | "Modify", "Update settings" | Filter card |
-| Clear the filter | **Reset filter** (+ confirm pair) | "Clear", "Delete filter" | Filter card |
-| Remove personal data | **🗑 Delete my data** / `/delete` (+ confirm pair) | "Unsubscribe", "Forget me" | Filter card, command |
-| Run the temporary demo | **Try the demo** / **Try the demo filter** | "Start the tour", "QA demo" | `/start`, empty/no-match states |
-| Wizard navigation | **⬅ Back** / **✖ Cancel** | "Previous", "Abort" | Every wizard step |
+| Run the guided demo in Telegram | **Try the demo** | "Start the tour", "QA demo", "Try it" | `/start`, `/help` |
+| Run the browser replay | **Explore the replay** | "Try it", "Start tour" | case-study CTAs |
+| Replay the scenario | **Replay the demo** | "Reset", "Again" | Result and explanation screens |
+| Explain the pipeline | **How matching works** | "Technical details" | Result screen |
+| Remove legacy data | `/delete` (+ consequence-named confirm pair) | "Unsubscribe", "Forget me" | Unadvertised compatibility only |
 | Admin: triage a finding | **Parser error** / **Parser correct** / **Borderline / unsure** | Any fourth label; abbreviations | QA reports |
 | Open a listing | **Open listing** (the card's only link) | "More", "Details" | Listing card |
-| Case-study CTAs | **Try the demo** / **Read the case study** / **View repository** | "Try it", "Try the guided demo", "GitHub" (as a button label) | Header, hero, and final CTA all use **Try the demo**; header nav item `Repository` is a nav link, not a CTA |
+| Case-study CTAs | **Explore the replay** / **Open in Telegram** / **View repository** | "Try it", "Try the guided demo", "GitHub" (as a button label) | Header, hero, and final CTA use **Explore the replay** as the primary action; Telegram is a secondary external link |
 
 Actions that have no product function (subscribe, bookmark, share, export, language switch, pause notifications) MUST NOT appear in UI or copy as if they did. If a phase adds one, define its canonical verb here first.
 
@@ -500,8 +489,8 @@ Actions that have no product function (subscribe, bookmark, share, export, langu
 | Rent basis | Kaltmiete | Base rent excluding operating and heating costs; the only matching basis | Kaltmiete / card `Kalt:` | Kaltmiete (glossed) | "cold rent", matching on Warmmiete |
 | Total rent | Warmmiete | Rent incl. utilities; display only | card `Warm:` | Warmmiete | Using it for matching |
 | Location unit | Bezirk | One of the 12 Berlin Bezirke | label `District` | Bezirk / district | Treating Ortsteil/Kiez as the unit |
-| Saved criteria | filter | The fixed 4-field user filter (WBS type, district, max Kaltmiete, rooms) | Your filter | user filter | "preferences", "profile", "subscription" |
-| Getting results | matches / matching | Deterministic rule comparison of listings vs filter | Show matches | deterministic matching | "recommendations", "AI matching" |
+| Matching criteria | example filter | Four demo fields (WBS type, district, max Kaltmiete, rooms); not personal state | example filter | product concept: saved filter; implemented demo: example filter | "Your filter", "subscription" in current demo |
+| Getting results | match / matching | Deterministic rule comparison of listings vs example criteria | why this matched | deterministic matching | "recommendations", "AI matching" |
 | Collection layer | source adapter | Per-source ingestion module with activity checks and health | Source (card field) | source-adapter architecture | "scraper" (the demo doesn't scrape) |
 | Demo source | FlatFeed Synthetic | The synthetic catalog adapter | Source: FlatFeed Synthetic | synthetic source adapter | Implying live sources exist |
 | Parsing | deterministic parsing | Rule-based field extraction at ingestion; no LLM | — (internal) | deterministic parsing | "AI parsing" |
@@ -514,7 +503,7 @@ Actions that have no product function (subscribe, bookmark, share, export, langu
 | Hidden answers | ground truth | Eval-only truth fields and case tags | — | hidden ground truth | Putting it anywhere near prompts |
 | Quality numbers | field accuracy / exact listing accuracy | Parser vs golden set | — | with "synthetic" scope attached | Unscoped "accuracy" |
 | Transit estimate | walking-time estimate | Geometric estimate from bundled station CSV | `S-Bahn:`/`U-Bahn:` minutes, `not calculated` | local walking-time estimates | Implying routing/geocoding services |
-| Notifications | optional background notification | Newly seen match deduplicated against stored delivery history; manual matches may repeat | — | background notification deduplication | "every match once", "alerts" (reserved for admin) |
+| User notifications | retired public capability | Legacy helpers exist, but the demo runtime never starts background delivery | no real new-listing notifications | legacy implementation only | Implying live monitoring |
 | Admin alerts | admin alert | Source-health or high-risk QA alert to admins | — | admin alert | Mixing with user notifications |
 | Provenance | synthetic / demo / mock / estimated | Not from live systems or production | demo catalog | synthetic, demo-only, mock provider | "sample data" (vague), unlabeled values |
 
@@ -538,43 +527,36 @@ Audience adaptation is allowed (gloss depth, sentence length) — mechanical wor
 
 The page serves three reading depths; every depth must independently answer its questions.
 
-**10-second scan** (brand label + kicker + H1 + lede + meta + product preview) must answer: What is this, who is it for, and what is the prototype boundary?
-Mechanics: the header brand label states `Product case study`; the kicker states `working prototype` and `synthetic catalog` once. The H1 names one filter, Berlin WBS listings, and one consistent Telegram feed. The lede explains the save-once, normalize, and deterministic-match mechanism without repeating the prototype boundary. Metadata identifies the audience, status, and says that AI flags suspected parser errors for admin review. Candidate ownership is explained in the Decisions contribution note and the deeper Markdown case instead of being compressed into a hero label. Live-source and renter-outcome limitations stay in Evidence and the deeper case-study text instead of weakening the opening proposition. The product preview shows one current synthetic match in a real Telegram demo session; it does not show internal QA metrics.
+**10-second scan** (brand label + numbered Product kicker + H1 + lede + meta + product preview) must answer: What user problem does this solve, who is it for, and what was built?
+Mechanics: the header brand label states `Product case study`; the kicker establishes `01 Product`. The H1 names repeated checks across housing-company websites. The lede explains the product flow in plain language—set criteria once, receive matching listings in one consistent format, understand why they match, open the source. A dedicated `AI checks data quality` line explains that AI compares parsed listing data with source text and flags suspected errors for admin review. Metadata identifies the audience and the functional Telegram bot with a documented demo. Candidate ownership is explained in the Decisions contribution note and the deeper Markdown case instead of being compressed into a hero label. The compact product preview is captured Telegram evidence; its caption states once that the screenshots come from the functional bot and the data is synthetic.
 
-**30-second scan** (+ section headings, workflow, decision cards, evidence split) must answer: what the core flow is, which three decisions matter, and what is demonstrated versus unvalidated.
-Mechanics: the four H2s state Product / Decisions / Evidence / Next test as takeaway sentences. Decision cards explain the rationale and trade-off, not experiment outcomes. Evidence records implemented proof, measured synthetic results, and specific unknowns without repeating the decision rationale. Next test maps those unknowns to Learn / Measure / Decide signals. Evidence keeps the Demonstrated / Not demonstrated split, followed by one plain-language final-evaluation narrative: experiment setup, decision, aggregate metrics with formulas and focus, field-level results, the one invalid check, stopping rationale, and a bounded cost scenario. Only the final 600-listing run may appear; the synthetic qualifier, accepted synthetic decision, one unusable check, and no-runtime-integration boundary stay visible at the same depth as its strongest metrics.
+**30-second scan** (+ visual comparison, Decisions, evidence split) must answer: how FlatFeed changes the user workflow, which three decisions matter, and what is implemented versus outside prototype scope.
+Mechanics: the numbered Product / Decisions / Evidence sequence is continuous. The Without/With comparison uses three short rows per side and one directional arrow. Decision cards explain the rationale and trade-off; the reliability boundary follows them so AI does not interrupt the user-value story. Evidence records implemented proof, measured synthetic results, and explicit scope boundaries without implying a future roadmap. It is followed by one plain-language final-evaluation narrative: experiment setup, decision, aggregate metrics with formulas and focus, field-level results, the one invalid check, stopping rationale, and a bounded cost scenario. Only the final 600-listing run may appear; the synthetic qualifier, accepted synthetic decision, one unusable check, and no-runtime-integration boundary stay visible at the same depth as its strongest metrics.
 
-**Deep read** must answer: problem hypothesis, product flow, ownership, three trade-offs, evidence limits, and next validation. Keep the four-question framework in §6.3 and the concise Markdown equivalent in `CASE_STUDY.md`.
+**Deep read** must answer: problem hypothesis, product flow, ownership, three trade-offs, AI boundary, measured evidence, and scope limits. Keep the three-section framework in §6.3 and the concise four-part Markdown equivalent in `CASE_STUDY.md`.
 
 Element rules:
-- **Hero:** boundary-aware kicker → plain proposition H1 → product-mechanism lede → term gloss → CTAs → three-item meta `dl` for audience, status, and AI role. Every value is decodable without insider context.
-- **Product preview:** one real Telegram demo-session screenshot only, presented inside a clearly external macOS-style evidence frame. Values come from the current synthetic catalog; the caption states that apartment terms are synthetic and carries the photo attribution. Location coherence remains documented in `assets/listing_photos/LICENSES.md`. The screenshot may be cropped to exclude Telegram's empty composer, but its card content MUST NOT be edited. No fake dashboard, product-internal browser chrome, or mock metrics.
-- **Workflow:** Filter → Collect → Prepare → Match → Deliver. Collection states
-  that the current source is synthetic; Prepare names deterministic field
-  normalization and S-/U-Bahn walking-time estimates; Deliver describes
-  Telegram results rather than elevating activity checks or deduplication into
-  user value.
-- **Decisions:** exactly three public decisions: a first-pass saved filter,
+- **Product:** numbered kicker → plain proposition H1 → product-mechanism lede → visible AI quality-control line → WBS gloss → two-item meta `dl` for audience and status → visual Without/FlatFeed comparison. Every value is decodable without insider context.
+- **Product preview:** a real Telegram bot capture, presented inside a clearly external macOS-style evidence frame at a compact but readable desktop width. The caption MUST say that the screenshots are from the functional Telegram bot and that the data is synthetic. No dashboard, mock metrics, fabricated runtime data or browser imitation.
+- **Workflow comparison:** Without FlatFeed lists three manual steps; With FlatFeed lists three simplified steps. The panels use distinct neutral/accent treatments and one directional SVG arrow. Do not return to inline arrow chains.
+- **Decisions:** exactly three public decisions: a first-pass four-field product concept,
   deterministic matching/optional QA boundary, and one normalized product flow
-  across source adapters. The first card says that renters still verify full
-  eligibility and application details at the source. Each card explains why
-  the boundary exists; measured outcomes belong in Evidence.
-- **Evidence:** Demonstrated now vs Not demonstrated yet. Demonstrated names the
+  across source adapters. The first card says that a future renter would still
+  verify full eligibility and application details at the source. Each card
+  explains why the boundary exists; measured outcomes belong in Evidence.
+- **Evidence:** Implemented and evaluated vs Outside prototype scope. Implemented names the
   synthetic Telegram flow, S-/U-Bahn walking-time estimates, and the final
   hosted-model result with its synthetic qualifier and 599/600 usable-check
   limitation in the same bullet.
-  Technical controls such as fail-closed matching, activity checks, and
+  Technical controls such as fail-closed matching, activity checks, and legacy
   notification deduplication stay in technical documentation instead of being
   presented as achievements. The final-evaluation block explains why each
   metric exists and shows both aggregate and field-level results. Field values
   are evaluation evidence, never renter or production outcomes. No score from
   an earlier model iteration appears.
-- **Next test:** a small moderated walkthrough of the existing synthetic
-  Telegram flow with WBS renters. Learn / Measure / Decide signals cover filter
-  completion, understanding why a listing appeared, finding and opening a
-  relevant result, and repeated usability or trust problems. The page states
-  that no permitted live source is currently available and treats source
-  access as a separate feasibility risk. It is a plan, not a claim.
+- **Conclusion:** the final evidence states that the portfolio prototype is
+  complete at its intended scope. The public page MUST NOT imply planned user
+  research, live-source pilots or other roadmap commitments.
 
 ---
 
@@ -627,7 +609,7 @@ Hard constraints (non-negotiable):
 
 ## 25. Professional Language Rules
 
-**Prefer:** concrete user-visible mechanisms tied to artifacts — "four-field filter", "source adapter", "estimated walks to the nearest S- and U-Bahn stations", and "Telegram listing summary". State whether each mechanism is in the main user path, optional, synthetic, or unvalidated. Keep authored regression-case counts, activity checks, fail-closed behavior, and notification deduplication in technical documentation unless they explain a specific reader-facing risk.
+**Prefer:** concrete user-visible mechanisms tied to artifacts — "four-field example filter", "source adapter", "estimated walks to the nearest S- and U-Bahn stations", and "Telegram listing summary". State whether each mechanism is in the guided path, legacy, synthetic, or unvalidated. Keep authored regression-case counts, activity checks, fail-closed behavior, and legacy notification deduplication in technical documentation unless they explain a specific reader-facing risk.
 
 **Buzzword register.** Current status: *leverage, seamless, robust, cutting-edge, intelligent, actionable insights, AI-powered, end-to-end (as a boast), scalable, production-ready, enterprise-grade* appear on no surface as self-praise. Protect this. Rules rather than blanket bans:
 - *production-ready / enterprise-grade*: MUST NOT appear — the demo explicitly is neither.
@@ -668,7 +650,7 @@ Hard constraints (non-negotiable):
   `eval.run_eval --json`, verifies the authored-case count in `README.md`, and
   checks both public case-study surfaces against the final locked-holdout
   scorecard, field report, and run cost.
-- The four-question Product / Decisions / Evidence / Next test structure and its five-part Markdown equivalent stay meaning-aligned.
+- The three-section Product / Decisions / Evidence structure and its four-part Markdown equivalent stay meaning-aligned.
 - WBS semantics: `flatfeed/wbs_rules.py` is the single source; documents give examples, the module defines truth.
 - The card field contract (§10) between `flatfeed/matching.py`, README's card sketch, PROJECT_CONTEXT's card sketch, and any case-page mockup.
 - Copy changes propagate across bot UI, tests, case-study surfaces, and documentation together (a stated Known Constraint in PROJECT_CONTEXT).
@@ -687,18 +669,17 @@ Working well; reuse as-is; do not "improve" for uniformity's sake.
 | Pattern | Location | Why approved | Reuse guidance |
 |---|---|---|---|
 | Deterministic core + AI-as-QA boundary | whole product | The portfolio thesis, implemented | Any new AI use starts admin-only, budgeted, non-mutating |
-| Persistent keyboard with one primary action | bot shell | Main story always one tap away | Keep `Show matches` alone on top |
-| `Step N/4` wizard with Back/Cancel and point-of-use hints | filter setup | One thing per page, glossed domain terms | Template for any future multi-step flow |
-| Consequence-named confirmation pairs | reset / delete | Destructive safety without friction elsewhere | Mandatory for destructive actions |
-| Filter card as home (wizard never forced) | `/start` | Respects returning users | Any future "home" message |
+| Single guided entry action | bot shell | Prevents a synthetic demo from reading as a usable feed | Keep `Try the demo` as the only public product action |
+| No personal state in the public path | `/start` + tour | Keeps the prototype boundary literal | Any future persistence requires a new phase decision |
+| Consequence-named confirmation pair | legacy `/delete` | Lets returning users remove old records safely | Compatibility only; do not advertise |
 | Fixed listing-card contract with canonical fallbacks | `flatfeed/matching.py` | Predictable, scannable, honest about unknowns | Never fork per-context card variants |
 | Fail-closed matching on unknown values | matching rules | Wrong sends are the costliest error | Default for any new matching field |
-| Adapter state check + optional background dedupe | delivery pipeline | Names the implemented boundary precisely | Do not imply live-network verification or manual-card dedupe |
+| Adapter state check before the demo card | guided delivery path | Names the implemented boundary precisely | Do not imply live-network verification |
 | Source-health alerting with cooldown | ingestion | Detects silent failure without alert spam | Any new background job |
-| Two-step guided demo | `/start` → `tour:1` → `tour:2` | Reaches real product proof before explanation | Keep temporary filter ephemeral; keep `How matching works` optional |
+| Two-step guided demo | `/start` → `tour:1` → `tour:2` | Reaches real product proof before explanation | Keep the example filter non-persistent; keep `How matching works` optional |
 | Ground-truth quarantine | `synthetic/` ↔ prompts | Makes the eval meaningful | Absolute; no exceptions |
 | Version-stamped QA reviews (one per listing per version) | `flatfeed/ai_qa.py` | Enables version comparison, caps cost | Any new AI artifact gets a version field |
-| Three concise decision cards | case study §02 | Shows prioritization without a separate AI essay | Keep first-pass filter, deterministic boundary, and one normalized flow across sources |
+| Three concise decision cards | case study §02 | Shows prioritization without a separate AI essay | Keep four-field concept, deterministic boundary, and one normalized flow across sources |
 | Demonstrated / Not demonstrated split | case study §03 | Prevents prototype completion from reading as market validation | Every future evidence claim |
 | Teal-only structure accent | case page | Keeps weak evidence from gaining visual weight | Use labels and filled/outlined markers for evidence status |
 | Licensed demo photos with attribution file | `assets/listing_photos/` | Defensibility | Any new third-party asset gets the same treatment |
@@ -711,7 +692,8 @@ Exists in the codebase today; MUST NOT be reused in new work; migrate when touch
 
 | Pattern | Current location | Reason | Replacement | Priority |
 |---|---|---|---|---|
-| ~~Unfiltered catalog browsing (`📂 All listings`)~~ | (removed — `main.py`) | It bypassed the saved-filter job and added a competing global action | Use the temporary demo filter or edit the saved filter | Done — don't reintroduce without a new phase decision |
+| ~~Saved-filter product mode (`Show matches`, `Filter`)~~ | compatibility code remains in `main.py`, public routes redirect | A tiny synthetic catalog made arbitrary filters look like a broken housing product | One guaranteed guided scenario | Retired 2026-08-05 — do not reintroduce without a new phase decision |
+| ~~Unfiltered catalog browsing (`📂 All listings`)~~ | (removed — `main.py`) | It bypassed the focused demo and added a competing global action | Replay the guided scenario | Done — don't reintroduce without a new phase decision |
 | Case-page GitHub links hard-coded to `github.com/mich-mayer/flatfeed` (×7) | `docs/case-study.html` — top-bar + evidence + CTA + footer | Static page, no build step: a URL can't be single-sourced in markup without JS-only links (breaks no-JS on the page's key "view my code" CTA) or introducing a build/template; the 7 real hrefs are the correct static pattern | VERIFIED 2026-07-08 against `git origin` — canonical = `mich-mayer/flatfeed`, treat as FACT. A canonical-URL comment at `<body>` top is the documented source of truth; keep the 7 links in sync on any repo move/rename | Resolved-verified |
 
 ---
@@ -724,7 +706,7 @@ Insufficient evidence for a rule — do not invent one; use the temporary defaul
 |---|---|---|---|
 | Localization (German or Russian bot copy) | Product is English-facing by decision (PROJECT_CONTEXT Known Constraints) | An explicit product decision to localize | English only; keep German domain terms glossed |
 | Live source adapters | Legal/terms review pending; demo is synthetic-only | Author's go-ahead + terms-compatible sources | Synthetic adapter only; describe others as PLANNED |
-| Renter-facing "why did this match?" explanations | Match reasons exist internally (`MatchDecision.reasons`) but aren't user-facing product-wide | A decision that renters need explanation UI in the main filter/matches flow | Keep reasons internal there; the guided tour's step 2 is a deliberate, scoped exception (§7.6, §34 2026-07-11) that surfaces `MatchDecision.reasons` as "Why it matched" — do not extend that exposure elsewhere without a new decision |
+| Renter-facing "why did this match?" explanations | Match reasons are visible only inside the guided scenario | Evidence from renter walkthroughs that the explanation is insufficient | Keep the current Demo 2/2 field-level reasons; there is no separate product-wide match flow |
 | Eval-metrics *generation* into docs (vs. verification) | Numbers are still written by hand; only checked automatically now (§27, `scripts/check_eval_numbers.py`, 2026-07-09) | A decision to template/generate the result blocks from `run_eval --json` instead of hand-editing them | Hand-edit numbers, then run the §27 sync check before handoff; do not build a generator without this decision |
 
 ---
@@ -734,7 +716,7 @@ Insufficient evidence for a rule — do not invent one; use the temporary defaul
 For Claude/Fable, Codex, and other coding agents.
 
 **Before changing bot UI or copy, an agent MUST:**
-1. Read §§7, 17–19 and match the existing register (bot first person, HTML tags `<b>/<i>/<a>` only, emoji only in the sanctioned button set).
+1. Read §§7, 17–19 and match the existing register (plain guided voice, HTML tags `<b>/<i>/<a>` only, no decorative emoji).
 2. Keep the listing-card contract (§10) and canonical fallback strings intact.
 3. Add a consequence-named confirmation to anything destructive or costly (§7.2).
 4. Propagate copy changes across bot, tests, case-study surfaces, and docs together (§27).
@@ -777,10 +759,10 @@ For Claude/Fable, Codex, and other coding agents.
 ## 32. Design Review Checklist
 
 - [ ] Bot: message = one purpose; HTML tags within the allowed set; emoji only in sanctioned button labels (§7.1).
-- [ ] Bot: wizard steps keep `Step N/4`, Back/Cancel, and point-of-use hints (§7.3).
+- [ ] Bot: `/start` removes old reply keyboards and exposes only `Try the demo` (§§6.1, 7.6).
 - [ ] Bot: destructive/costly actions have consequence-named confirmations (§7.2).
 - [ ] Card: field order, labels, grouping, and fallback strings match §10 exactly.
-- [ ] Delivery: adapter state check, optional background dedupe, ≤3 cards, fail-closed matching intact (§3 P5).
+- [ ] Delivery: adapter state check, exactly one demo card, disabled background user notifications, and fail-closed matching intact (§3 P5).
 - [ ] Case page: tokens only, square corners except the three macOS-style window controls, shadow only on the product preview, one teal content accent (§5).
 - [ ] Case page: four-question structure, numbered-kicker motif, one product preview, and clear mobile linear flow (§6.3, §14).
 - [ ] Accessibility: aria labels/alt preserved; new text colors checked ≥4.5:1; new motion gated (§15).
@@ -811,6 +793,38 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-05 product-value-first Telegram story
+
+- **Problem:** the demo repeatedly disclosed synthetic data but did not first explain the repeated manual work FlatFeed is designed to replace. The browser replay then looked like a second product interface rather than evidence from the Telegram prototype. AI quality evidence was visible only as a scorecard, without a compact explanation of its bounded relationship to the user-facing path.
+- **Rationale:** product value must precede prototype limitations. `/start` now contrasts the manual task with the intended flow, then demonstrates one fixed scenario. The case study uses captured Telegram evidence and a non-interactive product walkthrough so it remains available without a running bot. The optional reliability explanation and a case-study boundary block show AI as separately evaluated admin QA, never as a user-facing decision-maker.
+- **Affected surfaces:** `main.py`; `tests/test_guided_tour.py`; `docs/case-study.html`; `docs/styles.css`; `docs/demo-listing.html`; `README.md`; `CASE_STUDY.md`; `docs/PROJECT_CONTEXT.md`; `docs/CURRENT_STATUS.md`; this file (§§1, 5, 6, 7, 9, 22, 34).
+- **Compatibility impact:** `Try the demo`, `Temporary filter`, `Find matches`, `Why this matched`, `How matching works`, browser replay, and per-listing browser detail are no longer the public product narrative. `renter` is retained only to identify the Berlin WBS audience; product behavior and benefits use `user`.
+- **Migration consideration:** implemented in code and local case-study source. Replace the existing hero capture with current Telegram screenshots before publication; until then the locally rendered case study uses the existing truthful result capture rather than a fabricated replacement.
+
+### 2026-08-05 browser replay and synthetic listing details
+
+- **Problem:** the Telegram bot was the only interactive proof, yet it requires an externally hosted process and a Telegram account. The case-study hero showed a static screenshot, so a hiring manager could not inspect the two-step flow without leaving the portfolio. `Open listing` then led to a generic disclosure rather than the specific synthetic card they had just seen.
+- **Rationale:** make the reproducible, no-account replay the primary portfolio interaction while keeping Telegram as an optional proof of the same flow. The browser version is explicitly a static replay: it contains one fixed authored scenario and no backend, user state, live collection, notifications, or model call. A detail view can make the synthetic card inspectable without pretending it is a landlord or application page.
+- **Affected surfaces:** `docs/case-study.html`; `docs/replay.js`; `docs/demo-listing.html`; `docs/demo-listing.js`; `docs/styles.css`; `main.py`; `README.md`; `CASE_STUDY.md`; `docs/PROJECT_CONTEXT.md`; `docs/CURRENT_STATUS.md`; this file (§§1, 5, 6, 7, 22, 34).
+- **Compatibility impact:** the hero screenshot is superseded by the browser replay; `Explore the replay` is the primary CTA and `Open in Telegram` is secondary. Demo 2/2 no longer reports an active-match count, which did not add decision value in a single guaranteed scenario. `docs/demo-listing.html?id=0001` now renders the actual fixed synthetic detail fields instead of a generic disclosure.
+- **Migration consideration:** fixed now in the source tree. GitHub Pages remains on the prior version until this work is reviewed, committed, and deployed. The static replay is not a substitute for a live bot deployment and must not be described as one.
+
+### 2026-08-05 demo-only public prototype
+
+- **Problem:** the public bot combined a tightly authored guided scenario with a second saved-filter mode over the same tiny synthetic catalog. Arbitrary filters could return empty or artificial-looking results, while persistence and `Show matches` suggested a usable housing product even though there is no live ingestion or real notification service.
+- **Rationale:** make the public artifact do one job well. `/start` now removes legacy reply keyboards and leads into one guaranteed, non-persistent scenario that executes the real deterministic matcher, local activity check, field-level reasons, and canonical card. The product concept may still describe a future saved-filter feed, but the implemented Telegram evidence is explicitly the guided scenario.
+- **Affected surfaces:** `main.py`; `tests/test_guided_tour.py`; `tests/test_bot_ui.py`; `README.md`; `CASE_STUDY.md`; `docs/case-study.html`; `docs/PROJECT_CONTEXT.md`; `docs/CURRENT_STATUS.md`; this file (§§1–3, 6–9, 17–22, 28–34).
+- **Compatibility impact:** `Show matches`, `Filter`, `Set up my filter`, `Set up my own filter`, `Use this demo filter`, `/filter`, and `/matches` are retired public actions. The command menu contains only `/start` and `/help`; old commands and callbacks redirect to the demo without writing state. Background user notifications never start. `/delete` remains unadvertised only to remove legacy records.
+- **Migration consideration:** public migration completed now. Legacy filter/storage/delivery helpers remain in code for safe backward compatibility but are not reachable as a current product mode. A future personalized or live-feed phase requires a new product decision, permitted sources, and new evidence; it must not be re-enabled by exposing the dormant helpers.
+
+### 2026-08-04 guided-tour notification boundary
+
+- **Problem:** Demo 2/2 repeated the three-card limit immediately after the user had already requested matches, but did not explain that a synthetic prototype cannot provide real alerts about newly listed apartments. The optional pipeline explainer could then imply the opposite by describing automatic delivery without the live-source boundary.
+- **Rationale:** replace redundant capacity copy with the missing product limitation at the moment a visitor sees the result. The bot now states that the example is synthetic and that the prototype does not monitor live housing sources or send notifications about real new listings. The optional synthetic background-delivery implementation remains unchanged and stays documented as a technical capability.
+- **Affected surfaces:** `main.py`; `tests/test_guided_tour.py`; `tests/test_bot_ui.py`; `README.md`; `docs/PROJECT_CONTEXT.md`; this file (§§7.6, 34).
+- **Compatibility impact:** the Demo 2/2 sentence `In the regular flow, Show matches can return up to three active listings.` is no longer approved tour copy. The `How matching works` explainer and `/help` must not imply that synthetic background delivery is live housing monitoring.
+- **Migration consideration:** fixed now across bot copy, focused tests, and active technical documentation. The three-card limit, matching behavior, optional background-delivery code, case-study evidence, and evaluation numbers are unchanged.
 
 ### 2026-07-31 bot-only prototype and two-step demo
 
