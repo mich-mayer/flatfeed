@@ -16,7 +16,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260805-ai-hero">
+    <link rel="stylesheet" href="styles.css?v=20260806-product-prototype">
   </head>
   <body>
     <div class="case">
@@ -35,7 +35,7 @@
         </nav>
         <div class="top-actions">
           <a class="top-link" href="https://github.com/mich-mayer/flatfeed">Repository</a>
-          <a class="btn btn--primary" href="#product">See the product flow</a>
+          <a class="btn btn--primary" href="https://t.me/FlatFeedBot">Open prototype</a>
         </div>
       </header>
 
@@ -46,8 +46,9 @@
             <h1 id="case-title">One filter instead of checking WBS listings across housing-company websites.</h1>
             <p class="case-lede">
               FlatFeed is designed to turn repeated checks across housing-provider websites into
-              one consistent Telegram flow: set the criteria once, receive matches in a clear,
-              consistent format, see why they match and open the source listing.
+              one consistent flow: set the criteria once, receive matches in a clear format,
+              see why they match and open the source listing. The working Telegram prototype
+              implements this flow with a synthetic catalog.
             </p>
 
             <aside class="hero-ai-note" aria-label="AI role in FlatFeed">
@@ -61,7 +62,7 @@
 
             <dl class="case-meta">
               <div><dt>Audience</dt><dd>Berlin WBS renters</dd></div>
-              <div><dt>Status</dt><dd>Functional Telegram bot · documented demo</dd></div>
+              <div><dt>Status</dt><dd>Working Telegram prototype · synthetic data</dd></div>
             </dl>
           </div>
 
@@ -72,17 +73,19 @@
                 <i class="mac-window-dot mac-window-dot--minimize"></i>
                 <i class="mac-window-dot mac-window-dot--maximize"></i>
               </span>
-              <span class="mac-window-title">FlatFeed · Telegram walkthrough</span>
+              <span class="mac-window-title">FlatFeed · Telegram prototype</span>
             </div>
             <div class="telegram-shot-crop">
               <img
                 class="telegram-shot"
-                src="assets/flatfeed-telegram-showcase.png"
-                alt="Telegram screenshot documenting FlatFeed's WBS listing match walkthrough in Charlottenburg-Wilmersdorf"
+                src="assets/flatfeed-telegram-showcase.png?v=20260806"
+                alt="Telegram screenshot from the working FlatFeed prototype showing a synthetic WBS listing match in Charlottenburg-Wilmersdorf"
+                width="906"
+                height="1516"
               >
             </div>
             <figcaption id="preview-caption">
-              Screenshots from the functional Telegram bot. Data is synthetic.<br>“Kalt” is short
+              Captured from the working Telegram prototype. Data is synthetic.<br>“Kalt” is short
               for Kaltmiete: base rent excluding operating and heating costs.
             </figcaption>
           </figure>
@@ -111,6 +114,56 @@
             </article>
           </div>
 
+          <!-- Unhide only after replacing both demo-era assets with captures from the saved-filter flow. -->
+          <section class="walkthrough-evidence" id="walkthrough" aria-labelledby="walkthrough-title" hidden>
+            <header class="walkthrough-evidence__heading">
+              <p class="preview-label">Working product flow</p>
+              <div>
+                <h2 id="walkthrough-title">From a saved filter to an explained match.</h2>
+                <p>
+                  These Telegram captures come from the working prototype. The interaction and
+                  matching are functional; the listing catalog is synthetic.
+                </p>
+              </div>
+            </header>
+
+            <div class="walkthrough-grid">
+              <figure class="walkthrough-frame" aria-labelledby="filter-shot-caption">
+                <div class="walkthrough-shot-crop">
+                  <img
+                    class="walkthrough-shot"
+                    src="assets/flatfeed-telegram-filter.png?v=20260806"
+                    alt="Telegram capture showing a saved FlatFeed filter with WBS, district, Kaltmiete and rooms"
+                    width="910"
+                    height="1518"
+                  >
+                </div>
+                <figcaption id="filter-shot-caption">
+                  <span>Saved filter</span>
+                  <strong>Set the criteria once</strong>
+                  <p>The prototype stores the user's WBS, district, Kaltmiete and room criteria.</p>
+                </figcaption>
+              </figure>
+
+              <figure class="walkthrough-frame" aria-labelledby="match-shot-caption">
+                <div class="walkthrough-shot-crop">
+                  <img
+                    class="walkthrough-shot"
+                    src="assets/flatfeed-telegram-match-reasons.png?v=20260806"
+                    alt="Telegram capture showing the deterministic reasons for a synthetic WBS listing matched to a saved filter"
+                    width="910"
+                    height="1516"
+                  >
+                </div>
+                <figcaption id="match-shot-caption">
+                  <span>Matching result</span>
+                  <strong>Review why the listing matched</strong>
+                  <p>Fixed rules explain the WBS, district, rent and room checks before the listing card.</p>
+                </figcaption>
+              </figure>
+            </div>
+          </section>
+
         </section>
 
         <section class="case-section" id="decisions">
@@ -134,7 +187,7 @@
               <h3>Rules decide which listings appear</h3>
               <p>
                 Parsing and matching follow fixed rules, so the demonstrated match can be traced
-                to the example filter. AI QA is a separate admin-only check: it may flag a
+                to the saved filter. AI QA is a separate admin-only check: it may flag a
                 suspected parsing error for review, but it cannot change the listing or the match.
               </p>
             </article>
@@ -182,8 +235,8 @@
             <p class="kicker"><span>03</span>Evidence</p>
             <h2>A functional product flow, backed by a bounded AI quality check.</h2>
             <p>
-              The Telegram bot demonstrates the user experience and deterministic matching. A
-              separate 600-listing synthetic evaluation tests whether AI can catch parser errors
+              The Telegram prototype implements the user experience and deterministic matching.
+              A separate 600-listing synthetic evaluation tests whether AI can catch parser errors
               for admin review.
             </p>
           </header>
@@ -192,7 +245,7 @@
             <article class="evidence-card evidence-card--shown">
               <p class="evidence-status"><i aria-hidden="true"></i> Implemented and evaluated</p>
               <ul>
-                <li>The functional Telegram bot shows one example filter through the implemented deterministic matching and activity-check path</li>
+                <li>A user can save a four-field filter, request matches and see fixed-rule reasons before each synthetic listing card</li>
                 <li>The synthetic listing card includes estimated walks to the nearest S- and U-Bahn stations, calculated from synthetic coordinates</li>
                 <li>On 600 new synthetic listings, a hosted model plus deterministic comparison found and localized all 300 planted parser errors, raised no false alerts on 300 clean listings and returned 599 valid checks</li>
               </ul>
@@ -385,7 +438,7 @@
 
             <blockquote class="qa-stop">
               The final run met every synthetic acceptance gate, so I stopped synthetic tuning.
-              The prototype is complete at its intended scope: a functional Telegram experience,
+              The prototype is complete at its intended scope: an implemented Telegram flow,
               deterministic matching and a bounded AI quality-control role.
             </blockquote>
 
@@ -447,10 +500,10 @@
         <section class="case-cta">
           <div>
             <p class="kicker">Prototype summary</p>
-            <h2>A functional Telegram bot built around a real user problem—with AI used to protect data quality.</h2>
+            <h2>A working Telegram prototype built around one saved filter and explainable matching.</h2>
           </div>
           <div class="case-actions">
-            <a class="btn btn--accent" href="#product">Review product flow</a>
+            <a class="btn btn--accent" href="https://t.me/FlatFeedBot">Open prototype</a>
             <a class="btn btn--inverse" href="https://github.com/mich-mayer/flatfeed">View repository</a>
           </div>
         </section>
@@ -470,7 +523,7 @@
           <img class="brand-mark" src="assets/flatfeed-logo-mark.png" alt="">
           <strong>FlatFeed</strong>
         </a>
-        <p>One guided scenario. Deterministic matching. Admin-only AI QA.</p>
+        <p>One saved filter. Deterministic matching. Admin-only AI QA.</p>
         <nav aria-label="Footer links">
           <a href="https://github.com/mich-mayer/flatfeed">Repository</a>
           <a href="https://github.com/mich-mayer/flatfeed/blob/main/CASE_STUDY.md">Markdown version</a>

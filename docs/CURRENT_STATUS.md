@@ -1,6 +1,6 @@
 # FlatFeed Current Status
 
-**Last verified:** 2026-08-05
+**Last verified:** 2026-08-06
 **Purpose:** short handoff for a new human or AI work session. Read this after
 `AGENTS.md` / `CLAUDE.md` and before proposing the next experiment.
 
@@ -11,28 +11,28 @@ the full experiment history and contracts belong in
 
 ## Product State
 
-- FlatFeed is a product-first portfolio prototype that demonstrates one guided
-  Telegram scenario for reducing repeated checks across Berlin WBS listings with four criteria:
-  WBS type, district, maximum Kaltmiete, and rooms.
+- FlatFeed is a product-first Telegram prototype for reducing repeated checks
+  across Berlin WBS listings with four saved criteria: WBS type, district,
+  maximum Kaltmiete, and rooms.
 - The implemented demo uses one synthetic source adapter. It does not scrape or
   redistribute real housing-company listings and does not claim live source
   coverage or user outcomes.
 - Parsing and matching are deterministic and fail closed on unknown critical
   values.
-- The public product surface is the Telegram prototype; the case study presents
-  its captured product walkthrough and evidence. Saved-filter setup,
-  arbitrary `Show matches` requests, persistent reply-keyboard actions,
-  background user notifications, the Streamlit dashboard, public admin panel,
-  unfiltered catalog browser, and mock QA tour are outside the current scope.
-- `/start` reaches a real matching result in two guided steps: one authored
-  four-field example, then a short match explanation followed by one canonical
-  card produced by the deterministic matching, local activity-check, and card
-  formatter path. The demo stores no personal filter.
-- Result actions are limited to replaying the scenario, opening the optional
-  matching explanation, or reading the case study. Old filter/match commands
-  and callbacks redirect to the demo without writing state. `/delete` remains
-  unadvertised only so returning users can remove legacy records.
-- The public Telegram demo makes no model call. Optional runtime AI QA remains
+- The public product surface is the working Telegram bot; the case study uses
+  captured screens from that product flow and links to the bot. Saved-filter
+  setup, on-demand `Show matches`, persistent `Filter` / `Show matches`
+  actions, individual field editing, reset and data deletion are implemented.
+  Background user notifications, the Streamlit dashboard, public admin panel,
+  unfiltered catalog browser, and mock QA tour remain outside current scope.
+- `/start` opens the filter home. A user can save the four criteria and request
+  up to three results from the synthetic catalog. Each result gets a
+  fixed-rule explanation followed by the canonical card produced by the
+  deterministic matching, local activity-check, and card formatter path.
+- `/filter`, `/matches`, `/help`, and `/delete` are public commands. Buttons
+  from the retired guided tour redirect to the current saved-filter flow
+  without writing filter state themselves.
+- The public Telegram product flow makes no model call. Optional runtime AI QA remains
   bounded to direct admin alerts when explicitly enabled; it cannot mutate
   parsed listings, matching, or user-facing cards. No hosted model from the
   offline experiment is integrated into product runtime.
@@ -120,22 +120,24 @@ history. They are not current public evidence.
   measured production cost.
 - The new final result is published at the public GitHub Pages URL and was
   verified there on 2026-07-31.
-- The case-study sources now describe the implemented Telegram evidence as one
-  guided matching scenario, while keeping a saved-filter feed as the unbuilt
-  product concept rather than a current capability.
+- The local case-study sources now describe the saved-filter Telegram flow as
+  an implemented capability and retain the synthetic/no-live-source boundary.
 - The 2026-08-05 demo-only migration passed 348 unit tests, the 15-case
   deterministic parser evaluation, the public eval-number sync check, and
   desktop/mobile browser QA of the case-study page with no console errors.
-- The case-study walkthrough is intended to use captured Telegram evidence so
-  it remains available without running the bot. The GitHub Pages URL still
-  serves the prior public version until this work is committed and deployed.
+- The case-study source reserves three Telegram captures for the saved filter,
+  deterministic match reasons and canonical listing card. The existing local
+  demo-era filter and reason captures are kept out of the public page until
+  they are replaced with current product-flow screenshots. GitHub Pages
+  deployment must be verified from the workflow and public URL after each push.
 
 ## Portfolio Completion Decision
 
-No further product or user testing is planned for this portfolio prototype.
-Keep the functional Telegram walkthrough, deterministic matching evidence and
-bounded AI QA evaluation stable. Live source integration and production
-validation remain outside the intended scope rather than roadmap commitments.
+The current scope is a working saved-filter prototype on synthetic data, not a
+live housing service. Keep deterministic matching evidence and bounded AI QA
+evaluation stable. Live source integration, background renter notifications
+and production validation remain outside the intended scope rather than
+roadmap commitments.
 
 ## Maintenance Rule
 

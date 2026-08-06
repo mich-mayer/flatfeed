@@ -1,24 +1,25 @@
 # FlatFeed
 
-FlatFeed is a guided Telegram prototype for reducing repeated checks across
-Berlin WBS listings. The product concept is one filter, matching listings in a consistent format and
-clear reasons for each result. The public bot runs one synthetic scenario through
-that implemented matching path; it does not provide a usable housing feed, live
+FlatFeed is a working Telegram prototype for reducing repeated checks across
+Berlin WBS listings. A user saves one four-field filter, requests matching
+listings in a consistent format and sees fixed-rule reasons for each result.
+The prototype runs on a synthetic catalog; it does not provide live housing
 coverage or measured user outcomes.
 
 ## What It Shows
 
-- One four-field demo scenario: WBS type, district, max Kaltmiete, and rooms.
+- Saved four-field filter: WBS type, district, max Kaltmiete, and rooms.
 - Deterministic parsing and matching with fail-closed unknown values.
 - Consistent Telegram listing summaries with estimated walks to the nearest
   S- and U-Bahn stations.
-- Two-step guided demo: set the criteria once, then review one explained match.
-- Optional reliability explanation: deterministic user-facing decisions and a
-  separately evaluated, admin-only AI parser-quality check.
+- On-demand matching with fixed-rule reasons before each result card.
+- Filter editing, reset, and saved-data deletion in Telegram.
+- Separately evaluated, admin-only AI parser-quality checks that cannot alter
+  user-facing results.
 - 15 authored synthetic cases currently pass the parser regression check.
 
 No real source scraping, image reuploading, Google Maps, Photon geocoding, or
-server deployment scripts are part of the current demo product. The collection
+server deployment scripts are part of the current prototype. The collection
 layer is represented by the synthetic source adapter and shared ingestion
 pipeline.
 
@@ -101,28 +102,27 @@ Run the bot:
 ENV_FILE=.env.local python main.py
 ```
 
-## Guided Demo
+## Telegram Prototype
 
-The public Telegram bot runs the guided prototype: send `/start`, or open
-`https://t.me/FlatFeedBot?start=tour` directly. The core demo has two steps:
+The public product surface is the working Telegram prototype. `/start` opens
+the filter home and a persistent menu with `Show matches` and `Filter`.
 
-1. A four-field demo filter is shown without saving it.
-2. The same matching predicate as the main product path runs against the
-   synthetic catalog. A short explanation gives field-level reasons, followed
-   by one listing card produced by the canonical product formatter.
+The user can:
 
-The walkthrough shows one synthetic example card and states that the prototype
-does not monitor live housing sources or send notifications about real new
-listings. It stores no personal filter. Tour actions arrive in a separate
-follow-up message, so they do not change the product card itself. The only
-follow-up actions are `Replay the demo`, `How reliability works`, and `Read the case
-study`. `Open listing` resolves to a synthetic disclosure page, never a
-housing-company page or application flow.
+1. Set and save WBS type, district, maximum Kaltmiete, and rooms.
+2. Request up to three active matches from the synthetic catalog.
+3. Review fixed-rule reasons before each canonical listing card.
+4. Edit or reset the filter and delete saved FlatFeed data.
 
-The Telegram command menu publishes only `/start` and `/help`. Commands and
-buttons from older saved-filter versions redirect to the guided demo. `/delete`
-remains as an unadvertised compatibility path so a returning user can remove
-data saved by an older version; the current demo creates no new user record.
+The prototype states once at entry and in `/help` that its catalog is synthetic
+and that it does not monitor live housing sources or send notifications about
+real new listings. Background user notifications remain disabled. `Open
+listing` resolves to a synthetic disclosure page, never a housing-company page
+or application flow.
+
+The Telegram command menu publishes `/start`, `/filter`, `/matches`, `/help`,
+and `/delete`. Buttons from the retired guided walkthrough redirect to the
+current saved-filter product flow without writing new state themselves.
 
 ## Eval
 
@@ -200,9 +200,9 @@ git diff --check
 - Optional runtime AI QA findings go only to configured admins and require
   human feedback; the public bot has no QA controls or metrics.
 - User-facing listing cards are formatted in `flatfeed/matching.py`.
-- Listing photos are third-party Wikimedia Commons demo assets with separate
+- Listing photos are third-party Wikimedia Commons prototype assets with separate
   attribution and license details in `assets/listing_photos/LICENSES.md`. The
-  guided-tour showcase uses an address-aligned Schlangenbader Straße 91 photo; its
+  primary showcase uses an address-aligned Schlangenbader Straße 91 photo; its
   apartment details remain synthetic.
 - Synthetic listing URLs (the card's `Open listing` link) point at
   `docs/demo-listing.html`, a static GitHub Pages disclosure page — not a live

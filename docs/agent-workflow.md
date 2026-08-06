@@ -33,13 +33,13 @@ used for the task.
 
 ## Project Guardrails
 
-- FlatFeed is a portfolio prototype: a guided Telegram demo that runs one
-  synthetic Berlin WBS scenario through deterministic matching. The current
-  public bot does not save personal filters, expose arbitrary match requests,
-  or start background user notifications. The public case study carries
-  model-evaluation evidence; there is no separate dashboard or public admin
-  console. Preserve this demo-only Phase 1 scope unless the user explicitly
-  asks for a new phase.
+- FlatFeed is a portfolio prototype: a working Telegram saved-filter flow over
+  a synthetic Berlin WBS catalog. The current public bot saves one four-field
+  filter, exposes on-demand match requests and explains each deterministic
+  match. It does not start background user notifications. The public case
+  study carries captured product evidence and model-evaluation evidence; there
+  is no separate dashboard or public admin console. Preserve this Phase 1 scope
+  unless the user explicitly asks for a new phase.
 - Keep the demo synthetic and deterministic. Listings come from the synthetic
   catalog in `synthetic/` through the synthetic source adapter; SQLite
   (`flatfeed/db/`) accelerates selection and preserves history. There is no real

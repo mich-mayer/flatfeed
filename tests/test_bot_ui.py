@@ -22,8 +22,8 @@ from main import (
     _settings_card,
     _settings_keyboard,
     _wbs_keyboard,
+    handle_legacy_tour_callback,
     handle_location_choice,
-    handle_legacy_product_callback,
     handle_rent_choice,
     handle_rooms_choice,
     handle_wbs_choice,
@@ -92,10 +92,13 @@ class _FakeBot:
 
 
 class BotUITests(unittest.TestCase):
-    def test_public_command_menu_is_demo_only(self):
+    def test_public_command_menu_exposes_the_product_flow(self):
         commands = _public_bot_commands()
 
-        self.assertEqual([item.command for item in commands], ["start", "help"])
+        self.assertEqual(
+            [item.command for item in commands],
+            ["start", "filter", "matches", "help", "delete"],
+        )
 
     @staticmethod
     def _reply_button_texts(keyboard) -> list[str]:
@@ -117,11 +120,11 @@ class BotUITests(unittest.TestCase):
     def test_empty_and_no_match_states_return_to_core_paths(self) -> None:
         self.assertEqual(
             self._inline_button_texts(_no_filter_keyboard()),
-            ["Set up filter", "See the product flow"],
+            ["Set up filter"],
         )
         self.assertEqual(
             self._inline_button_texts(_no_matches_keyboard()),
-            ["Edit filter", "See the product flow"],
+            ["Edit filter"],
         )
 
     def test_settings_keyboard_contains_only_filter_actions(self) -> None:
@@ -137,31 +140,27 @@ class BotUITests(unittest.TestCase):
             ["Set up filter"],
         )
 
-    def test_saved_filter_copy_matches_scheduler_state(self) -> None:
+    def test_saved_filter_copy_describes_on_demand_results(self) -> None:
         preferences = UserPreferences(
             location=["Lichtenberg"],
             wbs_type="WBS 140",
             max_rent=600,
             rooms=2,
         )
-        with patch("main.get_settings") as get_settings:
-            get_settings.return_value = SimpleNamespace(bot_background_enabled=False)
-            self.assertIn("matches on demand", _settings_card(preferences))
-            self.assertNotIn("Notifications:</b> ON", _settings_card(preferences))
-            self.assertIn("Tap Show matches", _filter_summary(preferences))
-
-            get_settings.return_value = SimpleNamespace(bot_background_enabled=True)
-            self.assertIn("Notifications:</b> ON", _settings_card(preferences))
-            self.assertIn("send new matching listings", _filter_summary(preferences))
+        self.assertIn("available on demand", _settings_card(preferences))
+        self.assertNotIn("Notifications:</b> ON", _settings_card(preferences))
+        self.assertNotIn("Demo mode", _settings_card(preferences))
+        self.assertIn("Tap Show matches", _filter_summary(preferences))
 
     def test_help_names_the_prototype_notification_boundary(self) -> None:
         text = _help_text()
 
         self.assertIn("does not monitor live housing sources", text)
         self.assertIn("notifications about real new listings", text)
-        self.assertIn("/start — start or replay the demo", text)
-        for retired_action in ("Show matches", "Set up my filter", "/filter", "/matches"):
-            self.assertNotIn(retired_action, text)
+        self.assertIn("/start — open FlatFeed", text)
+        self.assertIn("/filter — set up or edit your filter", text)
+        self.assertIn("/matches — show matching listings", text)
+        self.assertIn("See the fixed-rule reasons for every match", text)
 
     def test_edit_filter_keyboard_reuses_field_edit_callbacks(self) -> None:
         buttons = [
@@ -229,21 +228,22 @@ class BotUITests(unittest.TestCase):
 
 
 class FilterPromptLifecycleTests(unittest.IsolatedAsyncioTestCase):
-    async def test_legacy_filter_callback_redirects_without_reopening_setup(self) -> None:
-        callback = _FakeCallback("settings:filter")
+    async def test_legacy_tour_callback_redirects_to_the_saved_filter_flow(self) -> None:
+        callback = _FakeCallback("tour:1")
         state = _FakeState()
         await state.update_data(existing_preferences={"wbs_type": "WBS 140"})
 
-        await handle_legacy_product_callback(callback, state)
+        with patch("main.load_user_preferences", return_value=None):
+            await handle_legacy_tour_callback(callback, state)
 
         self.assertEqual(state.data, {})
         self.assertEqual(
             callback.answered,
-            [("This prototype now uses one guided demo.", True)],
+            [("FlatFeed now uses your own saved filter.", True)],
         )
         text, markup = callback.message.answered[-1]
-        self.assertIn("Replay the guided scenario", text)
-        self.assertEqual(markup.inline_keyboard[0][0].text, "See the product flow")
+        self.assertIn("filter is not set up yet", text)
+        self.assertEqual(markup.inline_keyboard[0][0].text, "Set up filter")
 
     async def test_no_matches_names_the_limited_catalog_boundary(self) -> None:
         message = _FakeMessage()
@@ -260,12 +260,42 @@ class FilterPromptLifecycleTests(unittest.IsolatedAsyncioTestCase):
             await send_active_filtered_matches(message, _FakeBot(), user_id=123)
 
         text, markup = message.answered[-1]
-        self.assertIn("limited synthetic demo catalog", text)
+        self.assertIn("limited synthetic catalog", text)
         self.assertIn("does not describe the live Berlin housing market", text)
         self.assertEqual(
             [button.text for row in markup.inline_keyboard for button in row],
-            ["Edit filter", "See the product flow"],
+            ["Edit filter"],
         )
+
+    async def test_matches_show_fixed_rule_reasons_before_the_card(self) -> None:
+        message = _FakeMessage()
+        match = SimpleNamespace(
+            reasons=(
+                "WBS matches: WBS 100, 140",
+                "district matches the filter",
+                "within rent limit",
+                "room count matches",
+            )
+        )
+        with patch(
+            "main.load_user_preferences",
+            return_value=UserPreferences(wbs_type="WBS 140"),
+        ), patch("main.enrich_missing_transport_walk"), patch(
+            "main.load_active_filtered_match_candidates",
+            return_value=[match],
+        ), patch(
+            "main._verified_active_matches",
+            new=AsyncMock(return_value=[match]),
+        ), patch(
+            "main.send_match_to_chat",
+            new=AsyncMock(),
+        ) as send_match_to_chat:
+            await send_active_filtered_matches(message, _FakeBot(), user_id=123)
+
+        self.assertIn("Found 1 active listing", message.answered[-2][0])
+        self.assertIn("Why this listing matched", message.answered[-1][0])
+        self.assertIn("WBS matches: WBS 100, 140", message.answered[-1][0])
+        send_match_to_chat.assert_awaited_once()
 
     async def test_filter_prompt_is_edited_in_place(self) -> None:
         callback = _FakeCallback()
