@@ -30,6 +30,7 @@ from aiogram.types import (
     KeyboardButton,
     Message,
     ReplyKeyboardMarkup,
+    ReplyKeyboardRemove,
 )
 from sqlalchemy import delete, select
 
@@ -341,7 +342,7 @@ def _no_filter_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="Set up filter", callback_data="settings:filter")],
-            [InlineKeyboardButton(text="Try the demo", callback_data="tour:1")],
+            [InlineKeyboardButton(text="See the product flow", callback_data="tour:1")],
         ]
     )
 
@@ -350,7 +351,7 @@ def _no_matches_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="Edit filter", callback_data="settings:edit_menu")],
-            [InlineKeyboardButton(text="Try the demo filter", callback_data="tour:1")],
+            [InlineKeyboardButton(text="See the product flow", callback_data="tour:1")],
         ]
     )
 
@@ -1515,9 +1516,8 @@ async def _clear_markup(callback: CallbackQuery) -> None:
 # Every dynamic value (listing, district, prices, WBS phrasing, match count)
 # is read from the tour listing and the demo catalog at runtime.
 #
-# The demo filter stays ephemeral (never written to `users`) until the
-# visitor explicitly taps "Use this demo filter" on the result. Step 2 runs the
-# real matching predicate (is_listing_match) and the synthetic adapter's local
+# The demo filter stays ephemeral and is never written to `users`. Step 2 runs
+# the real matching predicate (is_listing_match) and the synthetic adapter's local
 # activity check over the demo catalog.
 # ---------------------------------------------------------------------------
 
@@ -1620,22 +1620,20 @@ def _tour_next_keyboard(label: str, callback_data: str) -> InlineKeyboardMarkup:
 def _tour_intro_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Try the demo", callback_data="tour:1")],
-            [InlineKeyboardButton(text="Set up my filter", callback_data="settings:filter")],
+            [InlineKeyboardButton(text="See the product flow", callback_data="tour:1")],
         ]
     )
 
 
 def _tour_start_keyboard() -> InlineKeyboardMarkup:
-    return _tour_next_keyboard("Try the demo", "tour:1")
+    return _tour_next_keyboard("See the product flow", "tour:1")
 
 
 def _tour_result_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Use this demo filter", callback_data="tour:save_filter")],
-            [InlineKeyboardButton(text="Set up my own filter", callback_data="settings:filter")],
-            [InlineKeyboardButton(text="How matching works", callback_data="tour:3")],
+            [InlineKeyboardButton(text="Replay the demo", callback_data="tour:1")],
+            [InlineKeyboardButton(text="How reliability works", callback_data="tour:3")],
             [InlineKeyboardButton(text="Read the case study", url=CASE_STUDY_URL)],
         ]
     )
@@ -1644,31 +1642,30 @@ def _tour_result_keyboard() -> InlineKeyboardMarkup:
 def _tour_explainer_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Use this demo filter", callback_data="tour:save_filter")],
-            [InlineKeyboardButton(text="Set up my own filter", callback_data="settings:filter")],
+            [InlineKeyboardButton(text="Replay the demo", callback_data="tour:1")],
             [InlineKeyboardButton(text="Read the case study", url=CASE_STUDY_URL)],
         ]
     )
 
 
 async def _send_tour_screen_0(message: Message) -> None:
-    # Two messages by platform constraint, not by choice: a Telegram message
-    # carries exactly one keyboard, and the persistent reply keyboard must be
-    # attached to some message or the user has no menu after the tour. Both
-    # arrive together before the user starts reading, so nothing scrolls away
-    # mid-step; every actual tour step is a single message.
+    # Remove reply keyboards left by earlier product versions before presenting
+    # the single current entry action as an inline button.
     await message.answer(
-        "This is <b>FlatFeed</b> — a Telegram product prototype for matching Berlin "
-        "WBS listings against four saved criteria. The catalog is synthetic, and "
-        "FlatFeed does not save your filter until you explicitly keep it.",
-        reply_markup=main_menu_keyboard(),
+        "<b>FlatFeed is designed for Berlin WBS renters.</b>\n\n"
+        "<b>Without FlatFeed</b>\n"
+        "Check several websites → reopen listings → find WBS and rent conditions → "
+        "compare them manually.\n\n"
+        "<b>With FlatFeed</b>\n"
+        "Set one filter → receive normalized matches → see why they match → open "
+        "the source.\n\n"
+        "This guided prototype demonstrates that product flow with one synthetic "
+        "scenario. It does not monitor live housing sources or send real notifications.",
+        reply_markup=ReplyKeyboardRemove(),
     )
     await message.answer(
-        "<b>See a working match?</b>\n\n"
-        "FlatFeed tests a narrow product hypothesis: one saved filter can make "
-        "scattered, inconsistent WBS listings easier to check.\n\n"
-        "Two steps, no typing: inspect a temporary filter, then run it against "
-        "the demo catalog.",
+        "Two steps, no typing: see the example criteria, then review one "
+        "explained match.",
         reply_markup=_tour_intro_keyboard(),
     )
 
@@ -1686,8 +1683,8 @@ async def _send_tour_screen_1(callback: CallbackQuery) -> None:
     if listing is None:
         await callback.message.answer(
             "The tour needs at least one active synthetic listing with a WBS 140 "
-            "requirement, and none is available right now. Set up your own filter "
-            "or try again later."
+            "requirement, and none is available right now. The guided demo is "
+            "temporarily unavailable; please try again later."
         )
         return
 
@@ -1698,18 +1695,15 @@ async def _send_tour_screen_1(callback: CallbackQuery) -> None:
     district_label = listing.district or "any district"
     rooms_label = _display_rooms(listing.rooms)
     await callback.message.answer(
-        "<b>Demo 1/2 · Temporary filter</b>\n\n"
-        f"Say you hold a WBS-{wbs_percent} certificate — Berlin's housing-eligibility "
-        f"document — and need a {escape(rooms_label)}-room flat in "
-        f"{escape(district_label)} under {rent_label} Kaltmiete (base rent before "
-        "utilities).\n\n"
+        "<b>Demo 1/2 · Set the criteria once</b>\n\n"
+        "In the product concept, the user saves these four criteria once instead "
+        "of checking them manually in every listing.\n\n"
         f"<b>WBS:</b> {wbs_percent}\n"
         f"<b>District:</b> {escape(district_label)}\n"
         f"<b>Kaltmiete:</b> up to {rent_label}\n"
         f"<b>Rooms:</b> {escape(rooms_label)}\n\n"
-        "This demo filter is temporary — it is not saved unless you choose to "
-        "keep it after seeing the result.",
-        reply_markup=_tour_next_keyboard("Find matches", "tour:2"),
+        "This walkthrough uses a fixed example and does not save personal data.",
+        reply_markup=_tour_next_keyboard("See the matching result", "tour:2"),
     )
 
 
@@ -1718,6 +1712,10 @@ async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
         return
     listing = await asyncio.to_thread(_select_tour_listing)
     if listing is None:
+        await callback.message.answer(
+            "The guided demo is temporarily unavailable because its synthetic "
+            "example listing is not available. Please try again later."
+        )
         return
 
     preferences, _ = _tour_filter_summary(listing)
@@ -1730,7 +1728,6 @@ async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
         (match for match in verified_matches if match.listing_id == listing.listing_id),
         None,
     )
-    match_count = len(verified_matches)
     if tour_match is None:
         await callback.message.answer(
             "The selected synthetic listing did not pass the adapter activity check, "
@@ -1738,17 +1735,15 @@ async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
         )
         return
 
-    match_label = "match" if match_count == 1 else "matches"
     reason_lines = "\n".join(
         f"• {escape(reason)}" for reason in tour_match.reasons
     ) or "• All four filter criteria match"
     await callback.message.answer(
-        "<b>Demo 2/2 · Why this matched</b>\n\n"
-        "FlatFeed applied four fixed rules to the temporary filter. "
-        f"It found {match_count} active {match_label} in the synthetic demo catalog.\n\n"
+        "<b>Demo 2/2 · Review only the match</b>\n\n"
+        "FlatFeed compared the listing with all four criteria, so the user does "
+        "not have to find and verify these details manually.\n\n"
         f"{reason_lines}\n\n"
-        "The walkthrough shows one example card below. In the regular flow, "
-        "Show matches can return up to three active listings."
+        "One synthetic example card follows."
     )
 
     await send_match_to_chat(
@@ -1757,7 +1752,8 @@ async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
         match=tour_match,
     )
     await callback.message.answer(
-        "Choose what to do next.",
+        "This is a synthetic example. Live source monitoring and real notifications "
+        "are not implemented.",
         reply_markup=_tour_result_keyboard(),
     )
 
@@ -1766,18 +1762,14 @@ async def _send_tour_screen_3(callback: CallbackQuery) -> None:
     if callback.message is None:
         return
     await callback.message.answer(
-        "<b>How the matching path works</b>\n\n"
-        "<b>Collect:</b> one synthetic adapter adds new demo listings to the catalog.\n"
-        "<b>Normalize:</b> fixed parsing rules turn free-form text into the fields "
-        "you saw on the card.\n"
-        "<b>Enrich:</b> local station data estimates walking times to the nearest "
-        "S-Bahn and U-Bahn stations.\n"
-        "<b>Match:</b> fixed rules compare WBS type, district, Kaltmiete and rooms.\n"
-        "<b>Deliver:</b> the demo shows matches on request; optional background mode "
-        "sends newly found matches automatically.\n\n"
-        "No AI sits in this matching path. If you save a filter, FlatFeed stores your "
-        "Telegram ID, filter and notification history; /delete removes those records "
-        "from FlatFeed's database.",
+        "<b>How reliability works</b>\n\n"
+        "The user-facing path is deterministic: fixed rules extract listing fields "
+        "and decide whether a listing matches.\n\n"
+        "Separately, FlatFeed evaluated an AI checker that compares parser output "
+        "with original synthetic listing text and flags suspected errors for admin review.\n\n"
+        "The AI cannot change listing fields, matching decisions or user-facing cards "
+        "automatically. This hosted-model evaluation is documented in the case study "
+        "and is not integrated into this Telegram prototype.",
         reply_markup=_tour_explainer_keyboard(),
     )
 
@@ -1802,26 +1794,9 @@ async def handle_tour_screen_3(callback: CallbackQuery) -> None:
 
 @router.callback_query(F.data == "tour:save_filter")
 async def handle_tour_save_filter(callback: CallbackQuery) -> None:
-    await callback.answer()
-    if callback.message is None or callback.from_user is None:
-        return
-    listing = await asyncio.to_thread(_select_tour_listing)
-    if listing is None:
-        await callback.message.answer(
-            "The tour listing is no longer available. Use ⚙ Filter to set up your "
-            "own filter instead."
-        )
-        return
-    preferences, _ = _tour_filter_summary(listing)
-    await asyncio.to_thread(
-        save_fixed_preferences,
-        user_id=callback.from_user.id,
-        preferences=preferences,
-    )
-    await _clear_markup(callback)
-    await callback.message.answer(
-        "Saved. Tap 🔎 Show matches any time to see this filter's matches, or "
-        "/delete to remove it."
+    await callback.answer(
+        "Saving filters is not part of this guided prototype.",
+        show_alert=True,
     )
 
 
@@ -1829,19 +1804,19 @@ def _help_text() -> str:
     return (
         "<b>How FlatFeed works</b>\n\n"
         "FlatFeed is a demo assistant for Berlin WBS apartments. It matches a small "
-        "catalog of <i>synthetic</i> listings — no real housing-company data is scraped.\n\n"
+        "catalog of <i>synthetic</i> listings — no real housing-company data is scraped. "
+        "This prototype does not monitor live housing sources or send notifications "
+        "about real new listings.\n\n"
         "<b>Glossary</b>\n"
         "• WBS (Wohnberechtigungsschein): Berlin eligibility certificate; the number is "
         "the income tier (higher number = higher allowed income).\n"
         "• Kaltmiete: base rent without utilities (Nebenkosten).\n\n"
-        "<b>What you can do</b>\n"
-        "• ⚙ Filter — set up or edit WBS type, district, rent, and rooms.\n"
-        "• 🔎 Show matches — up to three listings that match your saved filter.\n"
-        "• Try the demo — run a temporary filter without saving it.\n\n"
+        "<b>What the demo shows</b>\n"
+        "• One example of the four user criteria: WBS type, district, Kaltmiete, and rooms.\n"
+        "• Fixed rules that explain why one synthetic listing matches.\n"
+        "• The normalized Telegram listing card the product concept would use.\n\n"
         "<b>Commands</b>\n"
-        "/filter — set up or edit your filter\n"
-        "/matches — show matching listings\n"
-        "/delete — delete your saved data\n"
+        "/start — start or replay the demo\n"
         "/help — show this help"
     )
 
@@ -1860,33 +1835,21 @@ async def handle_help_command(message: Message) -> None:
 
 
 @router.message(Command("settings"))
-async def handle_settings_command(message: Message) -> None:
-    if message.from_user is None:
-        return
-    await send_settings_card(message, user_id=message.from_user.id)
+async def handle_settings_command(message: Message, state: FSMContext) -> None:
+    await state.clear()
+    await _send_tour_screen_0(message)
 
 
 @router.message(Command("filter"))
 async def handle_filter_command(message: Message, state: FSMContext) -> None:
-    await begin_filter_setup(message, state)
+    await state.clear()
+    await _send_tour_screen_0(message)
 
 
 @router.message(Command("reset"))
 async def handle_reset_command(message: Message, state: FSMContext) -> None:
     await state.clear()
-    if message.from_user is None:
-        return
-    removed = await asyncio.to_thread(reset_user_filter, message.from_user.id)
-    if removed:
-        await message.answer(
-            "Filter reset. Send /filter to set it up again.",
-            reply_markup=main_menu_keyboard(),
-        )
-    else:
-        await message.answer(
-            "The filter was not set up yet. Send /filter to set it up.",
-            reply_markup=main_menu_keyboard(),
-        )
+    await _send_tour_screen_0(message)
 
 
 @router.message(Command("delete"))
@@ -1902,26 +1865,46 @@ async def handle_delete_command(message: Message, state: FSMContext) -> None:
 
 
 @router.message(Command("matches"))
-async def handle_matches_command(message: Message, bot: Bot) -> None:
-    if message.from_user is None:
-        return
-    await send_active_filtered_matches(message, bot, user_id=message.from_user.id)
+async def handle_matches_command(message: Message, state: FSMContext) -> None:
+    await state.clear()
+    await _send_tour_screen_0(message)
 
 
 @router.message(F.text == BTN_SETTINGS)
 async def handle_settings_button(message: Message, state: FSMContext) -> None:
-    if message.from_user is None:
-        return
     await state.clear()
-    await send_settings_card(message, user_id=message.from_user.id)
+    await _send_tour_screen_0(message)
 
 
 @router.message(F.text == BTN_MATCHES)
 async def handle_matches_button(message: Message, state: FSMContext, bot: Bot) -> None:
-    if message.from_user is None:
-        return
     await state.clear()
-    await send_active_filtered_matches(message, bot, user_id=message.from_user.id)
+    await _send_tour_screen_0(message)
+
+
+@router.callback_query(
+    F.data.in_(
+        {
+            "settings:filter",
+            "settings:edit_menu",
+            "settings:back",
+            "settings:matches",
+            "settings:reset",
+            "settings:reset_confirm",
+        }
+    )
+)
+@router.callback_query(F.data.startswith("settings:edit:"))
+@router.callback_query(F.data.startswith("filter:"))
+async def handle_legacy_product_callback(callback: CallbackQuery, state: FSMContext) -> None:
+    """Prevent buttons from older messages from reopening the retired product mode."""
+    await state.clear()
+    await callback.answer("This prototype now uses one guided demo.", show_alert=True)
+    if callback.message is not None:
+        await callback.message.answer(
+            "Replay the guided scenario to see the implemented matching path.",
+            reply_markup=_tour_start_keyboard(),
+        )
 
 
 async def _finish_edit_if_needed(callback: CallbackQuery, state: FSMContext) -> bool:
@@ -2376,9 +2359,9 @@ async def handle_rooms_choice(callback: CallbackQuery, state: FSMContext) -> Non
 @router.message(F.text)
 async def handle_plain_text(message: Message) -> None:
     await message.answer(
-        "I only change your filter through the buttons, so free-text messages "
-        "cannot overwrite it by accident.\n\n"
-        "Use the buttons below: set up a filter, show matches, or browse the demo catalog."
+        "This prototype has one guided scenario and does not accept free-text filters. "
+        "Use the button below to replay the demo.",
+        reply_markup=_tour_start_keyboard(),
     )
 
 
@@ -2461,6 +2444,13 @@ async def run_hourly_pipeline(bot: Bot) -> None:
         await asyncio.sleep(interval)
 
 
+def _public_bot_commands() -> list[BotCommand]:
+    return [
+        BotCommand(command="start", description="Start or replay the demo"),
+        BotCommand(command="help", description="How FlatFeed works"),
+    ]
+
+
 async def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
@@ -2480,30 +2470,14 @@ async def main() -> None:
         token=settings.telegram_bot_token,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),
     )
-    await bot.set_my_commands(
-        [
-            BotCommand(command="start", description="Start / main menu"),
-            BotCommand(command="filter", description="Set up or edit your filter"),
-            BotCommand(command="matches", description="Show matching listings"),
-            BotCommand(command="help", description="How FlatFeed works"),
-            BotCommand(command="delete", description="Delete my data"),
-        ]
-    )
+    await bot.set_my_commands(_public_bot_commands())
     dispatcher = Dispatcher(storage=MemoryStorage())
     dispatcher.include_router(router)
 
-    background_task: Optional[asyncio.Task[Any]] = None
-    if settings.bot_background_enabled:
-        background_task = asyncio.create_task(run_hourly_pipeline(bot))
-    else:
-        logger.info("Background multi-source pipeline is disabled for this bot process.")
+    logger.info("Demo-only mode: background collection and notifications are disabled.")
     try:
         await dispatcher.start_polling(bot)
     finally:
-        if background_task is not None:
-            background_task.cancel()
-            with suppress(asyncio.CancelledError):
-                await background_task
         await bot.session.close()
 
 

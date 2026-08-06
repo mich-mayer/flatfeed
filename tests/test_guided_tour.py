@@ -362,10 +362,24 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("Demo 1/2", text)
         self.assertIn("<b>WBS:</b> 140", text)
         self.assertIn("<b>District:</b> Lichtenberg", text)
-        self.assertIn("temporary", text)
+        self.assertIn("Set the criteria once", text)
+        self.assertIn("does not save personal data", text)
         next_button = markup.inline_keyboard[0][0]
-        self.assertEqual(next_button.text, "Find matches")
+        self.assertEqual(next_button.text, "See the matching result")
         self.assertEqual(next_button.callback_data, "tour:2")
+
+    async def test_screen_1_unavailable_copy_does_not_offer_filter_setup(self) -> None:
+        callback = _FakeCallback("tour:1")
+
+        with patch("main.enrich_missing_transport_walk"), patch(
+            "main._select_tour_listing", return_value=None
+        ):
+            await M._send_tour_screen_1(callback)
+
+        text, markup = callback.message.answered[0]
+        self.assertIn("guided demo is temporarily unavailable", text)
+        self.assertNotIn("filter", text.lower())
+        self.assertIsNone(markup)
 
     async def test_screen_2_separates_explanation_canonical_card_and_actions(self) -> None:
         callback = _FakeCallback("tour:2")
@@ -396,10 +410,11 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(len(callback.message.answered), 2)
         explanation_text, explanation_markup = callback.message.answered[0]
-        self.assertIn("Demo 2/2 · Why this matched", explanation_text)
-        self.assertIn("found 2 active matches", explanation_text)
-        self.assertIn("one example card below", explanation_text)
-        self.assertIn("up to three active listings", explanation_text)
+        self.assertIn("Demo 2/2 · Review only the match", explanation_text)
+        self.assertNotIn("active match", explanation_text)
+        self.assertIn("One synthetic example card follows", explanation_text)
+        self.assertIn("does not have to find and verify", explanation_text)
+        self.assertNotIn("up to three active listings", explanation_text)
         self.assertIn("• WBS matches", explanation_text)
         self.assertIsNone(explanation_markup)
 
@@ -412,37 +427,36 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(card_message["reply_markup"])
 
         follow_up_text, follow_up_markup = callback.message.answered[1]
-        self.assertEqual(follow_up_text, "Choose what to do next.")
+        self.assertIn("synthetic example", follow_up_text)
+        self.assertIn("not implemented", follow_up_text)
         keyboard = follow_up_markup.inline_keyboard
         button_texts = [button.text for row in keyboard for button in row]
         self.assertEqual(
             button_texts,
             [
-                "Use this demo filter",
-                "Set up my own filter",
-                "How matching works",
+                "Replay the demo",
+                "How reliability works",
                 "Read the case study",
             ],
         )
 
-    async def test_screen_3_explains_the_pipeline_and_privacy(self) -> None:
+    async def test_screen_3_explains_the_reliability_boundary(self) -> None:
         callback = _FakeCallback("tour:3")
 
         await M._send_tour_screen_3(callback)
 
         self.assertEqual(len(callback.message.answered), 1)
         text, markup = callback.message.answered[0]
-        self.assertIn("How the matching path works", text)
-        for word in ("Collect:", "Normalize:", "Enrich:", "Match:", "Deliver:"):
-            self.assertIn(word, text)
-        self.assertIn("/delete", text)
+        self.assertIn("How reliability works", text)
+        self.assertIn("user-facing path is deterministic", text)
+        self.assertIn("AI checker", text)
+        self.assertIn("cannot change listing fields", text)
+        self.assertIn("not integrated into this Telegram prototype", text)
         button_texts = [b.text for row in markup.inline_keyboard for b in row]
-        self.assertIn("Use this demo filter", button_texts)
-        self.assertIn("Set up my own filter", button_texts)
-        self.assertIn("Read the case study", button_texts)
+        self.assertEqual(button_texts, ["Replay the demo", "Read the case study"])
 
 
-class TourSaveFilterTests(unittest.IsolatedAsyncioTestCase):
+class RetiredTourSaveFilterTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self) -> None:
         engine = _in_memory_engine()
         Base.metadata.create_all(engine)
@@ -462,7 +476,7 @@ class TourSaveFilterTests(unittest.IsolatedAsyncioTestCase):
             )
             session.commit()
 
-    async def test_save_filter_writes_the_derived_preferences_once(self) -> None:
+    async def test_old_save_filter_button_cannot_write_user_state(self) -> None:
         callback = _FakeCallback("tour:save_filter")
 
         with patch("main.SessionLocal", self.test_session):
@@ -472,14 +486,13 @@ class TourSaveFilterTests(unittest.IsolatedAsyncioTestCase):
             await M.handle_tour_save_filter(callback)
 
             with self.test_session() as session:
-                user = session.get(User, 999)
-                self.assertIsNotNone(user)
-                self.assertEqual(user.parsed_preferences["wbs_type"], "WBS 140")
-                self.assertEqual(user.parsed_preferences["location"], ["Lichtenberg"])
-                self.assertEqual(user.parsed_preferences["max_rent"], 600)
+                self.assertIsNone(session.get(User, 999))
 
-        confirmation_text = callback.message.answered[-1][0]
-        self.assertIn("Saved", confirmation_text)
+        self.assertEqual(callback.message.answered, [])
+        self.assertEqual(
+            callback.answered,
+            [("Saving filters is not part of this guided prototype.", True)],
+        )
 
 
 class TourEntryPointTests(unittest.IsolatedAsyncioTestCase):
@@ -495,15 +508,16 @@ class TourEntryPointTests(unittest.IsolatedAsyncioTestCase):
         intro_text, intro_markup = message.answered[0]
         pitch_text, pitch_markup = message.answered[1]
 
-        self.assertIn("FlatFeed", intro_text)
-        self.assertIn("does not save your filter until you explicitly keep it", intro_text)
-        self.assertIsNotNone(intro_markup)  # persistent reply keyboard is attached
+        self.assertIn("Without FlatFeed", intro_text)
+        self.assertIn("With FlatFeed", intro_text)
+        self.assertIn("synthetic scenario", intro_text)
+        self.assertTrue(intro_markup.remove_keyboard)
 
         tour_buttons = [
             button.text for row in pitch_markup.inline_keyboard for button in row
         ]
         self.assertIn("Two steps, no typing", pitch_text)
-        self.assertEqual(tour_buttons, ["Try the demo", "Set up my filter"])
+        self.assertEqual(tour_buttons, ["See the product flow"])
 
 
 if __name__ == "__main__":
