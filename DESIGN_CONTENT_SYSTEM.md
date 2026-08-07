@@ -137,7 +137,7 @@ Never choose "more impressive" over "more accurate".
 
 These tokens apply to `docs/case-study.html` / `docs/styles.css` only. The bot has no visual tokens (§7).
 
-The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, four numbered sections, three inspectable product captures, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine.
+The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, four numbered sections, one seven-screen product carousel, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine.
 
 ### 5.1 Color — ADOPT
 
@@ -155,12 +155,9 @@ All colors come from `:root` in `docs/styles.css`. New page styles MUST use thes
 | `--accent` | `#08766e` | Single accent — FlatFeed teal | Kicker numbers, state dots, button hovers, selection, focus rings | Long text |
 | `--accent-deep` | `#055d57` | Accent text/links | Link hovers and demo-state label | — |
 | `--accent-wash` | `#e3f2ee` | Accent wash | Role note and quiet accent fills | Text backgrounds needing contrast |
-| `--mac-close` | `#ff5f57` | macOS-style close control | Decorative window control only | Content, status, or evidence |
-| `--mac-minimize` | `#febc2e` | macOS-style minimize control | Decorative window control only | Content, status, or evidence |
-| `--mac-maximize` | `#28c840` | macOS-style maximize control | Decorative window control only | Content, status, or evidence |
 
 Rules:
-- **One-accent system:** teal is the only content accent. The three macOS-style window-control tokens are a decorative chrome exception and MUST NOT encode product status or evidence. Evidence is distinguished by labels and filled/outlined square markers, not by a second result color.
+- **One-accent system:** teal is the only content accent. Evidence is distinguished by labels and filled/outlined square markers, not by a second result color.
 - The page has no error/warning/success status colors — it is editorial, not operational. Do not import status palettes from the bot, the dashboard, or Opsqora's status set (`--ok`/`--warn`/`--bad` were deliberately not ported).
 - The dark CTA uses `--ink` as ground with literal white/transparent-white values in the local component rules. It is the only inverted zone on the page except dark buttons.
 
@@ -199,15 +196,15 @@ Rules:
 
 ### 5.3 Borders, Radius, Elevation — ADOPT
 
-- **Square corners by default: border-radius 0.** Status dots are literal squares. The three circular `.mac-window-dot` controls are the only sanctioned radius exception and exist solely in the screenshot frame.
+- **Square corners throughout: border-radius 0.** Status dots and carousel controls are literal squares.
 - 1px `--line` hairlines divide and border; 1px `--ink` rules open sections and label groups.
-- Elevation: one shadow only — on `.product-preview`. Everything else is flat.
+- Elevation: one shadow only — on `.product-carousel__image-frame`. Everything else is flat.
 - No gradients anywhere. The sticky header uses `color-mix` transparency + `backdrop-filter: blur(10px)`, not a gradient; the blur radius stays fixed px.
 
 ### 5.4 Grid and Width — ADOPT
 
 - One centered column: `.case` width `min(100% - 3rem, 75rem)`.
-- Hero is a two-column proposition + product preview at desktop and a single linear column below 56rem. On the two-column layout, the top of `.hero-copy` aligns with the top of `.product-preview`; do not vertically center the shorter column against a tall product image. The portrait Telegram preview is capped at `30rem` and aligned to the right on wide screens; below 56rem the existing responsive width rule takes over.
+- Hero is a text-led proposition with no screenshot. The seven-screen carousel follows the hero copy at full content width; each slide pairs a portrait capture with a short numbered caption and becomes a vertical stack below 40rem.
 - Numbered mono kickers (`01`–`04`) are the section motif. Workflow is 5-up, decisions 3-up, evidence 2-up; each collapses per §14.
 - The dark CTA spans the content width.
 
@@ -215,7 +212,7 @@ Rules:
 
 - Icons are inline hand-written SVG strokes, stroke `currentColor`, width 2: 14px inside buttons (arrows, git-branch), 16px in panel headers. No icon library at runtime, no emoji on the page.
 - Brand: `assets/flatfeed-logo-mark.png` at 26px in the header/footer wordmark, `alt=""` (decorative next to the visible name).
-- Imagery: three real Telegram captures document the working product flow: `assets/flatfeed-telegram-filter.png` (saved filter), `assets/flatfeed-telegram-match-reasons.png` (on-demand reasons), and `assets/flatfeed-telegram-showcase.png` (the canonical listing card in the hero). Their captions state that the catalog is synthetic. The hero's surrounding macOS-style bar is presentation chrome, not a claim that Telegram was captured in macOS. Do not add dashboard mockups or decorative illustrations.
+- Imagery: seven real Telegram captures document the working product flow in order: start, WBS tier, district, Kaltmiete, rooms, saved filter, and the canonical synthetic listing card. The carousel-level copy states that the catalog is synthetic; each slide adds only a short title and one orienting sentence rather than repeating the visible interface. Do not add a screenshot to the hero, dashboard mockups, or decorative illustrations.
 - Any photo of a building MUST keep alt text disclosing its demo context. Source, author, license, and modifications stay documented in `assets/listing_photos/LICENSES.md`; attribution for a licensed public-preview image also appears in the adjacent figcaption.
 
 ---
@@ -231,7 +228,7 @@ Rules:
 The status card shows whether a filter exists and, when configured, lists WBS, District, Max Kaltmiete, and Rooms in that order. It offers `Show matches`, `Edit filter`, `Reset filter`, and `Delete my data`. The setup wizard asks one field at a time and persists only after all four answers are complete.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → sticky top bar (brand; 3-item nav: Product · Decisions · Evidence; Repository + Open prototype) → split Product hero (plain-language proposition, WBS gloss, audience/status/AI-role metadata, compact captured Telegram result in a macOS-style frame) → visual Without/With comparison → two-screen captured product flow (saved filter, then match reasons) → **three-section framework**: 01 Product · 02 Decisions · 03 Evidence → dark summary CTA → sibling case cross-link → footer.
+Skip link → sticky top bar (brand; 3-item nav: Product · Decisions · Evidence; Repository + Open prototype) → text-led Product hero (plain-language proposition, WBS gloss, audience/status/AI-role metadata) → seven-screen captured product carousel → visual Without/With comparison → **three-section framework**: 01 Product · 02 Decisions · 03 Evidence → dark summary CTA → sibling case cross-link → footer.
 
 The page MUST answer in order: what user problem the product simplifies, what the candidate decided, and what is implemented or evaluated. AI QA appears after the user-value story as one bounded decision and one evidence block; dashboard mockups, mock-cost, legal analysis, historical iteration tables, and future-test plans do not belong in the main public narrative. At ≤56rem the nav may hide because the three sections remain a single linear scroll and the two primary header actions remain visible.
 
@@ -394,7 +391,7 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids), **56rem** (linear hero, hidden redundant section nav), and **40rem** (single-column metadata/workflow and full-width CTA buttons).
 
 - Desktop is the primary reading surface; mobile is a supported viewing mode, not a separately designed product.
-- Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, boundary-aware lede, CTAs, metadata, and product preview. The section nav may hide on narrow screens because the document remains a short linear flow.
+- Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, boundary-aware lede, CTAs, metadata, and the first product-carousel slide. The section nav may hide on narrow screens because the document remains a short linear flow.
 - Telegram handles bot responsiveness — do not add custom viewport logic there.
 
 ---
@@ -524,8 +521,8 @@ Audience adaptation is allowed (gloss depth, sentence length) — mechanical wor
 
 The page serves three reading depths; every depth must independently answer its questions.
 
-**10-second scan** (brand label + numbered Product kicker + H1 + lede + meta + product preview) must answer: What user problem does this solve, who is it for, and what was built?
-Mechanics: the header brand label states `Product case study`; the kicker establishes `01 Product`. The H1 names repeated checks across housing-company websites. The lede explains the implemented flow in plain language—save criteria once, request matching listings in one consistent format, understand why they match, open the source—and identifies the working Telegram prototype plus its synthetic catalog. A dedicated `AI checks data quality` line explains that AI compares parsed listing data with source text and flags suspected errors for admin review. Metadata identifies the audience and working-prototype status. Candidate ownership is explained in the Decisions contribution note and the deeper Markdown case instead of being compressed into a hero label. The compact product preview is captured Telegram evidence; its caption states once that the data is synthetic.
+**10-second scan** (brand label + numbered Product kicker + H1 + lede + meta + first product-carousel slide) must answer: What user problem does this solve, who is it for, and what was built?
+Mechanics: the header brand label states `Product case study`; the kicker establishes `01 Product`. The H1 names repeated checks across housing-company websites. The lede explains the implemented flow in plain language—save criteria once, request matching listings in one consistent format, understand why they match, open the source—and identifies the working Telegram prototype plus its synthetic catalog. A dedicated `AI checks data quality` line explains that AI compares parsed listing data with source text and flags suspected errors for admin review. Metadata identifies the audience and working-prototype status. Candidate ownership is explained in the Decisions contribution note and the deeper Markdown case instead of being compressed into a hero label. The first carousel slide supplies immediate captured Telegram evidence; the carousel heading states once that the data is synthetic.
 
 **30-second scan** (+ visual comparison, Decisions, evidence split) must answer: how FlatFeed changes the user workflow, which three decisions matter, and what is implemented versus outside prototype scope.
 Mechanics: the numbered Product / Decisions / Evidence sequence is continuous. The Without/With comparison uses three short rows per side and one directional arrow. Decision cards explain the rationale and trade-off; the reliability boundary follows them so AI does not interrupt the user-value story. Evidence records implemented proof, measured synthetic results, and explicit scope boundaries without implying a future roadmap. It is followed by one plain-language final-evaluation narrative: experiment setup, decision, aggregate metrics with formulas and focus, field-level results, the one invalid check, stopping rationale, and a bounded cost scenario. Only the final 600-listing run may appear; the synthetic qualifier, accepted synthetic decision, one unusable check, and no-runtime-integration boundary stay visible at the same depth as its strongest metrics.
@@ -534,7 +531,7 @@ Mechanics: the numbered Product / Decisions / Evidence sequence is continuous. T
 
 Element rules:
 - **Product:** numbered kicker → plain proposition H1 → product-mechanism lede → visible AI quality-control line → WBS gloss → two-item meta `dl` for audience and status → visual Without/FlatFeed comparison. Every value is decodable without insider context.
-- **Product preview:** three real Telegram captures document the implemented flow. The canonical listing card is the compact hero proof inside a clearly external macOS-style evidence frame. Saved-filter status and on-demand match reasons appear below the workflow comparison in a two-column captured walkthrough that stacks on narrow screens. Captions MUST say that the screens come from the working prototype and that the catalog is synthetic. No dashboard, mock metrics, fabricated runtime data or browser imitation.
+- **Product carousel:** seven real Telegram captures document setup through result in the author-supplied order. The hero remains text-only. The carousel does not auto-advance; previous/next buttons, arrow keys, and touch swipe expose the sequence. A carousel-level statement MUST say that the screens come from the working prototype and that the catalog is synthetic. Each slide uses a step number, short title, and one orienting sentence. No dashboard, mock metrics, fabricated runtime data or browser imitation.
 - **Workflow comparison:** Without FlatFeed lists three manual steps; With FlatFeed lists three simplified steps. The panels use distinct neutral/accent treatments and one directional SVG arrow. Do not return to inline arrow chains.
 - **Decisions:** exactly three public decisions: a first-pass four-field product concept,
   deterministic matching/optional QA boundary, and one normalized product flow
@@ -760,8 +757,8 @@ For Claude/Fable, Codex, and other coding agents.
 - [ ] Bot: destructive/costly actions have consequence-named confirmations (§7.2).
 - [ ] Card: field order, labels, grouping, and fallback strings match §10 exactly.
 - [ ] Delivery: adapter state check, up to three on-demand cards, reasons before each card, disabled background user notifications, and fail-closed matching intact (§3 P5).
-- [ ] Case page: tokens only, square corners except the three macOS-style window controls, shadow only on the product preview, one teal content accent (§5).
-- [ ] Case page: four-question structure, numbered-kicker motif, one product preview, and clear mobile linear flow (§6.3, §14).
+- [ ] Case page: tokens only, square corners, shadow only on the active carousel image frame, one teal content accent (§5).
+- [ ] Case page: four-question structure, numbered-kicker motif, text-only hero, seven-screen carousel, and clear mobile linear flow (§6.3, §14).
 - [ ] Accessibility: aria labels/alt preserved; new text colors checked ≥4.5:1; new motion gated (§15).
 - [ ] Product/evidence separation intact: no QA controls or metrics in renter-facing surfaces (§3 P8).
 
@@ -790,6 +787,22 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-07 text-only hero and seven-screen product carousel
+
+- **Problem:** one listing screenshot in the hero showed only the final output and competed with the product proposition. The newly captured working flow contains the stronger proof: setup, saved state, on-demand search, and the resulting listing in one sequence.
+- **Rationale:** keep the hero focused on the user problem and move visual evidence into one accessible, non-automatic carousel immediately after it. Seven short numbered captions orient an external reader without repeating the Telegram copy; a single carousel-level statement preserves the synthetic-catalog boundary at the same reading depth.
+- **Affected surfaces:** `docs/case-study.html`; `docs/styles.css`; `docs/carousel.js`; seven `docs/assets/flatfeed-flow-*.png` captures; this file (§§5, 6, 14, 15, 22, 32, 34).
+- **Compatibility impact:** the two-column hero, macOS-style screenshot frame, three-capture walkthrough, and hidden demo-era walkthrough no longer conform. The product proposition, working-prototype status, synthetic-data boundary, deterministic matching story, and Telegram implementation remain unchanged.
+- **Migration consideration:** implemented as a local review sandbox. Publication remains a separate approval step; the previous screenshot assets stay in the repository but are no longer referenced by the case page.
+
+### 2026-08-07 carousel controls below the screenshot
+
+- **Problem:** centering the existing previous / position / next controls under the complete two-column slide separated them from the screenshot they control.
+- **Rationale:** place the three-part control row in the left column directly below the screenshot and inside the carousel frame. Remove the separate position-indicator row so the screenshot has one clear control system. This follows the supplied reference without introducing additional navigation.
+- **Affected surfaces:** `docs/case-study.html`; `docs/styles.css`; `docs/carousel.js`; this file (§§5, 15, 22, 34).
+- **Compatibility impact:** previous/next behavior, accessible names, keyboard navigation, and swipe gestures remain unchanged. The seven direct-position indicators are removed; on narrow screens the control row remains directly below the screenshot in the same single-column reading flow.
+- **Migration consideration:** fixed in the local review sandbox. No product copy, image assets, matching behavior or evaluation evidence changed.
 
 ### 2026-08-06 restored saved-filter product prototype
 

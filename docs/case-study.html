@@ -16,7 +16,8 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260806-product-prototype">
+    <link rel="stylesheet" href="styles.css?v=20260807-product-carousel">
+    <script src="carousel.js?v=20260807-product-carousel" defer></script>
   </head>
   <body>
     <div class="case">
@@ -66,29 +67,161 @@
             </dl>
           </div>
 
-          <figure class="product-preview product-preview--telegram" aria-labelledby="preview-caption">
-            <div class="mac-window-bar">
-              <span class="mac-window-controls" aria-hidden="true">
-                <i class="mac-window-dot mac-window-dot--close"></i>
-                <i class="mac-window-dot mac-window-dot--minimize"></i>
-                <i class="mac-window-dot mac-window-dot--maximize"></i>
-              </span>
-              <span class="mac-window-title">FlatFeed · Telegram prototype</span>
+          <section class="product-carousel" id="walkthrough" aria-labelledby="walkthrough-title" data-carousel>
+            <header class="product-carousel__heading">
+              <p class="preview-label">Working product flow · synthetic catalog</p>
+              <div>
+                <h2 id="walkthrough-title">One filter, from setup to a matched listing.</h2>
+                <p>
+                  Seven captures show the working Telegram prototype in order. The interaction and
+                  matching are functional; the listing catalog is synthetic.
+                </p>
+              </div>
+            </header>
+
+            <div class="product-carousel__stage" tabindex="0" aria-label="Product screen carousel">
+              <ol class="product-carousel__slides">
+                <li class="product-carousel__slide" id="product-slide-1" data-carousel-slide>
+                  <figure>
+                    <div class="product-carousel__image-frame">
+                      <img
+                        src="assets/flatfeed-flow-01-start.png"
+                        alt="Telegram start screen for FlatFeed showing that no filter is set and offering a Set up filter action"
+                        width="1070"
+                        height="1520"
+                      >
+                    </div>
+                    <figcaption>
+                      <span>01 / 07</span>
+                      <strong>Start with one saved filter</strong>
+                      <p>The bot opens with the product boundary and one clear setup action.</p>
+                    </figcaption>
+                  </figure>
+                </li>
+                <li class="product-carousel__slide" id="product-slide-2" data-carousel-slide hidden>
+                  <figure>
+                    <div class="product-carousel__image-frame">
+                      <img
+                        src="assets/flatfeed-flow-02-wbs.png"
+                        alt="Telegram screen showing step one of four where a user selects a WBS eligibility tier"
+                        width="1076"
+                        height="1528"
+                        loading="lazy"
+                      >
+                    </div>
+                    <figcaption>
+                      <span>02 / 07</span>
+                      <strong>Choose the WBS tier</strong>
+                      <p>Step one captures the eligibility tier used for matching.</p>
+                    </figcaption>
+                  </figure>
+                </li>
+                <li class="product-carousel__slide" id="product-slide-3" data-carousel-slide hidden>
+                  <figure>
+                    <div class="product-carousel__image-frame">
+                      <img
+                        src="assets/flatfeed-flow-03-district.png"
+                        alt="Telegram screen showing step two of four where a user selects a Berlin district"
+                        width="1076"
+                        height="1528"
+                        loading="lazy"
+                      >
+                    </div>
+                    <figcaption>
+                      <span>03 / 07</span>
+                      <strong>Choose a district</strong>
+                      <p>Step two narrows the search to one Berlin district or keeps it open.</p>
+                    </figcaption>
+                  </figure>
+                </li>
+                <li class="product-carousel__slide" id="product-slide-4" data-carousel-slide hidden>
+                  <figure>
+                    <div class="product-carousel__image-frame">
+                      <img
+                        src="assets/flatfeed-flow-04-rent.png"
+                        alt="Telegram screen showing step three of four where a user sets a maximum Kaltmiete"
+                        width="1072"
+                        height="1526"
+                        loading="lazy"
+                      >
+                    </div>
+                    <figcaption>
+                      <span>04 / 07</span>
+                      <strong>Set maximum Kaltmiete</strong>
+                      <p>Step three records the base-rent ceiling used by the matcher.</p>
+                    </figcaption>
+                  </figure>
+                </li>
+                <li class="product-carousel__slide" id="product-slide-5" data-carousel-slide hidden>
+                  <figure>
+                    <div class="product-carousel__image-frame">
+                      <img
+                        src="assets/flatfeed-flow-05-rooms.png"
+                        alt="Telegram screen showing step four of four where a user selects the room count"
+                        width="1076"
+                        height="1530"
+                        loading="lazy"
+                      >
+                    </div>
+                    <figcaption>
+                      <span>05 / 07</span>
+                      <strong>Choose the room count</strong>
+                      <p>Step four completes the four-field filter.</p>
+                    </figcaption>
+                  </figure>
+                </li>
+                <li class="product-carousel__slide" id="product-slide-6" data-carousel-slide hidden>
+                  <figure>
+                    <div class="product-carousel__image-frame">
+                      <img
+                        src="assets/flatfeed-flow-06-saved-filter.png"
+                        alt="Telegram screen showing a saved FlatFeed filter for WBS 100, any district, up to 600 euro Kaltmiete and two rooms"
+                        width="1076"
+                        height="1530"
+                        loading="lazy"
+                      >
+                    </div>
+                    <figcaption>
+                      <span>06 / 07</span>
+                      <strong>Review the saved filter</strong>
+                      <p>The criteria remain visible before an on-demand search.</p>
+                    </figcaption>
+                  </figure>
+                </li>
+                <li class="product-carousel__slide" id="product-slide-7" data-carousel-slide hidden>
+                  <figure>
+                    <div class="product-carousel__image-frame">
+                      <img
+                        src="assets/flatfeed-flow-07-listing.png"
+                        alt="Telegram screen showing a synthetic matched listing with district, address, rooms, transit, WBS and rent fields"
+                        width="1078"
+                        height="1528"
+                        loading="lazy"
+                      >
+                    </div>
+                    <figcaption>
+                      <span>07 / 07</span>
+                      <strong>Open a matched listing</strong>
+                      <p>A canonical synthetic result combines eligibility, rent and transit details.</p>
+                    </figcaption>
+                  </figure>
+                </li>
+              </ol>
+
+              <div class="product-carousel__footer">
+                <div class="product-carousel__controls">
+                  <button class="carousel-button" type="button" data-carousel-previous aria-label="Previous product screen" disabled>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+                  </button>
+                  <p class="product-carousel__position" aria-live="polite" data-carousel-position>Screen 1 of 7</p>
+                  <button class="carousel-button" type="button" data-carousel-next aria-label="Next product screen">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+                  </button>
+                </div>
+
+              </div>
             </div>
-            <div class="telegram-shot-crop">
-              <img
-                class="telegram-shot"
-                src="assets/flatfeed-telegram-showcase.png?v=20260806"
-                alt="Telegram screenshot from the working FlatFeed prototype showing a synthetic WBS listing match in Charlottenburg-Wilmersdorf"
-                width="906"
-                height="1516"
-              >
-            </div>
-            <figcaption id="preview-caption">
-              Captured from the working Telegram prototype. Data is synthetic.<br>“Kalt” is short
-              for Kaltmiete: base rent excluding operating and heating costs.
-            </figcaption>
-          </figure>
+          </section>
 
           <div class="product-journey" aria-label="FlatFeed product comparison">
             <article class="product-journey__panel product-journey__panel--without">
@@ -113,56 +246,6 @@
               </ol>
             </article>
           </div>
-
-          <!-- Unhide only after replacing both demo-era assets with captures from the saved-filter flow. -->
-          <section class="walkthrough-evidence" id="walkthrough" aria-labelledby="walkthrough-title" hidden>
-            <header class="walkthrough-evidence__heading">
-              <p class="preview-label">Working product flow</p>
-              <div>
-                <h2 id="walkthrough-title">From a saved filter to an explained match.</h2>
-                <p>
-                  These Telegram captures come from the working prototype. The interaction and
-                  matching are functional; the listing catalog is synthetic.
-                </p>
-              </div>
-            </header>
-
-            <div class="walkthrough-grid">
-              <figure class="walkthrough-frame" aria-labelledby="filter-shot-caption">
-                <div class="walkthrough-shot-crop">
-                  <img
-                    class="walkthrough-shot"
-                    src="assets/flatfeed-telegram-filter.png?v=20260806"
-                    alt="Telegram capture showing a saved FlatFeed filter with WBS, district, Kaltmiete and rooms"
-                    width="910"
-                    height="1518"
-                  >
-                </div>
-                <figcaption id="filter-shot-caption">
-                  <span>Saved filter</span>
-                  <strong>Set the criteria once</strong>
-                  <p>The prototype stores the user's WBS, district, Kaltmiete and room criteria.</p>
-                </figcaption>
-              </figure>
-
-              <figure class="walkthrough-frame" aria-labelledby="match-shot-caption">
-                <div class="walkthrough-shot-crop">
-                  <img
-                    class="walkthrough-shot"
-                    src="assets/flatfeed-telegram-match-reasons.png?v=20260806"
-                    alt="Telegram capture showing the deterministic reasons for a synthetic WBS listing matched to a saved filter"
-                    width="910"
-                    height="1516"
-                  >
-                </div>
-                <figcaption id="match-shot-caption">
-                  <span>Matching result</span>
-                  <strong>Review why the listing matched</strong>
-                  <p>Fixed rules explain the WBS, district, rent and room checks before the listing card.</p>
-                </figcaption>
-              </figure>
-            </div>
-          </section>
 
         </section>
 
