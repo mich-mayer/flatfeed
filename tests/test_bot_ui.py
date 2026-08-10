@@ -2,6 +2,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
+import main as M
 from main import (
     BTN_MATCHES,
     BTN_SETTINGS,
@@ -140,27 +141,32 @@ class BotUITests(unittest.TestCase):
             ["Set up filter"],
         )
 
-    def test_saved_filter_copy_describes_on_demand_results(self) -> None:
+    def test_saved_filter_copy_matches_notification_setting(self) -> None:
         preferences = UserPreferences(
             location=["Lichtenberg"],
             wbs_type="WBS 140",
             max_rent=600,
             rooms=2,
         )
-        self.assertIn("available on demand", _settings_card(preferences))
-        self.assertNotIn("Notifications:</b> ON", _settings_card(preferences))
-        self.assertNotIn("Demo mode", _settings_card(preferences))
-        self.assertIn("Tap Show matches", _filter_summary(preferences))
+        with patch("main.get_settings") as get_settings:
+            get_settings.return_value = SimpleNamespace(bot_background_enabled=False)
+            self.assertIn("available on demand", _settings_card(preferences))
+            self.assertNotIn("Notifications:</b> ON", _settings_card(preferences))
+            self.assertIn("Tap Show matches", _filter_summary(preferences))
 
-    def test_help_names_the_prototype_notification_boundary(self) -> None:
+            get_settings.return_value = SimpleNamespace(bot_background_enabled=True)
+            self.assertIn("Notifications:</b> ON", _settings_card(preferences))
+            self.assertIn("send each new matching listing", _filter_summary(preferences))
+
+    def test_help_explains_optional_background_notifications(self) -> None:
         text = _help_text()
 
-        self.assertIn("does not monitor live housing sources", text)
-        self.assertIn("notifications about real new listings", text)
+        self.assertIn("With background delivery enabled", text)
+        self.assertIn("new listing that matches the saved filter", text)
         self.assertIn("/start — open FlatFeed", text)
         self.assertIn("/filter — set up or edit your filter", text)
         self.assertIn("/matches — show matching listings", text)
-        self.assertIn("See the fixed-rule reasons for every match", text)
+        self.assertNotIn("reasons for every match", text)
 
     def test_edit_filter_keyboard_reuses_field_edit_callbacks(self) -> None:
         buttons = [
@@ -267,7 +273,7 @@ class FilterPromptLifecycleTests(unittest.IsolatedAsyncioTestCase):
             ["Edit filter"],
         )
 
-    async def test_matches_show_fixed_rule_reasons_before_the_card(self) -> None:
+    async def test_matches_send_cards_without_reason_message(self) -> None:
         message = _FakeMessage()
         match = SimpleNamespace(
             reasons=(
@@ -292,9 +298,10 @@ class FilterPromptLifecycleTests(unittest.IsolatedAsyncioTestCase):
         ) as send_match_to_chat:
             await send_active_filtered_matches(message, _FakeBot(), user_id=123)
 
-        self.assertIn("Found 1 active listing", message.answered[-2][0])
-        self.assertIn("Why this listing matched", message.answered[-1][0])
-        self.assertIn("WBS matches: WBS 100, 140", message.answered[-1][0])
+        self.assertEqual(len(message.answered), 2)
+        self.assertIn("Checking synthetic listings", message.answered[0][0])
+        self.assertIn("Found 1 active listing", message.answered[1][0])
+        self.assertNotIn("Why this listing matched", message.answered[1][0])
         send_match_to_chat.assert_awaited_once()
 
     async def test_filter_prompt_is_edited_in_place(self) -> None:
@@ -351,6 +358,33 @@ class FilterPromptLifecycleTests(unittest.IsolatedAsyncioTestCase):
         save_fixed_preferences.assert_called_once()
         self.assertEqual(state.data, {})
         self.assertIn("Filter saved.", rooms_callback.message.edited[-1][0])
+
+
+class BackgroundNotificationStartupTests(unittest.IsolatedAsyncioTestCase):
+    async def test_main_starts_background_pipeline_when_enabled(self) -> None:
+        bot = SimpleNamespace(
+            set_my_commands=AsyncMock(),
+            session=SimpleNamespace(close=AsyncMock()),
+        )
+        dispatcher = SimpleNamespace(
+            include_router=lambda _router: None,
+            start_polling=AsyncMock(),
+        )
+        settings = SimpleNamespace(
+            telegram_bot_token="123:test-token",
+            bot_background_enabled=True,
+        )
+
+        with patch("main.get_settings", return_value=settings), patch(
+            "main.init_db"
+        ), patch("main.Bot", return_value=bot), patch(
+            "main.Dispatcher", return_value=dispatcher
+        ), patch("main.run_hourly_pipeline", new=AsyncMock()) as pipeline:
+            await M.main()
+
+        pipeline.assert_called_once_with(bot)
+        dispatcher.start_polling.assert_awaited_once_with(bot)
+        bot.session.close.assert_awaited_once()
 
 
 if __name__ == "__main__":

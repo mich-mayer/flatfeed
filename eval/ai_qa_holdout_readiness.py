@@ -373,7 +373,7 @@ def audit_locked_holdout_readiness(
         ),
         "not_suitable_for": (
             "production accuracy, natural parser-error prevalence, source "
-            "coverage, or renter-outcome claims"
+            "coverage, or user-outcome claims"
         ),
         "source": {
             "dataset_manifest_sha256": hashlib.sha256(

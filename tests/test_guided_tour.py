@@ -408,15 +408,7 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
             expected_card_text = M.format_match_message(expected_match)
             await M._send_tour_screen_2(callback, bot)
 
-        self.assertEqual(len(callback.message.answered), 2)
-        explanation_text, explanation_markup = callback.message.answered[0]
-        self.assertIn("Demo 2/2 · Review only the match", explanation_text)
-        self.assertNotIn("active match", explanation_text)
-        self.assertIn("One synthetic example card follows", explanation_text)
-        self.assertIn("does not have to find and verify", explanation_text)
-        self.assertNotIn("up to three active listings", explanation_text)
-        self.assertIn("• WBS matches", explanation_text)
-        self.assertIsNone(explanation_markup)
+        self.assertEqual(len(callback.message.answered), 1)
 
         self.assertEqual(len(bot.sent_messages), 1)
         card_message = bot.sent_messages[0]
@@ -426,9 +418,9 @@ class TourStepMessageTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("District:", card_message["text"])
         self.assertIsNone(card_message["reply_markup"])
 
-        follow_up_text, follow_up_markup = callback.message.answered[1]
+        follow_up_text, follow_up_markup = callback.message.answered[0]
         self.assertIn("synthetic example", follow_up_text)
-        self.assertIn("not implemented", follow_up_text)
+        self.assertIn("background delivery enabled", follow_up_text)
         keyboard = follow_up_markup.inline_keyboard
         button_texts = [button.text for row in keyboard for button in row]
         self.assertEqual(
@@ -510,7 +502,8 @@ class ProductEntryPointTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertIn("one saved filter", intro_text)
         self.assertIn("synthetic listings", intro_text)
-        self.assertIn("does not monitor live housing sources", intro_text)
+        self.assertIn("background delivery enabled", intro_text)
+        self.assertIn("sends a notification", intro_text)
         self.assertEqual(
             [button.text for row in intro_markup.keyboard for button in row],
             [M.BTN_MATCHES, M.BTN_SETTINGS],

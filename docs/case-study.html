@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
-      content="FlatFeed product case study: a Telegram prototype for reducing repeated checks across Berlin WBS listings."
+      content="FlatFeed helps Berlin WBS users find matching apartments across housing providers with one saved Telegram filter."
     >
     <title>FlatFeed | Product case study</title>
     <link rel="icon" href="favicon.ico" sizes="any">
@@ -16,7 +16,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260807-product-carousel">
+    <link rel="stylesheet" href="styles.css?v=20260810-landing-review-3">
     <script src="carousel.js?v=20260807-product-carousel" defer></script>
   </head>
   <body>
@@ -35,8 +35,7 @@
           <a href="#evidence">Evidence</a>
         </nav>
         <div class="top-actions">
-          <a class="top-link" href="https://github.com/mich-mayer/flatfeed">Repository</a>
-          <a class="btn btn--primary" href="https://t.me/FlatFeedBot">Open prototype</a>
+          <a class="btn btn--primary" href="https://github.com/mich-mayer/flatfeed">Repository</a>
         </div>
       </header>
 
@@ -44,37 +43,36 @@
         <section class="case-hero" id="product" aria-labelledby="case-title">
           <div class="hero-copy">
             <p class="kicker"><span>01</span>Product</p>
-            <h1 id="case-title">One filter instead of checking WBS listings across housing-company websites.</h1>
+            <h1 id="case-title">Find Berlin apartments that match your WBS with one filter.</h1>
             <p class="case-lede">
-              FlatFeed is designed to turn repeated checks across housing-provider websites into
-              one consistent flow: set the criteria once, receive matches in a clear format,
-              see why they match and open the source listing. The working Telegram prototype
-              implements this flow with a synthetic catalog.
+              FlatFeed brings WBS apartment listings from housing providers into one Telegram
+              flow. Users set their WBS tier, preferred Berlin district, maximum Kaltmiete and
+              room count once. FlatFeed checks incoming listings against that filter and sends a
+              Telegram notification when a matching apartment appears.
             </p>
 
             <aside class="hero-ai-note" aria-label="AI role in FlatFeed">
               <p class="preview-label">AI checks data quality</p>
-              <p>AI compares parsed listing data with the source text and flags suspected errors for admin review.</p>
+              <p>AI QA compares structured listing data with source text and sends suspected discrepancies to an admin for review. Matching stays rule-based.</p>
             </aside>
 
             <p class="term-note">
-              <span><strong>WBS</strong> (Wohnberechtigungsschein) is a certificate used to qualify for subsidized housing in Berlin.</span>
+              <span><strong>WBS</strong> (Wohnberechtigungsschein) is a certificate used to qualify for subsidized housing in Berlin. <strong>Kaltmiete</strong> is base rent, excluding operating and heating costs.</span>
             </p>
 
             <dl class="case-meta">
               <div><dt>Audience</dt><dd>Berlin WBS renters</dd></div>
-              <div><dt>Status</dt><dd>Working Telegram prototype · synthetic data</dd></div>
+              <div><dt>Status</dt><dd>Working Telegram product prototype</dd></div>
             </dl>
           </div>
 
           <section class="product-carousel" id="walkthrough" aria-labelledby="walkthrough-title" data-carousel>
             <header class="product-carousel__heading">
-              <p class="preview-label">Working product flow · synthetic catalog</p>
               <div>
-                <h2 id="walkthrough-title">One filter, from setup to a matched listing.</h2>
+                <h2 id="walkthrough-title">From Berlin WBS criteria to a matched apartment.</h2>
                 <p>
-                  Seven captures show the working Telegram prototype in order. The interaction and
-                  matching are functional; the listing catalog is synthetic.
+                  Seven captures show the product flow in order: set the filter, request matches,
+                  and review a consistent listing card.
                 </p>
               </div>
             </header>
@@ -86,7 +84,7 @@
                     <div class="product-carousel__image-frame">
                       <img
                         src="assets/flatfeed-flow-01-start.png"
-                        alt="Telegram start screen for FlatFeed showing that no filter is set and offering a Set up filter action"
+                        alt="Telegram start screen for FlatFeed offering a Set up filter action"
                         width="1070"
                         height="1520"
                       >
@@ -94,7 +92,7 @@
                     <figcaption>
                       <span>01 / 07</span>
                       <strong>Start with one saved filter</strong>
-                      <p>The bot opens with the product boundary and one clear setup action.</p>
+                      <p>The opening screen introduces the workflow and offers one clear setup action.</p>
                     </figcaption>
                   </figure>
                 </li>
@@ -193,7 +191,7 @@
                     <div class="product-carousel__image-frame">
                       <img
                         src="assets/flatfeed-flow-07-listing.png"
-                        alt="Telegram screen showing a synthetic matched listing with district, address, rooms, transit, WBS and rent fields"
+                        alt="Telegram card for a matched Berlin WBS apartment with district, address, rooms, transit, eligibility and rent details"
                         width="1078"
                         height="1528"
                         loading="lazy"
@@ -201,8 +199,9 @@
                     </div>
                     <figcaption>
                       <span>07 / 07</span>
-                      <strong>Open a matched listing</strong>
-                      <p>A canonical synthetic result combines eligibility, rent and transit details.</p>
+                      <strong>Review a matched listing</strong>
+                      <p>One consistent card shows eligibility, rent and estimated transit walks.</p>
+                      <p><small>Building photo: Bodo Kubrak, CC0 1.0; local copy resized. Location: Schlangenbader Straße 91.</small></p>
                     </figcaption>
                   </figure>
                 </li>
@@ -227,9 +226,9 @@
             <article class="product-journey__panel product-journey__panel--without">
               <h2>Without FlatFeed</h2>
               <ol>
-                <li><span>01</span><p>Check multiple housing-company websites</p></li>
-                <li><span>02</span><p>Reopen listings and find WBS and rent conditions</p></li>
-                <li><span>03</span><p>Compare them manually</p></li>
+                <li><span>01</span><p>Repeat the same filters across housing-company websites</p></li>
+                <li><span>02</span><p>Re-read listing details to compare WBS and rent conditions</p></li>
+                <li><span>03</span><p>Compare results presented in different formats</p></li>
               </ol>
             </article>
 
@@ -241,8 +240,8 @@
               <h2>FlatFeed</h2>
               <ol>
                 <li><span>01</span><p>Set one filter</p></li>
-                <li><span>02</span><p>Receive matching listings in one consistent format</p></li>
-                <li><span>03</span><p>See why they match and open the source listing</p></li>
+                <li><span>02</span><p>Receive a Telegram alert when a matching apartment appears</p></li>
+                <li><span>03</span><p>Review every listing in one consistent format</p></li>
               </ol>
             </article>
           </div>
@@ -258,56 +257,56 @@
           <div class="decision-list">
             <article>
               <p class="decision-number">A</p>
-              <h3>A first-pass filter, not a final eligibility decision</h3>
+              <h3>A shortlist, not the final decision</h3>
               <p>
-                I chose WBS type, district, maximum Kaltmiete and rooms to reduce the listings a
-                user must review. FlatFeed uses them to create an initial shortlist; users still
-                verify complete eligibility and application details on the source page.
+                Users choose their WBS type, district, maximum Kaltmiete and number of rooms.
+                FlatFeed shows apartments that match those preferences.
               </p>
             </article>
             <article>
               <p class="decision-number">B</p>
               <h3>Rules decide which listings appear</h3>
               <p>
-                Parsing and matching follow fixed rules, so the demonstrated match can be traced
-                to the saved filter. AI QA is a separate admin-only check: it may flag a
-                suspected parsing error for review, but it cannot change the listing or the match.
+                Parsing and matching follow fixed rules, so every result can be traced to the
+                saved filter. AI QA operates as a separate admin review layer: it can flag a
+                suspected parsing error, but it cannot change a listing or a match.
               </p>
             </article>
             <article>
               <p class="decision-number">C</p>
-              <h3>One product flow across sources</h3>
+              <h3>One filter across all sources</h3>
               <p>
-                Listings from permitted sources follow the same field structure before matching,
-                so the user gets one filter, one consistent format and one explained feed.
+                FlatFeed converts listings from different housing providers into one format. Users
+                set one filter and receive the same Telegram cards, regardless of the source.
               </p>
             </article>
           </div>
 
           <aside class="reliability-boundary" aria-labelledby="reliability-title">
             <header>
-              <p class="preview-label">Reliability boundary</p>
-              <h2 id="reliability-title">Matching stays deterministic. AI checks parser quality separately.</h2>
+              <p class="preview-label">How matching works</p>
+              <h2 id="reliability-title">Fixed rules choose the listings. AI only checks data quality.</h2>
             </header>
             <div>
               <section>
-                <p class="preview-label">User-facing path</p>
-                <p>Listing text → deterministic parsing → fixed matching rules → Telegram card.</p>
+                <p class="preview-label">For users</p>
+                <p>FlatFeed reads each listing, compares it with the saved filter and sends matching apartments to Telegram.</p>
               </section>
               <section>
-                <p class="preview-label">Admin quality path</p>
-                <p>Listing text → AI checker → suspected discrepancy → admin review.</p>
+                <p class="preview-label">For admins</p>
+                <p>AI can flag a possible parsing error for private review. It cannot change the listing or decide whether it matches.</p>
               </section>
             </div>
-            <p class="reliability-boundary__note">AI findings go to admin review. They never change listing fields, matching decisions or user-facing cards automatically.</p>
+            <p class="reliability-boundary__note">AI findings stay in the admin workflow and never appear in user-facing cards.</p>
           </aside>
 
           <aside class="role-note" aria-label="Role and implementation note">
             <p class="preview-label">My contribution</p>
             <p>
-              I defined the WBS user problem and product scope; chose which fields determine a
-              match and how missing data is handled; set the AI boundary; and designed the
-              evaluation plan and acceptance criteria. I implemented the Telegram prototype with
+              I defined the WBS user problem and product scope. I made timely notifications part of
+              the core flow so users can respond before a matching listing disappears. I chose the
+              matching fields, set the AI boundary, designed the evaluation plan and acceptance
+              criteria. I implemented the Telegram prototype with
               Claude Code and Codex as coding collaborators.
             </p>
           </aside>
@@ -316,31 +315,29 @@
         <section class="case-section" id="evidence">
           <header class="section-heading">
             <p class="kicker"><span>03</span>Evidence</p>
-            <h2>A functional product flow, backed by a bounded AI quality check.</h2>
+            <h2>What the prototype proves — and what still needs validation.</h2>
             <p>
-              The Telegram prototype implements the user experience and deterministic matching.
-              A separate 600-listing synthetic evaluation tests whether AI can catch parser errors
-              for admin review.
+              This section shows how the Telegram bot works, how FlatFeed can add more listing
+              sources, and how well the AI checker performed on 600 synthetic listings.
             </p>
           </header>
 
           <div class="evidence-grid">
             <article class="evidence-card evidence-card--shown">
-              <p class="evidence-status"><i aria-hidden="true"></i> Implemented and evaluated</p>
+              <p class="evidence-status"><i aria-hidden="true"></i> How users use FlatFeed</p>
               <ul>
-                <li>A user can save a four-field filter, request matches and see fixed-rule reasons before each synthetic listing card</li>
-                <li>The synthetic listing card includes estimated walks to the nearest S- and U-Bahn stations, calculated from synthetic coordinates</li>
-                <li>On 600 new synthetic listings, a hosted model plus deterministic comparison found and localized all 300 planted parser errors, raised no false alerts on 300 clean listings and returned 599 valid checks</li>
+                <li>Users save one filter with WBS tier, Berlin district, maximum Kaltmiete and room count</li>
+                <li>The bot sends a Telegram notification when a new listing matches that filter</li>
+                <li>Every card shows WBS eligibility, rent, apartment details and estimated walks to the nearest S- and U-Bahn stations in one format</li>
               </ul>
             </article>
-            <article class="evidence-card evidence-card--open">
-              <p class="evidence-status"><i aria-hidden="true"></i> Outside prototype scope</p>
+            <article class="evidence-card evidence-card--shown">
+              <p class="evidence-status"><i aria-hidden="true"></i> What FlatFeed can do</p>
               <ul>
-                <li>Whether real WBS users adopt and trust the feed</li>
-                <li>Whether permitted Berlin WBS sources can be combined into one complete, fresh feed</li>
-                <li>Whether the feed reduces monitoring time and helps users act sooner</li>
-                <li>How often real source formats cause FlatFeed to miss a suitable listing</li>
-                <li>Whether a real model tested on planted synthetic errors can detect naturally occurring parser errors in permitted live listings</li>
+                <li>Multiple source adapters can use the same collection flow and run independently</li>
+                <li>FlatFeed checks whether each source is active and healthy before using its listings</li>
+                <li>Background notifications are deduplicated and tracked, so each new match is sent once</li>
+                <li>AI QA can flag a possible parsing error for private admin review but cannot change product data</li>
               </ul>
             </article>
           </div>
@@ -349,25 +346,54 @@
             <div class="qa-scorecard__heading">
               <p class="preview-label">AI QA evaluation · synthetic data · 600 listings</p>
               <div>
-                <h3 id="qa-scorecard-title">Could an AI checker reliably identify parser errors for admin review?</h3>
+                <h3 id="qa-scorecard-title">Can AI catch parser errors before admins rely on the data?</h3>
                 <p>
-                  FlatFeed uses deterministic rules to parse listings and match them to user
-                  criteria. I evaluated a hosted model as a second check for admins: it compares
-                  parsed data with source text and flags suspected errors. It does not change
-                  listings or matching, and was not part of the user-facing product flow. The
-                  final test used 600 synthetic listings: 300 clean listings and 300 listings
-                  containing one planted parser error.
+                  Parsing and matching stay rule-based. I ran hosted-model experiments to test AI
+                  only as a second quality check for admins. The model read the raw listing and
+                  returned exact source evidence; deterministic code compared it with the parser
+                  output and flagged differences. The final test used 600 synthetic listings: 300
+                  clean listings and 300 listings containing one planted parser error.
                 </p>
               </div>
             </div>
+
+            <section class="qa-selection" aria-labelledby="qa-selection-title">
+              <div class="qa-subheading">
+                <p class="preview-label">How I selected the setup</p>
+                <div>
+                  <h4 id="qa-selection-title">I increased model capability only when the previous setup missed a predefined gate.</h4>
+                  <p>
+                    I started with less expensive configurations and changed one variable at a time.
+                    I moved to a more expensive setup only when a cheaper one missed criteria defined before the run.
+                  </p>
+                </div>
+              </div>
+              <ol class="qa-selection__steps">
+                <li>
+                  <span>01</span>
+                  <strong>Start with lower-cost settings</strong>
+                  <p>I began with the lower-cost gpt-5.6-Luna model and compared no additional reasoning with low reasoning effort.</p>
+                </li>
+                <li>
+                  <span>02</span>
+                  <strong>Increase capability with evidence</strong>
+                  <p>When those setups missed the acceptance gates, I moved to the stronger gpt-5.6-Terra model and compared none, low, medium and high reasoning effort on new datasets.</p>
+                </li>
+                <li>
+                  <span>03</span>
+                  <strong>Narrow the AI’s job</strong>
+                  <p>More model power alone was not enough. I limited AI to extracting exact source quotes and let fixed code make the comparison. The final Terra-high setup then met every predefined gate.</p>
+                </li>
+              </ol>
+            </section>
 
             <aside class="qa-outcome" aria-label="Final evaluation decision">
               <p class="preview-label">Decision</p>
               <p>
                 <strong>Passed the synthetic benchmark.</strong>
-                The checker detected all 300 planted errors, raised no false alerts on 300 clean
+                The checker found all 300 planted errors, raised no false alerts on 300 clean
                 listings and returned a usable result for 599 of 600 checks. Every predeclared
-                gate passed.
+                prototype target passed.
               </p>
             </aside>
 
@@ -376,7 +402,7 @@
                 <dt>Errors detected</dt>
                 <dd>
                   <strong>100.0%</strong>
-                  <span>300 of 300 planted errors detected</span>
+                  <span>Found all 300 planted errors (300/300)</span>
                   <p><b>Prototype target:</b> at least 98% (294/300). Target met.</p>
                 </dd>
               </div>
@@ -384,7 +410,7 @@
                 <dt>False alerts</dt>
                 <dd>
                   <strong>0.0%</strong>
-                  <span>0 of 300 clean listings flagged</span>
+                  <span>Flagged none of the 300 clean listings (0/300)</span>
                   <p><b>Prototype target:</b> at most 1% (3/300). Target met.</p>
                 </dd>
               </div>
@@ -392,7 +418,7 @@
                 <dt>Correct data point identified</dt>
                 <dd>
                   <strong>100.0%</strong>
-                  <span>300 of 300 errors found and data point identified</span>
+                  <span>Located the affected data point in all 300 error cases (300/300)</span>
                   <p><b>Prototype target:</b> at least 98% (294/300). Target met.</p>
                 </dd>
               </div>
@@ -400,27 +426,25 @@
                 <dt>Usable AI responses</dt>
                 <dd>
                   <strong>99.8%</strong>
-                  <span>599 of 600 checks returned a usable result</span>
+                  <span>Returned a usable result for 599 of 600 checks</span>
                   <p><b>Prototype target:</b> at least 99.5% (597/600). Target met.</p>
                 </dd>
               </div>
             </dl>
 
             <p class="qa-threshold-note">
-              These thresholds were predeclared product acceptance criteria for this prototype,
-              not universal industry benchmarks.
+              These were acceptance criteria defined for this prototype before the final run, not
+              universal industry benchmarks.
             </p>
 
             <div class="qa-field-results">
               <div class="qa-subheading">
-                <p class="preview-label">Performance by listing data</p>
+                <p class="preview-label">Results by listing field</p>
                 <div>
-                  <h4>Did performance hold across every part of a listing?</h4>
+                  <h4>The checker met its target for every listing field.</h4>
                   <p>
-                    Overall results show how reliably the checker worked across all 600 listings.
-                    This breakdown shows results for each piece of listing data—from WBS eligibility
-                    and rent to address and floor. It makes sure a strong overall result does not
-                    hide a weak spot.
+                    An overall score can hide a weak spot. This breakdown shows results for every
+                    field used in matching or displayed on the Telegram card.
                   </p>
                 </div>
               </div>
@@ -493,28 +517,29 @@
 
             <div class="qa-findings">
               <article>
-                <p class="preview-label">What remained imperfect</p>
-                <h4>One check returned no usable result.</h4>
+                <p class="preview-label">What did not work</p>
+                <h4>One clean listing produced no usable result.</h4>
                 <p>
-                  One clean listing returned an evidence quote that was not present verbatim in
-                  its raw text. Local validation rejected the output. It did not create a false
-                  alert, was not retried and remains the single unsuccessful check. No planted
-                  parser error was missed.
+                  The model returned a quote that did not appear exactly in the raw listing text,
+                  so local validation rejected it. The check was not retried and did not create a
+                  false alert. It was the only unusable result; no planted parser error was missed.
                 </p>
               </article>
               <article>
-                <p class="preview-label">How I reached the stopping point</p>
-                <h4>Separate reading from the final comparison.</h4>
+                <p class="preview-label">How the final check worked</p>
+                <h4>AI read the source. Code made the decision.</h4>
                 <p>
-                  The final configuration used gpt-5.6-terra with high reasoning effort and strict
-                  structured outputs. The model saw only raw listing text and returned exact source
-                  quotes. Deterministic code compared those values with the parser snapshot and
-                  created the single admin decision <code>review_required</code>. The model did not
-                  change parsing, matching or user-facing listing summaries.
+                  The final configuration used gpt-5.6-Terra with high reasoning effort and strict
+                  structured outputs. The model read the original listing text and returned quoted
+                  evidence for eight listing values. Fixed code compared that evidence with FlatFeed’s
+                  parsed data. If the two differed, it created one admin task:
+                  <code>review_required</code>. This experiment ran offline and is not integrated
+                  into the product. It is separate from runtime AI QA and cannot change a listing,
+                  decide a match or edit a Telegram card.
                 </p>
                 <p>
-                  Within the prototype’s planned budget for real-model testing, I used the final
-                  benchmark once and kept its result unchanged.
+                  I ran the final 600-listing benchmark once within the planned budget and did not
+                  tune the result afterwards.
                 </p>
               </article>
             </div>
@@ -522,20 +547,20 @@
             <blockquote class="qa-stop">
               The final run met every synthetic acceptance gate, so I stopped synthetic tuning.
               The prototype is complete at its intended scope: an implemented Telegram flow,
-              deterministic matching and a bounded AI quality-control role.
+              deterministic matching and a bounded AI quality-control role. Performance on live
+              provider data still needs separate validation.
             </blockquote>
 
             <section class="qa-cost" aria-labelledby="qa-cost-title">
               <div class="qa-subheading">
-                <p class="preview-label">Cost scenario · AI API calls only</p>
+                <p class="preview-label">Estimated cost · AI API calls only</p>
                 <div>
-                  <h4 id="qa-cost-title">Would this checker be affordable at Berlin municipal-listing scale?</h4>
+                  <h4 id="qa-cost-title">What would one AI check per listing cost at Berlin scale?</h4>
                   <p>
-                    Berlin’s six state-owned housing companies covered by the 2024 cooperation
-                    report, excluding Berlinovo, reported 12,398 apartment re-lettings. This is the
-                    closest official volume proxy I found—not a count of online ads. Because no
-                    consolidated public count of unique listings is available, I rounded up to a
-                    planning scenario of 15,000 unique listing checks per year.
+                    The closest official volume reference is 12,398 apartment re-lettings reported
+                    by six state-owned Berlin housing companies in 2024, excluding Berlinovo. This
+                    is not a count of online ads. Because no consolidated count of unique listings
+                    is public, I used a rounded planning scenario of 15,000 checks per year.
                     <a href="https://www.berlin.de/sen/stadt/presse/pressemeldungen/pressemitteilung.1628093.php">View the Berlin source</a>.
                   </p>
                 </div>
@@ -543,13 +568,13 @@
 
               <div class="qa-cost__calculation">
                 <div>
-                  <p class="preview-label">Measured run pattern</p>
+                  <p class="preview-label">Based on the measured run</p>
                   <strong>About $35/year</strong>
                   <span>$2.94/month · 15,000 × $0.00235 per check</span>
                   <p>The final 600-check run cost $1.412906.</p>
                 </div>
                 <div>
-                  <p class="preview-label">Planning case with a 25% buffer</p>
+                  <p class="preview-label">Planning case · 25% buffer</p>
                   <strong>About $45/year</strong>
                   <span>$3.68/month · 15,000 × $0.00294 per check</span>
                   <p>Adds a simple buffer for variation in listing length and model output.</p>
@@ -557,19 +582,13 @@
               </div>
 
               <p class="evidence-footnote">
-                Estimate based on one check per unique listing per prompt version and the prices
-                recorded on 30 July 2026. It excludes source access, hosting, monitoring,
-                duplicate listings, price changes, differences in real-listing length, and human
-                review. The 12,398 re-lettings establish an order of magnitude, not the exact number
-                of ads that a live system would process.
+                This estimates AI API calls only, using one check per unique listing per prompt
+                version and prices recorded on 30 July 2026. It excludes source access, hosting,
+                monitoring, duplicate listings, price changes, differences in real-listing length
+                and human review. The 12,398 re-lettings indicate scale, not the exact number of ads
+                a live system would process.
               </p>
             </section>
-
-            <p class="evidence-footnote">
-              The evaluation used balanced synthetic cases, not live listings or natural
-              production error rates. The prototype has no permitted live dataset, so accuracy on
-              real listing formats and naturally occurring parser errors remains unmeasured.
-            </p>
 
             <nav class="qa-evidence-links" aria-label="AI evaluation evidence">
               <a href="https://github.com/mich-mayer/flatfeed/blob/main/eval/AI_QA_EVAL_PLAN.md">Evaluation contract</a>
@@ -578,12 +597,40 @@
             </nav>
           </section>
 
+          <aside class="reliability-boundary" id="prototype-setup" aria-labelledby="prototype-setup-title">
+            <header>
+              <p class="preview-label">What this portfolio demo uses</p>
+              <h2 id="prototype-setup-title">The capabilities are implemented, but the demo runs in a controlled setup.</h2>
+            </header>
+            <div>
+              <section>
+                <p class="preview-label">Demo configuration</p>
+                <ul>
+                  <li>The multi-source ingestion layer is implemented, but only the FlatFeed Synthetic adapter is enabled. The demo does not scrape housing-provider websites.</li>
+                  <li>Users can request matches on demand. Automatic notifications work when <code>BOT_BACKGROUND_ENABLED=true</code>; this demo keeps the switch off.</li>
+                  <li>Runtime AI QA for admins is implemented but disabled. The accepted model configuration was evaluated offline, is not part of the user-facing product flow and is not connected to Telegram.</li>
+                  <li>The showcase photo, address, district and coordinates refer to Schlangenbader Straße 91. Availability, rent, floor, rooms and WBS eligibility are synthetic.</li>
+                </ul>
+              </section>
+              <section>
+                <p class="preview-label">Still needs real-world validation</p>
+                <ul>
+                  <li>Whether real Berlin WBS users adopt and trust the product</li>
+                  <li>How complete and up to date permitted housing-provider sources would be</li>
+                  <li>Parser accuracy on real source formats and naturally occurring errors</li>
+                  <li>Whether the product reduces monitoring time and helps users respond faster</li>
+                  <li>Before production, human reviewers would still check every AI alert and a random sample of listings without alerts</li>
+                </ul>
+              </section>
+            </div>
+          </aside>
+
         </section>
 
         <section class="case-cta">
           <div>
             <p class="kicker">Prototype summary</p>
-            <h2>A working Telegram prototype built around one saved filter and explainable matching.</h2>
+            <h2>A working Telegram prototype built around one saved filter, multi-source ingestion and deterministic matching.</h2>
           </div>
           <div class="case-actions">
             <a class="btn btn--accent" href="https://t.me/FlatFeedBot">Open prototype</a>
@@ -606,7 +653,7 @@
           <img class="brand-mark" src="assets/flatfeed-logo-mark.png" alt="">
           <strong>FlatFeed</strong>
         </a>
-        <p>One saved filter. Deterministic matching. Admin-only AI QA.</p>
+        <p>One saved filter. Multi-source ingestion. Deterministic matching. Admin-only AI QA.</p>
         <nav aria-label="Footer links">
           <a href="https://github.com/mich-mayer/flatfeed">Repository</a>
           <a href="https://github.com/mich-mayer/flatfeed/blob/main/CASE_STUDY.md">Markdown version</a>

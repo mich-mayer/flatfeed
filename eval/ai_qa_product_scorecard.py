@@ -557,7 +557,7 @@ def build_product_scorecard(
         ),
         "evidence_scope": (
             "Synthetic offline parser-QA evidence only; not live-source, "
-            "production-prevalence, or renter-outcome evidence."
+            "production-prevalence, or user-outcome evidence."
         ),
         "publication_state": (
             "final_test_result_ready_for_evidence_review"
