@@ -23,12 +23,13 @@ the full experiment history and contracts belong in
   captured screens from that product flow and links to the bot. Saved-filter
   setup, on-demand `Show matches`, persistent `Filter` / `Show matches`
   actions, individual field editing, reset and data deletion are implemented.
-  Background user notifications, the Streamlit dashboard, public admin panel,
-  unfiltered catalog browser, and mock QA tour remain outside current scope.
+  Background notifications are implemented behind `BOT_BACKGROUND_ENABLED`.
+  The Streamlit dashboard, public admin panel, unfiltered catalog browser, and
+  mock QA tour remain outside current scope.
 - `/start` opens the filter home. A user can save the four criteria and request
-  up to three results from the synthetic catalog. Each result gets a
-  fixed-rule explanation followed by the canonical card produced by the
-  deterministic matching, local activity-check, and card formatter path.
+  up to three results from the synthetic catalog. Each result is the canonical
+  card produced by the deterministic matching, local activity-check, and card
+  formatter path; no separate match-reason message is sent.
 - `/filter`, `/matches`, `/help`, and `/delete` are public commands. Buttons
   from the retired guided tour redirect to the current saved-filter flow
   without writing filter state themselves.
@@ -126,18 +127,18 @@ history. They are not current public evidence.
   deterministic parser evaluation, the public eval-number sync check, and
   desktop/mobile browser QA of the case-study page with no console errors.
 - The case-study source reserves three Telegram captures for the saved filter,
-  deterministic match reasons and canonical listing card. The existing local
-  demo-era filter and reason captures are kept out of the public page until
-  they are replaced with current product-flow screenshots. GitHub Pages
+  canonical listing card without a separate match-reason message. Existing
+  demo-era reason captures remain out of the public page. GitHub Pages
   deployment must be verified from the workflow and public URL after each push.
 
 ## Portfolio Completion Decision
 
 The current scope is a working saved-filter prototype on synthetic data, not a
 live housing service. Keep deterministic matching evidence and bounded AI QA
-evaluation stable. Live source integration, background renter notifications
-and production validation remain outside the intended scope rather than
-roadmap commitments.
+evaluation stable. Background notifications are implemented and run only when
+`BOT_BACKGROUND_ENABLED=true`; the current public demo keeps that switch off.
+Live source integration and production validation remain outside the intended
+scope rather than roadmap commitments.
 
 ## Maintenance Rule
 

@@ -2,7 +2,8 @@
 
 FlatFeed is a working Telegram prototype for reducing repeated checks across
 Berlin WBS listings. A user saves one four-field filter, requests matching
-listings in a consistent format and sees fixed-rule reasons for each result.
+listings in a consistent format and can receive each new match once when
+background delivery is enabled.
 The prototype runs on a synthetic catalog; it does not provide live housing
 coverage or measured user outcomes.
 
@@ -12,7 +13,7 @@ coverage or measured user outcomes.
 - Deterministic parsing and matching with fail-closed unknown values.
 - Consistent Telegram listing summaries with estimated walks to the nearest
   S- and U-Bahn stations.
-- On-demand matching with fixed-rule reasons before each result card.
+- On-demand matching plus deduplicated notifications for newly collected matches.
 - Filter editing, reset, and saved-data deletion in Telegram.
 - Separately evaluated, admin-only AI parser-quality checks that cannot alter
   user-facing results.
@@ -111,14 +112,15 @@ The user can:
 
 1. Set and save WBS type, district, maximum Kaltmiete, and rooms.
 2. Request up to three active matches from the synthetic catalog.
-3. Review fixed-rule reasons before each canonical listing card.
-4. Edit or reset the filter and delete saved FlatFeed data.
+3. Receive each new matching listing once when background delivery is enabled.
+4. Review each result in the canonical listing-card format.
+5. Edit or reset the filter and delete saved FlatFeed data.
 
-The prototype states once at entry and in `/help` that its catalog is synthetic
-and that it does not monitor live housing sources or send notifications about
-real new listings. Background user notifications remain disabled. `Open
-listing` resolves to a synthetic disclosure page, never a housing-company page
-or application flow.
+The prototype states once at entry and in `/help` that its catalog is synthetic.
+Set `BOT_BACKGROUND_ENABLED=true` to run the existing collection loop and send
+new matching listings automatically; the default demo setup keeps it off.
+`Open listing` resolves to a synthetic disclosure page, never a housing-company
+page or application flow.
 
 The Telegram command menu publishes `/start`, `/filter`, `/matches`, `/help`,
 and `/delete`. Buttons from the retired guided walkthrough redirect to the
@@ -199,6 +201,9 @@ git diff --check
 - Synthetic case tags and ground truth must stay out of parser/AI QA prompts.
 - Optional runtime AI QA findings go only to configured admins and require
   human feedback; the public bot has no QA controls or metrics.
+- The ingestion pipeline supports multiple registered source adapters; the
+  public demo enables FlatFeed Synthetic only. Provider-specific adapters need
+  separate source-access validation.
 - User-facing listing cards are formatted in `flatfeed/matching.py`.
 - Listing photos are third-party Wikimedia Commons prototype assets with separate
   attribution and license details in `assets/listing_photos/LICENSES.md`. The

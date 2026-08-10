@@ -35,8 +35,9 @@ used for the task.
 
 - FlatFeed is a portfolio prototype: a working Telegram saved-filter flow over
   a synthetic Berlin WBS catalog. The current public bot saves one four-field
-  filter, exposes on-demand match requests and explains each deterministic
-  match. It does not start background user notifications. The public case
+  filter, exposes on-demand match requests and sends canonical listing cards
+  without a separate match-reason message. When `BOT_BACKGROUND_ENABLED=true`,
+  it starts the implemented deduplicated notification loop. The public case
   study carries captured product evidence and model-evaluation evidence; there
   is no separate dashboard or public admin console. Preserve this Phase 1 scope
   unless the user explicitly asks for a new phase.

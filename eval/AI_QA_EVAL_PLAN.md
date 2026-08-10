@@ -22,7 +22,7 @@ The experiment is designed to answer one bounded question:
 > field?
 
 This is an offline feasibility experiment. It is not a production feature, a
-live-source evaluation, renter research, or evidence of product impact.
+live-source evaluation, user research, or evidence of product impact.
 
 ## 2. Hard Product Boundary
 
@@ -31,7 +31,7 @@ The experiment MUST remain separate from the Telegram product runtime.
 - OpenAI API access MUST NOT be added to or enabled from `main.py`.
 - The experiment MUST NOT change Telegram bot behavior, deterministic parsing,
   matching, listing cards, notifications, or user filters.
-- The experiment MUST NOT make AI output available to renters.
+- The experiment MUST NOT make AI output available to users.
 - The experiment MUST NOT write model suggestions back to listings or parser
   rules.
 - The experiment runner MUST live under `eval/` and run only through an
@@ -52,7 +52,7 @@ This experiment does not:
 - train, fine-tune, or distill a model;
 - scrape or redistribute real housing listings;
 - test live housing-provider coverage;
-- measure renter demand, engagement, or outcomes;
+- measure user demand, engagement, or outcomes;
 - measure production error prevalence;
 - validate autonomous parser correction;
 - replace the existing deterministic parser evaluation;
@@ -384,7 +384,7 @@ Published reporting MUST state:
 - the result applies only to this challenge set;
 - challenge-set precision is not production precision;
 - AI QA was not integrated into the Telegram prototype;
-- no live provider listings or renter outcomes were evaluated.
+- no live provider listings or user outcomes were evaluated.
 
 Raw outputs, the frozen manifest, scoring output, and aggregate report MUST be
 retained so every published number can be traced to an artifact.
@@ -1568,7 +1568,7 @@ A positive landing claim is permitted only when:
 
 The landing may then show only the four simple Product Scorecard results, each
 with its percentage and absolute count. They must appear below the primary
-renter-product story and carry the same-depth label `Synthetic frozen
+user-product story and carry the same-depth label `Synthetic frozen
 validation`. The detailed field table, confidence intervals, cost, latency,
 and historical engineering metrics stay in the case study or eval artifacts.
 Calibration output is labeled `Synthetic calibration preview` and is never
@@ -2189,7 +2189,7 @@ Final decision:
 - retain the passing 280-case frozen validation and this failed 600-case final
   test as separate, auditable synthetic results;
 - the result does not measure live housing-provider formats, natural
-  parser-error prevalence, missing listings, or renter outcomes;
+  parser-error prevalence, missing listings, or user outcomes;
 - any public-copy change remains a separate evidence-governance decision.
 
 ## 13. Review-v1 follow-up development screen

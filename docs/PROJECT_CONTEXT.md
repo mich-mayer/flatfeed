@@ -82,13 +82,13 @@ Synthetic catalog generation
   -> local transit enrichment from embedded coordinates
   -> optional AI QA for newly discovered listings
   -> compare listings with the saved user criteria
-  -> show up to three verified synthetic matches in Telegram
+  -> show up to three verified matches on demand
+  -> optionally send each newly collected match once
 ```
 
-The public runtime never starts background collection or user notifications.
-Users request matches on demand. Notification helpers remain in the repository,
-but the prototype does not monitor live housing sources or send notifications
-about real new listings.
+Users can request matches on demand. When `BOT_BACKGROUND_ENABLED=true`, the
+runtime also starts the implemented collection loop and sends each newly
+collected match once; the default demo setup keeps this switch off.
 
 SQLite accelerates selection and preserves history. The synthetic catalog is the
 prototype source of truth.
@@ -103,14 +103,14 @@ menu:
 2. **On-demand matching** — `is_listing_match` compares the active synthetic
    catalog with the saved filter, then `_verified_active_matches` applies the
    synthetic adapter's local activity check.
-3. **Explained results** — the bot sends fixed-rule reasons followed by the
-   canonical `format_match_message` card for each of up to three results.
+3. **Results** — the bot sends the canonical `format_match_message` card for
+   each of up to three on-demand results, without a separate explanation message.
 4. **Filter management** — the user can edit individual fields, reset the
    filter or delete all saved FlatFeed data.
 
-The entry message discloses once that the catalog is synthetic and does not
-monitor live housing sources. The same boundary is available in `/help` and
-the card identifies `FlatFeed Synthetic` as its source.
+The entry message discloses once that the catalog is synthetic. `/help` explains
+the optional notification mode, and the card identifies `FlatFeed Synthetic`
+as its source.
 
 Rules that keep the product flow safe and honest:
 

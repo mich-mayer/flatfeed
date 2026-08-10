@@ -393,6 +393,7 @@ def _display_wbs(value: Optional[str]) -> str:
 
 
 def _settings_card(preferences: Optional[UserPreferences]) -> str:
+    settings = get_settings()
     if preferences is None:
         return (
             "<b>Your filter</b>\n\n"
@@ -401,13 +402,18 @@ def _settings_card(preferences: Optional[UserPreferences]) -> str:
         )
 
     rent = f"up to {preferences.max_rent} EUR" if preferences.max_rent is not None else "no limit"
+    delivery_label = (
+        "<b>Notifications:</b> ON"
+        if settings.bot_background_enabled
+        else "<b>Results:</b> available on demand"
+    )
     return (
         "<b>Your filter</b>\n\n"
         f"<b>WBS:</b> {_display_wbs(preferences.wbs_type)}\n"
         f"<b>District:</b> {_display(preferences.location, fallback='any district')}\n"
         f"<b>Kaltmiete:</b> {rent}\n"
         f"<b>Rooms:</b> {_display_rooms(preferences.rooms)}\n\n"
-        "<b>Results:</b> available on demand"
+        f"{delivery_label}"
     )
 
 
@@ -443,13 +449,20 @@ def _preferences_from_state_data(data: Dict[str, Any]) -> UserPreferences:
 
 def _filter_summary(preferences: UserPreferences) -> str:
     rent = f"up to {preferences.max_rent} EUR" if preferences.max_rent is not None else "no limit"
+    if get_settings().bot_background_enabled:
+        next_step = (
+            "I will send each new matching listing here automatically, once. "
+            "Tap Show matches to check the catalog now."
+        )
+    else:
+        next_step = "Tap Show matches to check the synthetic catalog now."
     return (
         "Filter saved.\n\n"
         f"<b>WBS:</b> {_display_wbs(preferences.wbs_type)}\n"
         f"<b>District:</b> {_display(preferences.location, fallback='any district')}\n"
         f"<b>Kaltmiete:</b> {rent}\n"
         f"<b>Rooms:</b> {_display_rooms(preferences.rooms)}\n\n"
-        "Tap Show matches to check the synthetic catalog now."
+        f"{next_step}"
     )
 
 
@@ -1444,13 +1457,6 @@ async def send_active_filtered_matches(message: Message, bot: Bot, *, user_id: i
         f"Found {len(matches)} active {match_label} that match your filter."
     )
     for match in matches:
-        reason_lines = "\n".join(
-            f"• {escape(reason)}" for reason in match.reasons
-        ) or "• All selected criteria match"
-        await message.answer(
-            "<b>Why this listing matched</b>\n\n"
-            f"{reason_lines}"
-        )
         await send_match_to_chat(bot, chat_id=message.chat.id, match=match)
 
 
@@ -1645,20 +1651,20 @@ async def _send_tour_screen_0(message: Message) -> None:
     # Remove reply keyboards left by earlier product versions before presenting
     # the single current entry action as an inline button.
     await message.answer(
-        "<b>FlatFeed is designed for Berlin WBS renters.</b>\n\n"
+        "<b>FlatFeed is designed for Berlin WBS users.</b>\n\n"
         "<b>Without FlatFeed</b>\n"
         "Check several websites → reopen listings → find WBS and rent conditions → "
         "compare them manually.\n\n"
         "<b>With FlatFeed</b>\n"
-        "Set one filter → receive normalized matches → see why they match → open "
-        "the source.\n\n"
+        "Set one filter → receive normalized matches → get notified when a new "
+        "matching apartment appears → open the source.\n\n"
         "This guided prototype demonstrates that product flow with one synthetic "
-        "scenario. It does not monitor live housing sources or send real notifications.",
+        "scenario. The background delivery capability runs only when explicitly enabled.",
         reply_markup=ReplyKeyboardRemove(),
     )
     await message.answer(
         "Two steps, no typing: see the example criteria, then review one "
-        "explained match.",
+        "matching listing.",
         reply_markup=_tour_intro_keyboard(),
     )
 
@@ -1728,25 +1734,14 @@ async def _send_tour_screen_2(callback: CallbackQuery, bot: Bot) -> None:
         )
         return
 
-    reason_lines = "\n".join(
-        f"• {escape(reason)}" for reason in tour_match.reasons
-    ) or "• All four filter criteria match"
-    await callback.message.answer(
-        "<b>Demo 2/2 · Review only the match</b>\n\n"
-        "FlatFeed compared the listing with all four criteria, so the user does "
-        "not have to find and verify these details manually.\n\n"
-        f"{reason_lines}\n\n"
-        "One synthetic example card follows."
-    )
-
     await send_match_to_chat(
         bot,
         chat_id=callback.message.chat.id,
         match=tour_match,
     )
     await callback.message.answer(
-        "This is a synthetic example. Live source monitoring and real notifications "
-        "are not implemented.",
+        "This is a synthetic example. With background delivery enabled, FlatFeed "
+        "sends each newly collected matching listing once.",
         reply_markup=_tour_result_keyboard(),
     )
 
@@ -1761,7 +1756,8 @@ async def _send_tour_screen_3(callback: CallbackQuery) -> None:
         "Separately, FlatFeed evaluated an AI checker that compares parser output "
         "with original synthetic listing text and flags suspected errors for admin review.\n\n"
         "The AI cannot change listing fields, matching decisions or user-facing cards "
-        "automatically. This hosted-model evaluation is documented in the case study "
+        "automatically. When background delivery is enabled, matching cards are sent "
+        "without a separate explanation message. This hosted-model evaluation is documented in the case study "
         "and is not integrated into this Telegram prototype.",
         reply_markup=_tour_explainer_keyboard(),
     )
@@ -1795,8 +1791,8 @@ def _help_text() -> str:
         "listings in one consistent format.\n\n"
         "The current prototype uses a small <i>synthetic</i> catalog — no real "
         "housing-company data is scraped. "
-        "This prototype does not monitor live housing sources or send notifications "
-        "about real new listings.\n\n"
+        "With background delivery enabled, FlatFeed sends a Telegram notification "
+        "when the next source check finds a new listing that matches the saved filter.\n\n"
         "<b>Glossary</b>\n"
         "• WBS (Wohnberechtigungsschein): Berlin eligibility certificate; the number is "
         "the income tier (higher number = higher allowed income).\n"
@@ -1804,7 +1800,7 @@ def _help_text() -> str:
         "<b>What you can do</b>\n"
         "• Set up and save your four-field filter.\n"
         "• Check up to three matching synthetic listings on demand.\n"
-        "• See the fixed-rule reasons for every match.\n"
+        "• Receive each new matching listing once when background delivery is enabled.\n"
         "• Edit, reset or delete your saved filter.\n\n"
         "<b>Commands</b>\n"
         "/start — open FlatFeed\n"
@@ -1819,9 +1815,10 @@ async def _send_product_home(message: Message, *, user_id: int) -> None:
     await message.answer(
         "<b>FlatFeed matches Berlin WBS listings to one saved filter.</b>\n\n"
         "Set your WBS type, district, maximum Kaltmiete and room count once, "
-        "then check matching listings in one consistent format.\n\n"
-        "This prototype currently uses synthetic listings and does not monitor "
-        "live housing sources.",
+        "then review matching listings in one consistent format. With background "
+        "delivery enabled, FlatFeed sends a notification when a newly collected "
+        "apartment matches your filter.\n\n"
+        "This prototype currently uses synthetic listings.",
         reply_markup=main_menu_keyboard(),
     )
     await send_settings_card(message, user_id=user_id)
@@ -2472,10 +2469,19 @@ async def main() -> None:
     dispatcher = Dispatcher(storage=MemoryStorage())
     dispatcher.include_router(router)
 
-    logger.info("Product prototype mode: matches are available on demand.")
+    background_task: Optional[asyncio.Task[Any]] = None
+    if settings.bot_background_enabled:
+        background_task = asyncio.create_task(run_hourly_pipeline(bot))
+        logger.info("Background multi-source notifications are enabled.")
+    else:
+        logger.info("Background multi-source notifications are disabled for this bot process.")
     try:
         await dispatcher.start_polling(bot)
     finally:
+        if background_task is not None:
+            background_task.cancel()
+            with suppress(asyncio.CancelledError):
+                await background_task
         await bot.session.close()
 
 
