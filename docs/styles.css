@@ -7,6 +7,7 @@
   --ink-2: #445254;
   --ink-3: #687576;
   --line: #dce4e1;
+  --brand: #6247ea;
   --accent: #08766e;
   --accent-deep: #055d57;
   --accent-wash: #e3f2ee;
@@ -205,16 +206,6 @@ img {
   background: var(--accent);
 }
 
-.btn--inverse {
-  border-color: rgba(255, 255, 255, 0.45);
-  background: transparent;
-  color: #fff;
-}
-
-.btn--inverse:hover {
-  border-color: #fff;
-}
-
 .case-top {
   position: sticky;
   top: 0;
@@ -274,9 +265,17 @@ img {
 }
 
 .case-top .btn {
-  min-height: 2.25rem;
-  padding: 0.45rem 0.7rem;
+  height: 1.625rem;
+  min-height: 1.625rem;
+  padding: 0 0.7rem;
+  border-color: var(--brand);
+  background: var(--brand);
   font-size: 0.75rem;
+}
+
+.case-top .btn:hover {
+  border-color: color-mix(in srgb, var(--brand) 84%, var(--ink));
+  background: color-mix(in srgb, var(--brand) 84%, var(--ink));
 }
 
 .case-hero {
@@ -316,29 +315,57 @@ img {
 
 
 
-.term-note {
-  max-width: var(--measure-prose);
-  margin-top: 1.5rem;
-  padding-left: 1rem;
-  border-left: 2px solid var(--accent);
-  color: var(--ink-3);
-  font-size: 0.84375rem;
-  line-height: 1.6;
+.term {
+  position: relative;
+  display: inline-block;
 }
 
-.term-note strong {
-  color: var(--ink-2);
+.term__trigger {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  text-decoration: underline dotted;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.12em;
+  cursor: help;
 }
 
-.term-note span {
+.term__trigger:hover {
+  color: var(--accent-deep);
+}
+
+.term__tooltip {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: 50%;
+  z-index: 50;
+  display: none;
+  width: min(19rem, calc(100vw - 2rem));
+  padding: 0.65rem 0.75rem;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  font: 500 0.75rem/1.45 var(--font-ui);
+  letter-spacing: 0;
+  text-align: left;
+  pointer-events: none;
+}
+
+.term:hover .term__tooltip,
+.term__trigger:focus-visible + .term__tooltip,
+.term__trigger[aria-expanded='true'] + .term__tooltip {
   display: block;
 }
 
-.case-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.75rem;
+.term--align-start .term__tooltip {
+  left: 0;
+  transform: none;
 }
 
 .case-meta {
@@ -1035,11 +1062,6 @@ img {
   letter-spacing: -0.03em;
 }
 
-.case-cta .case-actions {
-  flex: none;
-  margin-top: 0;
-}
-
 .case-sibling {
   padding: var(--space-block) 0;
 }
@@ -1056,38 +1078,6 @@ img {
 .case-sibling a {
   color: var(--accent-deep);
   font-weight: 600;
-}
-
-.case-foot {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 2rem;
-  padding: 1.5rem 0 2.5rem;
-  border-top: 1px solid var(--line);
-}
-
-.case-foot > p {
-  justify-self: center;
-  color: var(--ink-3);
-  font: 500 0.625rem/1.5 var(--font-mono);
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
-
-.case-foot nav {
-  display: flex;
-  gap: 1rem;
-}
-
-.case-foot nav a {
-  color: var(--ink-2);
-  font-size: 0.78125rem;
-  font-weight: 500;
-}
-
-.case-foot nav a:hover {
-  color: var(--accent-deep);
 }
 
 .case-prose {
@@ -1120,13 +1110,6 @@ img {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .case-foot > p {
-    display: none;
-  }
-
-  .case-foot {
-    grid-template-columns: 1fr auto;
-  }
 }
 
 @media (max-width: 56rem) {
@@ -1256,9 +1239,6 @@ img {
     padding: var(--space-panel) calc(var(--pad-box) + 1px);
   }
 
-  .case-cta .case-actions {
-    margin-top: 1.75rem;
-  }
 }
 
 @media (min-width: 40.01rem) and (max-height: 40rem) {
@@ -1333,15 +1313,6 @@ img {
     padding: var(--pad-box) calc(var(--pad-box) + 1px);
   }
 
-  .case-cta .case-actions,
-  .case-cta .btn {
-    width: 100%;
-  }
-
-  .case-foot {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
 }
 
 /* Narrow phones: the caption column keeps shrinking, so the seventh slide's
@@ -1392,7 +1363,7 @@ img {
   background: var(--wash);
 }
 
-/* Same accent-bar idiom as .term-note, .role-note, .qa-outcome and .qa-stop. */
+/* Same accent-bar idiom as .role-note, .qa-outcome and .qa-stop. */
 .product-journey__panel--with {
   /* 2px accent bar instead of a 1px hairline: pull the inline padding back by
      that 1px so every panel shares one inner spine. */
