@@ -13,6 +13,22 @@
   --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+
+  /* Vertical rhythm — one scale for the whole page */
+  --space-section-top: 2.75rem;
+  --space-section-bottom: 5rem;
+  --space-heading-block: 3.5rem; /* section heading -> first block */
+  --space-block: 2.5rem;         /* block -> block inside a section */
+  --space-panel: 2rem;           /* block -> block inside a panel */
+  --space-subrule: 2rem;         /* padding after an in-section divider */
+  --space-caption: 1rem;         /* content -> footnote/caption */
+
+  /* Boxes and measures */
+  --pad-box: 1.5rem;             /* card and grid-cell padding */
+  --pad-panel: 3rem;             /* full-width panel block padding (2 x --pad-box) */
+  --label-col: 10rem;            /* label column in label/content rows */
+  --measure-prose: 48rem;
+  --measure-heading: 42rem;
 }
 
 *,
@@ -129,7 +145,7 @@ img {
 .kicker {
   color: var(--ink-3);
   font: 500 0.6875rem/1.45 var(--font-mono);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -137,6 +153,20 @@ img {
   margin-right: 0.625rem;
   color: var(--accent);
   font-weight: 600;
+}
+
+/* Block label — same mono/uppercase role as .kicker, dt and .evidence-status. */
+.preview-label {
+  color: var(--ink-3);
+  font: 600 0.6875rem/1.45 var(--font-mono);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+/* --accent-wash needs the darker ink for AA contrast at label size. */
+.role-note .preview-label,
+.qa-outcome .preview-label {
+  color: var(--ink-2);
 }
 
 .btn {
@@ -173,23 +203,6 @@ img {
 .btn--primary:hover {
   border-color: var(--accent);
   background: var(--accent);
-}
-
-.btn--ghost:hover {
-  border-color: var(--accent);
-  color: var(--accent-deep);
-}
-
-.btn--accent {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: #fff;
-}
-
-.btn--accent:hover {
-  border-color: #fff;
-  background: #fff;
-  color: var(--ink);
 }
 
 .btn--inverse {
@@ -240,16 +253,14 @@ img {
   display: none;
 }
 
-.case-top nav a,
-.top-link {
+.case-top nav a {
   flex: none;
   color: var(--ink-2);
   font-size: 0.78125rem;
   font-weight: 500;
 }
 
-.case-top nav a:hover,
-.top-link:hover {
+.case-top nav a:hover {
   color: var(--accent-deep);
 }
 
@@ -270,7 +281,7 @@ img {
 
 .case-hero {
   min-height: 0;
-  padding: 2.75rem 0 4.5rem;
+  padding: var(--space-section-top) 0 var(--space-section-bottom);
 }
 
 .hero-copy {
@@ -279,13 +290,13 @@ img {
 
 .case-hero h1 {
   max-width: 60rem;
-  margin-top: 1.35rem;
+  margin-top: 1.5rem;
   font: 600 clamp(2.5rem, 4.4vw, 4.15rem)/1.02 var(--font-display);
   letter-spacing: -0.04em;
 }
 
 .case-lede {
-  max-width: 49rem;
+  max-width: var(--measure-prose);
   margin-top: 1.5rem;
   color: var(--ink-2);
   font-size: clamp(1rem, 1.35vw, 1.125rem);
@@ -294,32 +305,24 @@ img {
 
 .hero-ai-note {
   display: grid;
-  grid-template-columns: 8.5rem minmax(0, 1fr);
+  grid-template-columns: var(--label-col) minmax(0, 1fr);
   gap: 1rem;
-  max-width: 49rem;
-  margin-top: 1.25rem;
+  max-width: var(--measure-prose);
+  margin-top: 1.5rem;
   padding: 1rem 0;
   border-top: 1px solid var(--ink);
   border-bottom: 1px solid var(--line);
 }
 
-.hero-ai-note .preview-label {
-  color: var(--accent-deep);
-}
 
-.hero-ai-note > p:last-child {
-  color: var(--ink-2);
-  font-size: 0.84375rem;
-  line-height: 1.55;
-}
 
 .term-note {
-  max-width: 48rem;
-  margin-top: 1.25rem;
-  padding-left: 0.875rem;
+  max-width: var(--measure-prose);
+  margin-top: 1.5rem;
+  padding-left: 1rem;
   border-left: 2px solid var(--accent);
   color: var(--ink-3);
-  font-size: 0.8125rem;
+  font-size: 0.84375rem;
   line-height: 1.6;
 }
 
@@ -341,13 +344,13 @@ img {
 .case-meta {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  max-width: 49rem;
-  margin-top: 2.25rem;
+  max-width: var(--measure-prose);
+  margin-top: var(--space-block);
   border-top: 1px solid var(--ink);
 }
 
 .case-meta div {
-  padding: 0.875rem 1rem 0.5rem 0;
+  padding: 0.75rem 1rem 0.75rem 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -372,36 +375,21 @@ img {
 .product-carousel {
   --product-carousel-media-width: clamp(14rem, calc(70.4svh - 4.225rem), 20rem);
   --product-carousel-copy-width: 25rem;
-  --product-carousel-caption-height: 18rem;
-  padding-top: 3.5rem;
-  margin-top: 4rem;
-  border-top: 1px solid var(--ink);
+  /* Reserved so the controls sit at one fixed offset on every slide. Measured
+     against the longest approved slide copy in this column; `min-height` keeps
+     longer copy from ever being clipped. Recalibrated per breakpoint — see
+     §5.4. */
+  --product-carousel-caption-height: 13.5rem;
+  margin-top: var(--space-block);
+  padding-top: var(--space-subrule);
+  border-top: 1px solid var(--line);
 }
 
-.product-carousel__heading {
-  display: grid;
-  grid-template-columns: var(--product-carousel-media-width) minmax(18rem, var(--product-carousel-copy-width));
-  justify-content: center;
-  gap: clamp(2rem, 5vw, 4rem);
-  align-items: start;
-}
-
-.product-carousel__heading > div {
-  grid-column: 2;
-}
-
-.product-carousel__heading h2 {
-  max-width: 46rem;
-  font: 600 clamp(1.5rem, 2.5vw, 2.25rem)/1.08 var(--font-display);
-  letter-spacing: -0.03em;
-}
-
+/* The heading sits on the page's left spine like every other section and
+   sub-block heading; the framed stage below keeps its centred composition. */
 .product-carousel__heading div > p {
-  max-width: 39rem;
-  margin-top: 0.5rem;
-  color: var(--ink-2);
-  font-size: 0.9375rem;
-  line-height: 1.65;
+  max-width: var(--measure-prose);
+  margin-top: 0.75rem;
 }
 
 .product-carousel__stage {
@@ -412,8 +400,8 @@ img {
   row-gap: 1rem;
   justify-content: center;
   align-items: center;
-  margin-top: 1.5rem;
-  padding: clamp(0.875rem, 1.5vw, 1.25rem);
+  margin-top: var(--pad-box);
+  padding: var(--pad-box);
   border: 1px solid var(--ink);
   background: var(--surface);
 }
@@ -461,23 +449,20 @@ img {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: var(--product-carousel-caption-height);
+  min-height: var(--product-carousel-caption-height);
 }
 
 .product-carousel__slide figcaption strong {
   display: block;
   max-width: 24rem;
   margin-top: 1rem;
-  font: 600 clamp(1.75rem, 3.4vw, 2.75rem)/1.08 var(--font-display);
+  font: 600 clamp(1.75rem, 3vw, 2.25rem)/1.08 var(--font-display);
   letter-spacing: -0.03em;
 }
 
 .product-carousel__slide figcaption p {
   max-width: 25rem;
   margin-top: 1rem;
-  color: var(--ink-2);
-  font-size: 0.9375rem;
-  line-height: 1.65;
 }
 
 .product-carousel__footer {
@@ -495,8 +480,8 @@ img {
 .carousel-button {
   position: relative;
   display: grid;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2.625rem;
+  height: 2.625rem;
   place-items: center;
   padding: 0;
   border: 1px solid var(--ink);
@@ -549,9 +534,99 @@ img {
   border: 0;
 }
 
+/* Supporting prose — one size and one line height across the page. */
+.section-heading > p:not(.kicker),
+.role-note--large > p:last-child,
+.qa-scorecard__heading > div > p,
+.qa-subheading > div > p,
+.qa-outcome > p:last-child,
+.product-carousel__heading div > p,
+.product-carousel__slide figcaption p,
+.case-sibling > p:last-child {
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+/* Card and grid-cell copy — one size and one line height across the page. */
+.workflow p,
+.decision-list article > p:last-child,
+.qa-selection__steps p,
+.qa-findings article > h4 ~ p,
+.qa-cost__calculation p:last-child,
+.qa-scorecard__metrics dd p,
+.product-journey li p,
+.hero-ai-note > p:last-child,
+.role-note > p:last-child,
+.reliability-boundary section > p:last-child,
+.evidence-card li,
+.reliability-boundary li {
+  color: var(--ink-2);
+  font-size: 0.84375rem;
+  line-height: 1.6;
+}
+
+/* Cell / step title — one role for workflow, decision and selection cells. */
+.workflow h3,
+.decision-list h3,
+.qa-selection__steps strong {
+  display: block;
+  margin-top: 1.25rem;
+  font: 600 1.125rem/1.3 var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+/* Sub-block heading, major. */
+.qa-scorecard__heading h3,
+.reliability-boundary h2,
+.product-carousel__heading h2 {
+  max-width: var(--measure-heading);
+  font: 600 clamp(1.35rem, 2.5vw, 2rem)/1.15 var(--font-display);
+  letter-spacing: -0.025em;
+}
+
+/* Sub-block heading, minor. */
+.qa-subheading h4,
+.qa-findings h4,
+.product-journey h2 {
+  font: 600 clamp(1.15rem, 2vw, 1.5rem)/1.2 var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Repeated equal-weight cells share one joined-hairline construction. */
+.evidence-grid,
+.decision-list,
+.qa-findings,
+.qa-selection__steps,
+.qa-scorecard__metrics,
+.qa-cost__calculation,
+.reliability-boundary > div {
+  display: grid;
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.evidence-card,
+.decision-list article,
+.qa-findings article,
+.qa-selection__steps li,
+.qa-scorecard__metrics > div,
+.qa-cost__calculation > div,
+.reliability-boundary section {
+  min-width: 0;
+  padding: var(--pad-box);
+  background: var(--surface);
+}
+
 .case-section {
-  padding: 2.75rem 0 5rem;
+  padding: var(--space-section-top) 0 var(--space-section-bottom);
   border-top: 1px solid var(--ink);
+}
+
+/* One gap between a section heading and the block that follows it. */
+.section-heading + * {
+  margin-top: var(--space-heading-block);
 }
 
 .section-heading {
@@ -573,16 +648,13 @@ img {
 
 .section-heading > p:not(.kicker) {
   max-width: 32rem;
-  color: var(--ink-2);
-  font-size: 0.9375rem;
-  line-height: 1.7;
 }
 
 .workflow {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 1.5rem;
-  margin-top: 3.75rem;
+  gap: var(--pad-box);
+  margin-top: var(--space-block);
 }
 
 .workflow--four {
@@ -590,100 +662,67 @@ img {
 }
 
 .workflow li {
-  padding-top: 0.8rem;
+  padding-top: 0.75rem;
   border-top: 1px solid var(--line);
 }
 
+/* Step / item number — one marker role across workflow, decision, selection
+   and journey lists. Only the colour changes, and only where it carries
+   meaning (the muted "Without FlatFeed" column). */
 .workflow li > span,
-.decision-number {
+.decision-number,
+.qa-selection__steps span,
+.product-journey li span {
+  display: block;
   color: var(--accent);
-  font: 600 0.6875rem/1 var(--font-mono);
-}
-
-.workflow h3 {
-  margin-top: 1.3rem;
-  font: 600 1rem/1.25 var(--font-display);
+  font: 600 0.6875rem/1.4 var(--font-mono);
+  letter-spacing: 0.07em;
 }
 
 .workflow p {
-  margin-top: 0.45rem;
-  color: var(--ink-2);
-  font-size: 0.78125rem;
-  line-height: 1.6;
+  margin-top: 0.75rem;
 }
 
 .decision-list {
-  display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  margin-top: 3.75rem;
-  border: 1px solid var(--line);
-  background: var(--line);
-}
-
-.decision-list article {
-  padding: 1.5rem;
-  background: var(--surface);
-}
-
-.decision-list h3 {
-  margin-top: 2rem;
-  font: 600 1.2rem/1.25 var(--font-display);
-  letter-spacing: -0.015em;
+  margin-top: var(--space-block);
 }
 
 .decision-list article > p:last-child {
-  margin-top: 0.8rem;
-  color: var(--ink-2);
-  font-size: 0.84375rem;
-  line-height: 1.65;
+  margin-top: 0.75rem;
 }
 
 .role-note {
   display: grid;
-  grid-template-columns: 10rem 1fr;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-  padding: 1.25rem 1.5rem;
+  grid-template-columns: var(--label-col) 1fr;
+  gap: var(--pad-box);
+  margin-top: var(--space-block);
+  padding: var(--pad-box);
+  /* 2px accent bar instead of a 1px hairline: pull the inline padding back by
+     that 1px so every panel shares one inner spine. */
+  padding-left: calc(var(--pad-box) - 1px);
   border-left: 2px solid var(--accent);
   background: var(--accent-wash);
 }
 
 .role-note > p:last-child {
-  max-width: 48rem;
-  color: var(--ink-2);
-  font-size: 0.84375rem;
-  line-height: 1.65;
+  max-width: var(--measure-prose);
 }
 
 .role-note--large {
-  margin-top: 3rem;
-  padding-block: 1.5rem;
-}
-
-.role-note--large > p:last-child {
-  font-size: 0.9375rem;
-  line-height: 1.7;
+  margin-top: var(--space-block);
 }
 
 .evidence-grid {
-  display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  margin-top: 3.75rem;
-}
-
-.evidence-card {
-  padding: 1.5rem;
-  border: 1px solid var(--line);
-  background: var(--surface);
+  margin-top: var(--space-block);
 }
 
 .evidence-status {
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  padding-bottom: 0.9rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--ink);
   font: 600 0.6875rem/1 var(--font-mono);
   letter-spacing: 0.07em;
@@ -696,31 +735,27 @@ img {
   background: var(--accent);
 }
 
-.evidence-card--open .evidence-status i {
-  border: 1px solid var(--ink-3);
-  background: transparent;
+.evidence-card ul,
+.reliability-boundary ul {
+  margin-top: 0.5rem;
 }
 
-.evidence-card ul {
-  margin-top: 0.4rem;
-}
-
-.evidence-card li {
+.evidence-card li,
+.reliability-boundary li {
   position: relative;
-  padding: 0.75rem 0 0.75rem 1rem;
+  padding: 0.7rem 0 0.7rem 1rem;
   border-bottom: 1px solid var(--line);
-  color: var(--ink-2);
-  font-size: 0.84375rem;
-  line-height: 1.55;
 }
 
-.evidence-card li:last-child {
+.evidence-card li:last-child,
+.reliability-boundary li:last-child {
   border-bottom: 0;
 }
 
-.evidence-card li::before {
+.evidence-card li::before,
+.reliability-boundary li::before {
   position: absolute;
-  top: 1.15rem;
+  top: 1.1rem;
   left: 0;
   width: 0.35rem;
   height: 0.35rem;
@@ -728,66 +763,47 @@ img {
   content: '';
 }
 
-.evidence-card--open li::before {
-  border: 1px solid var(--ink-3);
-  background: transparent;
-}
-
 .evidence-footnote {
   max-width: 44rem;
-  margin-top: 1.25rem;
+  margin-top: var(--space-caption);
   color: var(--ink-3);
   font: 400 0.71875rem/1.6 var(--font-mono);
 }
 
 .qa-scorecard {
-  margin-top: 1.5rem;
-  padding: 1.5rem;
+  margin-top: var(--space-block);
+  padding: var(--pad-box);
   border: 1px solid var(--ink);
   background: var(--surface);
 }
 
 .qa-scorecard__heading {
   display: grid;
-  grid-template-columns: 10rem 1fr;
-  gap: 1.5rem;
+  grid-template-columns: var(--label-col) 1fr;
+  gap: var(--pad-box);
   align-items: start;
 }
 
-.qa-scorecard__heading h3 {
-  max-width: 42rem;
-  font: 600 clamp(1.35rem, 2.5vw, 2rem)/1.15 var(--font-display);
-  letter-spacing: -0.025em;
-}
-
-.qa-scorecard__heading > div > p,
-.qa-subheading > div > p,
-.qa-explainer p,
-.qa-findings article > h4 ~ p,
-.qa-cost__calculation p {
-  color: var(--ink-2);
-  line-height: 1.65;
-}
-
 .qa-scorecard__heading > div > p {
-  max-width: 46rem;
-  margin-top: 0.85rem;
+  max-width: var(--measure-prose);
+  margin-top: 0.75rem;
 }
 
 .qa-outcome {
   display: grid;
-  grid-template-columns: 10rem 1fr;
-  gap: 1.5rem;
-  margin-top: 2rem;
-  padding: 1.25rem 1.5rem;
+  grid-template-columns: var(--label-col) 1fr;
+  gap: var(--pad-box);
+  margin-top: var(--space-panel);
+  padding: var(--pad-box);
+  /* 2px accent bar instead of a 1px hairline: pull the inline padding back by
+     that 1px so every panel shares one inner spine. */
+  padding-left: calc(var(--pad-box) - 1px);
   border-left: 2px solid var(--accent);
   background: var(--accent-wash);
 }
 
 .qa-outcome > p:last-child {
-  max-width: 48rem;
-  color: var(--ink-2);
-  line-height: 1.65;
+  max-width: var(--measure-prose);
 }
 
 .qa-outcome strong {
@@ -795,84 +811,35 @@ img {
 }
 
 .qa-selection {
-  margin-top: 2.5rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--ink);
+  margin-top: var(--space-block);
+  padding-top: var(--space-subrule);
+  border-top: 1px solid var(--line);
 }
 
 .qa-selection__steps {
-  display: grid;
   grid-template-columns: repeat(3, 1fr);
-  margin-top: 1.5rem;
-  border-top: 1px solid var(--line);
-  border-left: 1px solid var(--line);
+  margin-top: var(--pad-box);
   list-style: none;
 }
 
-.qa-selection__steps li {
-  min-width: 0;
-  padding: 1.25rem;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.qa-selection__steps span {
-  display: block;
-  color: var(--accent);
-  font: 600 0.6875rem/1 var(--font-mono);
-  letter-spacing: 0.045em;
-}
-
-.qa-selection__steps strong {
-  display: block;
-  margin-top: 1rem;
-  font: 600 1rem/1.3 var(--font-display);
-}
-
 .qa-selection__steps p {
-  margin-top: 0.65rem;
-  color: var(--ink-2);
-  font-size: 0.8125rem;
-  line-height: 1.6;
+  margin-top: 0.75rem;
 }
 
-.qa-explainer {
-  max-width: 48rem;
-  margin-top: 2.5rem;
-}
-
-.qa-explainer h4,
-.qa-subheading h4,
-.qa-findings h4 {
-  font: 600 clamp(1.15rem, 2vw, 1.5rem)/1.2 var(--font-display);
-  letter-spacing: -0.02em;
-}
-
-.qa-explainer p,
 .qa-subheading > div > p {
-  margin-top: 0.65rem;
+  margin-top: 0.75rem;
 }
 
 .qa-scorecard__metrics {
-  display: grid;
   grid-template-columns: repeat(2, 1fr);
-  margin-top: 2rem;
-  border-top: 1px solid var(--line);
-  border-left: 1px solid var(--line);
-}
-
-.qa-scorecard__metrics > div {
-  min-width: 0;
-  padding: 1.25rem;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  margin-top: var(--space-panel);
 }
 
 .qa-scorecard__metrics dt {
-  min-height: 2.8rem;
+  min-height: 2rem;
   color: var(--ink-2);
   font: 600 0.6875rem/1.35 var(--font-mono);
-  letter-spacing: 0.045em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -889,16 +856,13 @@ img {
 
 .qa-scorecard__metrics span {
   display: block;
-  margin-top: 0.65rem;
+  margin-top: 0.75rem;
   color: var(--ink-3);
   font: 400 0.71875rem/1.5 var(--font-mono);
 }
 
 .qa-scorecard__metrics dd p {
   margin-top: 0.75rem;
-  color: var(--ink-2);
-  font-size: 0.78125rem;
-  line-height: 1.55;
 }
 
 .qa-scorecard__metrics dd p + p {
@@ -911,27 +875,27 @@ img {
 }
 
 .qa-threshold-note {
-  max-width: 48rem;
-  margin-top: 1rem;
+  max-width: var(--measure-prose);
+  margin-top: var(--space-caption);
   color: var(--ink-3);
   font: 400 0.71875rem/1.6 var(--font-mono);
 }
 
 .qa-field-results,
 .qa-cost {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--ink);
+  margin-top: var(--space-block);
+  padding-top: var(--space-subrule);
+  border-top: 1px solid var(--line);
 }
 
 .qa-subheading {
   display: grid;
-  grid-template-columns: 10rem 1fr;
-  gap: 1.5rem;
+  grid-template-columns: var(--label-col) 1fr;
+  gap: var(--pad-box);
 }
 
 .qa-subheading > div > p {
-  max-width: 48rem;
+  max-width: var(--measure-prose);
 }
 
 .qa-subheading a,
@@ -944,7 +908,7 @@ img {
 }
 
 .qa-table-wrap {
-  margin-top: 1.5rem;
+  margin-top: var(--pad-box);
   overflow-x: auto;
 }
 
@@ -957,7 +921,7 @@ img {
 
 .qa-table th,
 .qa-table td {
-  padding: 0.8rem;
+  padding: 0.75rem;
   border: 1px solid var(--line);
   vertical-align: top;
 }
@@ -966,7 +930,7 @@ img {
   background: var(--wash);
   color: var(--ink-2);
   font: 600 0.625rem/1.4 var(--font-mono);
-  letter-spacing: 0.045em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -978,30 +942,13 @@ img {
 
 .qa-table tbody td {
   color: var(--ink-2);
-  font-size: 0.78125rem;
-  line-height: 1.45;
-}
-
-.qa-table__miss th,
-.qa-table__miss td {
-  background: var(--accent-wash);
-}
-
-.qa-table__miss td:last-child {
-  color: var(--ink);
-  font-weight: 700;
+  font-size: 0.8125rem;
+  line-height: 1.5;
 }
 
 .qa-findings {
-  display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.qa-findings article {
-  padding: 1.5rem;
-  border: 1px solid var(--line);
+  margin-top: var(--space-panel);
 }
 
 .qa-findings h4 {
@@ -1010,7 +957,6 @@ img {
 
 .qa-findings article > h4 ~ p {
   margin-top: 0.75rem;
-  font-size: 0.84375rem;
 }
 
 .qa-findings article > p + p {
@@ -1018,26 +964,20 @@ img {
 }
 
 .qa-stop {
-  margin: 2rem 0 0;
-  padding: 1.5rem;
+  margin: var(--space-panel) 0 0;
+  padding: var(--pad-box);
+  /* 2px accent bar instead of a 1px hairline: pull the inline padding back by
+     that 1px so every panel shares one inner spine. */
+  padding-left: calc(var(--pad-box) - 1px);
   border-left: 2px solid var(--accent);
-  background: var(--wash);
+  background: var(--accent-wash);
   color: var(--ink);
   font: 500 clamp(1rem, 1.8vw, 1.2rem)/1.6 var(--font-display);
 }
 
 .qa-cost__calculation {
-  display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  margin-top: 1.5rem;
-  background: var(--line);
-  border: 1px solid var(--line);
-}
-
-.qa-cost__calculation > div {
-  padding: 1.5rem;
-  background: var(--surface);
+  margin-top: var(--pad-box);
 }
 
 .qa-cost__calculation strong,
@@ -1046,29 +986,28 @@ img {
 }
 
 .qa-cost__calculation strong {
-  margin-top: 0.85rem;
+  margin-top: 1rem;
   color: var(--accent);
   font: 600 clamp(1.75rem, 3vw, 2.5rem)/1 var(--font-display);
   letter-spacing: -0.035em;
 }
 
 .qa-cost__calculation span {
-  margin-top: 0.6rem;
+  margin-top: 0.75rem;
   color: var(--ink-3);
   font: 400 0.71875rem/1.5 var(--font-mono);
 }
 
 .qa-cost__calculation p:last-child {
   margin-top: 0.75rem;
-  font-size: 0.78125rem;
 }
 
 .qa-evidence-links {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem 1.25rem;
-  margin-top: 1.5rem;
-  padding-top: 1.25rem;
+  margin-top: var(--space-panel);
+  padding-top: var(--pad-box);
   border-top: 1px solid var(--line);
   font-size: 0.78125rem;
 }
@@ -1078,7 +1017,9 @@ img {
   align-items: flex-end;
   justify-content: space-between;
   gap: 2rem;
-  padding: 3.5rem;
+  /* The filled panel draws no border, so its inline padding absorbs the 1px
+     the bordered panels spend on their hairline: one inner spine page-wide. */
+  padding: var(--pad-panel) calc(var(--pad-box) + 1px);
   background: var(--ink);
   color: #fff;
 }
@@ -1088,8 +1029,8 @@ img {
 }
 
 .case-cta h2 {
-  max-width: 43rem;
-  margin-top: 0.9rem;
+  max-width: var(--measure-heading);
+  margin-top: 1.5rem;
   font: 600 clamp(1.75rem, 3.5vw, 2.75rem)/1.08 var(--font-display);
   letter-spacing: -0.03em;
 }
@@ -1100,14 +1041,12 @@ img {
 }
 
 .case-sibling {
-  padding: 2.5rem 0;
+  padding: var(--space-block) 0;
 }
 
 .case-sibling > p:last-child {
-  max-width: 47rem;
+  max-width: var(--measure-prose);
   margin-top: 0.75rem;
-  color: var(--ink-2);
-  line-height: 1.65;
 }
 
 .case-sibling strong {
@@ -1132,7 +1071,7 @@ img {
   justify-self: center;
   color: var(--ink-3);
   font: 500 0.625rem/1.5 var(--font-mono);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -1143,7 +1082,7 @@ img {
 
 .case-foot nav a {
   color: var(--ink-2);
-  font-size: 0.75rem;
+  font-size: 0.78125rem;
   font-weight: 500;
 }
 
@@ -1159,7 +1098,7 @@ img {
   margin-bottom: 1rem;
   color: var(--ink-2);
   font-size: 0.9375rem;
-  line-height: 1.7;
+  line-height: 1.65;
 }
 
 @media (max-width: 68rem) {
@@ -1211,29 +1150,65 @@ img {
     padding: 0.2rem 0;
   }
 
-  .case-hero {
-    padding: 2.5rem 0 4rem;
-  }
-
   .hero-copy {
     max-width: 52rem;
   }
 
-  .product-carousel__heading {
+  .product-carousel {
+    /* Below 56rem the two-column composition squeezes the commentary to about
+       200px, which both breaks the measure and makes the seventh slide's
+       attribution overflow the reserved caption height. The slide becomes the
+       vertical stack here instead, and the reserve is recalibrated for that
+       column so the controls still sit at one fixed offset on every slide. */
+    --product-carousel-caption-height: 13rem;
+    margin-top: var(--space-block);
+    padding-top: var(--space-subrule);
+  }
+
+  .product-carousel__stage {
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    row-gap: 1.25rem;
+    align-items: start;
   }
 
-  .product-carousel__heading > div {
-    grid-column: 1;
-  }
-
+  .product-carousel__slides,
+  .product-carousel__slide:not([hidden]),
   .product-carousel__slide figure {
     display: contents;
   }
 
-  .product-carousel__stage {
-    grid-template-columns: var(--product-carousel-media-width) minmax(0, 1fr);
-    column-gap: 2.5rem;
+  .product-carousel__image-frame {
+    grid-column: 1;
+    grid-row: 1;
+    width: min(100%, var(--product-carousel-media-width));
+    margin-inline: auto;
+  }
+
+  .product-carousel__slide figcaption {
+    grid-column: 1;
+    grid-row: 2;
+    /* Top-aligned in the stack: leftover reserve must fall between the comment
+       and the controls, never between the screenshot and its own comment. */
+    justify-content: flex-start;
+    width: min(100%, 26rem);
+    margin-inline: auto;
+  }
+
+  .product-carousel__slide figcaption strong,
+  .product-carousel__slide figcaption p {
+    margin-top: 0.75rem;
+  }
+
+  .product-carousel__footer {
+    grid-column: 1;
+    grid-row: 3;
+    width: min(100%, 26rem);
+    margin-inline: auto;
+  }
+
+  .product-carousel__controls {
+    grid-column: 1;
   }
 
   .section-heading {
@@ -1278,7 +1253,7 @@ img {
 
   .case-cta {
     display: block;
-    padding: 2.5rem;
+    padding: var(--space-panel) calc(var(--pad-box) + 1px);
   }
 
   .case-cta .case-actions {
@@ -1312,10 +1287,9 @@ img {
 @media (max-width: 40rem) {
   .case {
     width: min(100% - 2rem, 75rem);
-  }
-
-  .top-link {
-    display: none;
+    /* One tighter box padding for every panel and cell on small screens, so the
+       inner spine stays single. */
+    --pad-box: 1.25rem;
   }
 
   .case-top .btn {
@@ -1340,66 +1314,9 @@ img {
     border-left: 0;
   }
 
-  .product-carousel {
-    margin-top: 3rem;
-    padding-top: 2.5rem;
-  }
-
-  .product-carousel__stage {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    row-gap: 1.25rem;
-    padding: 1rem;
-  }
-
-  .product-carousel__slides,
-  .product-carousel__slide:not([hidden]),
-  .product-carousel__slide figure {
-    display: contents;
-  }
-
-  .product-carousel__footer {
-    grid-column: 1;
-    grid-row: 3;
-    width: min(100%, 26rem);
-    margin-inline: auto;
-  }
-
-  .product-carousel__controls {
-    grid-column: 1;
-  }
-
-  .product-carousel__image-frame {
-    grid-column: 1;
-    grid-row: 1;
-    width: min(100%, var(--product-carousel-media-width));
-    margin-inline: auto;
-  }
-
-  .product-carousel__slide figcaption {
-    grid-column: 1;
-    grid-row: 2;
-    width: min(100%, 26rem);
-    margin-inline: auto;
-  }
-
-  .product-carousel__slide figcaption strong {
-    margin-top: 0.65rem;
-    font-size: clamp(1.5rem, 8vw, 2.1rem);
-  }
-
-  .product-carousel__slide figcaption p {
-    margin-top: 0.65rem;
-  }
-
   .workflow {
     grid-template-columns: 1fr;
     gap: 1rem;
-  }
-
-  .workflow h3 {
-    margin-top: 0.8rem;
   }
 
   .role-note {
@@ -1407,12 +1324,13 @@ img {
     gap: 0.75rem;
   }
 
-  .case-section {
+  .case-section,
+  .case-hero {
     padding: 3rem 0 4rem;
   }
 
   .case-cta {
-    padding: 2rem 1.25rem;
+    padding: var(--pad-box) calc(var(--pad-box) + 1px);
   }
 
   .case-cta .case-actions,
@@ -1423,6 +1341,22 @@ img {
   .case-foot {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+}
+
+/* Narrow phones: the caption column keeps shrinking, so the seventh slide's
+   attribution wraps further and the 13rem reserve would let the controls move
+   between slides. Each step is measured against the longest approved slide copy
+   at that width — see §5.4. */
+@media (max-width: 23rem) {
+  .product-carousel {
+    --product-carousel-caption-height: 15rem;
+  }
+}
+
+@media (max-width: 21.5rem) {
+  .product-carousel {
+    --product-carousel-caption-height: 16.5rem;
   }
 }
 
@@ -1444,13 +1378,13 @@ img {
 .product-journey {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 4rem minmax(0, 1fr);
-  margin-top: clamp(3.5rem, 6vw, 5rem);
+  margin-top: var(--space-block);
   align-items: stretch;
 }
 
 .product-journey__panel {
   min-width: 0;
-  padding: 1.75rem 2rem 2rem;
+  padding: var(--pad-box);
   border: 1px solid var(--line);
 }
 
@@ -1458,15 +1392,13 @@ img {
   background: var(--wash);
 }
 
+/* Same accent-bar idiom as .term-note, .role-note, .qa-outcome and .qa-stop. */
 .product-journey__panel--with {
-  border-color: var(--accent);
-  box-shadow: inset 3px 0 0 var(--accent);
+  /* 2px accent bar instead of a 1px hairline: pull the inline padding back by
+     that 1px so every panel shares one inner spine. */
+  padding-left: calc(var(--pad-box) - 1px);
+  border-left: 2px solid var(--accent);
   background: var(--surface);
-}
-
-.product-journey h2 {
-  font: 600 clamp(1.35rem, 2.2vw, 1.75rem)/1.15 var(--font-display);
-  letter-spacing: -0.02em;
 }
 
 .product-journey ol {
@@ -1479,26 +1411,31 @@ img {
   grid-template-columns: 2rem minmax(0, 1fr);
   gap: 0.75rem;
   align-items: start;
-  padding: 0.75rem 0;
+  padding: 0.7rem 0;
   border-bottom: 1px solid var(--line);
 }
 
+/* Inline marker: optical offset onto the first line of the copy. */
+/* Separators between items, no trailing rule — same as the evidence and
+   boundary lists. */
+.product-journey li:last-child {
+  border-bottom: 0;
+}
+
 .product-journey li span {
-  padding-top: 0.1rem;
+  padding-top: 0.2rem;
+}
+
+.product-journey__panel--without li span {
   color: var(--ink-3);
-  font: 600 0.625rem/1.4 var(--font-mono);
-  letter-spacing: 0.06em;
 }
 
 .product-journey__panel--with li span {
   color: var(--accent-deep);
 }
 
-.product-journey li p {
-  color: var(--ink-2);
-  font-size: 0.84375rem;
-  line-height: 1.5;
-}
+
+
 
 .product-journey__arrow {
   display: grid;
@@ -1518,74 +1455,24 @@ img {
 
 .reliability-boundary {
   grid-column: 1 / -1;
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--ink);
+  margin-top: var(--space-block);
+  padding-top: var(--space-subrule);
+  border-top: 1px solid var(--line);
 }
 
 .reliability-boundary header {
   display: grid;
-  grid-template-columns: 10rem 1fr;
-  gap: 1.5rem;
-}
-
-.reliability-boundary h2 {
-  max-width: 42rem;
-  font: 600 clamp(1.35rem, 2.5vw, 2rem)/1.15 var(--font-display);
-  letter-spacing: -0.025em;
+  grid-template-columns: var(--label-col) 1fr;
+  gap: var(--pad-box);
 }
 
 .reliability-boundary > div {
-  display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  margin-top: 1.5rem;
-  border: 1px solid var(--line);
-  background: var(--line);
+  margin-top: var(--pad-box);
 }
 
-.reliability-boundary section {
-  padding: 1.25rem;
-  background: var(--surface);
-}
-
-.reliability-boundary section > p:last-child,
-.reliability-boundary__note {
+.reliability-boundary section > p:last-child {
   margin-top: 0.75rem;
-  color: var(--ink-2);
-  font-size: 0.84375rem;
-  line-height: 1.65;
-}
-
-.reliability-boundary ul {
-  margin-top: 0.5rem;
-}
-
-.reliability-boundary li {
-  position: relative;
-  padding: 0.55rem 0 0.55rem 1rem;
-  border-bottom: 1px solid var(--line);
-  color: var(--ink-2);
-  font-size: 0.84375rem;
-  line-height: 1.55;
-}
-
-.reliability-boundary li:last-child {
-  border-bottom: 0;
-}
-
-.reliability-boundary li::before {
-  position: absolute;
-  top: 1rem;
-  left: 0;
-  width: 0.35rem;
-  height: 0.35rem;
-  background: var(--accent);
-  content: '';
-}
-
-.reliability-boundary__note {
-  max-width: 52rem;
 }
 
 @media (max-width: 56rem) {
@@ -1603,10 +1490,6 @@ img {
 }
 
 @media (max-width: 40rem) {
-  .product-journey__panel {
-    padding: 1.25rem;
-  }
-
   .reliability-boundary header,
   .reliability-boundary > div {
     grid-template-columns: 1fr;
@@ -1647,7 +1530,7 @@ img {
 
 .demo-listing-disclosure strong {
   font: 600 0.6875rem/1.4 var(--font-mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 
@@ -1679,7 +1562,7 @@ img {
 .demo-listing-facts dt {
   color: var(--ink-3);
   font: 500 0.625rem/1.35 var(--font-mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 

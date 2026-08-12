@@ -183,30 +183,70 @@ Sizes below list the **reference px at a 16px root**; each is authored in `style
 | Hero h1 | display 600 | clamp(36px → 64px), lh 1.02, ls −0.035em | first-person outcome statement |
 | Section h2 | display 600 | clamp(28px → 48px), lh 1.06 | takeaway statements |
 | Hero lede | ui 400 | clamp(16px → 20px) / 1.6 | `--ink-2` |
-| Body prose (`.case-prose p`) | ui 400 | 16px / 1.7, max-width 680px | `--ink-2` |
-| Kicker (`.kicker`) | mono 500 | 11px uppercase, ls 0.08em | `--ink-3`; index number span in `--accent` 600 |
+| Body prose (`.case-prose p`) | ui 400 | 16px / 1.65, max-width 680px | `--ink-2` |
+| Supporting prose | ui 400 | 15px / 1.65, measure `--measure-prose` | `--ink-2`; section ledes, panel intros, callout bodies, slide commentary |
+| Card / cell copy | ui 400 | 13.5px / 1.6 | `--ink-2`; every card, grid cell and evidence bullet |
+| Sub-block heading, major | display 600 | clamp(21.6px → 32px) / 1.15, ls −0.025em | scorecard, boundary and carousel intro headings |
+| Sub-block heading, minor | display 600 | clamp(18.4px → 24px) / 1.2, ls −0.02em | subheadings, findings, comparison-panel titles |
+| Cell / step title | display 600 | 18px / 1.3, ls −0.015em | workflow, decision and selection cells |
+| Slide title | display 600 | clamp(24px → 36px) / 1.08, ls −0.03em | carousel figcaption; stays below the section h2 |
+| Kicker (`.kicker`) | mono 500 | 11px uppercase, ls 0.07em | `--ink-3`; index number span in `--accent` 600 |
+| Block label (`.preview-label`, `.evidence-status`) | mono 600 | 11px uppercase, ls 0.07em | `--ink-3`; `--ink-2` on `--accent-wash` for AA contrast |
+| Step / item number | mono 600 | 11px, ls 0.07em | `--accent`; only colour varies, and only where it carries meaning |
 | Buttons (`.btn`) | ui 600 | 13px, padding 11×18 | square corners; the header Repository action uses compact 12px text, 7×11 padding and a 36px minimum height |
-| Labels / dt | mono 500 | 10–11px uppercase | `--ink-3` |
+| Labels / dt | mono 500 | 10–11px uppercase, ls 0.07em | `--ink-3` |
 | Product-preview fields | ui/mono | 9–12px | compact product evidence only |
 
 Rules:
 - Base body is 15px/1.5 `--font-ui`; long-form prose measure stays ≤680px (reference px at the 16px root; authored as 0.9375rem/42.5rem).
 - Display sizes use `clamp()` — do not add per-breakpoint font overrides.
 - New text styles SHOULD reuse a role above rather than introduce a new size; do not add weights above 700.
+- **One letter-spacing for every mono/uppercase label: `0.07em`.** Kickers, block
+  labels, `dt`s, table headers, step numbers and the footer tagline share it.
+- **One line height per prose role.** Supporting prose is 1.65, card/cell copy is
+  1.6. Do not fork a per-component line height.
+- Display letter-spacing follows size monotonically: −0.04em (h1) → −0.035em
+  (section h2) → −0.03em (slide title, CTA) → −0.025em (major) → −0.02em (minor)
+  → −0.015em (cell title).
 
 ### 5.3 Borders, Radius, Elevation — ADOPT
 
 - **Square corners throughout: border-radius 0.** Status dots and carousel controls are literal squares.
 - 1px `--line` hairlines divide and border; 1px `--ink` rules open sections and label groups.
+- **The `--ink` rule marks exactly two things: a `.case-section` boundary and a
+  label group (`.hero-ai-note`, `.case-meta`, `.evidence-status`).** Every
+  divider *inside* a section is `--line`, so a sub-block can never read as a new
+  numbered section. The two `--ink`-bordered panels (`.product-carousel__stage`,
+  `.qa-scorecard`) are the only major-evidence containers.
+- **One construction for repeated equal-weight cells:** `gap: 1px` over a
+  `--line` ground, cells on `--surface`, a 1px `--line` frame. Do not reintroduce
+  separated bordered cards with a gap, or per-cell `border-right`/`border-bottom`.
+- **One accent-emphasis idiom:** `border-left: 2px solid var(--accent)`
+  (`.term-note`, `.role-note`, `.qa-outcome`, `.qa-stop`,
+  `.product-journey__panel--with`, `.demo-listing-disclosure`). Do not draw an
+  accent bar with an inset shadow or a fully tinted border.
 - Elevation: one shadow only — on `.product-carousel__image-frame`. Everything else is flat.
 - No gradients anywhere. The sticky header uses `color-mix` transparency + `backdrop-filter: blur(10px)`, not a gradient; the blur radius stays fixed px.
 
 ### 5.4 Grid and Width — ADOPT
 
 - One centered column: `.case` width `min(100% - 3rem, 75rem)`.
-- Hero is a text-led proposition with no screenshot. The seven-screen carousel follows the hero copy at full content width. On desktop, each slide centers a portrait capture and a bounded 25rem caption column as one composition; the carousel heading aligns with the caption column and a compact joined previous/next pair aligns to the commentary's left edge. The slide's visible `01 / 07` label carries position, while a visually hidden live region announces changes for screen readers. Below 56rem the copy column becomes fluid, and below 40rem the slide becomes a vertical stack ordered capture → commentary → controls.
+- Hero is a text-led proposition with no screenshot. The seven-screen carousel follows the hero copy at full content width. On desktop, each slide centers a portrait capture and a bounded 25rem caption column as one composition inside the framed stage, and a compact joined previous/next pair aligns to the commentary's left edge. **The carousel heading sits on the page's left content edge like every other section and sub-block heading** — the framed stage is the object whose contents are centred, not the heading above it. The slide's visible `01 / 07` label carries position, while a visually hidden live region announces changes for screen readers. **At 56rem and below the slide becomes the vertical stack ordered capture → commentary → controls.** The two-column composition is only kept while the commentary column can hold its bounded measure; below 56rem it would be squeezed to roughly 200px, which breaks both the measure and the reserved caption height.
+- The caption height reserved to keep the carousel controls from moving is
+  **measured, per breakpoint, against the longest approved slide copy in that
+  column** — `13.5rem` on desktop, `13rem` in the stack, `15rem` below 23rem,
+  `16.5rem` below 21.5rem — and is authored as `min-height` so longer copy can
+  never be clipped. Verify the reserve by stepping through all seven slides at
+  the breakpoint edges and confirming the controls do not move; re-measure
+  whenever slide copy or caption type changes. In the stack the caption is
+  top-aligned so leftover reserve falls between the comment and the controls,
+  never between the screenshot and its own comment.
+- **The slide title takes one `clamp()` across all widths.** A second,
+  viewport-relative `clamp` inside a media query made the caption height depend
+  on both the column width and the viewport, so no fixed reserve could hold —
+  which is the concrete reason §5.2 forbids per-breakpoint font overrides.
 - Numbered mono kickers (`01`–`07`) are the section motif. Solution is 4-up, AI and learnings are 3-up, evidence is 2-up; each collapses per §14.
-- The dark CTA spans the content width.
+- The dark CTA spans the content width and uses `--pad-panel`.
 
 ### 5.5 Icons and Imagery — ADOPT
 
@@ -214,6 +254,35 @@ Rules:
 - Brand: `assets/flatfeed-logo-mark.png` at 26px in the header/footer wordmark, `alt=""` (decorative next to the visible name).
 - Imagery: seven real Telegram captures document the working product flow in order: start, WBS tier, district, Kaltmiete, rooms, saved filter, and the canonical synthetic listing card. The carousel-level copy states that the catalog is synthetic; each slide adds only a short title and one orienting sentence rather than repeating the visible interface. Do not add a screenshot to the hero, dashboard mockups, or decorative illustrations.
 - Any photo of a building MUST keep alt text disclosing its demo context. Source, author, license, and modifications stay documented in `assets/listing_photos/LICENSES.md`; attribution for a licensed public-preview image also appears in the adjacent figcaption.
+
+### 5.6 Spacing and Structural Tokens — ADOPT
+
+Rhythm, box padding and measure are authored as `:root` tokens in
+`docs/styles.css`. New page styles MUST use these tokens; a new literal value
+MUST NOT be introduced without updating this table.
+
+| Token | Value | Role |
+|---|---|---|
+| `--space-section-top` / `--space-section-bottom` | `2.75rem` / `5rem` | `.case-hero` and `.case-section` insets (`3rem` / `4rem` below 40rem) |
+| `--space-heading-block` | `3.5rem` | section heading → first block, applied once via `.section-heading + *` |
+| `--space-block` | `2.5rem` | block → block inside a section |
+| `--space-panel` | `2rem` | block → block inside a panel |
+| `--space-subrule` | `2rem` | padding after an in-section `--line` divider |
+| `--space-caption` | `1rem` | content → footnote/caption |
+| `--pad-box` | `1.5rem` | every card and grid cell |
+| `--pad-panel` | `3rem` | full-width panel (dark CTA); always `2 × --pad-box` |
+| `--label-col` | `10rem` | label column in every label/content row |
+| `--measure-prose` | `48rem` | prose measure |
+| `--measure-heading` | `42rem` | sub-block and CTA heading measure |
+
+Rules:
+- Micro gaps use one family: `0.75rem` (label/title → text), `1rem`
+  (label → figure, content → caption), `1.5rem` (kicker → heading, everywhere
+  including the dark CTA).
+- Two button heights only: `2.625rem` standard (`.btn`, `.carousel-button`) and
+  `2.25rem` compact (header action, short-viewport carousel).
+- Do not add a component-specific spacing value when a token expresses the same
+  relationship.
 
 ---
 
@@ -793,6 +862,96 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-12 landing consistency pass (tokens, label role, divider hierarchy)
+
+- **Problem:** the page had been refined section by section, so components with
+  one role had drifted apart. `.preview-label` — the block label used 14 times
+  across seven sections — had no style definition at all and rendered as body
+  text next to real mono labels. The 1px `--ink` rule marked both a
+  `.case-section` boundary and five in-section sub-blocks, so a sub-block read
+  as a new numbered section. Repeated equal-weight cells were built three
+  different ways (1px-gap grid, per-cell `border-right`/`border-bottom`,
+  separated cards with a 1.5rem gap). Heading→block spacing was 3.75 / 3 / 1.5 /
+  clamp(3.5–5)rem, card padding 1.25 / 1.5 / 1.75–2rem, cell copy 12.5 / 13 /
+  13.5px at four line heights, label letter-spacing 0.04 / 0.045 / 0.06 / 0.07 /
+  0.08em, and step numbers existed in four variants. The carousel slide title
+  (max 2.75rem) rivalled the section h2 (max 3.5rem), and the caption reserve of
+  18rem — calibrated for the desktop 25rem column — left up to 193px of dead
+  space between a screenshot and its own comment below 56rem. Read top to
+  bottom, the page felt like a set of separately designed sections rather than
+  one product.
+- **Rationale:** consistency over visual preference (§4). Every difference was
+  tested against "is this element intentionally different, or accidentally
+  different?", and only accidental variation was normalized. Nothing was
+  redesigned: the Swiss International system, the one-accent rule, square
+  corners, the seven-section motif and the single shadow are unchanged, and no
+  new colour, family, weight or component was introduced. The fixes are
+  systematic rather than local — a `:root` spacing/measure scale (§5.6), one
+  label role and one letter-spacing (§5.2), one meaning per rule weight and one
+  grid construction (§5.3), and a per-breakpoint caption reserve (§5.4) — so a
+  future change inherits the rule instead of re-deriving a value. The reserved
+  caption height keeps the 2026-08-12 fixed-navigation guarantee: the controls
+  sit at an identical offset on all seven slides at every width, verified in the
+  browser. Removing `box-shadow: inset 3px 0 0` from the comparison panel makes
+  the existing "one shadow only" rule literally true.
+- **Affected surfaces:** `docs/styles.css` (1729 → 1613 lines);
+  `docs/case-study.html` and `docs/demo-listing.html` (stylesheet cache key
+  only); this file (§§5.2–5.6, 34). **No copy, markup, evidence label or number
+  changed on any surface** — the two HTML files differ from their previous
+  version by the `?v=` query string alone.
+- **Carousel breakpoint correction (part of this pass):** measuring the reserve
+  across the full width range exposed a defect that predates it. Between 40rem
+  and 56rem the two-column stage left the commentary about 200px wide, and the
+  seventh slide's attribution needed 18.02rem — more than the reserve. The
+  original fixed `height` therefore overflowed the arrows in that band, which is
+  exactly what the 2026-08-12 fixed-navigation entry set out to prevent, and a
+  `min-height` alone only converted the overlap into a moving control. The
+  vertical stack now starts at 56rem instead of 40rem, so the two-column
+  composition is kept only where the commentary can hold its bounded measure.
+  Under §4 this is correctness over visual preference: the recorded guarantee
+  was unmet, and the composition it protected had already failed at that width.
+  Verified by stepping all seven slides at 344 / 360 / 375 / 390 / 430 / 500 /
+  660 / 700 / 890 / 900 / 1000 / 1280 / 1600px — the controls hold one offset at
+  every width.
+- **Carousel heading alignment (author-approved, second review pass):** the
+  carousel introduction was aligned to the caption column, so the media column
+  above the stage stood empty and the block looked accidental rather than
+  composed. It now sits on the page's left content edge, which makes the block
+  read like every other sub-block on the page: rule → heading → panel. This
+  supersedes the alignment half of the 2026-08-11 "centered carousel
+  composition" entry; the centred capture-and-commentary composition *inside*
+  the framed stage is unchanged.
+- **Second review pass — remaining defects found and fixed:** a later
+  `.section-heading > p` rule silently overrode the shared prose role, so all
+  seven section paragraphs stayed at line-height 1.7 while every other prose
+  block moved to 1.65; `.hero-ai-note` copy sat at 1.55 and `.term-note` at
+  0.8125rem, outside the card-copy role; header and footer nav links used two
+  sizes; the field table used two sizes for `th` and `td` where weight already
+  carries the distinction; the comparison lists kept a trailing hairline the
+  evidence lists did not; the 1px accent-bar compensation was placed before the
+  rules it had to override, so the cascade discarded it; the dark CTA and the
+  small-screen panels each carried their own inner spine. The page now resolves
+  to **one outer spine and one inner spine at every width**, verified by
+  measuring the left edge of every panel and its first child.
+- **Compatibility impact:** an unstyled or sentence-case `.preview-label`, an
+  `--ink` divider inside a section, a second grid construction for repeated
+  cells, a literal spacing/padding/measure value where §5.6 has a token, a mono
+  label at any letter-spacing other than `0.07em`, an accent bar drawn as an
+  inset shadow, a desktop-only carousel caption reserve, a two-column carousel
+  stage below 56rem, a carousel heading aligned to the caption column, a
+  per-breakpoint font-size override, and any second inner spine no longer
+  conform.
+  Dead selectors that duplicated a live pattern (`.btn--ghost`, `.btn--accent`,
+  `.top-link`, `.evidence-card--open`, `.qa-table__miss`, `.qa-explainer`,
+  `.reliability-boundary__note`) were removed so they cannot seed a divergent
+  variant; the `.demo-listing-*` rules were kept because they belong to the
+  separate demo surface.
+- **Migration consideration:** fixed now, in one pass. Carousel behaviour,
+  keyboard and swipe support, the `aria-live` position region, disabled states,
+  focus rings, slide order, screenshots, evidence and the seven-section
+  structure are unchanged. The carousel heading alignment was raised as an open
+  item in the first pass, approved by the author, and folded into this entry.
 
 ### 2026-08-12 fixed carousel navigation position
 
