@@ -47,17 +47,18 @@
         <section class="case-hero" id="problem" aria-labelledby="case-title">
           <div class="hero-copy">
             <p class="kicker"><span>01</span>Problem</p>
-            <h1 id="case-title">Stop checking multiple websites for Berlin WBS apartments.</h1>
+            <h1 id="case-title">Berlin WBS listings are spread across housing portals and provider websites.</h1>
             <p class="case-lede">
-              New listings can appear and disappear quickly. Checking several housing-provider
-              websites again and again takes time, repeats the same work and makes it easy to see
-              a suitable apartment too late. FlatFeed lets users save four criteria once and
-              receive a Telegram notification when a matching Berlin apartment appears.
+              ImmoScout24 can notify users when a new offer appears on its platform, but housing
+              providers also maintain their own listing pages; users cannot assume every offer
+              appears in both places at the same time. In a market where listings may stay online
+              only briefly, even a delay can leave less time to apply. FlatFeed lets users save four
+              criteria once and receive a Telegram notification when a matching Berlin apartment appears.
             </p>
 
             <aside class="hero-ai-note" aria-label="FlatFeed product summary">
               <p class="preview-label">Product in one sentence</p>
-              <p>One saved WBS filter replaces repeated checks across provider websites and turns new matching listings into timely Telegram alerts.</p>
+              <p>One saved WBS filter replaces repeated checks across housing portals and provider websites and turns new matching listings into timely Telegram alerts.</p>
             </aside>
 
             <p class="term-note">
@@ -68,7 +69,7 @@
               <div><dt>Audience</dt><dd>Berlin WBS renters</dd></div>
               <div><dt>Role</dt><dd>AI Product Manager</dd></div>
               <div><dt>Product</dt><dd>Telegram apartment-alert prototype</dd></div>
-              <div><dt>Scope</dt><dd>0→1 product, architecture and AI QA evaluation</dd></div>
+              <div><dt>Scope</dt><dd>Product strategy, prototype architecture and AI QA evaluation</dd></div>
             </dl>
           </div>
         </section>
@@ -135,11 +136,7 @@
         <section class="case-section" id="built">
           <header class="section-heading">
             <p class="kicker"><span>03</span>What I Built</p>
-            <h2>A working Telegram flow backed by multi-source ingestion and deterministic matching.</h2>
-            <p>
-              The screenshots below show the complete user journey: create a saved filter, review
-              its criteria and receive a consistent card for a matching apartment.
-            </p>
+            <h2>A working Telegram product that matches listings to one saved filter.</h2>
           </header>
 
           <section class="product-carousel" id="walkthrough" aria-labelledby="walkthrough-title" data-carousel>
@@ -147,7 +144,7 @@
               <div>
                 <h2 id="walkthrough-title">From four criteria to a matching apartment.</h2>
                 <p>
-                  Seven captures show how the product works without exposing a live prototype.
+                  The screenshots below show the complete user journey: create a saved filter, review its criteria and receive a consistent card for a matching apartment.
                 </p>
               </div>
             </header>
@@ -344,7 +341,7 @@
         <section class="case-section" id="ai">
           <header class="section-heading">
             <p class="kicker"><span>05</span>How AI Fits</p>
-            <h2>AI checks data quality without deciding which apartments users see.</h2>
+            <h2>AI flags possible data errors. Fixed rules decide which apartments match.</h2>
             <p>
               WBS type, district, maximum Kaltmiete and rooms are explicit criteria, so matching
               does not need a model. AI is useful as a second quality check because housing
@@ -593,15 +590,6 @@
 
             <div class="qa-findings">
               <article>
-                <p class="preview-label">What did not work</p>
-                <h4>One clean listing produced no usable result.</h4>
-                <p>
-                  The model returned a quote that did not appear exactly in the raw listing text,
-                  so local validation rejected it. The check was not retried and did not create a
-                  false alert. It was the only unusable result; no planted parser error was missed.
-                </p>
-              </article>
-              <article>
                 <p class="preview-label">How the final check worked</p>
                 <h4>AI read the source. Code made the decision.</h4>
                 <p>
@@ -616,6 +604,15 @@
                 <p>
                   I ran the final 600-listing benchmark once within the planned budget and did not
                   tune the result afterwards.
+                </p>
+              </article>
+              <article>
+                <p class="preview-label">What did not work</p>
+                <h4>One clean listing produced no usable result.</h4>
+                <p>
+                  The model returned a quote that did not appear exactly in the raw listing text,
+                  so local validation rejected it. The check was not retried and did not create a
+                  false alert. It was the only unusable result; no planted parser error was missed.
                 </p>
               </article>
             </div>

@@ -1,10 +1,10 @@
 # FlatFeed Case Study
 
-FlatFeed helps Berlin WBS users avoid repeatedly checking several
-housing-provider websites for new apartments. Users save their WBS type,
-preferred Berlin district, maximum Kaltmiete and room count once. FlatFeed
-checks newly collected listings against that filter and sends a Telegram
-notification when a matching apartment appears.
+FlatFeed helps Berlin WBS users avoid repeatedly checking housing portals and
+provider websites for new apartments. Users save their WBS type, preferred
+Berlin district, maximum Kaltmiete and room count once. FlatFeed checks newly
+collected listings against that filter and sends a Telegram notification when a
+matching apartment appears.
 
 WBS (Wohnberechtigungsschein) is a certificate used to qualify for subsidized
 housing in Berlin. Kaltmiete is the base rent, excluding operating and heating
@@ -12,11 +12,12 @@ costs.
 
 ## 1. Problem
 
-New WBS listings can appear and disappear quickly. Checking several provider
-websites again and again takes time, repeats the same work and makes it easy to
-see a suitable apartment too late. FlatFeed replaces that repeated monitoring
-with one saved filter, timely Telegram notifications and one consistent listing
-format.
+ImmoScout24 can notify users when a new offer appears on its platform, but
+housing providers also maintain their own listing pages; users cannot assume
+every offer appears in both places at the same time. In a market where listings
+may stay online only briefly, even a delay can leave less time to apply.
+FlatFeed replaces repeated monitoring across those channels with one saved
+filter, timely Telegram notifications and one consistent listing format.
 
 ## 2. Solution
 
@@ -45,7 +46,9 @@ in one consistent format.
 
 ## 3. What I Built
 
-The Telegram product supports the complete saved-filter journey:
+I built a working Telegram product that matches listings to one saved filter
+and sends each result in one consistent format. It supports the complete
+saved-filter journey:
 
 - create and edit a filter with WBS type, district, maximum Kaltmiete and rooms;
 - request matching listings on demand;
@@ -65,11 +68,12 @@ The system foundation includes:
 - deterministic parsing and matching;
 - notification tracking and deduplication.
 
-The HTML case study uses seven Telegram captures to show the product without
-opening a live prototype: start, WBS type, district, maximum Kaltmiete, rooms,
-saved filter and matching listing. The final capture includes a building photo
-by Bodo Kubrak, CC0 1.0; the local copy was resized and the location is
-Schlangenbader Straße 91.
+The screenshots in the HTML case study show the complete user journey: create a
+saved filter, review its criteria and receive a consistent card for a matching
+apartment. The seven captures cover the start, WBS type, district, maximum
+Kaltmiete, rooms, saved filter and matching listing. The final capture includes
+a building photo by Bodo Kubrak, CC0 1.0; the local copy was resized and the
+location is Schlangenbader Straße 91.
 
 ## 4. My Role
 
@@ -87,9 +91,9 @@ team or a live rollout.
 
 ## 5. How AI Fits
 
-AI is not used to decide which apartments users see. WBS type, district,
-maximum Kaltmiete and rooms are explicit criteria, so deterministic rules are
-more predictable and easier to trace.
+AI flags possible data errors. Fixed rules decide which apartments match. WBS
+type, district, maximum Kaltmiete and rooms are explicit criteria, so those
+rules are predictable and easy to trace.
 
 AI is useful as a second data-quality check because provider listings express
 the same values in different language and layouts. The model rereads the
@@ -158,11 +162,6 @@ impact.
 | Floor | Listing card | 25/25 (100.0%) | 25/25 | Target met |
 | Warmmiete | Listing card | 20/20 (100.0%) | 20/20 | Target met |
 
-One clean listing produced no usable result because the model returned a quote
-that did not appear exactly in the original listing text. Local validation
-rejected it. The check was not retried and did not create a false alert. No
-planted parser error was missed.
-
 The final configuration used `gpt-5.6-Terra` with high reasoning effort and
 strict Structured Outputs. The model returned quoted evidence for eight listing
 values. Fixed code compared that evidence with FlatFeed's parsed data and could
@@ -172,6 +171,11 @@ This experiment ran offline and is not integrated into the product. It cannot
 change a listing, decide a match or edit a Telegram card. I ran the final
 600-listing benchmark once within the planned budget and did not tune the
 result afterwards.
+
+One clean listing produced no usable result because the model returned a quote
+that did not appear exactly in the original listing text. Local validation
+rejected it. The check was not retried and did not create a false alert. No
+planted parser error was missed.
 
 > The final run met every synthetic acceptance gate, so I stopped synthetic
 > tuning. The prototype is complete at its intended scope: an implemented
