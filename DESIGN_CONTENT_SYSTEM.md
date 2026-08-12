@@ -215,7 +215,7 @@ Rules:
 - **Square corners throughout: border-radius 0.** Status dots and carousel controls are literal squares.
 - 1px `--line` hairlines divide and border; 1px `--ink` rules open sections and label groups.
 - **The `--ink` rule marks exactly two things: a `.case-section` boundary and a
-  label group (`.hero-ai-note`, `.case-meta`, `.evidence-status`).** Every
+  label group (`.case-meta`, `.evidence-status`).** Every
   divider *inside* a section is `--line`, so a sub-block can never read as a new
   numbered section. The two `--ink`-bordered panels (`.product-carousel__stage`,
   `.qa-scorecard`) are the only major-evidence containers.
@@ -299,7 +299,7 @@ Rules:
 The status card shows whether a filter exists and, when configured, lists WBS, District, Max Kaltmiete, and Rooms in that order. It offers `Show matches`, `Edit filter`, `Reset filter`, and `Delete my data`. The setup wizard asks one field at a time and persists only after all four answers are complete.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → compact sticky top bar (FlatFeed brand with `Product case study` subtitle; compact centered seven-item nav: Problem · Solution · What I Built · My Role · How AI Fits · Results · What I Learned; one proportionally compact Repository action) → text-led Problem hero (plain-language proposition, first-use domain-term tooltips and role/product/audience/scope metadata) → **product-first seven-section case study**: 01 Problem · 02 Solution · 03 What I Built · 04 My Role · 05 How AI Fits · 06 Results · 07 What I Learned → current setup and limitations inside What I Learned → dark summary CTA → sibling case cross-link. The sibling cross-link is the final page block; there is no separate footer.
+Skip link → compact sticky top bar (FlatFeed brand with `Product case study` subtitle; compact centered seven-item nav: Problem · Solution · What I Built · My Role · How AI Fits · Results · What I Learned; one proportionally compact Repository action) → text-led Problem hero (plain-language proposition and first-use WBS tooltip) → Solution opening (one bold product statement with the first-use Kaltmiete tooltip, followed by Audience and Product metadata) → **product-first seven-section case study**: 01 Problem · 02 Solution · 03 What I Built · 04 My Role · 05 How AI Fits · 06 Results · 07 What I Learned → current setup and limitations inside What I Learned → dark summary CTA → sibling case cross-link. The sibling cross-link is the final page block; there is no separate footer.
 
 The page MUST answer in order: what user problem the product simplifies, how FlatFeed solves it, what was built, what the candidate owned, how AI fits into the already-understood product, what was measured and what was learned. AI QA remains bounded and follows the product proof; dashboard mockups, mock-cost, legal analysis and historical iteration tables do not belong in the main public narrative. At ≤56rem the nav becomes a two-column grid so all seven section names remain visible without making the header sticky.
 
@@ -604,20 +604,20 @@ technical docs, research language, outcomes and tests — use `user` / `users`.
 
 The page serves three reading depths; every depth must independently answer its questions.
 
-**10-second scan** (brand label + Problem kicker + H1 + lede + one-sentence product summary + metadata) must answer: What is FlatFeed, where is it used, which repeated task does it replace, who is it for, and what did the candidate own?
-Mechanics: the header brand shows `FlatFeed` with a smaller `Product case study` subtitle. The seven navigation labels sit in a compact centered row rather than being distributed across the full page width. Every numbered section has a matching navigation item using exactly the same words, capitalization and punctuation. The kicker establishes `01 Problem`. The H1 names repeated checks across Berlin WBS apartment websites. The lede explains why repeated monitoring costs time and why a late discovery matters, then states the saved-filter and Telegram-alert solution. The one-sentence summary describes the product mechanism without technical setup qualifiers. Metadata identifies Audience, Role, Product and Scope. Demo-source, runtime and validation limitations remain consolidated in the final disclosure block.
+**10-second scan** (brand label + Problem kicker + H1 + lede + the opening of Solution with its bold product statement and metadata) must answer: What is FlatFeed, where is it used, which repeated task does it replace and who is it for?
+Mechanics: the header brand shows `FlatFeed` with a smaller `Product case study` subtitle. The seven navigation labels sit in a compact centered row rather than being distributed across the full page width. Every numbered section has a matching navigation item using exactly the same words, capitalization and punctuation. The kicker establishes `01 Problem`. The H1 names repeated checks across Berlin WBS apartment websites. The lede explains why repeated monitoring costs time and why a late discovery matters, then states the saved-filter and Telegram-alert solution. The one-sentence summary describes the product mechanism without technical setup qualifiers. Metadata identifies Audience and Product; candidate ownership remains in My Role. Demo-source, runtime and validation limitations remain consolidated in the final disclosure block.
 
 **30-second scan** (+ Solution, product walkthrough and Role) must answer: how FlatFeed changes the user workflow, what was implemented and what the candidate owned before introducing AI details.
-Mechanics: the product-first sequence is Problem → Solution → What I Built → My Role. Solution shows save → prepare → match → notify plus the Without/FlatFeed comparison. What I Built contains the seven-screen carousel and two concise capability cards. My Role names direct ownership and coding collaborators without implying a managed ML team.
+Mechanics: the product-first sequence is Problem → Solution → What I Built → My Role. Solution establishes the product value with the Without/FlatFeed comparison. What I Built starts with the implemented save → prepare → match → notify flow, then shows the seven-screen carousel and two concise capability cards. My Role names direct ownership and coding collaborators without implying a managed ML team.
 
 **Deep read** must answer: problem severity without invented metrics, product mechanism, implemented product, ownership, AI rationale, model-selection rationale, measured evidence, limitations, learnings and the next validation question. How AI Fits explains the bounded AI role only after the product is established. Results contains one plain-language final-evaluation narrative: experiment setup, decision, aggregate metrics, field-level results, the one invalid check, stopping rationale and a bounded cost scenario. Only the final 600-listing run may appear as quantitative evidence; the synthetic qualifier, accepted synthetic decision, one unusable check and no-runtime-integration boundary stay visible at the same depth as the strongest metrics.
 
 Element rules:
-- **Problem hero:** numbered kicker → plain proposition H1 → one-paragraph problem and product lede → one-sentence summary → WBS gloss → four-item metadata for Audience, Role, Product and Scope. Every value is decodable without insider context.
-- **Solution:** show four stages—save one filter, prepare every source, match with rules, notify once—followed by the Without/FlatFeed comparison. This section explains the complete product mechanism without AI or demo-setup qualifiers interrupting the story.
+- **Problem hero:** numbered kicker → plain proposition H1 with the first-use WBS tooltip → one-paragraph problem and product lede. It names the fragmented, time-sensitive task before project metadata interrupts the argument.
+- **Solution:** one bold, full-width product statement combines the outcome, four saved criteria, normalized listing format, fixed-rule matching and Telegram alert behavior → two-item metadata for Audience and Product → the Without/FlatFeed comparison. Do not repeat the product essence in a secondary paragraph or `Product in one sentence` block, and do not pre-empt My Role with Role or Scope metadata. Every metadata value is decodable without insider context. This section explains the complete product mechanism without AI or demo-setup qualifiers interrupting the story.
 - **Product carousel:** seven real Telegram captures document setup through result in the author-supplied order. The hero remains text-only. The carousel does not auto-advance; previous/next buttons, arrow keys, and touch swipe expose the sequence. On desktop the capture and its bounded caption form one centered two-column block, with the heading aligned over the caption and a compact joined pair of arrow buttons immediately below the commentary, aligned to its left edge. Every capture sits in the same fixed-ratio frame with `object-fit: contain`, and every caption uses the same reserved height, sized for the longest approved slide copy. Together these keep the buttons fixed while screens change without cropping screenshots or allowing copy to overlap the controls. The buttons share one internal border so they read as a single navigator rather than two floating actions. Do not show a second visual `Screen N of 7` label because the caption already shows `NN / 07`; retain a visually hidden live region for assistive technology. On mobile, commentary remains adjacent in reading order, retains the shared reserved height, and controls follow it with the same left alignment. Carousel-level copy describes the product sequence without repeating demo setup. Each slide uses a step number, short title, and one orienting sentence. Photo credit remains adjacent to the relevant image. No dashboard, mock metrics, fabricated runtime data or browser imitation.
 - **Workflow comparison:** Without FlatFeed lists three manual steps; With FlatFeed lists three simplified steps. It belongs in Solution, uses distinct neutral/accent treatments and one directional SVG arrow, and MUST NOT return to inline arrow chains.
-- **What I Built:** lead with the seven-screen carousel, then use two cards to summarize the user product and implemented system foundation. Notification delivery is a product capability and may appear; AI rationale waits until How AI Fits; lower-level controls such as source-health cooldowns stay in technical docs.
+- **What I Built:** begin with the four-stage implemented flow—save one filter, prepare every source, match with rules, notify once—then lead into the seven-screen carousel and use two cards to summarize the user product and implemented system foundation. Notification delivery is a product capability and may appear; AI rationale waits until How AI Fits; lower-level controls such as source-health cooldowns stay in technical docs.
 - **My Role:** name problem definition, notification priority, matching fields, source-adapter architecture, AI boundary, evaluation ownership and coding collaborators. State that the portfolio project did not include a managed ML team or live rollout.
 - **How AI Fits:** state explicitly that deterministic rules own user matching. AI rereads source text only for parser QA, admins review discrepancies, and the user/admin paths stay separate. Include the qualitative progression from lower-cost configurations to the selected model and reasoning effort without intermediate scores. Do not frame AI as the product recommendation engine.
 - **Results:** open with an explicit Implemented product / Measured · synthetic AI QA split. The final hosted-model result retains its synthetic qualifier and 599/600 usable-check limitation at the same reading depth.
@@ -864,6 +864,49 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-12 move the implementation flow into What I Built
+
+- **Problem:** the four-stage workflow in Solution repeated the product
+  mechanism after the consolidated product statement, while What I Built began
+  with screenshots without first showing the implemented system that produces
+  them.
+- **Rationale:** Solution should establish the user value through the concise
+  product statement and Without/FlatFeed comparison. Starting What I Built with
+  save → prepare → match → notify creates a clear mechanism-to-proof sequence:
+  readers see the implemented flow before its Telegram screens. The existing
+  four-column workflow and single-column mobile treatment remain unchanged.
+- **Affected surfaces:** workflow markup in `docs/case-study.html`; its
+  narrative location in `CASE_STUDY.md`; this file (§§22, 34).
+- **Compatibility impact:** a four-stage workflow inside Solution no longer
+  conforms. It belongs immediately after the What I Built heading and before
+  the product carousel.
+- **Migration consideration:** moved now without changing workflow copy,
+  product behavior, screenshots, evidence or responsive layout.
+
+### 2026-08-12 consolidate the product essence in Solution
+
+- **Problem:** the Solution opening repeated the product across a headline,
+  supporting paragraph and separate `Product in one sentence` block. Each
+  version added a different detail, forcing readers to assemble the product
+  proposition from three competing texts.
+- **Rationale:** keep Problem focused on the user need, then consolidate the
+  complete product essence into one bold, full-width Solution statement. Place
+  Audience and Product metadata directly after it. Role and Scope belong in My Role;
+  removing them here prevents the Solution from previewing the next section.
+  This removes repetition without removing the four criteria, normalized
+  format, fixed rules or Telegram-alert behavior.
+- **Affected surfaces:** Solution copy and markup in `docs/case-study.html` and
+  `CASE_STUDY.md`; statement width and retired product-summary rules in
+  `docs/styles.css`; stylesheet cache keys in both public HTML files; this file
+  (§§5.3, 6.3, 22, 34).
+- **Compatibility impact:** separate Solution supporting copy, a `Product in one
+  sentence` block, product metadata inside Problem, or Role / Scope metadata in
+  Solution no longer conform. The approved order is one product statement →
+  Audience / Product metadata → four-step workflow.
+- **Migration consideration:** consolidated now. The retained metadata values,
+  workflow, tooltips, product claims, evaluation evidence and product behavior
+  are unchanged; ownership detail remains in My Role.
 
 ### 2026-08-12 first-use domain-term tooltips
 
