@@ -16,8 +16,9 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260812-consistency-pass">
+    <link rel="stylesheet" href="styles.css?v=20260812-term-tooltips">
     <script src="carousel.js?v=20260807-product-carousel" defer></script>
+    <script src="terms.js?v=20260812-term-tooltips" defer></script>
   </head>
   <body>
     <div class="case">
@@ -39,7 +40,7 @@
           <a href="#learned">What I Learned</a>
         </nav>
         <div class="top-actions">
-          <a class="btn btn--primary" href="https://github.com/mich-mayer/flatfeed">Repository</a>
+          <a class="btn btn--primary" href="https://github.com/mich-mayer/flatfeed">View repository</a>
         </div>
       </header>
 
@@ -47,7 +48,7 @@
         <section class="case-hero" id="problem" aria-labelledby="case-title">
           <div class="hero-copy">
             <p class="kicker"><span>01</span>Problem</p>
-            <h1 id="case-title">Berlin WBS listings are spread across housing portals and provider websites.</h1>
+            <h1 id="case-title">Berlin <span class="term" data-term><button class="term__trigger" type="button" aria-describedby="term-wbs" aria-expanded="false">WBS</button><span class="term__tooltip" id="term-wbs" role="tooltip">Wohnberechtigungsschein: a certificate used to qualify for subsidized housing in Berlin.</span></span> listings are spread across housing portals and provider websites.</h1>
             <p class="case-lede">
               ImmoScout24 can notify users when a new offer appears on its platform, but housing
               providers also maintain their own listing pages; users cannot assume every offer
@@ -60,10 +61,6 @@
               <p class="preview-label">Product in one sentence</p>
               <p>One saved WBS filter replaces repeated checks across housing portals and provider websites and turns new matching listings into timely Telegram alerts.</p>
             </aside>
-
-            <p class="term-note">
-              <span><strong>WBS</strong> (Wohnberechtigungsschein) is a certificate used to qualify for subsidized housing in Berlin. <strong>Kaltmiete</strong> is base rent, excluding operating and heating costs.</span>
-            </p>
 
             <dl class="case-meta">
               <div><dt>Audience</dt><dd>Berlin WBS renters</dd></div>
@@ -79,7 +76,7 @@
             <p class="kicker"><span>02</span>Solution</p>
             <h2>One saved filter turns repeated website checks into timely Telegram alerts.</h2>
             <p>
-              Users set WBS type, district, maximum Kaltmiete and rooms once. FlatFeed prepares
+              Users set WBS type, district, maximum <span class="term term--align-start" data-term><button class="term__trigger" type="button" aria-describedby="term-kaltmiete" aria-expanded="false">Kaltmiete</button><span class="term__tooltip" id="term-kaltmiete" role="tooltip">Base rent, excluding operating and heating costs.</span></span> and rooms once. FlatFeed prepares
               listings from different sources in one format, applies fixed matching rules and
               notifies the user when a newly collected apartment matches the saved criteria.
             </p>
@@ -272,7 +269,7 @@
                     <figcaption>
                       <span>07 / 07</span>
                       <strong>Review a matched listing</strong>
-                      <p>One consistent card shows eligibility, rent and estimated transit walks.</p>
+                      <p>One consistent card shows eligibility, rent and estimated transit walks. When background delivery is enabled, each newly collected match arrives as a Telegram notification in the same card format.</p>
                       <p><small>Building photo: Bodo Kubrak, CC0 1.0; local copy resized. Location: Schlangenbader Straße 91.</small></p>
                     </figcaption>
                   </figure>
@@ -747,9 +744,6 @@
             <p class="kicker">Case study summary</p>
             <h2>One filter. Timely apartment alerts. FlatFeed brings multiple listing sources into one flow, matches apartments with fixed rules and uses AI to check data quality.</h2>
           </div>
-          <div class="case-actions">
-            <a class="btn btn--inverse" href="https://github.com/mich-mayer/flatfeed">View repository</a>
-          </div>
         </section>
 
         <section class="case-sibling" aria-label="Another product case study">
@@ -762,17 +756,6 @@
         </section>
       </main>
 
-      <footer class="case-foot">
-        <a class="brand" href="case-study.html" aria-label="FlatFeed">
-          <img class="brand-mark" src="assets/flatfeed-logo-mark.png" alt="">
-          <strong>FlatFeed</strong>
-        </a>
-        <p>One saved filter. Multi-source ingestion. Deterministic matching. Admin-only AI QA.</p>
-        <nav aria-label="Footer links">
-          <a href="https://github.com/mich-mayer/flatfeed">Repository</a>
-          <a href="https://github.com/mich-mayer/flatfeed/blob/main/CASE_STUDY.md">Markdown version</a>
-        </nav>
-      </footer>
     </div>
   </body>
 </html>

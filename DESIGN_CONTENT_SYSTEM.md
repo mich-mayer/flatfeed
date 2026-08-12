@@ -95,7 +95,7 @@ Derived from the product's actual behavior — not imported from external system
 
 **P6 — Domain terms are kept, glossed, never translated away.**
 *Why:* WBS, Kaltmiete, Bezirk are the domain; removing them removes correctness.
-*Implications:* the product is English-facing; WBS (Wohnberechtigungsschein) and Kaltmiete keep short plain-language explainers at the point of use (wizard hints); the visible filter label is `District` while the semantic unit is the Bezirk (12 Berlin Bezirke; Ortsteil/Kiez names normalize to a Bezirk).
+*Implications:* the product is English-facing; WBS (Wohnberechtigungsschein) and Kaltmiete keep short plain-language explainers at the point of use (wizard hints in Telegram; accessible hover, keyboard-focus and tap tooltips at first use on the case page); the visible filter label is `District` while the semantic unit is the Bezirk (12 Berlin Bezirke; Ortsteil/Kiez names normalize to a Bezirk).
 *Anti-pattern:* renaming WBS to "housing certificate"; translating Kaltmiete to "cold rent" in UI.
 
 **P7 — Destructive actions confirm; everything else flows.**
@@ -152,12 +152,13 @@ All colors come from `:root` in `docs/styles.css`. New page styles MUST use thes
 | `--ink-2` | `#445254` | Secondary text | Ledes, prose paragraphs, nav links | — |
 | `--ink-3` | `#687576` | Tertiary text | Mono kickers, captions, labels | Long body text blocks |
 | `--line` | `#dce4e1` | Hairlines | 1px dividers, card borders, grid rules | Text |
+| `--brand` | `#6247ea` | FlatFeed logo purple | Header Repository button only | Content accents, evidence status, long text |
 | `--accent` | `#08766e` | Single accent — FlatFeed teal | Kicker numbers, state dots, button hovers, selection, focus rings | Long text |
 | `--accent-deep` | `#055d57` | Accent text/links | Link hovers and demo-state label | — |
 | `--accent-wash` | `#e3f2ee` | Accent wash | Role note and quiet accent fills | Text backgrounds needing contrast |
 
 Rules:
-- **One-accent system:** teal is the only content accent. Evidence is distinguished by labels and filled/outlined square markers, not by a second result color.
+- **One-accent system:** teal is the only content accent. Evidence is distinguished by labels and filled/outlined square markers, not by a second result color. The header Repository button is the sole brand-purple exception and matches the logo asset; purple carries no evidence or status meaning.
 - The page has no error/warning/success status colors — it is editorial, not operational. Do not import status palettes from the bot, the dashboard, or Opsqora's status set (`--ok`/`--warn`/`--bad` were deliberately not ported).
 - The dark CTA uses `--ink` as ground with literal white/transparent-white values in the local component rules. It is the only inverted zone on the page except dark buttons.
 
@@ -193,7 +194,7 @@ Sizes below list the **reference px at a 16px root**; each is authored in `style
 | Kicker (`.kicker`) | mono 500 | 11px uppercase, ls 0.07em | `--ink-3`; index number span in `--accent` 600 |
 | Block label (`.preview-label`, `.evidence-status`) | mono 600 | 11px uppercase, ls 0.07em | `--ink-3`; `--ink-2` on `--accent-wash` for AA contrast |
 | Step / item number | mono 600 | 11px, ls 0.07em | `--accent`; only colour varies, and only where it carries meaning |
-| Buttons (`.btn`) | ui 600 | 13px, padding 11×18 | square corners; the header Repository action uses compact 12px text, 7×11 padding and a 36px minimum height |
+| Buttons (`.btn`) | ui 600 | 13px, padding 11×18 | square corners; the header Repository action uses compact 12px text, 11px horizontal padding and the same 26px authored height as the logo mark |
 | Labels / dt | mono 500 | 10–11px uppercase, ls 0.07em | `--ink-3` |
 | Product-preview fields | ui/mono | 9–12px | compact product evidence only |
 
@@ -201,8 +202,8 @@ Rules:
 - Base body is 15px/1.5 `--font-ui`; long-form prose measure stays ≤680px (reference px at the 16px root; authored as 0.9375rem/42.5rem).
 - Display sizes use `clamp()` — do not add per-breakpoint font overrides.
 - New text styles SHOULD reuse a role above rather than introduce a new size; do not add weights above 700.
-- **One letter-spacing for every mono/uppercase label: `0.07em`.** Kickers, block
-  labels, `dt`s, table headers, step numbers and the footer tagline share it.
+- **One letter-spacing for every mono/uppercase label: `0.07em`.** Kickers,
+  block labels, `dt`s, table headers and step numbers share it.
 - **One line height per prose role.** Supporting prose is 1.65, card/cell copy is
   1.6. Do not fork a per-component line height.
 - Display letter-spacing follows size monotonically: −0.04em (h1) → −0.035em
@@ -222,7 +223,7 @@ Rules:
   `--line` ground, cells on `--surface`, a 1px `--line` frame. Do not reintroduce
   separated bordered cards with a gap, or per-cell `border-right`/`border-bottom`.
 - **One accent-emphasis idiom:** `border-left: 2px solid var(--accent)`
-  (`.term-note`, `.role-note`, `.qa-outcome`, `.qa-stop`,
+  (`.role-note`, `.qa-outcome`, `.qa-stop`,
   `.product-journey__panel--with`, `.demo-listing-disclosure`). Do not draw an
   accent bar with an inset shadow or a fully tinted border.
 - Elevation: one shadow only — on `.product-carousel__image-frame`. Everything else is flat.
@@ -251,7 +252,7 @@ Rules:
 ### 5.5 Icons and Imagery — ADOPT
 
 - Icons are inline hand-written SVG strokes, stroke `currentColor`, width 2: 14px inside buttons (arrows, git-branch), 16px in panel headers. No icon library at runtime, no emoji on the page.
-- Brand: `assets/flatfeed-logo-mark.png` at 26px in the header/footer wordmark, `alt=""` (decorative next to the visible name).
+- Brand: `assets/flatfeed-logo-mark.png` at 26px in the header wordmark, `alt=""` (decorative next to the visible name).
 - Imagery: seven real Telegram captures document the working product flow in order: start, WBS tier, district, Kaltmiete, rooms, saved filter, and the canonical synthetic listing card. The carousel-level copy states that the catalog is synthetic; each slide adds only a short title and one orienting sentence rather than repeating the visible interface. Do not add a screenshot to the hero, dashboard mockups, or decorative illustrations.
 - Any photo of a building MUST keep alt text disclosing its demo context. Source, author, license, and modifications stay documented in `assets/listing_photos/LICENSES.md`; attribution for a licensed public-preview image also appears in the adjacent figcaption.
 
@@ -279,8 +280,9 @@ Rules:
 - Micro gaps use one family: `0.75rem` (label/title → text), `1rem`
   (label → figure, content → caption), `1.5rem` (kicker → heading, everywhere
   including the dark CTA).
-- Two button heights only: `2.625rem` standard (`.btn`, `.carousel-button`) and
-  `2.25rem` compact (header action, short-viewport carousel).
+- Standard controls use `2.625rem`; short-viewport carousel arrows use
+  `2.25rem`. The header Repository action is a deliberate `1.625rem` brand
+  lockup exception matching the adjacent logo-mark height.
 - Do not add a component-specific spacing value when a token expresses the same
   relationship.
 
@@ -297,7 +299,7 @@ Rules:
 The status card shows whether a filter exists and, when configured, lists WBS, District, Max Kaltmiete, and Rooms in that order. It offers `Show matches`, `Edit filter`, `Reset filter`, and `Delete my data`. The setup wizard asks one field at a time and persists only after all four answers are complete.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → compact sticky top bar (FlatFeed brand with `Product case study` subtitle; compact centered seven-item nav: Problem · Solution · What I Built · My Role · How AI Fits · Results · What I Learned; one proportionally compact Repository action) → text-led Problem hero (plain-language proposition, WBS gloss and role/product/audience/scope metadata) → **product-first seven-section case study**: 01 Problem · 02 Solution · 03 What I Built · 04 My Role · 05 How AI Fits · 06 Results · 07 What I Learned → current setup and limitations inside What I Learned → dark summary CTA → sibling case cross-link → footer.
+Skip link → compact sticky top bar (FlatFeed brand with `Product case study` subtitle; compact centered seven-item nav: Problem · Solution · What I Built · My Role · How AI Fits · Results · What I Learned; one proportionally compact Repository action) → text-led Problem hero (plain-language proposition, first-use domain-term tooltips and role/product/audience/scope metadata) → **product-first seven-section case study**: 01 Problem · 02 Solution · 03 What I Built · 04 My Role · 05 How AI Fits · 06 Results · 07 What I Learned → current setup and limitations inside What I Learned → dark summary CTA → sibling case cross-link. The sibling cross-link is the final page block; there is no separate footer.
 
 The page MUST answer in order: what user problem the product simplifies, how FlatFeed solves it, what was built, what the candidate owned, how AI fits into the already-understood product, what was measured and what was learned. AI QA remains bounded and follows the product proof; dashboard mockups, mock-cost, legal analysis and historical iteration tables do not belong in the main public narrative. At ≤56rem the nav becomes a two-column grid so all seven section names remain visible without making the header sticky.
 
@@ -355,10 +357,10 @@ The first-use message states that the prototype uses a synthetic catalog. Empty 
 | Product entry | Persistent reply keyboard + filter status card | `Filter`, `Show matches` | Verb + object |
 | Filter management | Inline buttons under the filter status | `Set up filter`, `Edit filter`, `Reset filter` | One clear action |
 | Destructive | Published `/delete` + inline status action | `Yes, delete saved data` | Consequence named in the confirm labels |
-| Case-study CTAs | `.btn--primary` (ink, teal hover) in the top bar; `.btn--inverse` in the dark CTA | Top bar + final CTA | `Repository` in the header; `View repository` in the final CTA |
+| Case-study CTA | `.btn--primary` in the top bar | Header only | `View repository` |
 
 Rules:
-- One primary action per surface: the bot uses `Show matches` after a filter exists; the case-page header uses `Repository`, while the final summary offers only the repository handoff.
+- One primary action per surface: the bot uses `Show matches` after a filter exists; the case page uses `View repository` in the header. The final summary is editorial, with no button.
 - Catalog browsing, admin controls, model metrics, and QA simulation are intentionally absent from the public bot.
 - Actions that do not exist (subscribe/unsubscribe toggles, listing bookmarking, export, language switch) MUST NOT be referenced in copy as if they did.
 
@@ -544,7 +546,7 @@ Capitalization: sentence case everywhere; card labels and proper/domain nouns (W
 | Remove saved product data | `/delete` (+ consequence-named confirm pair) | "Unsubscribe", "Forget me" | Published command and status card |
 | Admin: triage a finding | **Parser error** / **Parser correct** / **Borderline / unsure** | Any fourth label; abbreviations | QA reports |
 | Open a listing | **Open listing** (the card's only link) | "More", "Details" | Listing card |
-| Case-study CTAs | **Repository** / **View repository** | "Open prototype", "Try the demo", "Review the walkthrough", "GitHub" (as a button label) | Header uses **Repository**; the final CTA uses **View repository** |
+| Case-study CTA | **View repository** | "Open prototype", "Try the demo", "Review the walkthrough", "GitHub" (as a button label) | Header only |
 
 Actions that have no product function (subscribe, bookmark, share, export, language switch, pause notifications) MUST NOT appear in UI or copy as if they did. If a phase adds one, define its canonical verb here first.
 
@@ -626,7 +628,7 @@ Element rules:
   never user or production outcomes. No score from an earlier model iteration
   appears.
 - **What I Learned:** explain why explicit criteria remain rule-based, why model power alone was insufficient and what synthetic evidence cannot prove. Integrate the current demo setup and unvalidated product outcomes as `Current limits` inside this section. Any next-step language is conditional (`If I continued...` / `I would...`), not a roadmap commitment.
-- **Conclusion:** use three plain-language beats: `One filter. Timely apartment alerts.` followed by the mechanism. State that FlatFeed brings multiple listing sources into one flow, fixed rules match apartments and AI checks data quality. This order makes the user value memorable and keeps AI out of the matching decision. The public page MUST NOT imply a committed user study, live-source pilot or production rollout. The final CTA links only to the repository; product behavior is demonstrated through screenshots.
+- **Conclusion:** use three plain-language beats: `One filter. Timely apartment alerts.` followed by the mechanism. State that FlatFeed brings multiple listing sources into one flow, fixed rules match apartments and AI checks data quality. This order makes the user value memorable and keeps AI out of the matching decision. The public page MUST NOT imply a committed user study, live-source pilot or production rollout. The final summary has no button; product behavior is demonstrated through screenshots.
 
 ---
 
@@ -764,7 +766,7 @@ Exists in the codebase today; MUST NOT be reused in new work; migrate when touch
 |---|---|---|---|---|
 | ~~Guided demo as the only public mode (`Try the demo`, `tour:*`)~~ | compatibility handlers remain in `main.py` | It showed portfolio framing instead of the normal product a user would operate | Saved filter + on-demand matching | Retired 2026-08-06; old tour callbacks redirect to filter status |
 | ~~Unfiltered catalog browsing (`📂 All listings`)~~ | (removed — `main.py`) | It bypassed the focused demo and added a competing global action | Replay the guided scenario | Done — don't reintroduce without a new phase decision |
-| Case-page GitHub links hard-coded to `github.com/mich-mayer/flatfeed` (×7) | `docs/case-study.html` — top-bar + evidence + CTA + footer | Static page, no build step: a URL can't be single-sourced in markup without JS-only links (breaks no-JS on the page's key "view my code" CTA) or introducing a build/template; the 7 real hrefs are the correct static pattern | VERIFIED 2026-07-08 against `git origin` — canonical = `mich-mayer/flatfeed`, treat as FACT. A canonical-URL comment at `<body>` top is the documented source of truth; keep the 7 links in sync on any repo move/rename | Resolved-verified |
+| Case-page GitHub links hard-coded to `github.com/mich-mayer/flatfeed` (×4) | `docs/case-study.html` — top bar and evaluation evidence | Static page, no build step: a URL can't be single-sourced in markup without JS-only links (breaks no-JS on the page's key "view my code" CTA) or introducing a build/template; the 4 real hrefs are the correct static pattern | VERIFIED 2026-07-08 against `git origin` — canonical = `mich-mayer/flatfeed`, treat as FACT. A canonical-URL comment at `<body>` top is the documented source of truth; keep the 4 links in sync on any repo move/rename | Resolved-verified |
 
 ---
 
@@ -862,6 +864,75 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-12 first-use domain-term tooltips
+
+- **Problem:** the separate WBS/Kaltmiete glossary block interrupted the Problem
+  section's reading flow and visually competed with the product metadata.
+- **Rationale:** keep each German domain term and move its explanation to its
+  first use. A visible dotted underline plus a tooltip available on hover,
+  keyboard focus and tap preserves discoverability and accessibility without a
+  permanent explanatory block.
+- **Affected surfaces:** tooltip markup and script in `docs/case-study.html` and
+  `docs/terms.js`; tooltip styles and retired `.term-note` rules in
+  `docs/styles.css`; stylesheet cache keys in both public HTML files; this file
+  (§§3, 6.3, 17, 33, 34).
+- **Compatibility impact:** a separate case-page glossary block or a tooltip
+  that works only on hover no longer conforms. Telegram wizard hints remain
+  inline and unchanged.
+- **Migration consideration:** fixed now for the first WBS and Kaltmiete uses
+  on the case page. Later repetitions remain plain text; product behavior,
+  evaluation evidence and domain semantics are unchanged.
+
+### 2026-08-12 remove the final repository button
+
+- **Problem:** the final summary repeated the same Repository action already
+  available in the header, weakening the summary's role as a closing statement.
+- **Rationale:** retain one repository handoff in the persistent header and
+  leave the dark summary panel as editorial content only.
+- **Affected surfaces:** CTA markup in `docs/case-study.html`; retired CTA
+  button/action rules in `docs/styles.css`; this file (§§9, 19, 22, 29, 34).
+- **Compatibility impact:** `View repository`, `.btn--inverse`, or a
+  `.case-actions` group in the final summary no longer conform.
+- **Migration consideration:** removed now. The header Repository action,
+  summary copy, sibling case link, evidence links and product behavior are
+  unchanged.
+
+### 2026-08-12 remove the case-study footer
+
+- **Problem:** after the final CTA and sibling-case link, the repeated FlatFeed
+  wordmark and positioning tagline added a separate 100px closing zone without
+  introducing a new action or piece of evidence.
+- **Rationale:** end the page on the sibling-case cross-link, which is the last
+  useful reader action. Removing the entire footer also removes its divider and
+  vertical padding, matching the author-selected browser region exactly.
+- **Affected surfaces:** footer markup and stylesheet cache key in
+  `docs/case-study.html`; footer rules and responsive overrides in
+  `docs/styles.css`; shared stylesheet cache key in `docs/demo-listing.html`;
+  this file (§§5.2, 5.5, 6.3, 29, 34).
+- **Compatibility impact:** a separate footer, footer wordmark, footer tagline,
+  footer navigation, or footer divider no longer conform on the case-study page.
+- **Migration consideration:** removed now. The header brand, Repository
+  actions, sibling-case link, product copy, evidence and evaluation results are
+  unchanged.
+
+### 2026-08-12 logo-aligned header action
+
+- **Problem:** the header Repository button was taller than the adjacent logo
+  mark and used the page ink color, so the two brand-side actions did not read
+  as one compact lockup.
+- **Rationale:** match the button's authored height to the 26px logo mark and
+  use the logo asset's measured dominant purple (`#6247ea`). Keep teal as the
+  content and evidence accent; purple is confined to this single brand action
+  and carries no semantic status.
+- **Affected surfaces:** `docs/styles.css`; stylesheet cache keys in
+  `docs/case-study.html` and `docs/demo-listing.html`; this file (§§5.1, 5.2,
+  5.6, 34).
+- **Compatibility impact:** header Repository buttons taller than the logo or
+  using ink/teal as their resting fill no longer conform.
+- **Migration consideration:** fixed now for the case-study header only. Other
+  buttons, evidence colors, content accents, copy, product behavior and
+  evaluation results are unchanged.
 
 ### 2026-08-12 landing consistency pass (tokens, label role, divider hierarchy)
 
