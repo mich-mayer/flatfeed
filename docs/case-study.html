@@ -16,7 +16,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260812-term-tooltips">
+    <link rel="stylesheet" href="styles.css?v=20260812-carousel-intro">
     <script src="carousel.js?v=20260807-product-carousel" defer></script>
     <script src="terms.js?v=20260812-term-tooltips" defer></script>
   </head>
@@ -50,60 +50,25 @@
             <p class="kicker"><span>01</span>Problem</p>
             <h1 id="case-title">Berlin <span class="term" data-term><button class="term__trigger" type="button" aria-describedby="term-wbs" aria-expanded="false">WBS</button><span class="term__tooltip" id="term-wbs" role="tooltip">Wohnberechtigungsschein: a certificate used to qualify for subsidized housing in Berlin.</span></span> listings are spread across housing portals and provider websites.</h1>
             <p class="case-lede">
-              ImmoScout24 can notify users when a new offer appears on its platform, but housing
+              A major housing portal can notify users when a new offer appears on its platform, but housing
               providers also maintain their own listing pages; users cannot assume every offer
               appears in both places at the same time. In a market where listings may stay online
-              only briefly, even a delay can leave less time to apply. FlatFeed lets users save four
+              only briefly, a delay in learning about a new apartment can mean missing the chance to respond. FlatFeed lets users save four
               criteria once and receive a Telegram notification when a matching Berlin apartment appears.
             </p>
-
-            <aside class="hero-ai-note" aria-label="FlatFeed product summary">
-              <p class="preview-label">Product in one sentence</p>
-              <p>One saved WBS filter replaces repeated checks across housing portals and provider websites and turns new matching listings into timely Telegram alerts.</p>
-            </aside>
-
-            <dl class="case-meta">
-              <div><dt>Audience</dt><dd>Berlin WBS renters</dd></div>
-              <div><dt>Role</dt><dd>AI Product Manager</dd></div>
-              <div><dt>Product</dt><dd>Telegram apartment-alert prototype</dd></div>
-              <div><dt>Scope</dt><dd>Product strategy, prototype architecture and AI QA evaluation</dd></div>
-            </dl>
           </div>
         </section>
 
         <section class="case-section" id="solution">
-          <header class="section-heading">
+          <header class="section-heading section-heading--statement">
             <p class="kicker"><span>02</span>Solution</p>
-            <h2>One saved filter turns repeated website checks into timely Telegram alerts.</h2>
-            <p>
-              Users set WBS type, district, maximum <span class="term term--align-start" data-term><button class="term__trigger" type="button" aria-describedby="term-kaltmiete" aria-expanded="false">Kaltmiete</button><span class="term__tooltip" id="term-kaltmiete" role="tooltip">Base rent, excluding operating and heating costs.</span></span> and rooms once. FlatFeed prepares
-              listings from different sources in one format, applies fixed matching rules and
-              notifies the user when a newly collected apartment matches the saved criteria.
-            </p>
+            <h2>FlatFeed turns fragmented Berlin WBS apartment searches into one Telegram alert flow: users save WBS type, district, maximum <span class="term term--align-start" data-term><button class="term__trigger" type="button" aria-describedby="term-kaltmiete" aria-expanded="false">Kaltmiete</button><span class="term__tooltip" id="term-kaltmiete" role="tooltip">Base rent, excluding operating and heating costs.</span></span> and rooms once; FlatFeed prepares newly collected listings in one format, matches them with fixed rules and sends an alert when an apartment matches the saved filter.</h2>
           </header>
 
-          <ol class="workflow workflow--four" aria-label="How FlatFeed solves the problem">
-            <li>
-              <span>01</span>
-              <h3>Save one filter</h3>
-              <p>Users set WBS type, district, maximum Kaltmiete and rooms once.</p>
-            </li>
-            <li>
-              <span>02</span>
-              <h3>Prepare every source</h3>
-              <p>Source adapters convert different provider formats into one listing schema.</p>
-            </li>
-            <li>
-              <span>03</span>
-              <h3>Match with rules</h3>
-              <p>Deterministic code compares each listing with the saved criteria.</p>
-            </li>
-            <li>
-              <span>04</span>
-              <h3>Notify once</h3>
-              <p>Each newly collected match is verified, sent to Telegram and recorded to prevent duplicates.</p>
-            </li>
-          </ol>
+          <dl class="case-meta">
+            <div><dt>Audience</dt><dd>Berlin WBS renters</dd></div>
+            <div><dt>Product</dt><dd>Telegram apartment-alert prototype</dd></div>
+          </dl>
 
           <div class="product-journey" aria-label="FlatFeed product comparison">
             <article class="product-journey__panel product-journey__panel--without">
@@ -133,16 +98,36 @@
         <section class="case-section" id="built">
           <header class="section-heading">
             <p class="kicker"><span>03</span>What I Built</p>
-            <h2>A working Telegram product that matches listings to one saved filter.</h2>
+            <h2>FlatFeed combines filter setup, rule-based matching and Telegram delivery in one working product.</h2>
           </header>
+
+          <ol class="workflow workflow--four" aria-label="Implemented FlatFeed workflow">
+            <li>
+              <span>01</span>
+              <h3>Save one filter</h3>
+              <p>Users set WBS type, district, maximum Kaltmiete and rooms once.</p>
+            </li>
+            <li>
+              <span>02</span>
+              <h3>Prepare every source</h3>
+              <p>Source adapters convert different provider formats into one listing schema.</p>
+            </li>
+            <li>
+              <span>03</span>
+              <h3>Match with rules</h3>
+              <p>Deterministic code compares each listing with the saved criteria.</p>
+            </li>
+            <li>
+              <span>04</span>
+              <h3>Notify once</h3>
+              <p>Each newly collected match is verified, sent to Telegram and recorded to prevent duplicates.</p>
+            </li>
+          </ol>
 
           <section class="product-carousel" id="walkthrough" aria-labelledby="walkthrough-title" data-carousel>
             <header class="product-carousel__heading">
               <div>
-                <h2 id="walkthrough-title">From four criteria to a matching apartment.</h2>
-                <p>
-                  The screenshots below show the complete user journey: create a saved filter, review its criteria and receive a consistent card for a matching apartment.
-                </p>
+                <h2 id="walkthrough-title">See how one saved filter becomes a matching apartment alert.</h2>
               </div>
             </header>
 
@@ -160,7 +145,7 @@
                     </div>
                     <figcaption>
                       <span>01 / 07</span>
-                      <strong>Start with one saved filter</strong>
+                      <strong>Open the filter setup</strong>
                       <p>The opening screen introduces the workflow and offers one clear setup action.</p>
                     </figcaption>
                   </figure>
@@ -433,7 +418,7 @@
               </ul>
             </article>
             <article class="evidence-card evidence-card--shown">
-              <p class="evidence-status"><i aria-hidden="true"></i> Measured · synthetic AI QA</p>
+              <p class="evidence-status"><i aria-hidden="true"></i> Measured · AI QA</p>
               <ul>
                 <li>One frozen evaluation on 600 synthetic listings</li>
                 <li>Every predeclared prototype gate passed</li>

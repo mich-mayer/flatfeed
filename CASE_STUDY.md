@@ -12,32 +12,20 @@ costs.
 
 ## 1. Problem
 
-ImmoScout24 can notify users when a new offer appears on its platform, but
+A major housing portal can notify users when a new offer appears on its platform, but
 housing providers also maintain their own listing pages; users cannot assume
 every offer appears in both places at the same time. In a market where listings
-may stay online only briefly, even a delay can leave less time to apply.
+may stay online only briefly, a delay in learning about a new apartment can mean
+missing the chance to respond.
 FlatFeed replaces repeated monitoring across those channels with one saved
 filter, timely Telegram notifications and one consistent listing format.
 
 ## 2. Solution
 
-Users save WBS type, district, maximum Kaltmiete and rooms once. FlatFeed
-prepares listings from different sources in one format, compares them with the
-saved criteria and sends a Telegram notification when a newly collected
-apartment matches.
-
-```text
-Save one filter → Prepare every source → Match with rules → Notify once
-```
-
-1. **Save one filter.** Users set the four criteria once instead of repeating
-   them on every housing-provider website.
-2. **Prepare every source.** Source adapters convert different provider formats
-   into one shared listing schema.
-3. **Match with rules.** Deterministic code compares each listing with the saved
-   criteria.
-4. **Notify once.** Each newly collected match is verified, sent to Telegram
-   and recorded to prevent duplicates.
+FlatFeed turns fragmented Berlin WBS apartment searches into one Telegram alert
+flow: users save WBS type, district, maximum Kaltmiete and rooms once; FlatFeed
+prepares newly collected listings in one format, matches them with fixed rules
+and sends an alert when an apartment matches the saved filter.
 
 Without FlatFeed, users repeatedly check several sites, enter the same criteria
 and manually compare results before a suitable listing disappears. With
@@ -46,9 +34,17 @@ in one consistent format.
 
 ## 3. What I Built
 
-I built a working Telegram product that matches listings to one saved filter
-and sends each result in one consistent format. It supports the complete
-saved-filter journey:
+1. **Save one filter.** Users set WBS type, district, maximum Kaltmiete and
+   rooms once instead of repeating them on every housing-provider website.
+2. **Prepare every source.** Source adapters convert different provider formats
+   into one shared listing schema.
+3. **Match with rules.** Deterministic code compares each listing with the saved
+   criteria.
+4. **Notify once.** Each newly collected match is verified, sent to Telegram
+   and recorded to prevent duplicates.
+
+FlatFeed combines filter setup, rule-based matching and Telegram delivery in
+one working product. It supports the complete saved-filter journey:
 
 - create and edit a filter with WBS type, district, maximum Kaltmiete and rooms;
 - request matching listings on demand;
@@ -68,9 +64,8 @@ The system foundation includes:
 - deterministic parsing and matching;
 - notification tracking and deduplication.
 
-The screenshots in the HTML case study show the complete user journey: create a
-saved filter, review its criteria and receive a consistent card for a matching
-apartment. The seven captures cover the start, WBS type, district, maximum
+See how one saved filter becomes a matching apartment alert. The seven captures
+cover the start, WBS type, district, maximum
 Kaltmiete, rooms, saved filter and matching listing. The final capture includes
 a building photo by Bodo Kubrak, CC0 1.0; the local copy was resized and the
 location is Schlangenbader Straße 91.
