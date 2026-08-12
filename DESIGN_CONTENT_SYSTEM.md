@@ -1,7 +1,7 @@
 # FlatFeed — Design & Content System
 
 **Status:** Normative. Single source of truth for UI, layout, components, copy, terminology, and case-study content.
-**Date:** 2026-08-10 (landing hierarchy and workflow comparison refined; see §34 history for earlier decisions).
+**Date:** 2026-08-12 (carousel navigation fixed across slide changes; see §34 history for earlier decisions).
 **Basis:** source code inspection (`main.py`, `flatfeed/`, `synthetic/`, `eval/`), an evidence/claim audit, desktop and mobile browser renders of the case-study page, and the project docs (`README.md`, `docs/PROJECT_CONTEXT.md`, `CASE_STUDY.md`). No user research or usability study has been run; product-value statements remain hypotheses.
 
 **Rule keywords.** MUST = mandatory project rule. SHOULD = default; deviate only for a stated reason. MAY = permitted option. MUST NOT = prohibited. Rules without a keyword are descriptive context.
@@ -22,7 +22,7 @@ Before making a change, identify the touched surface and read the relevant route
 | Bot UI or user copy | §§7, 10, 17–20, 31 | One message = one purpose; sanctioned emoji only; listing-card field order unchanged; destructive actions confirm with consequence-named buttons; no public admin/model-eval controls |
 | Parser, matching, WBS, transit, or eval | §§2–3, 10–13, 20, 23, 27, 31 | Deterministic matching owns user-facing decisions; fail closed; WBS semantics live in `flatfeed/wbs_rules.py`; eval numbers update everywhere together |
 | AI QA | §§2–3, 11–12, 21, 23, 31 | Admin-only, budgeted, versioned, non-mutating; ground truth and case tags never enter prompts |
-| Case-study landing page | §§4–6, 13–15, 22–27, 32–34 | Synthetic/mock qualifiers stay at reading depth; ownership language preserved; four-question structure and preview honesty preserved |
+| Case-study landing page | §§4–6, 13–15, 22–27, 32–34 | Synthetic/mock qualifiers stay at reading depth; ownership language preserved; product-first seven-section structure and preview honesty preserved |
 | Public docs | §§16–27, 31, 33 | Evidence labels, terminology, and ownership stay meaning-identical across surfaces |
 | Deployment or public URL claims | README + §§23, 27, 29, 35 | Verify before stating as FACT; do not guess canonical GitHub/Page URLs |
 
@@ -119,7 +119,7 @@ References inform rules; they are never templates. Deviation from a reference is
 | Bot conversation UX | Telegram Bot API / official bot design conventions | Persistent reply keyboard for the main story; inline keyboards for choices; commands published in the menu (§7) |
 | Saved-filter flow | GOV.UK "one thing per page" | Four focused setup questions, one purpose per message, then canonical listing cards (§7.6) |
 | Listing card | Project (`flatfeed/matching.py`) | Fixed field order, bold HTML labels, canonical fallback strings (§10) |
-| Case-study page | Repo-local "Swiss International" rules in §5; the sibling Opsqora landing is a comparison example when available, not a required dependency | Hand-written HTML/CSS, token palette in `docs/styles.css`, four-question case framework (§6.3, §22); accent split: FlatFeed teal, Opsqora ultramarine |
+| Case-study page | Repo-local "Swiss International" rules in §5; the sibling Opsqora landing is a comparison example when available, not a required dependency | Hand-written HTML/CSS, token palette in `docs/styles.css`, product-first seven-section case framework (§6.3, §22); accent split: FlatFeed teal, Opsqora ultramarine |
 | Product copy | GOV.UK/GDS principles | §§16–19 |
 | AI language | Project boundary (§2) + Microsoft AI wording guidance | §21 |
 | Evidence integrity | AI PM portfolio evidence standards | Measured-on-synthetic beats claimed; label everything (§23) |
@@ -137,7 +137,7 @@ Never choose "more impressive" over "more accurate".
 
 These tokens apply to `docs/case-study.html` / `docs/styles.css` only. The bot has no visual tokens (§7).
 
-The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, four numbered sections, one seven-screen product carousel, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine.
+The page uses the repo-local **"Swiss International" system** documented in this section: flat 1px-bordered panels, square corners, mono uppercase kickers, seven numbered case-study sections, one seven-screen product carousel, and a dark final CTA. The sibling Opsqora project is a useful comparison implementation when it is available, but this file is the source of truth for FlatFeed. The deliberate difference between the two sites is the accent: FlatFeed is teal, Opsqora is ultramarine.
 
 ### 5.1 Color — ADOPT
 
@@ -185,7 +185,7 @@ Sizes below list the **reference px at a 16px root**; each is authored in `style
 | Hero lede | ui 400 | clamp(16px → 20px) / 1.6 | `--ink-2` |
 | Body prose (`.case-prose p`) | ui 400 | 16px / 1.7, max-width 680px | `--ink-2` |
 | Kicker (`.kicker`) | mono 500 | 11px uppercase, ls 0.08em | `--ink-3`; index number span in `--accent` 600 |
-| Buttons (`.btn`) | ui 600 | 13px, padding 11×18 | square corners |
+| Buttons (`.btn`) | ui 600 | 13px, padding 11×18 | square corners; the header Repository action uses compact 12px text, 7×11 padding and a 36px minimum height |
 | Labels / dt | mono 500 | 10–11px uppercase | `--ink-3` |
 | Product-preview fields | ui/mono | 9–12px | compact product evidence only |
 
@@ -204,8 +204,8 @@ Rules:
 ### 5.4 Grid and Width — ADOPT
 
 - One centered column: `.case` width `min(100% - 3rem, 75rem)`.
-- Hero is a text-led proposition with no screenshot. The seven-screen carousel follows the hero copy at full content width; each slide pairs a portrait capture with a short numbered caption and becomes a vertical stack below 40rem.
-- Numbered mono kickers (`01`–`04`) are the section motif. Workflow is 5-up, decisions 3-up, evidence 2-up; each collapses per §14.
+- Hero is a text-led proposition with no screenshot. The seven-screen carousel follows the hero copy at full content width. On desktop, each slide centers a portrait capture and a bounded 25rem caption column as one composition; the carousel heading aligns with the caption column and a compact joined previous/next pair aligns to the commentary's left edge. The slide's visible `01 / 07` label carries position, while a visually hidden live region announces changes for screen readers. Below 56rem the copy column becomes fluid, and below 40rem the slide becomes a vertical stack ordered capture → commentary → controls.
+- Numbered mono kickers (`01`–`07`) are the section motif. Solution is 4-up, AI and learnings are 3-up, evidence is 2-up; each collapses per §14.
 - The dark CTA spans the content width.
 
 ### 5.5 Icons and Imagery — ADOPT
@@ -228,12 +228,12 @@ Rules:
 The status card shows whether a filter exists and, when configured, lists WBS, District, Max Kaltmiete, and Rooms in that order. It offers `Show matches`, `Edit filter`, `Reset filter`, and `Delete my data`. The setup wizard asks one field at a time and persists only after all four answers are complete.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → sticky top bar (brand; 3-item nav: Product · Decisions · Evidence; one primary Repository action) → text-led Product hero (plain-language proposition, WBS gloss, audience/status/AI-role metadata) → seven-screen captured product carousel → visual Without/With comparison → **three-section framework**: 01 Product · 02 Decisions · 03 Evidence → dark summary CTA → sibling case cross-link → footer.
+Skip link → compact sticky top bar (FlatFeed brand with `Product case study` subtitle; compact centered seven-item nav: Problem · Solution · What I Built · My Role · How AI Fits · Results · What I Learned; one proportionally compact Repository action) → text-led Problem hero (plain-language proposition, WBS gloss and role/product/audience/scope metadata) → **product-first seven-section case study**: 01 Problem · 02 Solution · 03 What I Built · 04 My Role · 05 How AI Fits · 06 Results · 07 What I Learned → current setup and limitations inside What I Learned → dark summary CTA → sibling case cross-link → footer.
 
-The page MUST answer in order: what user problem the product simplifies, what the candidate decided, and what is implemented or evaluated. AI QA appears after the user-value story as one bounded decision and one evidence block; dashboard mockups, mock-cost, legal analysis, historical iteration tables, and future-test plans do not belong in the main public narrative. At ≤56rem the nav may hide because the three sections remain a single linear scroll and the primary Repository action remains visible.
+The page MUST answer in order: what user problem the product simplifies, how FlatFeed solves it, what was built, what the candidate owned, how AI fits into the already-understood product, what was measured and what was learned. AI QA remains bounded and follows the product proof; dashboard mockups, mock-cost, legal analysis and historical iteration tables do not belong in the main public narrative. At ≤56rem the nav becomes a two-column grid so all seven section names remain visible without making the header sticky.
 
 ### 6.4 No separate dashboard — ADOPT
-The prototype has no dashboard or public operations console. The Telegram bot is the working product artifact, while the case study documents it with captured evidence and MAY link to the bot using `Open prototype`. Final hosted-model evidence lives in the case study and frozen `eval/` artifacts. A new stats command, admin page, or dashboard would be a new phase and requires an explicit product decision rather than a replacement implementation.
+The prototype has no dashboard or public operations console. The case study demonstrates the Telegram product only through captured screens and MUST NOT link to or invite readers to open the bot. Final hosted-model evidence lives in the case study and frozen `eval/` artifacts. A new stats command, admin page, or dashboard would be a new phase and requires an explicit product decision rather than a replacement implementation.
 
 ---
 
@@ -273,7 +273,7 @@ The first-use message states that the prototype uses a synthetic catalog. Empty 
 
 - Captured Telegram screens document the interaction: saved filter → deterministic match → canonical listing card.
 - The case-study narrative explains the implemented notification loop: collect → match → verify → send once.
-- The case study documents the product decisions and reports the accepted synthetic hosted-model experiment; `Open prototype` may link to the working Telegram artifact.
+- The case study documents the product decisions and reports the accepted synthetic hosted-model experiment. Product behavior is shown through the seven captured Telegram screens; no live-prototype CTA appears.
 - Frozen `eval/` artifacts hold detailed protocol, field diagnostics, cost, and reproducibility evidence.
 - Do not reintroduce a dashboard, Telegram stats command, mock QA interaction, or hand-typed runtime metrics. A new operational surface is a new product phase.
 
@@ -286,10 +286,10 @@ The first-use message states that the prototype uses a synthetic catalog. Empty 
 | Product entry | Persistent reply keyboard + filter status card | `Filter`, `Show matches` | Verb + object |
 | Filter management | Inline buttons under the filter status | `Set up filter`, `Edit filter`, `Reset filter` | One clear action |
 | Destructive | Published `/delete` + inline status action | `Yes, delete saved data` | Consequence named in the confirm labels |
-| Case-study CTAs | `.btn--primary` (ink, teal hover) in the top bar; dark CTA block: `.btn--accent` (teal) / `.btn--inverse` | Top bar + final CTA | `Repository` in the header; `Open prototype` and `View repository` in the final CTA |
+| Case-study CTAs | `.btn--primary` (ink, teal hover) in the top bar; `.btn--inverse` in the dark CTA | Top bar + final CTA | `Repository` in the header; `View repository` in the final CTA |
 
 Rules:
-- One primary action per surface: the bot uses `Show matches` after a filter exists; the case-page header uses `Repository`, while the final summary retains the prototype and repository handoffs.
+- One primary action per surface: the bot uses `Show matches` after a filter exists; the case-page header uses `Repository`, while the final summary offers only the repository handoff.
 - Catalog browsing, admin controls, model metrics, and QA simulation are intentionally absent from the public bot.
 - Actions that do not exist (subscribe/unsubscribe toggles, listing bookmarking, export, language switch) MUST NOT be referenced in copy as if they did.
 
@@ -397,7 +397,8 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids), **56rem** (linear hero, hidden redundant section nav), and **40rem** (single-column metadata/workflow and full-width CTA buttons).
 
 - Desktop is the primary reading surface; mobile is a supported viewing mode, not a separately designed product.
-- Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, boundary-aware lede, CTAs, metadata, and the first product-carousel slide. The section nav may hide on narrow screens because the document remains a short linear flow.
+- Section kickers start after a compact top inset: 2.75rem on desktop and 3rem below 40rem. The Problem section hero uses the same 2.75rem desktop inset so the first viewport prioritizes content over shell spacing. Desktop anchor navigation uses a 5.5rem scroll offset matched to the compact sticky header.
+- Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, boundary-aware lede, CTAs, metadata, and the first product-carousel slide. The section nav remains visible and becomes a two-column grid on narrow screens.
 - Telegram handles bot responsiveness — do not add custom viewport logic there.
 
 ---
@@ -474,7 +475,7 @@ Capitalization: sentence case everywhere; card labels and proper/domain nouns (W
 | Remove saved product data | `/delete` (+ consequence-named confirm pair) | "Unsubscribe", "Forget me" | Published command and status card |
 | Admin: triage a finding | **Parser error** / **Parser correct** / **Borderline / unsure** | Any fourth label; abbreviations | QA reports |
 | Open a listing | **Open listing** (the card's only link) | "More", "Details" | Listing card |
-| Case-study CTAs | **Repository** / **Open prototype** / **View repository** | "Try the demo", "Review the walkthrough", "GitHub" (as a button label) | Header uses **Repository**; the final CTA uses **Open prototype** and **View repository** |
+| Case-study CTAs | **Repository** / **View repository** | "Open prototype", "Try the demo", "Review the walkthrough", "GitHub" (as a button label) | Header uses **Repository**; the final CTA uses **View repository** |
 
 Actions that have no product function (subscribe, bookmark, share, export, language switch, pause notifications) MUST NOT appear in UI or copy as if they did. If a phase adds one, define its canonical verb here first.
 
@@ -532,40 +533,31 @@ technical docs, research language, outcomes and tests — use `user` / `users`.
 
 The page serves three reading depths; every depth must independently answer its questions.
 
-**10-second scan** (brand label + numbered Product kicker + H1 + lede + meta + first product-carousel slide) must answer: What user problem does this solve, who is it for, and what was built?
-Mechanics: the header brand label states `Product case study`; the kicker establishes `01 Product`. The H1 states the category, geography and audience in one line: finding Berlin apartments that match a user's WBS. The lede explains the product flow in plain language—save WBS tier, Berlin district, maximum Kaltmiete and rooms once, then receive a Telegram notification when a newly collected apartment matches. A dedicated `AI checks data quality` line explains the separate admin review layer without interrupting the user-value story. Metadata identifies the audience and working-prototype status. Candidate ownership is explained in the Decisions contribution note and the deeper Markdown case instead of being compressed into a hero label. The first carousel slide supplies immediate captured Telegram evidence. Demo-source, runtime and validation limitations are consolidated in the final disclosure block instead of repeated through the product narrative.
+**10-second scan** (brand label + Problem kicker + H1 + lede + one-sentence product summary + metadata) must answer: What is FlatFeed, where is it used, which repeated task does it replace, who is it for, and what did the candidate own?
+Mechanics: the header brand shows `FlatFeed` with a smaller `Product case study` subtitle. The seven navigation labels sit in a compact centered row rather than being distributed across the full page width. Every numbered section has a matching navigation item using exactly the same words, capitalization and punctuation. The kicker establishes `01 Problem`. The H1 names repeated checks across Berlin WBS apartment websites. The lede explains why repeated monitoring costs time and why a late discovery matters, then states the saved-filter and Telegram-alert solution. The one-sentence summary describes the product mechanism without technical setup qualifiers. Metadata identifies Audience, Role, Product and Scope. Demo-source, runtime and validation limitations remain consolidated in the final disclosure block.
 
-**30-second scan** (+ visual comparison, Decisions, evidence split) must answer: how FlatFeed changes the user workflow, which three decisions matter, and what is implemented versus outside prototype scope.
-Mechanics: the numbered Product / Decisions / Evidence sequence is continuous. The Without/With comparison uses three short rows per side and one directional arrow. Decision cards explain the rationale and trade-off; the reliability boundary follows them so AI does not interrupt the user-value story. Evidence records implemented product and system capabilities, including conditional deduplicated notifications, followed by one plain-language final-evaluation narrative: experiment setup, qualitative model-and-reasoning selection path without intermediate scores, decision, aggregate metrics with formulas and focus, field-level results, the one invalid check, stopping rationale, and a bounded cost scenario. Only the final 600-listing run may appear as quantitative evidence; the synthetic qualifier, accepted synthetic decision, one unusable check, and no-runtime-integration boundary stay visible at the same depth as its strongest metrics. One final `Prototype setup and limitations` block then records the enabled source, current runtime switches, offline model setup and unvalidated outcomes.
+**30-second scan** (+ Solution, product walkthrough and Role) must answer: how FlatFeed changes the user workflow, what was implemented and what the candidate owned before introducing AI details.
+Mechanics: the product-first sequence is Problem → Solution → What I Built → My Role. Solution shows save → prepare → match → notify plus the Without/FlatFeed comparison. What I Built contains the seven-screen carousel and two concise capability cards. My Role names direct ownership and coding collaborators without implying a managed ML team.
 
-**Deep read** must answer: problem hypothesis, product flow, ownership, three trade-offs, AI boundary, measured evidence, and scope limits. Keep the three-section framework in §6.3 and the concise four-part Markdown equivalent in `CASE_STUDY.md`.
+**Deep read** must answer: problem severity without invented metrics, product mechanism, implemented product, ownership, AI rationale, model-selection rationale, measured evidence, limitations, learnings and the next validation question. How AI Fits explains the bounded AI role only after the product is established. Results contains one plain-language final-evaluation narrative: experiment setup, decision, aggregate metrics, field-level results, the one invalid check, stopping rationale and a bounded cost scenario. Only the final 600-listing run may appear as quantitative evidence; the synthetic qualifier, accepted synthetic decision, one unusable check and no-runtime-integration boundary stay visible at the same depth as the strongest metrics.
 
 Element rules:
-- **Product:** numbered kicker → plain proposition H1 → product-mechanism lede → visible AI quality-control line → WBS gloss → two-item meta `dl` for audience and status → visual Without/FlatFeed comparison. Every value is decodable without insider context.
-- **Product carousel:** seven real Telegram captures document setup through result in the author-supplied order. The hero remains text-only. The carousel does not auto-advance; previous/next buttons, arrow keys, and touch swipe expose the sequence. Carousel-level copy describes the product sequence without repeating demo setup. Each slide uses a step number, short title, and one orienting sentence. Photo credit remains adjacent to the relevant image. No dashboard, mock metrics, fabricated runtime data or browser imitation.
-- **Workflow comparison:** Without FlatFeed lists three manual steps; With FlatFeed lists three simplified steps. The panels use distinct neutral/accent treatments and one directional SVG arrow. Do not return to inline arrow chains.
-- **Decisions:** exactly three public decisions: a first-pass four-field product concept,
-  deterministic matching/optional QA boundary, and one normalized product flow
-  across source adapters. The third card explains the shared adapter contract and
-  stable downstream flow without interrupting the decision with current demo setup.
-  The first card says that a user still verifies full eligibility and application
-  details against authoritative provider terms. Each card
-  explains why the boundary exists; measured outcomes belong in Evidence.
-- **Evidence:** two opening cards summarize product flow and implemented system
-  capabilities. The final hosted-model result retains its synthetic qualifier and
-  599/600 usable-check limitation at the same reading depth.
+- **Problem hero:** numbered kicker → plain proposition H1 → one-paragraph problem and product lede → one-sentence summary → WBS gloss → four-item metadata for Audience, Role, Product and Scope. Every value is decodable without insider context.
+- **Solution:** show four stages—save one filter, prepare every source, match with rules, notify once—followed by the Without/FlatFeed comparison. This section explains the complete product mechanism without AI or demo-setup qualifiers interrupting the story.
+- **Product carousel:** seven real Telegram captures document setup through result in the author-supplied order. The hero remains text-only. The carousel does not auto-advance; previous/next buttons, arrow keys, and touch swipe expose the sequence. On desktop the capture and its bounded caption form one centered two-column block, with the heading aligned over the caption and a compact joined pair of arrow buttons immediately below the commentary, aligned to its left edge. Every capture sits in the same fixed-ratio frame with `object-fit: contain`, and every caption uses the same reserved height, sized for the longest approved slide copy. Together these keep the buttons fixed while screens change without cropping screenshots or allowing copy to overlap the controls. The buttons share one internal border so they read as a single navigator rather than two floating actions. Do not show a second visual `Screen N of 7` label because the caption already shows `NN / 07`; retain a visually hidden live region for assistive technology. On mobile, commentary remains adjacent in reading order, retains the shared reserved height, and controls follow it with the same left alignment. Carousel-level copy describes the product sequence without repeating demo setup. Each slide uses a step number, short title, and one orienting sentence. Photo credit remains adjacent to the relevant image. No dashboard, mock metrics, fabricated runtime data or browser imitation.
+- **Workflow comparison:** Without FlatFeed lists three manual steps; With FlatFeed lists three simplified steps. It belongs in Solution, uses distinct neutral/accent treatments and one directional SVG arrow, and MUST NOT return to inline arrow chains.
+- **What I Built:** lead with the seven-screen carousel, then use two cards to summarize the user product and implemented system foundation. Notification delivery is a product capability and may appear; AI rationale waits until How AI Fits; lower-level controls such as source-health cooldowns stay in technical docs.
+- **My Role:** name problem definition, notification priority, matching fields, source-adapter architecture, AI boundary, evaluation ownership and coding collaborators. State that the portfolio project did not include a managed ML team or live rollout.
+- **How AI Fits:** state explicitly that deterministic rules own user matching. AI rereads source text only for parser QA, admins review discrepancies, and the user/admin paths stay separate. Include the qualitative progression from lower-cost configurations to the selected model and reasoning effort without intermediate scores. Do not frame AI as the product recommendation engine.
+- **Results:** open with an explicit Implemented product / Measured · synthetic AI QA split. The final hosted-model result retains its synthetic qualifier and 599/600 usable-check limitation at the same reading depth.
   Notification delivery is a product capability and may appear in the landing;
   lower-level controls such as source-health cooldowns stay in technical docs.
-  The final-evaluation block explains the qualitative progression from cheaper
-  configurations to the selected model and reasoning effort, why model power
-  alone was insufficient, why each metric exists, and both aggregate and
-  field-level results. Field values are evaluation evidence, never user or
-  production outcomes. No score from an earlier model iteration appears.
-- **Conclusion:** the final evidence states that the portfolio prototype is
-  complete at its intended scope. A single disclosure block immediately before the
-  final CTA contains current demo setup and all unvalidated product outcomes. The
-  public page MUST NOT imply planned user research, live-source pilots or other
-  roadmap commitments.
+  The final-evaluation block explains why each metric exists and shows both
+  aggregate and field-level results. Field values are evaluation evidence,
+  never user or production outcomes. No score from an earlier model iteration
+  appears.
+- **What I Learned:** explain why explicit criteria remain rule-based, why model power alone was insufficient and what synthetic evidence cannot prove. Integrate the current demo setup and unvalidated product outcomes as `Current limits` inside this section. Any next-step language is conditional (`If I continued...` / `I would...`), not a roadmap commitment.
+- **Conclusion:** use three plain-language beats: `One filter. Timely apartment alerts.` followed by the mechanism. State that FlatFeed brings multiple listing sources into one flow, fixed rules match apartments and AI checks data quality. This order makes the user value memorable and keeps AI out of the matching decision. The public page MUST NOT imply a committed user study, live-source pilot or production rollout. The final CTA links only to the repository; product behavior is demonstrated through screenshots.
 
 ---
 
@@ -659,7 +651,7 @@ Hard constraints (non-negotiable):
   `eval.run_eval --json`, verifies the authored-case count in `README.md`, and
   checks both public case-study surfaces against the final locked-holdout
   scorecard, field report, and run cost.
-- The three-section Product / Decisions / Evidence structure and its four-part Markdown equivalent stay meaning-aligned.
+- The seven-part Problem / Solution / Built / Role / AI / Results / Learned structure stays meaning-aligned between HTML and Markdown.
 - WBS semantics: `flatfeed/wbs_rules.py` is the single source; documents give examples, the module defines truth.
 - The card field contract (§10) between `flatfeed/matching.py`, README's card sketch, PROJECT_CONTEXT's card sketch, and any case-page mockup.
 - Copy changes propagate across bot UI, tests, case-study surfaces, and documentation together (a stated Known Constraint in PROJECT_CONTEXT).
@@ -688,7 +680,7 @@ Working well; reuse as-is; do not "improve" for uniformity's sake.
 | Deduplicated automatic delivery | background pipeline | New matches reach users without requiring repeated manual checks | Gate with `BOT_BACKGROUND_ENABLED`; verify activity and record each successful send |
 | Ground-truth quarantine | `synthetic/` ↔ prompts | Makes the eval meaningful | Absolute; no exceptions |
 | Version-stamped QA reviews (one per listing per version) | `flatfeed/ai_qa.py` | Enables version comparison, caps cost | Any new AI artifact gets a version field |
-| Three concise decision cards | case study §02 | Shows prioritization without a separate AI essay | Keep four-field concept, deterministic boundary, and one normalized flow across sources |
+| Product-first story sequence | case study §§01–05 | Lets readers understand the problem, solution and built product before AI details | Keep Problem → Solution → Built → Role → AI in that order |
 | Demonstrated / Not demonstrated split | case study §03 | Prevents prototype completion from reading as market validation | Every future evidence claim |
 | Teal-only structure accent | case page | Keeps weak evidence from gaining visual weight | Use labels and filled/outlined markers for evidence status |
 | Licensed demo photos with attribution file | `assets/listing_photos/` | Defensibility | Any new third-party asset gets the same treatment |
@@ -772,7 +764,7 @@ For Claude/Fable, Codex, and other coding agents.
 - [ ] Card: field order, labels, grouping, and fallback strings match §10 exactly.
 - [ ] Delivery: adapter state check, up to three on-demand cards, no separate match-reason message, conditional deduplicated notifications, and fail-closed matching intact (§3 P5).
 - [ ] Case page: tokens only, square corners, shadow only on the active carousel image frame, one teal content accent (§5).
-- [ ] Case page: four-question structure, numbered-kicker motif, text-only hero, seven-screen carousel, and clear mobile linear flow (§6.3, §14).
+- [ ] Case page: product-first seven-section structure, numbered-kicker motif, text-only hero, seven-screen carousel, and clear mobile linear flow (§6.3, §14).
 - [ ] Accessibility: aria labels/alt preserved; new text colors checked ≥4.5:1; new motion gated (§15).
 - [ ] Product/evidence separation intact: no QA controls or metrics in user-facing surfaces (§3 P8).
 
@@ -801,6 +793,280 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-12 fixed carousel navigation position
+
+- **Problem:** slide comments have different lengths, so the navigation moved
+  vertically when readers switched screens. On narrow layouts the movement was
+  large enough to interrupt the reading rhythm and could make long copy feel
+  crowded against the controls.
+- **Rationale:** reserve one caption height based on the longest approved slide
+  copy and bottom-align every comment inside it. Normalize the near-identical
+  source captures inside one non-cropping frame because their source dimensions
+  differ by a few pixels. The shared control then follows the same fixed text
+  and media boundaries on every slide, while the reserved space prevents the
+  seventh slide's longer attribution from overlapping the arrows.
+- **Affected surfaces:** `docs/styles.css`; `docs/case-study.html` (stylesheet
+  cache key); this file (§§5.4, 22, 34).
+- **Compatibility impact:** content-sized carousel captions that move navigation
+  between slides no longer conform.
+- **Migration consideration:** implemented locally. Slide copy, screenshots,
+  controls, keyboard support, swipe support, evidence and production deployment
+  are unchanged.
+
+### 2026-08-12 joined carousel arrow control
+
+- **Problem:** the separate arrows aligned to the far right of the commentary
+  looked detached from the reading flow and made two related actions resemble
+  independent buttons.
+- **Rationale:** join the square buttons with one shared internal border and
+  align the pair to the commentary's left edge. This creates one compact
+  navigator at the natural end of the text path: slide number → title → note →
+  navigation. Keep disabled buttons in place so the control does not shift at
+  the first or last screen.
+- **Affected surfaces:** `docs/styles.css`; `docs/case-study.html` (stylesheet
+  cache key); this file (§§5.4, 15, 22, 34).
+- **Compatibility impact:** separated or right-aligned carousel arrow pairs no
+  longer conform.
+- **Migration consideration:** implemented locally. Button labels, disabled
+  states, arrow-key support, swipe support, screenshots, copy, evidence and
+  production deployment are unchanged.
+
+### 2026-08-12 arrow-only carousel navigation
+
+- **Problem:** the visible `Screen N of 7` inside the navigation duplicated the
+  `NN / 07` label immediately above each slide title and made a simple two-action
+  control feel like a wide status bar.
+- **Rationale:** show only a compact previous/next arrow pair, aligned to the
+  right edge of the commentary. Keep the dynamic position text as a visually
+  hidden `aria-live` region so screen-reader users still receive the slide
+  change announcement.
+- **Affected surfaces:** `docs/styles.css`; `docs/case-study.html` (stylesheet
+  cache key); this file (§§5.4, 15, 22, 34).
+- **Compatibility impact:** a second visible carousel position label and
+  full-width three-cell control bars no longer conform.
+- **Migration consideration:** implemented locally. Button labels, disabled
+  states, arrow-key support, swipe support, screenshot order, evidence and
+  production deployment are unchanged.
+
+### 2026-08-12 carousel controls integrated with commentary
+
+- **Problem:** controls below the screenshot visually separated navigation from
+  the slide explanation. Readers had to move between the left and right
+  columns to understand a screen and then advance it.
+- **Rationale:** place the shared previous / position / next controls directly
+  below the active commentary in the right column. Center the commentary and
+  controls together against the screenshot. On narrow screens keep a linear
+  capture → commentary → controls order so the explanation is read before the
+  reader advances.
+- **Affected surfaces:** `docs/styles.css`; `docs/case-study.html` (stylesheet
+  cache key); this file (§§5.4, 14, 22, 34).
+- **Compatibility impact:** carousel layouts with navigation under the
+  screenshot no longer conform.
+- **Migration consideration:** implemented locally. Carousel behavior,
+  screenshot order, copy, keyboard support, swipe support, evidence and
+  production deployment are unchanged.
+
+### 2026-08-11 centered carousel composition
+
+- **Problem:** the carousel figure was mathematically centered, but its second
+  grid column expanded to fill the remaining width while the caption itself
+  stopped at 25rem. The visible screenshot-and-copy composition therefore felt
+  left-heavy and made repeated slide navigation less comfortable.
+- **Rationale:** center an explicit two-column composition using the bounded
+  screenshot width and a 25rem copy column. Align the carousel introduction
+  with the caption column and keep controls below the screenshot. Retain a
+  fluid copy column below 56rem and the established vertical stack below 40rem
+  so comments remain readable without horizontal overflow.
+- **Affected surfaces:** `docs/styles.css`; `docs/case-study.html` (stylesheet
+  cache key); this file (§§5.4, 14, 22, 34).
+- **Compatibility impact:** desktop carousel layouts with a full-width flexible
+  caption cell or an introduction misaligned from the caption no longer
+  conform.
+- **Migration consideration:** implemented locally. Screenshot order, copy,
+  controls, accessibility behavior, product evidence and production deployment
+  are unchanged.
+
+### 2026-08-11 remove `only` from the closing AI clause
+
+- **Problem:** `uses AI only to check data quality` added emphasis the closing
+  proposition did not need and made the sentence less natural.
+- **Rationale:** use the direct clause `uses AI to check data quality`. The
+  preceding fixed-rules clause still keeps matching ownership explicit, so the
+  AI boundary remains clear without the extra limiter.
+- **Affected surfaces:** `docs/case-study.html`; `CASE_STUDY.md`; this file
+  (§§21–22, 34).
+- **Compatibility impact:** the word `only` no longer belongs in this closing
+  AI clause; historical §34 entries retain their recorded wording.
+- **Migration consideration:** implemented locally. Product behavior,
+  evaluation evidence, runtime configuration and production deployment are
+  unchanged.
+
+### 2026-08-11 plain-language closing proposition
+
+- **Problem:** the accurate closing summary read like an architecture inventory:
+  `deterministic matching`, `multi-source ingestion` and `bounded, admin-only AI
+  QA` competed in one sentence, weakening the user outcome and making the final
+  scan harder to remember.
+- **Rationale:** lead with two short benefits—`One filter. Timely apartment
+  alerts.`—then explain the system in plain verbs: sources come into one flow,
+  fixed rules match apartments and AI only checks data quality. The word `only`
+  preserves the AI boundary without internal QA terminology in the headline.
+- **Affected surfaces:** `docs/case-study.html`; `CASE_STUDY.md`; this file
+  (§§21–22, 34).
+- **Compatibility impact:** architecture-first final summaries and unexplained
+  `AI QA` terminology no longer conform in the closing proposition.
+- **Migration consideration:** implemented locally. Product behavior,
+  evaluation evidence, runtime configuration and production deployment are
+  unchanged.
+
+### 2026-08-11 AI boundary in the final case-study summary
+
+- **Problem:** the final CTA summarized saved filters, alerts, deterministic
+  matching and multi-source architecture but omitted the bounded AI QA work,
+  leaving one of the case study's central product decisions out of the closing
+  scan.
+- **Rationale:** add `bounded, admin-only AI QA` after the user product and
+  deterministic matching. This keeps AI visible without implying that it
+  selects apartments or changes user-facing data.
+- **Affected surfaces:** `docs/case-study.html`; `CASE_STUDY.md`; this file
+  (§§21–22, 34).
+- **Compatibility impact:** closing summaries that omit the AI boundary or
+  describe AI as part of matching no longer conform.
+- **Migration consideration:** implemented locally. Product behavior,
+  evaluation evidence, runtime configuration and production deployment are
+  unchanged.
+
+### 2026-08-11 article-free Problem and Solution labels
+
+- **Problem:** `The Problem` and `The Solution` were grammatically valid but
+  longer than the other compact navigation labels, while the definite article
+  did not add information in this case-study taxonomy.
+- **Rationale:** use the article-free category labels `Problem` and `Solution`
+  in both navigation and section kickers. Keep the remaining labels unchanged
+  because they are first-person or verb phrases rather than parallel noun
+  categories.
+- **Affected surfaces:** `docs/case-study.html`; `CASE_STUDY.md`; this file
+  (§§6.3, 14, 22, 34).
+- **Compatibility impact:** current navigation, section kickers and Markdown
+  headings using `The Problem` or `The Solution` no longer conform. Historical
+  §34 entries retain the wording they documented at the time.
+- **Migration consideration:** implemented locally. Anchors, section order,
+  copy, product claims, evaluation evidence and production deployment are
+  unchanged.
+
+### 2026-08-11 compact case-study header and section starts
+
+- **Problem:** the two-row desktop header occupied about 109px and the first
+  section content began another 68px below it; regular sections used more than
+  90px of top padding. Together they hid too much case-study content in the
+  first viewport.
+- **Rationale:** keep the complete seven-item navigation and Repository action,
+  but reduce the header row gap, header top inset, nav padding and the
+  Repository button in proportion. Align the Problem hero and regular section
+  starts to a tighter editorial rhythm while retaining more bottom spacing to
+  separate complete sections.
+- **Affected surfaces:** `docs/styles.css`; `docs/case-study.html` (stylesheet
+  cache key); this file (§§5.2, 6.3, 14, 34).
+- **Compatibility impact:** desktop headers around 109px tall, the 42px header
+  Repository button, 7rem anchor offset, 4rem Problem top padding and 5.5rem
+  regular-section top padding no longer conform.
+- **Migration consideration:** implemented locally for desktop and narrow
+  layouts. Product copy, section order, screenshots, evaluation evidence,
+  runtime behavior and production deployment are unchanged.
+
+### 2026-08-11 product-first case-study sequence
+
+- **Problem:** the landing introduced `Why AI?` before readers had seen how
+  FlatFeed solved the repeated-monitoring problem or what the working product
+  looked like. The formal framework therefore made the case read like an AI QA
+  project instead of a Berlin WBS apartment-alert product.
+- **Rationale:** reorder the seven sections to The Problem → The Solution →
+  What I Built → My Role → How AI Fits → Results → What I Learned. Move the
+  four-step product path and Without/FlatFeed comparison into The Solution,
+  keep the product screenshots before candidate and AI detail, move model
+  selection into How AI Fits, separate implemented product evidence from
+  measured synthetic AI QA in Results, and integrate current limitations into
+  What I Learned.
+- **Affected surfaces:** `docs/case-study.html`; `docs/styles.css`;
+  `CASE_STUDY.md`; `docs/CURRENT_STATUS.md`; this file (§§0, 4–6, 14, 22,
+  27–28, 32, 34).
+- **Compatibility impact:** the earlier Problem → Why AI → Role → Approach →
+  Built order, a standalone Approach section, and a separate unnumbered
+  Prototype Setup and Limitations section no longer conform. Historical §34
+  entries retain their original wording as decision history.
+- **Migration consideration:** implemented locally without changing product
+  behavior, screenshots, evaluation numbers or production deployment.
+
+### 2026-08-11 first-person role section label
+
+- **Problem:** `Your Role` addressed the case-study author in the second person,
+  while the section itself describes the author's contribution in the first
+  person and the Markdown case study already used `My Role`.
+- **Rationale:** use `My Role` in both the navigation and numbered section so
+  the label matches the narrative voice and remains identical across HTML and
+  Markdown surfaces.
+- **Affected surfaces:** `docs/case-study.html`; this file (§§6.3, 22, 34).
+- **Compatibility impact:** `Your Role` is no longer the current section label;
+  historical governance entries retain the wording they documented at the time.
+- **Migration consideration:** implemented locally. Section content, anchor,
+  product claims, evidence and production deployment are unchanged.
+
+### 2026-08-11 compact landing navigation and restored brand subtitle
+
+- **Problem:** distributing seven section labels across the full navigation row
+  made the header feel visually fragmented, while the FlatFeed wordmark alone
+  did not identify the page as a case study.
+- **Rationale:** group the exact section labels in a compact centered row and
+  restore `Product case study` beside the FlatFeed wordmark at every viewport;
+  all seven navigation links remain visible below it.
+- **Affected surfaces:** `docs/case-study.html`; `docs/styles.css`; this file
+  (§§6.3, 22, 34).
+- **Compatibility impact:** full-width `space-between` navigation and the
+  subtitle-free desktop brand no longer conform. The prior §34 entry remains a
+  historical record of the earlier direction.
+- **Migration consideration:** implemented locally. Product copy, section
+  names, screenshots, evaluation evidence, runtime behavior and production
+  deployment are unchanged.
+
+### 2026-08-11 exact section names in landing navigation
+
+- **Problem:** the header used shortened labels for five of seven sections and
+  omitted Why AI? and Your Role, so the navigation did not represent the page
+  structure. The brand also repeated the generic `Product case study` subtitle.
+- **Rationale:** show all seven sections in the header and make every label
+  match its numbered section exactly. Keep the desktop header compact with a
+  dedicated navigation row. On narrow screens the header stops being sticky
+  and the links use a two-column grid so every section name remains visible.
+- **Affected surfaces:** `docs/case-study.html`; `docs/styles.css`; this file
+  (§§5, 6.3, 22, 34).
+- **Compatibility impact:** abbreviated `Problem`, `Approach`, `Product` and
+  `Learnings` labels, the five-item nav, hidden mobile nav and the `Product case
+  study` brand subtitle no longer conform.
+- **Migration consideration:** implemented locally. Product copy, screenshots,
+  evaluation evidence, runtime behavior and production deployment are unchanged.
+
+### 2026-08-11 seven-part hiring-manager case-study structure
+
+- **Problem:** the Product / Decisions / Evidence narrative made the working
+  product visible but buried the problem, AI rationale, candidate ownership and
+  learnings. The live-prototype CTA also invited readers into an artifact the
+  author now wants to demonstrate only through controlled screenshots.
+- **Rationale:** use the InstitutePM seven-part framework as a scan-friendly
+  case-study backbone. Lead with the time spent repeatedly checking several
+  housing-provider websites, state early that rules own matching and AI owns
+  only parser QA, give role and approach their own sections, keep the existing
+  seven-screen carousel as product proof, and separate measured synthetic
+  results from conditional next-test learning. Remove every live-prototype CTA.
+- **Affected surfaces:** `docs/case-study.html`; `docs/styles.css`;
+  `CASE_STUDY.md`; this file (§§5, 6, 8, 9, 19, 22, 27, 34).
+- **Compatibility impact:** the three-section header navigation, Product hero,
+  combined Decisions contribution note, Evidence opening cards and `Open
+  prototype` action no longer conform. Historical §34 entries remain records of
+  earlier states rather than current instructions.
+- **Migration consideration:** implemented as a local landing-page and Markdown
+  restructure. Existing screenshots, product behavior, evaluation artifacts,
+  final metrics and production deployment are unchanged.
 
 ### 2026-08-10 evidence-led AI QA configuration selection story
 

@@ -1,6 +1,6 @@
 # FlatFeed Current Status
 
-**Last verified:** 2026-08-06
+**Last verified:** 2026-08-11
 **Purpose:** short handoff for a new human or AI work session. Read this after
 `AGENTS.md` / `CLAUDE.md` and before proposing the next experiment.
 
@@ -19,8 +19,9 @@ the full experiment history and contracts belong in
   coverage or user outcomes.
 - Parsing and matching are deterministic and fail closed on unknown critical
   values.
-- The public product surface is the working Telegram bot; the case study uses
-  captured screens from that product flow and links to the bot. Saved-filter
+- The Telegram bot is the working implementation artifact; the case study uses
+  captured screens from that product flow and does not link to or invite readers
+  to open the bot. Saved-filter
   setup, on-demand `Show matches`, persistent `Filter` / `Show matches`
   actions, individual field editing, reset and data deletion are implemented.
   Background notifications are implemented behind `BOT_BACKGROUND_ENABLED`.
@@ -123,6 +124,9 @@ history. They are not current public evidence.
   verified there on 2026-07-31.
 - The local case-study sources now describe the saved-filter Telegram flow as
   an implemented capability and retain the synthetic/no-live-source boundary.
+- The local case-study sources use the product-first Problem / Solution / Built /
+  Role / AI / Results / Learned structure and demonstrate the product only
+  through captured screens. This local restructure is not deployed yet.
 - The 2026-08-05 demo-only migration passed 348 unit tests, the 15-case
   deterministic parser evaluation, the public eval-number sync check, and
   desktop/mobile browser QA of the case-study page with no console errors.
