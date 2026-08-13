@@ -302,6 +302,26 @@ img {
   line-height: 1.65;
 }
 
+.case-status {
+  max-width: 60rem;
+  margin-top: 1.25rem;
+  color: var(--accent-deep);
+  font: 600 0.6875rem/1.6 var(--font-mono);
+  letter-spacing: 0.03em;
+}
+
+.case-status p + p {
+  margin-top: 0.25rem;
+}
+
+.case-status strong {
+  color: var(--ink-2);
+}
+
+.hero-ownership {
+  max-width: 60rem;
+}
+
 .term {
   position: relative;
   display: inline-block;
@@ -698,6 +718,14 @@ img {
   margin-top: var(--space-block);
 }
 
+.decision-list--four {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.decision-list--three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .decision-list article > p:last-child {
   margin-top: 0.75rem;
 }
@@ -721,6 +749,63 @@ img {
 
 .role-note--large {
   margin-top: var(--space-block);
+}
+
+.case-details {
+  margin-top: var(--space-block);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.case-details + .case-details {
+  margin-top: 1rem;
+}
+
+.case-details > summary {
+  padding: 1rem 0;
+  color: var(--accent-deep);
+  font: 600 0.75rem/1.4 var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.case-details[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.case-details > .qa-field-results,
+.case-details > .qa-cost {
+  margin-top: 0;
+  padding: var(--space-panel) 0;
+  border-top: 0;
+}
+
+.case-details > .qa-evidence-links {
+  margin-top: 0;
+  padding-bottom: var(--space-panel);
+}
+
+.case-details > .prototype-limits {
+  padding: var(--space-panel) 0;
+}
+
+.prototype-limits {
+  max-width: var(--measure-prose);
+  color: var(--ink-2);
+  line-height: 1.65;
+}
+
+.prototype-limits p + p {
+  margin-top: 0.75rem;
+}
+
+.next-question {
+  max-width: var(--measure-prose);
+  margin-top: var(--space-block);
+  color: var(--ink-2);
+  font-size: 1rem;
+  line-height: 1.65;
 }
 
 .evidence-grid {
@@ -961,6 +1046,11 @@ img {
   margin-top: var(--space-panel);
 }
 
+.qa-findings--inside-details {
+  margin-top: 0;
+  margin-bottom: var(--space-panel);
+}
+
 .qa-findings h4 {
   margin-top: 0.75rem;
 }
@@ -1045,6 +1135,14 @@ img {
   letter-spacing: -0.03em;
 }
 
+.case-cta__copy {
+  max-width: var(--measure-prose);
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
 .case-sibling {
   padding: var(--space-block) 0;
 }
@@ -1126,7 +1224,7 @@ img {
        attribution overflow the reserved caption height. The slide becomes the
        vertical stack here instead, and the reserve is recalibrated for that
        column so the controls still sit at one fixed offset on every slide. */
-    --product-carousel-caption-height: 13rem;
+    --product-carousel-caption-height: 16.5rem;
     margin-top: var(--space-block);
     padding-top: var(--space-subrule);
   }
@@ -1294,18 +1392,18 @@ img {
 }
 
 /* Narrow phones: the caption column keeps shrinking, so the seventh slide's
-   attribution wraps further and the 13rem reserve would let the controls move
+   attribution wraps further and the 16.5rem reserve would let the controls move
    between slides. Each step is measured against the longest approved slide copy
    at that width — see §5.4. */
 @media (max-width: 23rem) {
   .product-carousel {
-    --product-carousel-caption-height: 15rem;
+    --product-carousel-caption-height: 18.5rem;
   }
 }
 
 @media (max-width: 21.5rem) {
   .product-carousel {
-    --product-carousel-caption-height: 16.5rem;
+    --product-carousel-caption-height: 20rem;
   }
 }
 

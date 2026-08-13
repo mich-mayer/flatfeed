@@ -1,6 +1,6 @@
 # FlatFeed Current Status
 
-**Last verified:** 2026-08-11
+**Last verified:** 2026-08-13
 **Purpose:** short handoff for a new human or AI work session. Read this after
 `AGENTS.md` / `CLAUDE.md` and before proposing the next experiment.
 
@@ -120,13 +120,14 @@ history. They are not current public evidence.
   proxy, not as a count of online ads. The rounded 15,000-check workload,
   measured `$35/year` pattern, and buffered `$45/year` scenario are not
   measured production cost.
-- The new final result is published at the public GitHub Pages URL and was
-  verified there on 2026-07-31.
+- The final result and compressed hiring-first case study are published at the
+  public GitHub Pages URL and were verified there on 2026-08-13.
 - The local case-study sources now describe the saved-filter Telegram flow as
   an implemented capability and retain the synthetic/no-live-source boundary.
-- The local case-study sources use the product-first Problem / Solution / Built /
-  Role / AI / Results / Learned structure and demonstrate the product only
-  through captured screens. This local restructure is not deployed yet.
+- The local case-study sources use the compressed hiring-first Problem /
+  Product / Decisions / AI Evaluation / Next structure. The product is demonstrated
+  through captured screens; technical evaluation depth remains in closed
+  details. This structure is the current GitHub Pages source.
 - The 2026-08-05 demo-only migration passed 348 unit tests, the 15-case
   deterministic parser evaluation, the public eval-number sync check, and
   desktop/mobile browser QA of the case-study page with no console errors.
