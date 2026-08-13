@@ -39,10 +39,10 @@ PUBLIC_EVIDENCE_LABEL = "AI QA evaluation · synthetic data · 600 listings"
 ANNUAL_CHECK_SCENARIO = 15_000
 OFFICIAL_RELETTING_PROXY = 12_398
 PLANNING_BUFFER = 1.25
-FINAL_STOPPING_RATIONALE_PARTS = (
-    "The final run met every synthetic acceptance gate",
-    "The prototype is complete at its intended scope",
-    "bounded AI quality-control role",
+FINAL_EVIDENCE_BOUNDARY_PARTS = (
+    "Every predeclared prototype target passed",
+    "This demonstrates feasibility on controlled synthetic data",
+    "not integrated into the product",
 )
 HISTORICAL_PUBLIC_MARKERS = (
     "Synthetic frozen validation",
@@ -54,9 +54,9 @@ HISTORICAL_PUBLIC_MARKERS = (
 )
 METRIC_LABELS = {
     "parser_error_detection_rate": "Errors detected",
-    "false_alert_rate": "False alerts",
-    "correct_field_detection_rate": "Correct data point identified",
-    "successful_check_rate": "Usable AI responses",
+    "false_alert_rate": "Unnecessary review flags",
+    "correct_field_detection_rate": "Correct field identified",
+    "successful_check_rate": "Usable results",
 }
 RUNTIME_BOUNDARY_MARKERS = (
     "not part of the user-facing product flow",
@@ -256,11 +256,11 @@ def main() -> int:
             errors.append(
                 f"{path.relative_to(PROJECT_ROOT)}: runtime boundary is missing"
             )
-        for rationale_part in FINAL_STOPPING_RATIONALE_PARTS:
+        for rationale_part in FINAL_EVIDENCE_BOUNDARY_PARTS:
             if rationale_part not in text:
                 errors.append(
                     f"{path.relative_to(PROJECT_ROOT)}: "
-                    "approved stopping rationale is missing or changed: "
+                    "approved evidence boundary is missing or changed: "
                     f"{rationale_part}"
                 )
         for label, percentage, count in expected_public_metrics:
