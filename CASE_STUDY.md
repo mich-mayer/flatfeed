@@ -5,48 +5,51 @@
 WBS (Wohnberechtigungsschein) is a certificate used to qualify for subsidized
 housing in Berlin.
 
-Portal alerts cover only listings on that platform. Housing providers also
-publish apartments on their own websites, so users repeat the same WBS,
-district, rent and room search across several places and compare different
-listing formats. The FlatFeed prototype tests a simpler flow: save those
-criteria once and review matching listings in Telegram.
+Several property portals let users save searches and receive alerts, but each
+alert covers only its own platform. Housing providers also publish apartments
+on their own websites. Users therefore repeat the same WBS, district, rent and
+room search across several places and compare different listing formats.
+FlatFeed tests a simpler flow: save those criteria once and review matching
+listings in Telegram.
 
 **Product:** Working Telegram prototype · Generated test listings · Rule-based
 matching
 
-**Evaluation:** Separate AI-and-code data-quality check · Tested offline on 600
-synthetic listings
+**Evaluation:** AI extracts source evidence; code checks it · Tested offline on
+600 synthetic listings
 
-**Project ownership:** I defined the problem and product scope, chose the
-matching rules and AI role, made the implementation decisions and set the
-evaluation targets.
+**Project ownership:** I defined the problem and scope, chose how matching
+works, decided where AI should and should not be used and set the evaluation
+targets.
 
 ## 1. Problem
 
-Portal alerts do not cover apartments that providers publish only on their own
-websites. Users repeat the same eligibility, district, rent and room criteria
-and then compare different listing formats before they can respond. The need is
-based on first-hand and observed experience; the prototype does not claim a
-measured market prevalence or user outcome.
+Several property portals offer saved-search alerts, but each alert covers only
+listings on that platform. Housing providers also publish apartments on their
+own websites. Users therefore repeat the same eligibility, district, rent and
+room criteria across several places and compare different listing formats
+before they can respond. The need is based on first-hand and observed
+experience; the prototype does not claim a measured market prevalence or user
+outcome.
 
 ## 2. Product
 
-### A complete saved-filter journey works in Telegram.
+### Users can save one filter and review matching listings in Telegram.
 
 Users save WBS type, district, maximum Kaltmiete and rooms. Kaltmiete is the
-base rent, excluding operating and heating costs. FlatFeed maps listings into
-one consistent format, compares them with the saved filter using deterministic
-rules and returns matches in a Telegram card.
+base rent, excluding operating and heating costs. FlatFeed puts every listing
+into the same format, checks it against the saved filter with fixed rules and
+returns matches in a Telegram card.
 
 1. **Save one filter.** Set the four matching criteria once.
-2. **Normalize listings.** A shared import pipeline maps each listing into one
-   schema. The demo uses one synthetic adapter; no live provider adapters are
-   included.
-3. **Match with rules.** Deterministic code compares each listing with the
-   saved criteria. Missing required rent or room data does not count as a match.
-4. **Return each new match once.** Users can request matches on demand.
-   Background delivery with duplicate prevention is implemented but disabled
-   in this demo.
+2. **Put listings into one format.** One import flow turns every listing into
+   the same set of fields. The demo uses one synthetic source adapter and
+   includes no live provider adapters.
+3. **Match with rules.** Code compares each listing with the saved criteria. If
+   required rent or room data is missing, the listing does not match.
+4. **Return each new match once.** Users can request matches when they want.
+   Background delivery can send new matches and record each successful send to
+   prevent duplicates. It is built but switched off in this demo.
 
 Seven captured Telegram screens document the implemented journey:
 
@@ -64,48 +67,47 @@ synthetic.
 
 ## 3. Decisions
 
-### Three decisions defined the product boundary.
+### I made three decisions to keep the product focused and testable.
 
 This was a self-directed portfolio project, not a live rollout. I made the
 product and evaluation decisions and implemented the prototype with Claude Code
 and Codex as coding collaborators.
 
-1. **Missing required values do not count as matches.** When a filter requires
-   rent or room count and the listing lacks that value, FlatFeed does not treat
-   it as a match. This avoids unsupported matches but may hide a suitable
-   listing; the trade-off still needs live validation.
-2. **Do not claim coverage before validating source access.** The demo uses
-   generated listings through one synthetic adapter. I have not validated
+1. **Do not match a listing when required data is missing.** If rent or room
+   count is missing, the listing does not match a filter that requires it. This
+   reduces wrong matches but may hide a suitable listing. Real data is needed
+   to judge the trade-off.
+2. **Do not promise coverage before source access is clear.** The demo uses
+   generated listings through one synthetic source adapter. I have not validated
    access to provider websites or the terms for using their listings, so the
-   prototype makes no live-coverage claim.
-3. **Give AI a narrow, checkable task.** A model-only comparison missed direct
-   contradictions. Additional prompt rules improved one field but degraded
-   others, so I narrowed the task: extract exact source evidence, then let
-   deterministic code validate and compare it.
+   prototype does not claim to cover live listings.
+3. **Give AI a narrow, checkable task.** AI alone sometimes missed conflicts
+   between a listing and the parsed data. Adding more prompt rules improved one
+   field but made others worse. I therefore asked AI only to quote the source
+   and let code compare the values.
 
 **User path:** Saved filter → Rule-based matching → Telegram result
 
-**Offline evaluation path:** Raw listing text → AI extracts a source quote or
-`null` → Code validates and compares parsed values → Offline review-required
-result
+**Offline evaluation path:** Listing text → AI returns an exact quote or `null`
+→ Code checks the quote and compares values → Result marked for offline review
 
-The evaluated AI-and-code setup ran offline. It cannot change listings, decide
-matches or affect the Telegram flow.
+The tested setup ran offline. It cannot change listing data, decide matches or
+affect the Telegram product.
 
 ## 4. AI Evaluation
 
-### The product works with generated listings. The data-quality check passed its synthetic benchmark.
+### The product works with generated listings. A separate AI quality check passed its 600-listing synthetic test.
 
-Seven Telegram screens document the implemented journey. A separate offline
-evaluation tested whether a bounded AI-and-code check could detect deliberately
-planted parser errors.
+The seven Telegram screens above show the working product. A separate offline
+test asked whether AI and code could find deliberately planted errors in data
+extracted from listings.
 
 **AI QA evaluation · synthetic data · 600 listings**
 
-The final dataset was fixed before the run: 300 clean listings and 300 with one
-planted parser error. The model saw raw listing text only—not expected answers,
-parser snapshots or labels identifying the test case. The benchmark ran once,
-with zero retries and no post-run tuning or rescoring.
+I fixed the final dataset before the run: 300 clean listings and 300 with one
+planted parser error. The model saw only raw listing text. It did not see the
+expected answers, FlatFeed's parsed values or labels identifying each test
+case. The test ran once, with no retries, tuning or rescoring afterward.
 
 **Passed the synthetic benchmark. Every predeclared prototype target passed.**
 
@@ -116,24 +118,25 @@ with zero retries and no post-run tuning or rescoring.
 | Correct field identified | 100.0% (300/300) | At least 98% (294/300) |
 | Usable results | 99.8% (599/600) | At least 99.5% (597/600) |
 
-These acceptance criteria were defined for this prototype before the final
-run; they are not universal industry benchmarks.
+I set these acceptance criteria before the final run. They apply to this
+prototype, not to the industry as a whole.
 
-One clean listing produced an unusable quote. Local validation rejected it, and
-no unnecessary review flag was created. This demonstrates feasibility on controlled synthetic data—not live-source accuracy, production performance or
-user impact. The evaluated configuration ran offline and is not integrated into the product.
+One clean listing produced an unusable quote. Code rejected it because the
+quote was not present in the listing, so it created no unnecessary review flag.
+This demonstrates feasibility on controlled synthetic data—not live-source
+accuracy, production performance or user impact. The tested setup ran offline
+and is not integrated into the product.
 
 ### Evaluation method and field-level results
 
-The final configuration used `gpt-5.6-terra` with high reasoning effort and
-strict Structured Outputs. For every evaluated value, the model returned an
-exact source quote or `null`. Deterministic code validated the output, compared
-it with FlatFeed's parsed values and produced the offline outcome
-`review_required` when values differed.
+The final setup used `gpt-5.6-terra` with high reasoning effort and a strict
+response format (Structured Outputs). For each field, the model returned an
+exact quote from the listing or `null`. Code rejected invalid output, compared
+the quoted evidence with FlatFeed's parsed value and marked any difference for
+offline review.
 
-The only unusable result contained a quote that did not appear exactly in the
-raw listing text. The case was not retried, and no planted parser error was
-missed.
+The only unusable result contained a quote that was not in the listing. The
+case was not retried. No planted parser error was missed.
 
 | Listing data | Used for | Errors found | Prototype target |
 |---|---|---:|---:|
@@ -153,18 +156,17 @@ At a planning volume of 15,000 checks per year, the measured cost pattern would
 be about `$35` per year (`$2.94` per month). A 25% planning buffer produces
 `$0.00294` per check, about `$45` per year (`$3.68` per month).
 
-The 15,000-check figure is a planning scenario, not a forecast. The closest
-official volume reference is 12,398 apartment re-lettings reported by six
-state-owned Berlin housing companies in 2024, excluding Berlinovo. Re-lettings
-are not the same as online advertisements.
+The 15,000-check figure is a planning scenario, not a forecast. Berlin reported
+12,398 apartment re-lettings by six state-owned housing companies in 2024,
+excluding Berlinovo. This is not the number of online ads.
 
 The estimate covers AI API calls only. It excludes source access, hosting,
 monitoring, duplicate listings, price changes, differences in real-listing
-length and human review. Prices were recorded on 30 July 2026.
+length and human review. It uses prices recorded on 30 July 2026.
 
 Evidence:
 
-- [Evaluation contract](eval/AI_QA_EVAL_PLAN.md)
+- [Evaluation plan](eval/AI_QA_EVAL_PLAN.md)
 - [Final 600-listing report](eval/runs/extraction-v1-final-600/report.md)
 - [Repository](https://github.com/mich-mayer/flatfeed)
 - [Berlin volume reference](https://www.berlin.de/sen/stadt/presse/pressemeldungen/pressemitteilung.1628093.php)
@@ -177,24 +179,23 @@ The next step is to confirm which sources permit this use and then test whether
 the resulting alerts are timely and useful.
 
 - **Source coverage:** How many listings are available from permitted sources?
-- **Time to alert:** How long does publication-to-notification take?
-- **Alert follow-through:** What share of notifications do users open or act on?
-- **Irrelevant or unavailable listings:** What share does not fit the user's
-  needs or is already unavailable?
+- **Time to alert:** How long after publication does an alert arrive?
+- **Alert follow-through:** What share of alerts do users open or act on?
+- **Irrelevant or unavailable listings:** What share of alerts are irrelevant
+  or already unavailable?
 
-Before testing AI data-quality checks with real listings, reviewers should
-inspect every review flag and an independent random sample of listings without
-flags.
+Before using AI quality checks on real listings, reviewers should inspect every
+flagged case and a random sample of listings with no flag.
 
 Current prototype limits:
 
-- One synthetic adapter is present and enabled; no live provider adapters are
-  included.
-- On-demand matching works. Background delivery with duplicate prevention is
-  implemented but disabled in the demo.
-- An optional runtime admin-QA path is implemented but disabled. The accepted
-  hosted-model configuration was evaluated separately offline and is connected
-  to neither that path nor the Telegram flow.
+- The demo uses one synthetic source adapter and includes no live provider
+  adapters.
+- On-demand matching works. Automatic background delivery with duplicate
+  prevention is built but switched off in the demo.
+- An optional AI quality check for administrators is built but switched off.
+  The model setup reported above was tested separately offline and is connected
+  to neither that path nor the Telegram product.
 - Live-source performance and user impact have not been measured.
 
 ## What this demonstrates
@@ -207,7 +208,7 @@ and defined what must be validated before testing with real listings.
 
 ## Another case
 
-Opsqora explores a different AI boundary: AI groups support feedback while
-people decide what to build.
+Opsqora uses AI differently: AI groups support feedback while people decide
+what to build.
 
 [Read the case study →](https://mich-mayer.github.io/opsqora/case-study.html)
