@@ -16,7 +16,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260813-compressed-case">
+    <link rel="stylesheet" href="styles.css?v=20260814-header-credit">
     <script src="carousel.js?v=20260807-product-carousel" defer></script>
     <script src="terms.js?v=20260812-term-tooltips" defer></script>
   </head>
@@ -46,21 +46,21 @@
         <section class="case-hero" id="problem" aria-labelledby="case-title">
           <div class="hero-copy">
             <p class="kicker"><span>01</span>Problem</p>
-            <h1 id="case-title">Berlin <span class="term" data-term><button class="term__trigger" type="button" aria-describedby="term-wbs" aria-expanded="false">WBS</button><span class="term__tooltip" id="term-wbs" role="tooltip">Wohnberechtigungsschein: a certificate used to qualify for subsidized housing in Berlin.</span></span> apartment seekers repeat the same search across separate sources.</h1>
+            <h1 id="case-title">Berlin <span class="term" data-term><button class="term__trigger" type="button" aria-describedby="term-wbs" aria-expanded="false">WBS</button><span class="term__tooltip" id="term-wbs" role="tooltip">Wohnberechtigungsschein: a certificate used to qualify for subsidized housing in Berlin.</span></span> apartment seekers repeat the same search across multiple websites.</h1>
             <p class="case-lede">
-              A portal alert covers only listings on that platform, while housing providers also
-              publish apartments on their own websites. Users therefore repeat the same WBS,
-              district, rent and room criteria and compare different listing formats before
-              responding. FlatFeed explores a simpler flow: save those criteria once and review
+              Portal alerts cover only listings on that platform. Housing providers also publish
+              apartments on their own websites, so users repeat the same WBS, district, rent and
+              room search across several places and compare different listing formats. The
+              FlatFeed prototype tests a simpler flow: save those criteria once and review
               matching listings in Telegram.
             </p>
             <div class="case-status" aria-label="Product and evaluation status">
-              <p><strong>Product:</strong> Working Telegram prototype · Generated test listings · Fixed-rule matching</p>
+              <p><strong>Product:</strong> Working Telegram prototype · Generated test listings · Rule-based matching</p>
               <p><strong>Evaluation:</strong> Separate AI-and-code data-quality check · Tested offline on 600 synthetic listings</p>
             </div>
             <aside class="role-note hero-ownership" aria-label="Project ownership">
               <p class="preview-label">Project ownership</p>
-              <p>I defined the problem framing, product scope, matching rules, AI boundary, implementation decisions and evaluation gates.</p>
+              <p>I defined the problem and product scope, chose the matching rules and AI role, made the implementation decisions and set the evaluation targets.</p>
             </aside>
           </div>
         </section>
@@ -226,7 +226,7 @@
                       <span>07 / 07</span>
                       <strong>Review a matched listing</strong>
                       <p>See eligibility, rent, apartment details and estimated transit walks in one consistent card.</p>
-                      <p><small>Photo: Bodo Kubrak, CC0 1.0; resized. Schlangenbader Straße 91. Apartment details are synthetic.</small></p>
+                      <p class="product-carousel__credit"><small>Photo: Bodo Kubrak, CC0 1.0; resized. Schlangenbader Straße 91. Apartment details are synthetic.</small></p>
                     </figcaption>
                   </figure>
                 </li>
@@ -282,7 +282,7 @@
             <div>
               <section>
                 <p class="preview-label">User path</p>
-                <p>Saved filter → Fixed-rule matching → Telegram result</p>
+                <p>Saved filter → Rule-based matching → Telegram result</p>
               </section>
               <section>
                 <p class="preview-label">Offline evaluation path</p>
@@ -565,8 +565,8 @@
         <section class="case-cta">
           <div>
             <p class="kicker">What this demonstrates</p>
-            <h2>A bounded product, explicit trade-offs and evidence before expansion.</h2>
-            <p class="case-cta__copy">A working Telegram prototype with fixed-rule matching and a separately evaluated AI-and-code quality check. This case demonstrates how I turn a fragmented workflow into a bounded product, make trade-offs explicit, separate deterministic product logic from probabilistic checks and define evidence before expanding scope.</p>
+            <h2>A working product, clear decisions and evidence for the next step.</h2>
+            <p class="case-cta__copy">I turned a repeated housing search into a working Telegram prototype. I used rules to decide which listings match, kept AI in a separate data-quality check and defined what must be validated before testing with real listings.</p>
           </div>
         </section>
 
