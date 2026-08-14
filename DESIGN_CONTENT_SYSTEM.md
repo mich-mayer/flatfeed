@@ -299,9 +299,9 @@ Rules:
 The status card shows whether a filter exists and, when configured, lists WBS, District, Max Kaltmiete, and Rooms in that order. It offers `Show matches`, `Edit filter`, `Reset filter`, and `Delete my data`. The setup wizard asks one field at a time and persists only after all four answers are complete.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → compact sticky top bar (FlatFeed brand with `Product case study` subtitle; compact centered five-item nav: Problem · Product · Decisions · AI Evaluation · Next; one proportionally compact Repository action) → text-led Problem hero (plain-language proposition, first-use WBS tooltip, separate product/evaluation status lines and ownership note) → **hiring-first five-section case study**: 01 Problem · 02 Product · 03 Decisions · 04 AI Evaluation · 05 Next → dark `What this demonstrates` summary → sibling case cross-link. The sibling cross-link is the final page block; there is no separate footer.
+Skip link → compact sticky top bar (above 56rem, FlatFeed brand with `Product case study` subtitle, the centered five-item nav Problem · Product · Decisions · AI Evaluation · Next, and one proportionally compact Repository action share one row) → text-led Problem hero (plain-language proposition, first-use WBS tooltip, separate product/evaluation status lines and ownership note) → **hiring-first five-section case study**: 01 Problem · 02 Product · 03 Decisions · 04 AI Evaluation · 05 Next → dark `What this demonstrates` summary → sibling case cross-link. The sibling cross-link is the final page block; there is no separate footer.
 
-The page MUST answer in order: what user problem the product simplifies, what was built, what the candidate owned and decided, how the bounded AI check was evaluated, and what should be tested next. Product combines the solution, four-stage workflow and seven-screen Telegram proof. Decisions combines the three consequential trade-offs with the exact user/offline path boundary. AI Evaluation keeps the aggregate results and one unusable result visible; field-level results, configuration and cost assumptions sit in closed-by-default details so they do not interrupt the hiring scan. Dashboard mockups, mock-cost, legal analysis, scripted-demo history and historical iteration tables do not belong in the main public narrative. At ≤56rem the nav becomes a two-column grid without making the header sticky.
+The page MUST answer in order: what user problem the product simplifies, what was built, what the candidate owned and decided, how the bounded AI check was evaluated, and what should be tested next. Product combines the solution, four-stage workflow and seven-screen Telegram proof. Decisions combines the three consequential trade-offs with the exact user/offline path boundary. AI Evaluation keeps the aggregate results and one unusable result visible; field-level results, configuration and cost assumptions sit in closed-by-default details so they do not interrupt the hiring scan. Dashboard mockups, mock-cost, legal analysis, scripted-demo history and historical iteration tables do not belong in the main public narrative. At ≤56rem the header is not sticky and the nav moves to a second row as a two-column grid; the brand and Repository action remain in the first row without creating an implicit third column.
 
 ### 6.4 No separate dashboard — ADOPT
 The prototype has no dashboard or public operations console. The case study demonstrates the Telegram product only through captured screens and MUST NOT link to or invite readers to open the bot. Final hosted-model evidence lives in the case study and frozen `eval/` artifacts. A new stats command, admin page, or dashboard would be a new phase and requires an explicit product decision rather than a replacement implementation.
@@ -465,10 +465,10 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 
 ## 14. Responsive System (case-study page)
 
-Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids), **56rem** (linear hero, hidden redundant section nav), and **40rem** (single-column metadata/workflow and full-width CTA buttons).
+Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids), **56rem** (non-sticky two-row header and linear hero), and **40rem** (single-column metadata/workflow and full-width CTA buttons).
 
 - Desktop is the primary reading surface; mobile is a supported viewing mode, not a separately designed product.
-- Section kickers start after a compact top inset: 2.75rem on desktop and 3rem below 40rem. The Problem section hero uses the same 2.75rem desktop inset so the first viewport prioritizes content over shell spacing. Desktop anchor navigation uses a 5.5rem scroll offset matched to the compact sticky header.
+- Section kickers start after a compact top inset: 2.75rem on desktop and 3rem below 40rem. The Problem section hero uses the same 2.75rem desktop inset so the first viewport prioritizes content over shell spacing. Desktop anchor navigation uses a 3rem scroll offset matched to the single-row sticky header.
 - Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, boundary-aware lede, compact status, ownership note, CTA and metadata. The section nav remains visible and becomes a two-column grid on narrow screens.
 - Telegram handles bot responsiveness — do not add custom viewport logic there.
 
@@ -605,7 +605,7 @@ technical docs, research language, outcomes and tests — use `user` / `users`.
 The page serves three reading depths; every depth must independently answer its questions.
 
 **10-second scan** (brand label + Problem kicker + H1 + lede + separate product/evaluation status + ownership note) must answer: What is FlatFeed, where is it used, which repeated task does it replace, what is implemented and what did the candidate own?
-Mechanics: the header brand shows `FlatFeed` with a smaller `Product case study` subtitle. Five navigation labels sit in a compact centered row. Every numbered section has a matching navigation item using exactly the same words, capitalization and punctuation. The kicker establishes only `01 Problem`; do not repeat the case-study type beside it. The H1 names the repeated cross-source search problem without introducing FlatFeed's solution. The lede states the cross-source repetition and intended Telegram flow without claiming live aggregation. The same first-screen layer discloses working prototype, generated listings, fixed-rule matching, separate offline synthetic AI evaluation and direct product/evaluation ownership. The self-directed project context remains in Decisions. No name, role label or contact data is required.
+Mechanics: above 56rem the header brand, five centered navigation labels and Repository action share one compact row; at narrower widths the nav remains visible in a second-row two-column grid. Every numbered section has a matching navigation item using exactly the same words, capitalization and punctuation. The kicker establishes only `01 Problem`; do not repeat the case-study type beside it. The H1 names the repeated cross-website search problem without introducing FlatFeed's solution. The lede states the cross-website repetition and intended Telegram flow without claiming live aggregation. The same first-screen layer discloses working prototype, generated listings, rule-based matching, separate offline synthetic AI evaluation and direct product/evaluation ownership. The self-directed project context remains in Decisions. No name, role label or contact data is required.
 
 **45-second scan** (+ Product, Decisions, aggregate AI Evaluation and Next) must answer: how FlatFeed changes the user workflow, which trade-offs the candidate made, what was implemented, why AI does not match listings, what was measured and what remains unvalidated.
 Mechanics: the hiring-first sequence is Problem → Product → Decisions → AI Evaluation → Next. Product starts with the implemented save → normalize → match → return flow, then shows the seven-screen carousel. Decisions presents three consequential choices and one exact boundary: model extracts source evidence offline, deterministic code compares parsed values, fixed rules decide user matches. AI Evaluation keeps the four aggregate metrics, synthetic qualifier, unusable result and runtime boundary visible; field results and cost assumptions are secondary details.
@@ -614,12 +614,12 @@ Mechanics: the hiring-first sequence is Problem → Product → Decisions → AI
 
 Element rules:
 - **Problem hero:** numbered `01 Problem` kicker → plain proposition H1 with the first-use WBS tooltip → one-paragraph problem and product lede → separate Product and Evaluation status lines → ownership note. The brand already labels the page `Product case study`; self-directed context belongs in Decisions rather than being repeated in the hero.
-- **Product carousel:** seven real Telegram captures document setup through result in the author-supplied order. The hero remains text-only. The carousel does not auto-advance; previous/next buttons, arrow keys, and touch swipe expose the sequence. On desktop the capture and its bounded caption form one centered two-column block, with the heading aligned over the caption and a compact joined pair of arrow buttons immediately below the commentary, aligned to its left edge. Every capture sits in the same fixed-ratio frame with `object-fit: contain`, and every caption uses the same reserved height, sized for the longest approved slide copy. Together these keep the buttons fixed while screens change without cropping screenshots or allowing copy to overlap the controls. The buttons share one internal border so they read as a single navigator rather than two floating actions. Do not show a second visual `Screen N of 7` label because the caption already shows `NN / 07`; retain a visually hidden live region for assistive technology. On mobile, commentary remains adjacent in reading order, retains the shared reserved height, and controls follow it with the same left alignment. Carousel-level copy describes the product sequence without repeating demo setup. Each slide uses a step number, short title, and one orienting sentence. Photo credit remains adjacent to the relevant image. No dashboard, mock metrics, fabricated runtime data or browser imitation.
+- **Product carousel:** seven real Telegram captures document setup through result in the author-supplied order. The hero remains text-only. The carousel does not auto-advance; previous/next buttons, arrow keys, and touch swipe expose the sequence. On desktop the capture and its bounded caption form one centered two-column block, with the heading aligned over the caption and a compact joined pair of arrow buttons immediately below the commentary, aligned to its left edge. Every capture sits in the same fixed-ratio frame with `object-fit: contain`, and every caption uses the same reserved height, sized for the longest approved slide copy. Together these keep the buttons fixed while screens change without cropping screenshots or allowing copy to overlap the controls. The buttons share one internal border so they read as a single navigator rather than two floating actions. Do not show a second visual `Screen N of 7` label because the caption already shows `NN / 07`; retain a visually hidden live region for assistive technology. On mobile, commentary remains adjacent in reading order, retains the shared reserved height, and controls follow it with the same left alignment. Carousel-level copy describes the product sequence without repeating demo setup. Each slide uses a step number, short title, and one orienting sentence. Photo credit remains adjacent to the relevant image in a smaller 11px utility style with 1.5 line height and readable `--ink-3` contrast. No dashboard, mock metrics, fabricated runtime data or browser imitation.
 - **Product:** combine the solution and implementation proof. Begin with the four saved criteria and first-use Kaltmiete tooltip, then the four-stage implemented flow—save, normalize, match, return once—and the seven-screen carousel. Qualify the architecture with the one present synthetic adapter and the disabled background-delivery mode at the same depth. Do not repeat the workflow in comparison or capability cards.
 - **Decisions:** name direct ownership, coding collaborators and the absence of a live rollout. Show three choices: fail-closed missing values, no live-coverage claim and the model-evidence/code-comparison split. Follow them with the exact user/offline path boundary. Scripted-demo history does not belong in the linear case.
 - **AI Evaluation:** open by pairing the seven-screen product proof with the separate synthetic evaluation question. The final hosted-model result retains its synthetic qualifier, all four aggregates, 599/600 limitation, one-run/no-tuning setup and no-runtime-integration boundary at visible depth. Field-level results, final configuration, unusable-case detail and cost scenario live in closed details. Field values are evaluation evidence, never user or production outcomes. No score from an earlier model iteration appears.
 - **Next:** show the four next product metrics, the human-review requirement and controlled prototype limits. Configuration detail belongs in a closed block. Do not imply a committed user study, live-source pilot or production rollout.
-- **Conclusion:** explicitly synthesize the hiring signal under `What this demonstrates`: bounded product, explicit trade-offs, separation of deterministic logic from probabilistic checks, and evidence before expansion. The final summary has no button; product behavior is demonstrated through screenshots.
+- **Conclusion:** explicitly synthesize the hiring signal under `What this demonstrates` in concrete terms: a working Telegram prototype, rules deciding user-facing matches, AI kept in a separate data-quality check, and the validation required before testing with real listings. The final summary has no button; product behavior is demonstrated through screenshots.
 
 ---
 
@@ -857,6 +857,81 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-14 make the hiring summary concrete
+
+- **Problem:** the final summary relied on abstract portfolio phrases such as
+  `bounded product`, `probabilistic checks` and `evidence before expansion`.
+  They were accurate but made the reader translate the hiring signal back into
+  the product decisions already shown on the page.
+- **Rationale:** name the demonstrated work directly: a working Telegram
+  prototype, rules deciding matches, AI kept in a separate quality check and
+  validation before real-listing testing. This keeps the professional signal
+  while making each claim understandable on its own.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this file
+  (§§22 and 34).
+- **Compatibility impact:** conclusion copy that summarizes the case only with
+  abstract product-management terminology no longer conforms.
+- **Migration consideration:** migrated now across the rendered case study and
+  Markdown counterpart. Product scope, evidence and behavior are unchanged.
+
+### 2026-08-14 reduce the carousel photo credit hierarchy
+
+- **Problem:** the required photo attribution used nearly the same visual size
+  as the orienting slide sentence, so utility metadata competed with product
+  explanation.
+- **Rationale:** keep the complete credit adjacent to the image, but render it
+  at 11px with a 1.5 line height and the existing readable secondary text color.
+  The disclosure stays legible while its lower information priority becomes
+  visible.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`, stylesheet
+  cache key in `docs/demo-listing.html`, and this file (§§5.5, 22 and 34).
+- **Compatibility impact:** carousel photo credits styled like primary slide
+  commentary no longer conform.
+- **Migration consideration:** migrated now for the single licensed carousel
+  image. Credit wording, adjacency, license disclosure and synthetic boundary
+  are unchanged.
+
+### 2026-08-14 make the first-screen language more concrete
+
+- **Problem:** the first screen used abstract portfolio language such as
+  `separate sources`, `explores a simpler flow`, `problem framing`, `AI
+  boundary` and `evaluation gates`. The facts were accurate, but a fast reader
+  had to translate them into websites, a prototype test and concrete ownership.
+- **Rationale:** name the visible context directly (`multiple websites`), make
+  the prototype status the subject of the proposed flow, use the established
+  `rule-based matching` term and express ownership with plain verbs. Keep the
+  synthetic, implementation and evaluation boundaries unchanged.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this file
+  (§§22, 24 and 34).
+- **Compatibility impact:** the previous abstract first-screen phrases and
+  `fixed-rule matching` label no longer conform on the active case-study
+  surfaces.
+- **Migration consideration:** migrated now across the rendered case study and
+  its Markdown counterpart. Product behavior, evidence and scope are unchanged.
+
+### 2026-08-14 align desktop navigation with the brand row
+
+- **Problem:** the desktop navigation occupied a separate 36px row even though
+  the brand, five links and Repository action fit comfortably on one line. The
+  extra shell height delayed the Problem content and ownership signal during a
+  fast first-viewport scan. On narrow widths, the inherited desktop third
+  column also let the Repository action create horizontal overflow.
+- **Rationale:** above 56rem, use equal outer grid columns around the centered
+  navigation so the nav stays geometrically centered while the brand and action
+  sit at opposite edges. Symmetric block padding centers all three elements
+  vertically without restoring the removed navigation row. At 56rem and below,
+  retain the readable two-column nav with its own vertical padding on a second
+  non-sticky row and explicitly place the action in column two.
+- **Affected surfaces:** `docs/styles.css`, stylesheet cache keys in
+  `docs/case-study.html` and `docs/demo-listing.html`, and this file (§§6.3, 14,
+  22 and 34).
+- **Compatibility impact:** a separate desktop nav row, one-sided desktop
+  header padding, a 5.5rem desktop anchor offset, or a narrow header with an
+  implicit third action column no longer conforms.
+- **Migration consideration:** migrated now for the shared case-study shell.
+  Navigation labels, destinations, product copy, evidence and behavior are
+  unchanged.
 
 ### 2026-08-13 make the hero headline problem-led
 

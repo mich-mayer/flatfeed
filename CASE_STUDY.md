@@ -1,24 +1,25 @@
 # FlatFeed Case Study
 
-# Berlin WBS apartment seekers repeat the same search across separate sources.
+# Berlin WBS apartment seekers repeat the same search across multiple websites.
 
 WBS (Wohnberechtigungsschein) is a certificate used to qualify for subsidized
 housing in Berlin.
 
-A portal alert covers only listings on that platform, while housing providers
-also publish apartments on their own websites. Users therefore repeat the same
-WBS, district, rent and room criteria and compare different listing formats
-before responding. FlatFeed explores a simpler flow: save those criteria once
-and review matching listings in Telegram.
+Portal alerts cover only listings on that platform. Housing providers also
+publish apartments on their own websites, so users repeat the same WBS,
+district, rent and room search across several places and compare different
+listing formats. The FlatFeed prototype tests a simpler flow: save those
+criteria once and review matching listings in Telegram.
 
-**Product:** Working Telegram prototype · Generated test listings · Fixed-rule
+**Product:** Working Telegram prototype · Generated test listings · Rule-based
 matching
 
 **Evaluation:** Separate AI-and-code data-quality check · Tested offline on 600
 synthetic listings
 
-**Project ownership:** I defined the problem framing, product scope, matching
-rules, AI boundary, implementation decisions and evaluation gates.
+**Project ownership:** I defined the problem and product scope, chose the
+matching rules and AI role, made the implementation decisions and set the
+evaluation targets.
 
 ## 1. Problem
 
@@ -82,7 +83,7 @@ and Codex as coding collaborators.
    others, so I narrowed the task: extract exact source evidence, then let
    deterministic code validate and compare it.
 
-**User path:** Saved filter → Fixed-rule matching → Telegram result
+**User path:** Saved filter → Rule-based matching → Telegram result
 
 **Offline evaluation path:** Raw listing text → AI extracts a source quote or
 `null` → Code validates and compares parsed values → Offline review-required
@@ -198,13 +199,11 @@ Current prototype limits:
 
 ## What this demonstrates
 
-### A bounded product, explicit trade-offs and evidence before expansion.
+### A working product, clear decisions and evidence for the next step.
 
-A working Telegram prototype with fixed-rule matching and a separately
-evaluated AI-and-code quality check. This case demonstrates how I turn a
-fragmented workflow into a bounded product, make trade-offs explicit, separate
-deterministic product logic from probabilistic checks and define evidence before
-expanding scope.
+I turned a repeated housing search into a working Telegram prototype. I used
+rules to decide which listings match, kept AI in a separate data-quality check
+and defined what must be validated before testing with real listings.
 
 ## Another case
 
