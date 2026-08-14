@@ -493,6 +493,13 @@ Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids)
 5. **Explain domain terms at first use, keep the term.** "WBS (Wohnberechtigungsschein) is a Berlin eligibility certificate…", "Kaltmiete is the base rent, excluding operating and heating costs." Don't translate the term away; gloss it (P6).
 6. **Every claim carries its evidence status.** "These are synthetic evaluation metrics, not production user-impact numbers" — the qualifier is part of the sentence, not a footnote (§23).
 7. **Write for the working reader.** The user wants the next apartment; the recruiter wants the judgment. Private operational alerts serve configured admins without becoming a public product surface.
+8. **Explain the action before the system term.** On the public case study, say
+   what happens in plain verbs (`puts every listing into the same format`, `AI
+   returns an exact quote`, `code compares the values`) before using an internal
+   term such as schema, parser snapshot, deterministic comparison or runtime
+   QA. Keep a technical term only when it carries evidence, product-boundary or
+   reproducibility meaning. Plain language must remain professional and exact;
+   it is not permission to remove synthetic qualifiers, ownership or limits.
 
 ---
 
@@ -605,7 +612,7 @@ technical docs, research language, outcomes and tests — use `user` / `users`.
 The page serves three reading depths; every depth must independently answer its questions.
 
 **10-second scan** (brand label + Problem kicker + H1 + lede + separate product/evaluation status + ownership note) must answer: What is FlatFeed, where is it used, which repeated task does it replace, what is implemented and what did the candidate own?
-Mechanics: above 56rem the header brand, five centered navigation labels and Repository action share one compact row; at narrower widths the nav remains visible in a second-row two-column grid. Every numbered section has a matching navigation item using exactly the same words, capitalization and punctuation. The kicker establishes only `01 Problem`; do not repeat the case-study type beside it. The H1 names the repeated cross-website search problem without introducing FlatFeed's solution. The lede states the cross-website repetition and intended Telegram flow without claiming live aggregation. The same first-screen layer discloses working prototype, generated listings, rule-based matching, separate offline synthetic AI evaluation and direct product/evaluation ownership. The self-directed project context remains in Decisions. No name, role label or contact data is required.
+Mechanics: above 56rem the header brand, five centered navigation labels and Repository action share one compact row; at narrower widths the nav remains visible in a second-row two-column grid. Every numbered section has a matching navigation item using exactly the same words, capitalization and punctuation. The kicker establishes only `01 Problem`; do not repeat the case-study type beside it. The H1 names the repeated cross-website search problem without introducing FlatFeed's solution. The lede explicitly states that several property portals offer alerts, that each alert is limited to its own platform, and that housing providers also publish on their own websites; it then introduces the intended Telegram flow without claiming live aggregation. The same first-screen layer discloses working prototype, generated listings, rule-based matching, separate offline synthetic AI evaluation and direct product/evaluation ownership. The self-directed project context remains in Decisions. No name, role label or contact data is required.
 
 **45-second scan** (+ Product, Decisions, aggregate AI Evaluation and Next) must answer: how FlatFeed changes the user workflow, which trade-offs the candidate made, what was implemented, why AI does not match listings, what was measured and what remains unvalidated.
 Mechanics: the hiring-first sequence is Problem → Product → Decisions → AI Evaluation → Next. Product starts with the implemented save → normalize → match → return flow, then shows the seven-screen carousel. Decisions presents three consequential choices and one exact boundary: model extracts source evidence offline, deterministic code compares parsed values, fixed rules decide user matches. AI Evaluation keeps the four aggregate metrics, synthetic qualifier, unusable result and runtime boundary visible; field results and cost assumptions are secondary details.
@@ -615,9 +622,9 @@ Mechanics: the hiring-first sequence is Problem → Product → Decisions → AI
 Element rules:
 - **Problem hero:** numbered `01 Problem` kicker → plain proposition H1 with the first-use WBS tooltip → one-paragraph problem and product lede → separate Product and Evaluation status lines → ownership note. The brand already labels the page `Product case study`; self-directed context belongs in Decisions rather than being repeated in the hero.
 - **Product carousel:** seven real Telegram captures document setup through result in the author-supplied order. The hero remains text-only. The carousel does not auto-advance; previous/next buttons, arrow keys, and touch swipe expose the sequence. On desktop the capture and its bounded caption form one centered two-column block, with the heading aligned over the caption and a compact joined pair of arrow buttons immediately below the commentary, aligned to its left edge. Every capture sits in the same fixed-ratio frame with `object-fit: contain`, and every caption uses the same reserved height, sized for the longest approved slide copy. Together these keep the buttons fixed while screens change without cropping screenshots or allowing copy to overlap the controls. The buttons share one internal border so they read as a single navigator rather than two floating actions. Do not show a second visual `Screen N of 7` label because the caption already shows `NN / 07`; retain a visually hidden live region for assistive technology. On mobile, commentary remains adjacent in reading order, retains the shared reserved height, and controls follow it with the same left alignment. Carousel-level copy describes the product sequence without repeating demo setup. Each slide uses a step number, short title, and one orienting sentence. Photo credit remains adjacent to the relevant image in a smaller 11px utility style with 1.5 line height and readable `--ink-3` contrast. No dashboard, mock metrics, fabricated runtime data or browser imitation.
-- **Product:** combine the solution and implementation proof. Begin with the four saved criteria and first-use Kaltmiete tooltip, then the four-stage implemented flow—save, normalize, match, return once—and the seven-screen carousel. Qualify the architecture with the one present synthetic adapter and the disabled background-delivery mode at the same depth. Do not repeat the workflow in comparison or capability cards.
-- **Decisions:** name direct ownership, coding collaborators and the absence of a live rollout. Show three choices: fail-closed missing values, no live-coverage claim and the model-evidence/code-comparison split. Follow them with the exact user/offline path boundary. Scripted-demo history does not belong in the linear case.
-- **AI Evaluation:** open by pairing the seven-screen product proof with the separate synthetic evaluation question. The final hosted-model result retains its synthetic qualifier, all four aggregates, 599/600 limitation, one-run/no-tuning setup and no-runtime-integration boundary at visible depth. Field-level results, final configuration, unusable-case detail and cost scenario live in closed details. Field values are evaluation evidence, never user or production outcomes. No score from an earlier model iteration appears.
+- **Product:** combine the solution and implementation proof. Begin with the four saved criteria and first-use Kaltmiete tooltip, then the four-stage implemented flow—save, put listings into one format, match with rules, return once—and the seven-screen carousel. Qualify the architecture with the one present synthetic source adapter and the disabled background-delivery mode at the same depth. Explain the user-visible action before technical architecture. Do not repeat the workflow in comparison or capability cards.
+- **Decisions:** name direct ownership, coding collaborators and the absence of a live rollout. Show three choices in reader language: do not match when required data is missing, do not promise coverage before source access is clear, and give AI a narrow evidence-extraction task while code compares values. Follow them with the exact user/offline path boundary. Scripted-demo history does not belong in the linear case.
+- **AI Evaluation:** open by pairing the seven-screen product proof with the separate synthetic evaluation question. Describe the task first as finding deliberately planted errors in listing data; keep parser, model and configuration terms only where they explain the method or make the result reproducible. The final hosted-model result retains its synthetic qualifier, all four aggregates, 599/600 limitation, one-run/no-tuning setup and no-runtime-integration boundary at visible depth. Field-level results, final configuration, unusable-case detail and cost scenario live in closed details. Field values are evaluation evidence, never user or production outcomes. No score from an earlier model iteration appears.
 - **Next:** show the four next product metrics, the human-review requirement and controlled prototype limits. Configuration detail belongs in a closed block. Do not imply a committed user study, live-source pilot or production rollout.
 - **Conclusion:** explicitly synthesize the hiring signal under `What this demonstrates` in concrete terms: a working Telegram prototype, rules deciding user-facing matches, AI kept in a separate data-quality check, and the validation required before testing with real listings. The final summary has no button; product behavior is demonstrated through screenshots.
 
@@ -857,6 +864,48 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-14 use plain professional language across the case study
+
+- **Problem:** the final hiring summary used short, concrete verbs, while the
+  rest of the case still asked readers to decode internal phrases such as
+  `bounded AI-and-code check`, `shared import pipeline`, `parser snapshots`,
+  `review-required result` and `runtime admin-QA path`. The facts were correct,
+  but the writing style changed between sections and slowed a hiring-manager
+  scan.
+- **Rationale:** apply the final summary's pattern across the page: state what
+  happens in plain verbs first, then retain a technical term only when it is
+  needed for evidence, product boundaries or reproducibility. Keep the tone
+  professional by preserving exact ownership, synthetic qualifiers, metrics,
+  trade-offs and limitations rather than replacing them with vague claims.
+- **Affected surfaces:** rendered case study, Markdown case study and the
+  public-copy rules (`docs/case-study.html`, `CASE_STUDY.md`, §§16, 22 and 34).
+- **Compatibility impact:** unexplained internal terminology in public
+  headings, linear copy, paths, details labels or prototype-limit text no
+  longer conforms when a shorter action-led explanation carries the same fact.
+  Technical terms remain allowed where the detail is necessary.
+- **Migration consideration:** migrated now across all five case-study
+  sections and the sibling-case handoff. Evaluation values, evidence labels,
+  ownership, product scope and behavior are unchanged.
+
+### 2026-08-14 state the multi-portal baseline explicitly
+
+- **Problem:** the generic sentence `Portal alerts cover only listings on that
+  platform` used a singular portal without an antecedent, so the problem could
+  read as if Berlin had only one property portal.
+- **Rationale:** state that several property portals offer saved-search alerts,
+  while making the actual fragmentation precise: each alert is limited to its
+  own platform and housing providers also publish on their own websites. This
+  clarifies the existing market baseline without implying that FlatFeed already
+  aggregates live sources.
+- **Affected surfaces:** rendered case study, Markdown case study and the
+  10-second-scan mechanics (`docs/case-study.html`, `CASE_STUDY.md`, §§22 and
+  34).
+- **Compatibility impact:** singular or generic portal-alert copy that can be
+  read as describing one portal no longer conforms.
+- **Migration consideration:** migrated now across the rendered case study and
+  its Markdown counterpart. Product scope, evidence and implementation status
+  are unchanged.
 
 ### 2026-08-14 make the hiring summary concrete
 
