@@ -15,10 +15,15 @@
   --font-display: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
 
-  /* Vertical rhythm — one scale for the whole page */
-  --space-section-top: 2.75rem;
-  --space-section-bottom: 5rem;
-  --space-heading-block: 3.5rem; /* section heading -> first block */
+  /* Vertical rhythm — one scale for the whole page. The largest steps separate
+     fluid display type, so they scale with the viewport like that type; the
+     smaller steps separate fixed body-size content and stay fixed. The ladder
+     descends boundary (top + bottom) > heading-block > block > panel at every
+     width — do not let a step overtake the one above it. */
+  --space-section-top: 2.75rem;  /* fixed: the sticky header clears the section
+                                    kicker through this inset alone (§14) */
+  --space-section-bottom: clamp(2.75rem, 2vw + 1.45rem, 3.5rem);
+  --space-heading-block: clamp(2.75rem, 0.8vw + 2.3rem, 3.125rem); /* section heading -> first block */
   --space-block: 2.5rem;         /* block -> block inside a section */
   --space-panel: 2rem;           /* block -> block inside a panel */
   --space-subrule: 2rem;         /* padding after an in-section divider */
@@ -1412,11 +1417,6 @@ img {
   .role-note {
     grid-template-columns: 1fr;
     gap: 0.75rem;
-  }
-
-  .case-section,
-  .case-hero {
-    padding: 3rem 0 4rem;
   }
 
   .case-cta {

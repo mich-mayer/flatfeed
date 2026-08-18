@@ -268,8 +268,8 @@ MUST NOT be introduced without updating this table.
 
 | Token | Value | Role |
 |---|---|---|
-| `--space-section-top` / `--space-section-bottom` | `2.75rem` / `5rem` | `.case-hero` and `.case-section` insets (`3rem` / `4rem` below 40rem) |
-| `--space-heading-block` | `3.5rem` | section heading → first block, applied once via `.section-heading + *` |
+| `--space-section-top` / `--space-section-bottom` | `2.75rem` / `clamp(2.75rem, 2vw + 1.45rem, 3.5rem)` | `.case-hero` and `.case-section` insets, one value at every width with no breakpoint override. The top inset stays **fixed**: with `scroll-padding-top: 0` it is the only thing clearing the sticky header above an anchored section's kicker (§14), so reducing it clips the kicker. |
+| `--space-heading-block` | `clamp(2.75rem, 0.8vw + 2.3rem, 3.125rem)` | section heading → first block, applied once via `.section-heading + *` |
 | `--space-block` | `2.5rem` | block → block inside a section |
 | `--space-panel` | `2rem` | block → block inside a panel |
 | `--space-subrule` | `2rem` | padding after an in-section `--line` divider |
@@ -281,6 +281,17 @@ MUST NOT be introduced without updating this table.
 | `--measure-heading` | `42rem` | sub-block and CTA heading measure |
 
 Rules:
+- **The rhythm is one descending ladder** — section boundary
+  (`top` + `bottom`) > `--space-heading-block` > `--space-block` >
+  `--space-panel` / `--space-subrule` > `--space-caption`. A step MUST NOT
+  overtake the one above it at any width; check the resolved pixel values, not
+  the authored units, when changing any of them.
+- The largest steps separate fluid display type (`h2` is
+  `clamp(1.75rem, 4vw, 3rem)`), so they are authored as `clamp()` and scale with
+  the viewport like that type. The steps below them separate fixed body-size
+  content and stay fixed. This is why the section insets need no breakpoint
+  override. `--space-section-top` is the one exception — it is pinned by the
+  sticky-header clearance above, not by the type it separates.
 - Micro gaps use one family: `0.75rem` (label/title → text), `1rem`
   (label → figure, content → caption), `1.5rem` (kicker → heading, everywhere
   including the dark CTA).
@@ -472,7 +483,7 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids), **56rem** (non-sticky two-row header and linear hero), and **40rem** (single-column metadata/workflow and full-width CTA buttons).
 
 - Desktop is the primary reading surface; mobile is a supported viewing mode, not a separately designed product.
-- Section kickers start after a compact top inset: 2.75rem on desktop and 3rem below 40rem. The Problem section hero uses the same 2.75rem desktop inset so the first viewport prioritizes content over shell spacing. Desktop anchor navigation scrolls each section divider beneath the single-row sticky header; the section's own top inset places its kicker below the shell.
+- Section kickers start after a compact top inset: `--space-section-top` (`2.75rem`), one value at every width. The Problem section hero uses the same inset so the first viewport prioritizes content over shell spacing. Desktop anchor navigation scrolls each section divider beneath the single-row sticky header; the section's own top inset places its kicker below the shell.
 - Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, boundary-aware lede, CTA and metadata. The section nav remains visible and becomes a two-column grid on narrow screens.
 - Telegram handles bot responsiveness — do not add custom viewport logic there.
 
@@ -867,6 +878,50 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-18 recalibrate the vertical rhythm's two largest steps
+
+- **Problem:** the 2026-08-12 pass unified heading→block spacing to a single
+  `3.5rem` but never re-tuned the resulting density. Measured on the rendered
+  page at 1440px, a section boundary opened a 138–163px optical void and a
+  section `h2` sat 79–82px above the block it introduces, so a headline read as
+  detached from its own supporting copy. Empty bands of 40px or more totalled
+  1745px — 29% of the page. Nothing in the rhythm scaled: every step was a fixed
+  `rem` while the display type it separates is `clamp()`-fluid, and below 40rem
+  the section insets were hardcoded to `3rem`/`4rem`, bypassing the tokens
+  entirely so the scale had two sources of truth.
+- **Rationale:** consistency over visual preference (§4), applied to density
+  rather than to naming. Only the two oversized top steps were changed;
+  `--space-block`, `--space-panel`, `--space-subrule`, `--space-caption` and
+  `--pad-box` are untouched, because the measurement showed the lower half of
+  the ladder was already correct. The binding constraint is the descending
+  ladder now written into §5.6: `--space-heading-block` cannot fall much further
+  without overtaking `--space-block` beneath it, so the bulk of the reduction
+  comes from the section boundary, which has no such floor. Spacing that
+  separates fluid display type is now fluid for the same reason the type is —
+  which also removes the need for the breakpoint override, collapsing the scale
+  back to one source. Rejected: cutting the steps to a uniform smaller value,
+  which inverted the ladder (`heading-block` fell below `block`) and made a
+  headline bind less tightly to its own block than two sibling blocks bind to
+  each other.
+- **Affected surfaces:** `docs/styles.css` (the `:root` rhythm tokens and the
+  removed `max-width: 40rem` section-inset override), the stylesheet cache keys
+  in `docs/case-study.html` and `docs/demo-listing.html`, and this file
+  (§§5.6, 14, 34). Copy, product behaviour, evaluation evidence and Markdown are
+  unchanged.
+- **Compatibility impact:** at 1440px the section boundary drops from 132px to
+  100px and heading→block from 59.5px to 50.6px; at 375px the boundary drops
+  from 112px to 88px and heading→block from 56px to 44px. The ladder stays
+  strictly descending at 375, 640, 896, 1088 and 1440px. `--space-section-top`
+  was deliberately left fixed at `2.75rem`: making it fluid resolved it to
+  36.8px at 1440px, below the 40.5px sticky header, and a verified anchor click
+  clipped the destination kicker by 3px. That coupling — `scroll-padding-top: 0`
+  plus the section's own inset (§14) — is now recorded in §5.6 so the token is
+  not "simplified" into the fluid pair later.
+- **Migration consideration:** fixed now. Verify by resolved pixel value, not
+  authored unit: the ladder must descend at every tested width, and anchor
+  navigation must leave the destination kicker below the sticky header at
+  widths above 56rem.
 
 ### 2026-08-18 align body-copy starts across repeated card rows
 
