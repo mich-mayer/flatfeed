@@ -16,7 +16,7 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Inter+Tight:wght@500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=20260814-header-credit">
+    <link rel="stylesheet" href="styles.css?v=20260818-card-text-alignment">
     <script src="carousel.js?v=20260807-product-carousel" defer></script>
     <script src="terms.js?v=20260812-term-tooltips" defer></script>
   </head>
@@ -48,20 +48,13 @@
             <p class="kicker"><span>01</span>Problem</p>
             <h1 id="case-title">Berlin <span class="term" data-term><button class="term__trigger" type="button" aria-describedby="term-wbs" aria-expanded="false">WBS</button><span class="term__tooltip" id="term-wbs" role="tooltip">Wohnberechtigungsschein: a certificate used to qualify for subsidized housing in Berlin.</span></span> apartment seekers repeat the same search across multiple websites.</h1>
             <p class="case-lede">
-              Several property portals let users save searches and receive alerts, but each alert
-              covers only its own platform. Housing providers also publish apartments on their own
-              websites. Users therefore repeat the same WBS, district, rent and room search across
-              several places and compare different listing formats. FlatFeed tests a simpler flow:
-              save those criteria once and review matching listings in Telegram.
+              Several real-estate portals let users save searches and receive alerts, but each alert
+              covers only its own platform. Meanwhile, housing providers are a primary source of WBS listings
+              and may publish them on their own websites before they reach real-estate portals. Some
+              providers offer only email alerts; others offer none. Users therefore repeat the same
+              search across several places and compare different listing formats. FlatFeed tests a
+              simpler flow: save your criteria once and review matching listings in Telegram.
             </p>
-            <div class="case-status" aria-label="Product and evaluation status">
-              <p><strong>Product:</strong> Working Telegram prototype · Generated test listings · Rule-based matching</p>
-              <p><strong>Evaluation:</strong> AI extracts source evidence; code checks it · Tested offline on 600 synthetic listings</p>
-            </div>
-            <aside class="role-note hero-ownership" aria-label="Project ownership">
-              <p class="preview-label">Project ownership</p>
-              <p>I defined the problem and scope, chose how matching works, decided where AI should and should not be used and set the evaluation targets.</p>
-            </aside>
           </div>
         </section>
 
@@ -69,19 +62,22 @@
           <header class="section-heading">
             <p class="kicker"><span>02</span>Product</p>
             <h2>Users can save one filter and review matching listings in Telegram.</h2>
-            <p>Users save WBS type, district, maximum <span class="term term--align-start" data-term><button class="term__trigger" type="button" aria-describedby="term-kaltmiete" aria-expanded="false">Kaltmiete</button><span class="term__tooltip" id="term-kaltmiete" role="tooltip">Base rent, excluding operating and heating costs.</span></span> and rooms. FlatFeed puts every listing into the same format, checks it against the saved filter with fixed rules and returns matches in a Telegram card.</p>
           </header>
+
+          <div class="case-status" aria-label="Product status">
+            <p>Working Telegram prototype · Generated test listings · Rule-based matching · AI parser-quality review</p>
+          </div>
 
           <ol class="workflow workflow--four" aria-label="Implemented FlatFeed workflow">
             <li>
               <span>01</span>
               <h3>Save one filter</h3>
-              <p>Set the four matching criteria once.</p>
+              <p>Set WBS type, district, maximum <span class="term term--align-start" data-term><button class="term__trigger" type="button" aria-describedby="term-kaltmiete-workflow" aria-expanded="false">Kaltmiete</button><span class="term__tooltip" id="term-kaltmiete-workflow" role="tooltip">Base rent, excluding operating and heating costs.</span></span> and rooms once.</p>
             </li>
             <li>
               <span>02</span>
-              <h3>Put listings into one format</h3>
-              <p>One import flow turns every listing into the same set of fields. The demo uses one synthetic source adapter and includes no live provider adapters.</p>
+              <h3>Turn listing text into structured fields</h3>
+              <p>The parser extracts WBS, district, rent, rooms and the details shown on each card. Every matching rule and Telegram result depends on these fields. The demo uses one synthetic source adapter and includes no live provider adapters.</p>
             </li>
             <li>
               <span>03</span>
@@ -90,8 +86,8 @@
             </li>
             <li>
               <span>04</span>
-              <h3>Return each new match once</h3>
-              <p>Users can request matches when they want. Background delivery can send new matches and record each successful send to prevent duplicates. It is built but switched off in this demo.</p>
+              <h3>Return matches in Telegram</h3>
+              <p>Users can request matches when they want. FlatFeed returns each match in a Telegram card. Background delivery can send new matches and record each successful send to prevent duplicates.</p>
             </li>
           </ol>
 
@@ -226,7 +222,7 @@
                       <span>07 / 07</span>
                       <strong>Review a matched listing</strong>
                       <p>See eligibility, rent, apartment details and estimated walks to S- and U-Bahn stations in one card.</p>
-                      <p class="product-carousel__credit"><small>Photo: Bodo Kubrak, CC0 1.0; resized. Schlangenbader Straße 91. Apartment details are synthetic.</small></p>
+                      <p class="product-carousel__credit"><small>Photo: Bodo Kubrak · CC0 1.0<br>Apartment details are synthetic.</small></p>
                     </figcaption>
                   </figure>
                 </li>
@@ -250,81 +246,60 @@
         </section>
 
         <section class="case-section" id="decisions">
-          <header class="section-heading">
+          <header class="section-heading section-heading--statement">
             <p class="kicker"><span>03</span>Decisions</p>
-            <h2>I made three decisions to keep the product focused and testable.</h2>
-            <p>This was a self-directed portfolio project, not a live rollout. I made the product and evaluation decisions and implemented the prototype with Claude Code and Codex as coding collaborators.</p>
+            <h2>Three decisions kept the prototype focused and testable.</h2>
           </header>
+
+          <aside class="role-note role-note--stacked decision-ownership" aria-label="Project ownership">
+            <p class="preview-label">My role</p>
+            <p class="role-note__body">I defined the WBS user problem and product scope; chose which fields determine a match and how missing data is handled; set the AI boundary; and designed the evaluation plan and acceptance criteria. I then implemented the Telegram prototype with Claude Code and Codex as coding collaborators.</p>
+            <p class="role-note__scope">Self-directed portfolio project · Not a live rollout</p>
+          </aside>
 
           <div class="decision-list decision-list--three">
             <article>
               <p class="decision-number">A</p>
-              <h3>Do not match a listing when required data is missing</h3>
-              <p>If rent or room count is missing, the listing does not match a filter that requires it. This reduces wrong matches but may hide a suitable listing. Real data is needed to judge the trade-off.</p>
+              <h3>Use AI to audit the parser—not to decide matches</h3>
+              <p>Deterministic rules still depend on correct input data. I tested whether AI could act as an independent parser check: it returned exact source evidence for each requested field, while code compared that evidence with simulated parser output. Differences were marked for review; AI never changed listing data or match decisions.</p>
             </article>
             <article>
               <p class="decision-number">B</p>
-              <h3>Do not promise coverage before source access is clear</h3>
-              <p>The demo uses generated listings through one synthetic source adapter. I have not validated access to provider websites or the terms for using their listings, so the prototype does not claim to cover live listings.</p>
+              <h3>Use synthetic data to test mechanics</h3>
+              <p>I chose generated listings to test filter setup, normalization, matching and Telegram delivery without using provider data until source access and reuse terms are clear. This tests product mechanics, but not source coverage, listing freshness or renter value; those require permitted live sources and a real-user pilot.</p>
             </article>
             <article>
               <p class="decision-number">C</p>
-              <h3>Give AI a narrow, checkable task</h3>
-              <p>AI alone sometimes missed conflicts between a listing and the parsed data. Adding more prompt rules improved one field but made others worse. I therefore asked AI only to quote the source and let code compare the values.</p>
+              <h3>Fail closed when critical data is missing</h3>
+              <p>If rent or room count required by a filter is unknown, the listing does not match. This reduces unsupported matches but may hide a suitable apartment, so the trade-off still needs real-world validation.</p>
             </article>
           </div>
 
-          <aside class="reliability-boundary" aria-labelledby="ai-boundary-title">
-            <header>
-              <p class="preview-label">Two separate paths</p>
-              <h2 id="ai-boundary-title">AI extracts evidence offline. Fixed rules still decide which listings match.</h2>
-            </header>
-            <div>
-              <section>
-                <p class="preview-label">User path</p>
-                <p>Saved filter → Rule-based matching → Telegram result</p>
-              </section>
-              <section>
-                <p class="preview-label">Offline evaluation path</p>
-                <p>Listing text → AI returns an exact quote or null → Code checks the quote and compares values → Result marked for offline review</p>
-              </section>
-            </div>
-            <p class="evidence-footnote">The tested setup ran offline. It cannot change listing data, decide matches or affect the Telegram product.</p>
-          </aside>
         </section>
 
         <section class="case-section" id="ai-evaluation">
           <header class="section-heading">
             <p class="kicker"><span>04</span>AI Evaluation</p>
-            <h2>The product works with generated listings. A separate AI quality check passed its 600-listing synthetic test.</h2>
-            <p>
-              The seven Telegram screens above show the working product. A separate offline test
-              asked whether AI and code could find deliberately planted errors in data extracted
-              from listings.
-            </p>
           </header>
+
+          <div class="ai-evaluation-intro">
+            <h2>Correct matching starts with<br>correct data.</h2>
+            <p>FlatFeed’s rules depend on the fields produced by the parser. A wrong WBS, rent or room value can hide a suitable listing or show one that does not match the saved filter. I tested AI as an independent check: it returned exact source evidence for each field, and code compared that evidence with simulated parser output. The benchmark used generated listings, ran offline and never changed Telegram results.</p>
+          </div>
 
           <section class="qa-scorecard" aria-labelledby="qa-scorecard-title">
             <div class="qa-scorecard__heading">
-              <p class="preview-label">AI QA evaluation · synthetic data · 600 listings</p>
               <div>
-                <h3 id="qa-scorecard-title">Can AI and code find deliberately planted errors in listing data?</h3>
+                <h3 id="qa-scorecard-title">Can AI and code detect field-level data conflicts?</h3>
                 <p>
-                  I fixed the final dataset before the run: 300 clean listings and 300 with one
-                  planted parser error. The model saw only raw listing text. It did not see the
-                  expected answers, FlatFeed's parsed values or labels identifying each test case.
+                  I froze the final synthetic dataset before the run: 300 text–data pairs that agreed
+                  and 300 with one deliberately altered structured value. The model saw only the
+                  generated listing text. It did not see the structured values or labels identifying
+                  each test case. Code then compared the model’s quoted evidence with those values.
                   The test ran once, with no retries, tuning or rescoring afterward.
                 </p>
               </div>
             </div>
-
-            <aside class="qa-outcome" aria-label="Final evaluation decision">
-              <p class="preview-label">Decision</p>
-              <p>
-                <strong>Passed the synthetic benchmark.</strong>
-                Every predeclared prototype target passed.
-              </p>
-            </aside>
 
             <dl class="qa-scorecard__metrics">
               <div>
@@ -366,9 +341,10 @@
               not to the industry as a whole.
             </p>
 
-            <aside class="qa-outcome qa-outcome--limitation" aria-label="Evaluation limitation">
+            <aside class="role-note role-note--stacked" aria-label="Evaluation limitation">
               <p class="preview-label">Evidence boundary</p>
-              <p><strong>One clean listing produced an unusable quote.</strong> Code rejected it because the quote was not present in the listing, so it created no unnecessary review flag. This demonstrates feasibility on controlled synthetic data—not live-source accuracy, production performance or user impact. The tested setup ran offline and is not integrated into the product.</p>
+              <p class="role-note__body"><strong>One clean listing produced an unusable quote.</strong> Code rejected it because the quote was not present in the listing, so it created no unnecessary review flag. This demonstrates feasibility on controlled synthetic data—not live-source accuracy, production performance or user impact. The tested setup ran offline and is not integrated into the product.</p>
+              <p class="role-note__scope">Controlled synthetic evaluation · Offline · Not integrated into the product</p>
             </aside>
 
             <details class="case-details">
@@ -545,9 +521,10 @@
             </article>
           </div>
 
-          <aside class="role-note role-note--large" aria-label="Human review requirement">
-            <p class="preview-label">Human-review requirement</p>
-            <p>Before using AI quality checks on real listings, reviewers should inspect every flagged case and a random sample of listings with no flag.</p>
+          <aside class="role-note role-note--large role-note--stacked" aria-label="Data-quality gate for live listings">
+            <p class="preview-label">Data-quality gate for live listings</p>
+            <p class="role-note__body">Before relying on parsed data from permitted sources, reviewers should verify WBS, district, rent, rooms and card fields on a random sample of listings. Every AI flag and a random sample of unflagged listings should be reviewed to measure both detected errors and missed errors.</p>
+            <p class="role-note__scope">Before live-source reliance · Human review required</p>
           </aside>
 
           <details class="case-details">
@@ -566,7 +543,7 @@
           <div>
             <p class="kicker">What this demonstrates</p>
             <h2>A working product, clear decisions and evidence for the next step.</h2>
-            <p class="case-cta__copy">I turned a repeated housing search into a working Telegram prototype. I used rules to decide which listings match, kept AI in a separate data-quality check and defined what must be validated before testing with real listings.</p>
+            <p class="case-cta__copy">I built a rule-based Telegram product and tested AI as an independent parser-quality control. Rules decide matches; AI supplies field-level evidence for data review. Real-source accuracy and user value remain the next validation step.</p>
           </div>
         </section>
 

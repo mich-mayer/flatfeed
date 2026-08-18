@@ -95,7 +95,7 @@ Derived from the product's actual behavior — not imported from external system
 
 **P6 — Domain terms are kept, glossed, never translated away.**
 *Why:* WBS, Kaltmiete, Bezirk are the domain; removing them removes correctness.
-*Implications:* the product is English-facing; WBS (Wohnberechtigungsschein) and Kaltmiete keep short plain-language explainers at the point of use (wizard hints in Telegram; accessible hover, keyboard-focus and tap tooltips at first use on the case page); the visible filter label is `District` while the semantic unit is the Bezirk (12 Berlin Bezirke; Ortsteil/Kiez names normalize to a Bezirk).
+*Implications:* the product is English-facing; WBS (Wohnberechtigungsschein) and Kaltmiete keep short plain-language explainers at the point of use (wizard hints in Telegram; accessible hover, keyboard-focus and tap tooltips at first use on the case page's `Save one filter` step); the visible filter label is `District` while the semantic unit is the Bezirk (12 Berlin Bezirke; Ortsteil/Kiez names normalize to a Bezirk).
 *Anti-pattern:* renaming WBS to "housing certificate"; translating Kaltmiete to "cold rent" in UI.
 
 **P7 — Destructive actions confirm; everything else flows.**
@@ -181,7 +181,7 @@ Sizes below list the **reference px at a 16px root**; each is authored in `style
 
 | Role | Font / weight | Size | Notes |
 |---|---|---|---|
-| Hero h1 | display 600 | clamp(36px → 64px), lh 1.02, ls −0.035em | first-person outcome statement |
+| Hero h1 | display 600 | clamp(36px → 64px), lh 1.02, ls −0.04em | first-person outcome statement |
 | Section h2 | display 600 | clamp(28px → 48px), lh 1.06 | takeaway statements |
 | Hero lede | ui 400 | clamp(16px → 20px) / 1.6 | `--ink-2` |
 | Body prose (`.case-prose p`) | ui 400 | 16px / 1.65, max-width 680px | `--ink-2` |
@@ -191,6 +191,7 @@ Sizes below list the **reference px at a 16px root**; each is authored in `style
 | Sub-block heading, minor | display 600 | clamp(18.4px → 24px) / 1.2, ls −0.02em | subheadings, findings, comparison-panel titles |
 | Cell / step title | display 600 | 18px / 1.3, ls −0.015em | workflow, decision and selection cells |
 | Slide title | display 600 | clamp(24px → 36px) / 1.08, ls −0.03em | carousel figcaption; stays below the section h2 |
+| CTA heading | display 600 | clamp(28px → 44px) / 1.08, ls −0.03em | dark case-study CTA; measure `--measure-heading` |
 | Kicker (`.kicker`) | mono 500 | 11px uppercase, ls 0.07em | `--ink-3`; index number span in `--accent` 600 |
 | Block label (`.preview-label`, `.evidence-status`) | mono 600 | 11px uppercase, ls 0.07em | `--ink-3`; `--ink-2` on `--accent-wash` for AA contrast |
 | Step / item number | mono 600 | 11px, ls 0.07em | `--accent`; only colour varies, and only where it carries meaning |
@@ -222,8 +223,11 @@ Rules:
 - **One construction for repeated equal-weight cells:** `gap: 1px` over a
   `--line` ground, cells on `--surface`, a 1px `--line` frame. Do not reintroduce
   separated bordered cards with a gap, or per-cell `border-right`/`border-bottom`.
+  Within each workflow or decision-grid row, item marker, title and body occupy
+  shared subgrid rows so every body begins on the same visual baseline even when
+  one title wraps.
 - **One accent-emphasis idiom:** `border-left: 2px solid var(--accent)`
-  (`.role-note`, `.qa-outcome`, `.qa-stop`,
+  (`.role-note`, `.qa-stop`,
   `.product-journey__panel--with`, `.demo-listing-disclosure`). Do not draw an
   accent bar with an inset shadow or a fully tinted border.
 - Elevation: one shadow only — on `.product-carousel__image-frame`. Everything else is flat.
@@ -299,9 +303,9 @@ Rules:
 The status card shows whether a filter exists and, when configured, lists WBS, District, Max Kaltmiete, and Rooms in that order. It offers `Show matches`, `Edit filter`, `Reset filter`, and `Delete my data`. The setup wizard asks one field at a time and persists only after all four answers are complete.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → compact sticky top bar (above 56rem, FlatFeed brand with `Product case study` subtitle, the centered five-item nav Problem · Product · Decisions · AI Evaluation · Next, and one proportionally compact Repository action share one row) → text-led Problem hero (plain-language proposition, first-use WBS tooltip, separate product/evaluation status lines and ownership note) → **hiring-first five-section case study**: 01 Problem · 02 Product · 03 Decisions · 04 AI Evaluation · 05 Next → dark `What this demonstrates` summary → sibling case cross-link. The sibling cross-link is the final page block; there is no separate footer.
+Skip link → compact sticky top bar (above 56rem, FlatFeed brand with `Product case study` subtitle, the centered five-item nav Problem · Product · Decisions · AI Evaluation · Next, and one proportionally compact Repository action share one row) → text-led Problem hero (plain-language proposition and first-use WBS tooltip) → **hiring-first five-section case study**: 01 Problem · 02 Product · 03 Decisions · 04 AI Evaluation · 05 Next → dark `What this demonstrates` summary → sibling case cross-link. The sibling cross-link is the final page block; there is no separate footer.
 
-The page MUST answer in order: what user problem the product simplifies, what was built, what the candidate owned and decided, how the bounded AI check was evaluated, and what should be tested next. Product combines the solution, four-stage workflow and seven-screen Telegram proof. Decisions combines the three consequential trade-offs with the exact user/offline path boundary. AI Evaluation keeps the aggregate results and one unusable result visible; field-level results, configuration and cost assumptions sit in closed-by-default details so they do not interrupt the hiring scan. Dashboard mockups, mock-cost, legal analysis, scripted-demo history and historical iteration tables do not belong in the main public narrative. At ≤56rem the header is not sticky and the nav moves to a second row as a two-column grid; the brand and Repository action remain in the first row without creating an implicit third column.
+The page MUST answer in order: what user problem the product simplifies, what was built, what the candidate owned and decided, how the bounded AI check was evaluated, and what should be tested next. Product combines the solution, four-stage workflow and seven-screen Telegram proof. Decisions combines the three consequential trade-offs. AI Evaluation opens with a concise prose boundary between rule-based matching and the separate offline parser-quality check, then keeps the aggregate results and one unusable result visible; field-level results, configuration and cost assumptions sit in closed-by-default details so they do not interrupt the hiring scan. Dashboard mockups, mock-cost, legal analysis, scripted-demo history and historical iteration tables do not belong in the main public narrative. At ≤56rem the header is not sticky and the nav moves to a second row as a two-column grid; the brand and Repository action remain in the first row without creating an implicit third column.
 
 ### 6.4 No separate dashboard — ADOPT
 The prototype has no dashboard or public operations console. The case study demonstrates the Telegram product only through captured screens and MUST NOT link to or invite readers to open the bot. Final hosted-model evidence lives in the case study and frozen `eval/` artifacts. A new stats command, admin page, or dashboard would be a new phase and requires an explicit product decision rather than a replacement implementation.
@@ -443,9 +447,9 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 - Before frozen hosted-model validation, the public HTML and Markdown case studies show no quantitative AI result. The authored regression-case count remains a technical README/eval check, verified by `scripts/check_eval_numbers.py`.
 - After the one-time final locked holdout completes and passes a separate
   evidence review, the AI Evaluation section MAY report its result whether the
-  configuration passed or failed. It MUST show the final decision, the four
-  aggregate product metrics, and all seven field results under the same-depth
-  label `AI QA evaluation · synthetic data · 600 listings`.
+  configuration passed or failed. It MUST show the four aggregate product
+  metrics and all seven field results with a visible
+  synthetic-data qualifier in the scorecard method prose.
 - The landing reports only the final independent 600-listing result; development
   and earlier validation scores stay out of public surfaces. The four aggregate
   metrics explain overall behavior. The field table separately distinguishes
@@ -468,8 +472,8 @@ The enforcement of the FlatFeed AI boundary in product behavior and copy:
 Breakpoints are authored in rem/em-like units: **68rem** (tighter desktop grids), **56rem** (non-sticky two-row header and linear hero), and **40rem** (single-column metadata/workflow and full-width CTA buttons).
 
 - Desktop is the primary reading surface; mobile is a supported viewing mode, not a separately designed product.
-- Section kickers start after a compact top inset: 2.75rem on desktop and 3rem below 40rem. The Problem section hero uses the same 2.75rem desktop inset so the first viewport prioritizes content over shell spacing. Desktop anchor navigation uses a 3rem scroll offset matched to the single-row sticky header.
-- Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, boundary-aware lede, compact status, ownership note, CTA and metadata. The section nav remains visible and becomes a two-column grid on narrow screens.
+- Section kickers start after a compact top inset: 2.75rem on desktop and 3rem below 40rem. The Problem section hero uses the same 2.75rem desktop inset so the first viewport prioritizes content over shell spacing. Desktop anchor navigation scrolls each section divider beneath the single-row sticky header; the section's own top inset places its kicker below the shell.
+- Nothing needed for the 10-second scan (§22) may disappear at any width: kicker, H1, boundary-aware lede, CTA and metadata. The section nav remains visible and becomes a two-column grid on narrow screens.
 - Telegram handles bot responsiveness — do not add custom viewport logic there.
 
 ---
@@ -611,20 +615,20 @@ technical docs, research language, outcomes and tests — use `user` / `users`.
 
 The page serves three reading depths; every depth must independently answer its questions.
 
-**10-second scan** (brand label + Problem kicker + H1 + lede + separate product/evaluation status + ownership note) must answer: What is FlatFeed, where is it used, which repeated task does it replace, what is implemented and what did the candidate own?
-Mechanics: above 56rem the header brand, five centered navigation labels and Repository action share one compact row; at narrower widths the nav remains visible in a second-row two-column grid. Every numbered section has a matching navigation item using exactly the same words, capitalization and punctuation. The kicker establishes only `01 Problem`; do not repeat the case-study type beside it. The H1 names the repeated cross-website search problem without introducing FlatFeed's solution. The lede explicitly states that several property portals offer alerts, that each alert is limited to its own platform, and that housing providers also publish on their own websites; it then introduces the intended Telegram flow without claiming live aggregation. The same first-screen layer discloses working prototype, generated listings, rule-based matching, separate offline synthetic AI evaluation and direct product/evaluation ownership. The self-directed project context remains in Decisions. No name, role label or contact data is required.
+**10-second scan** (brand label + Problem kicker + H1 + lede) must answer: What is FlatFeed, where is it used and which repeated task does it replace?
+Mechanics: above 56rem the header brand, five centered navigation labels and Repository action share one compact row; at narrower widths the nav remains visible in a second-row two-column grid. Every numbered section has a matching navigation item using exactly the same words, capitalization and punctuation. The kicker establishes only `01 Problem`; do not repeat the case-study type beside it. The H1 names the repeated cross-website search problem without introducing FlatFeed's solution. The lede explicitly states that several real-estate portals offer alerts, that each alert is limited to its own platform, and that, meanwhile, housing providers are a primary WBS-listing source whose own websites may publish before portals; it also states that some providers offer only email alerts while others offer none. It then introduces the intended Telegram flow without claiming live aggregation. Product status appears at the beginning of Product; the AI method and its synthetic-evaluation label appear in AI Evaluation. Direct ownership and the self-directed project context appear in Decisions. No name, role label or contact data is required.
 
 **45-second scan** (+ Product, Decisions, aggregate AI Evaluation and Next) must answer: how FlatFeed changes the user workflow, which trade-offs the candidate made, what was implemented, why AI does not match listings, what was measured and what remains unvalidated.
-Mechanics: the hiring-first sequence is Problem → Product → Decisions → AI Evaluation → Next. Product starts with the implemented save → normalize → match → return flow, then shows the seven-screen carousel. Decisions presents three consequential choices and one exact boundary: model extracts source evidence offline, deterministic code compares parsed values, fixed rules decide user matches. AI Evaluation keeps the four aggregate metrics, synthetic qualifier, unusable result and runtime boundary visible; field results and cost assumptions are secondary details.
+Mechanics: the hiring-first sequence is Problem → Product → Decisions → AI Evaluation → Next. Product starts with the implemented save → normalize → match → return flow, then shows the seven-screen carousel. Decisions presents three consequential choices. AI Evaluation introduces the boundary in prose: the Telegram flow remains rule-based, while a separate offline check asks AI for source evidence and lets code compare parsed values. It keeps the four aggregate metrics, synthetic qualifier, unusable result and runtime boundary visible; field results and cost assumptions are secondary details.
 
-**Deep read** must answer: problem without invented metrics, product mechanism, ownership, decisions, implemented product, AI rationale, measured evidence, limitations and the next validation question. AI Evaluation contains one plain-language final-evaluation narrative plus closed details for field-level results, final configuration and a bounded cost scenario. Only the final 600-listing run may appear as quantitative evidence; the synthetic qualifier, accepted synthetic decision, one unusable check and no-runtime-integration boundary stay visible at the same depth as the strongest aggregate metrics.
+**Deep read** must answer: problem without invented metrics, product mechanism, ownership, decisions, implemented product, AI rationale, measured evidence, limitations and the next validation question. AI Evaluation contains one plain-language final-evaluation narrative plus closed details for field-level results, final configuration and a bounded cost scenario. Only the final 600-listing run may appear as quantitative evidence; the synthetic qualifier, one unusable check and no-runtime-integration boundary stay visible at the same depth as the strongest aggregate metrics.
 
 Element rules:
-- **Problem hero:** numbered `01 Problem` kicker → plain proposition H1 with the first-use WBS tooltip → one-paragraph problem and product lede → separate Product and Evaluation status lines → ownership note. The brand already labels the page `Product case study`; self-directed context belongs in Decisions rather than being repeated in the hero.
+- **Problem hero:** numbered `01 Problem` kicker → plain proposition H1 with the first-use WBS tooltip → one-paragraph problem and product lede. The brand already labels the page `Product case study`; direct ownership and self-directed context belong in Decisions.
 - **Product carousel:** seven real Telegram captures document setup through result in the author-supplied order. The hero remains text-only. The carousel does not auto-advance; previous/next buttons, arrow keys, and touch swipe expose the sequence. On desktop the capture and its bounded caption form one centered two-column block, with the heading aligned over the caption and a compact joined pair of arrow buttons immediately below the commentary, aligned to its left edge. Every capture sits in the same fixed-ratio frame with `object-fit: contain`, and every caption uses the same reserved height, sized for the longest approved slide copy. Together these keep the buttons fixed while screens change without cropping screenshots or allowing copy to overlap the controls. The buttons share one internal border so they read as a single navigator rather than two floating actions. Do not show a second visual `Screen N of 7` label because the caption already shows `NN / 07`; retain a visually hidden live region for assistive technology. On mobile, commentary remains adjacent in reading order, retains the shared reserved height, and controls follow it with the same left alignment. Carousel-level copy describes the product sequence without repeating demo setup. Each slide uses a step number, short title, and one orienting sentence. Photo credit remains adjacent to the relevant image in a smaller 11px utility style with 1.5 line height and readable `--ink-3` contrast. No dashboard, mock metrics, fabricated runtime data or browser imitation.
-- **Product:** combine the solution and implementation proof. Begin with the four saved criteria and first-use Kaltmiete tooltip, then the four-stage implemented flow—save, put listings into one format, match with rules, return once—and the seven-screen carousel. Qualify the architecture with the one present synthetic source adapter and the disabled background-delivery mode at the same depth. Explain the user-visible action before technical architecture. Do not repeat the workflow in comparison or capability cards.
-- **Decisions:** name direct ownership, coding collaborators and the absence of a live rollout. Show three choices in reader language: do not match when required data is missing, do not promise coverage before source access is clear, and give AI a narrow evidence-extraction task while code compares values. Follow them with the exact user/offline path boundary. Scripted-demo history does not belong in the linear case.
-- **AI Evaluation:** open by pairing the seven-screen product proof with the separate synthetic evaluation question. Describe the task first as finding deliberately planted errors in listing data; keep parser, model and configuration terms only where they explain the method or make the result reproducible. The final hosted-model result retains its synthetic qualifier, all four aggregates, 599/600 limitation, one-run/no-tuning setup and no-runtime-integration boundary at visible depth. Field-level results, final configuration, unusable-case detail and cost scenario live in closed details. Field values are evaluation evidence, never user or production outcomes. No score from an earlier model iteration appears.
+- **Product:** combine the solution and implementation proof. Begin with a compact product-status line, then the four-stage implemented flow—save, put listings into one format, match with rules, return matches in Telegram—and the seven-screen carousel. The `Save one filter` step gives the first accessible Kaltmiete tooltip. Qualify the architecture with the one present synthetic source adapter. Explain the user-visible action before technical architecture. Do not repeat the workflow in comparison or capability cards.
+- **Decisions:** use a full-width heading, then a full-width `My role` note before the three decision cards. The note names direct ownership, coding collaborators and the absence of a live rollout without competing with the heading. Show three choices in reader language: use AI to audit the parser rather than decide matches, use synthetic data to test product mechanics while source access and reuse terms remain unvalidated, and fail closed when critical data is missing. Scripted-demo history does not belong in the linear case.
+- **AI Evaluation:** begin after the `04 AI Evaluation` kicker with one heading and one prose paragraph that distinguish rule-based Telegram matching from the synthetic review experiment. State that AI extracts quotes from generated listing text, code compares them with structured values that simulate parser output, and the setup cannot change listings, matches or cards. Then move directly to the question of planted conflicts between listing text and structured data. Describe the frozen set as 300 agreeing pairs and 300 with one deliberately altered structured value; retain its synthetic qualifier, no-retry/no-tuning setup, 599/600 limitation and no-runtime-integration boundary at visible depth. Present that boundary as a full-width stacked `role-note`, matching `My role` and the Next data-quality gate, then place field-level results, final configuration, unusable-case detail and cost scenario in closed details. These values are controlled evaluation evidence, never user or production outcomes. No score from an earlier model iteration appears.
 - **Next:** show the four next product metrics, the human-review requirement and controlled prototype limits. Configuration detail belongs in a closed block. Do not imply a committed user study, live-source pilot or production rollout.
 - **Conclusion:** explicitly synthesize the hiring signal under `What this demonstrates` in concrete terms: a working Telegram prototype, rules deciding user-facing matches, AI kept in a separate data-quality check, and the validation required before testing with real listings. The final summary has no button; product behavior is demonstrated through screenshots.
 
@@ -651,11 +655,10 @@ Hard constraints (non-negotiable):
 - Synthetic eval numbers MUST NOT read as production evidence at any reading depth.
 - Eval numbers MUST come from an actual run and update **all** their occurrences together (§27); never round 99.x to 100, never keep stale numbers because they look better.
 - A hosted-model result MUST come only from the final one-time locked holdout and
-  MUST show `AI QA evaluation · synthetic data · 600 listings`, absolute
-  counts, the final accept/reject decision, and the real-world manual-audit
-  limitation at the same reading depth. Calibration, development-screen, and
-  earlier frozen-validation scores MUST NOT appear on the landing or public
-  Markdown case study.
+  MUST show a synthetic-data qualifier, absolute counts and the real-world
+  manual-audit limitation at the same reading depth. Calibration,
+  development-screen, and earlier frozen-validation scores MUST NOT appear on
+  the landing or public Markdown case study.
 - Public cost calculations are ESTIMATE, not MEASURED: show the final run's
   recorded per-check cost separately from a conservative no-cache scenario,
   cite the workload proxy, and disclose that inference cost excludes source
@@ -864,6 +867,536 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-18 align body-copy starts across repeated card rows
+
+- **Problem:** workflow and decision cards used identical margins but independent
+  title heights. A wrapped title therefore pushed only its own paragraph down,
+  producing visibly uneven body starts inside one equal-weight row.
+- **Rationale:** marker, title and body are shared structural roles. CSS subgrid
+  lets each row adopt the tallest title without fixed heights, manual line breaks
+  or viewport-specific exceptions, and preserves natural height after cards
+  collapse to one column.
+- **Affected surfaces:** `docs/styles.css`, `docs/case-study.html` (stylesheet
+  cache version only), and this file (§§5.3, 34). Copy, product behaviour,
+  evaluation evidence and Markdown are unchanged.
+- **Compatibility impact:** Product workflow, Decisions cards and Next metric
+  cards now synchronize body starts within each rendered row. Browsers without
+  subgrid support retain the previous readable layout through `@supports`.
+- **Migration consideration:** updated now. Verify desktop, intermediate and
+  single-column widths, plus browser console and the carousel interaction.
+
+### 2026-08-18 make contextual role notes consistent in width and structure
+
+- **Problem:** after Evidence boundary adopted the stacked role-note pattern,
+  it remained inset by the scorecard padding, while `My role` was full width.
+  The Next data-quality gate still used the older side-by-side label layout,
+  and only `My role` carried a quiet scope line.
+- **Rationale:** these are the same label-plus-explanation component in three
+  contexts. A shared label, body and scope structure makes their reading order,
+  inner spine and evidence boundary consistent without changing the surrounding
+  scorecard evidence. Scope lines only restate limits already present in body
+  copy; they introduce no new claims.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`, and this
+  file (§§22, 34), plus `CASE_STUDY.md` for narrative parity. Product
+  behaviour and evaluation data are unchanged.
+- **Compatibility impact:** the scorecard's Evidence boundary now bleeds only
+  through its own inner padding to align with section-level notes; scorecard
+  borders, metrics and closed details remain contained. The Next gate stacks
+  its label above the explanatory text. All three notes end with the same quiet
+  uppercase scope metadata role.
+- **Migration consideration:** updated now. Verify all three notes at desktop
+  and mobile widths for matching width and no horizontal overflow.
+
+### 2026-08-18 reuse the stacked role-note pattern for the AI evidence boundary
+
+- **Problem:** the Evidence boundary used a side-by-side evaluation-outcome
+  layout while the closely related `My role` note used the clearer stacked
+  contribution-note pattern. The different treatments made equivalent
+  label-plus-explanation blocks feel unrelated.
+- **Rationale:** both blocks are contextual evidence, not scorecards. Reusing
+  the stacked `role-note` component preserves the accent boundary while giving
+  the label and explanation one direct reading order.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`, and this
+  file (§§5.3, 22, 34). User-facing wording, product behaviour, evaluation
+  evidence and Markdown are unchanged.
+- **Compatibility impact:** the Evidence boundary no longer uses the retired
+  `.qa-outcome` component. Its label, emphasis and visible limitation remain in
+  the same location ahead of the closed evaluation details.
+- **Migration consideration:** updated now, including the existing Decisions
+  note, through the reusable stacked modifier. Verify desktop and mobile layout
+  with no horizontal overflow.
+
+### 2026-08-18 give AI Evaluation the same heading role as numbered sections
+
+- **Problem:** the heading directly below the `04 AI Evaluation` kicker used
+  the major sub-block type role despite being the section's sole reader-facing
+  takeaway. It therefore appeared materially smaller and looser than Product,
+  Decisions and Next.
+- **Rationale:** a numbered section's first and only takeaway is a section
+  heading, regardless of the local wrapper used to keep its explanatory prose
+  together. Applying the shared section role restores the scan hierarchy and
+  leaves major sub-block type for the scorecard and carousel introductions.
+- **Affected surfaces:** `docs/styles.css`, `docs/case-study.html` (stylesheet
+  cache version only), and this file (§§34). User-facing copy, product behaviour,
+  evaluation evidence and Markdown are unchanged.
+- **Compatibility impact:** the AI Evaluation takeaway now uses the same fluid
+  size, line height, letter spacing and 48rem measure as other numbered section
+  headings; its following paragraph and all scorecard subheadings are unchanged.
+- **Migration consideration:** updated now and verified at desktop and mobile
+  widths. No application code or eval data changed.
+
+### 2026-08-18 align every case-study heading role with the type scale
+
+- **Problem:** the case page's hero, section and carousel-title CSS had drifted
+  from the approved role table. The section H2 could grow beyond its documented
+  maximum, the carousel title began too large on narrow screens, and a
+  breakpoint-specific hero override contradicted the one-clamp rule. The dark
+  CTA used an intentional display role that was not specified in the table.
+- **Rationale:** the approved type scale is the source of truth. One fluid clamp
+  per display role preserves readable mobile minima and stable hierarchy without
+  exceptions; documenting the existing CTA role makes its deliberate prominence
+  reviewable rather than implicit.
+- **Affected surfaces:** `docs/styles.css`, `docs/case-study.html` (stylesheet
+  cache version only), and this file (§§5.2, 34). User-facing case-study copy,
+  product behaviour, evaluation evidence and Markdown are unchanged.
+- **Compatibility impact:** the hero now uses its standard fluid clamp at every
+  breakpoint; section H2s and slide titles may be smaller at narrow and very
+  wide widths, while major/minor sub-block and cell-title roles are unchanged.
+- **Migration consideration:** updated now and verified in the browser at
+  desktop and mobile widths. No eval data or application code changed.
+
+### 2026-08-18 make Decisions ownership a full-width contribution note
+
+- **Problem:** the ownership copy sat in the narrow right column of the Decisions
+  heading, where it competed with the takeaway and read as a generic aside rather
+  than evidence of the candidate's judgment and delivery.
+- **Rationale:** keep direct ownership in Decisions, but place it before the
+  three choices in a vertically stacked `My role` note. The note first names the
+  candidate's concrete product and evaluation decisions, then implementation and
+  coding-collaborator disclosure, with the no-live-rollout boundary in a quieter
+  scope line.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`,
+  `CASE_STUDY.md`, and this file (§§22 and 34).
+- **Compatibility impact:** the Decisions heading no longer carries supporting
+  prose in its second desktop column; direct ownership remains in the same
+  section and keeps the approved collaborator disclosure.
+- **Migration consideration:** updated now across the public HTML and Markdown
+  case studies. Product scope, evaluation evidence and the three decisions are
+  unchanged.
+
+### 2026-08-17 remove the redundant AI Evaluation method line
+
+- **Problem:** after the `Two separate paths` boundary moved into AI Evaluation,
+  the compact `Method:` line immediately repeated the same AI-evidence and
+  code-comparison explanation.
+- **Rationale:** let the boundary establish the operating model, then move
+  directly to the question the offline test asks. Removing the duplicate keeps
+  the evaluation introduction concise without weakening the AI boundary.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`,
+  `CASE_STUDY.md`, and this file (§§22 and 34).
+- **Compatibility impact:** a standalone `Method: AI extracts source evidence;
+  code checks it.` line no longer belongs below the two-path boundary.
+- **Migration consideration:** removed now across public HTML and Markdown.
+  The boundary, method semantics and measured evaluation evidence are unchanged.
+
+### 2026-08-17 move the two-path boundary into AI Evaluation
+
+- **Problem:** the `Two separate paths` explanation sat below Decisions even
+  though it explains the architecture and scope of the subsequent AI
+  effectiveness evaluation.
+- **Rationale:** begin AI Evaluation with the boundary between deterministic
+  user matching and offline AI evidence extraction. Readers can then understand
+  what the 600-listing test evaluates before seeing its method, question and
+  scorecard.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`,
+  `CASE_STUDY.md`, and this file (§§22 and 34).
+- **Compatibility impact:** Decisions now ends after its three product choices;
+  the user/offline path explanation no longer belongs there.
+- **Migration consideration:** moved now across public HTML and Markdown. The
+  text, AI boundary, evaluation evidence and section destinations are unchanged.
+
+### 2026-08-17 remove redundant AI Evaluation labels
+
+- **Problem:** the opening outcome heading and the `Two separate paths` label
+  repeated information conveyed by the evaluation evidence and boundary itself.
+- **Rationale:** begin the section with the `04 AI Evaluation` kicker and the
+  boundary's explanatory heading, leaving the scorecard to present the measured
+  result.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this file
+  (§§22 and 34).
+- **Compatibility impact:** the content hierarchy remains intact; only duplicate
+  labels are removed.
+- **Migration consideration:** removed now across public HTML and Markdown.
+  The boundary, explanatory copy and measured evaluation evidence remain.
+
+### 2026-08-17 give the AI boundary its full heading measure
+
+- **Problem:** after its label was removed, the boundary retained the old
+  two-column header grid and top rule. The heading occupied the narrow label
+  column while the empty rule added a visual interruption.
+- **Rationale:** remove the redundant divider and render the explanatory
+  heading across the normal heading measure before the two path cards.
+- **Affected surfaces:** `docs/styles.css` and this system (§§14 and 34).
+- **Compatibility impact:** the AI Evaluation boundary no longer uses the
+  label-column layout or top rule; its cards and evidence footnote are unchanged.
+- **Migration consideration:** updated now in the rendered case study.
+
+### 2026-08-17 turn the AI boundary into a testing introduction
+
+- **Problem:** two path cards, a runtime footnote and a separate product-proof
+  paragraph repeated the same boundary without forming a clear transition into
+  the evaluation scorecard.
+- **Rationale:** condense the material into one heading and one prose paragraph:
+  matching remains rule-based, AI supplies source evidence offline, code checks
+  it, and the setup cannot affect product output. The evaluation question now
+  follows directly.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`,
+  `CASE_STUDY.md`, and this system (§§6.3, 22 and 34).
+- **Compatibility impact:** the public AI Evaluation introduction no longer
+  uses separate user-path and offline-path cards.
+- **Migration consideration:** consolidated now across public HTML and Markdown.
+  The AI boundary and evaluation evidence are unchanged.
+
+### 2026-08-17 simplify the AI Evaluation introduction heading
+
+- **Problem:** the word `offline` in the introduction heading duplicated the
+  explanation immediately below it and made the heading less direct.
+- **Rationale:** state the product boundary in the heading — parser quality
+  versus rule-based matching — and retain the separate offline-evaluation detail
+  in the body copy where it explains the method.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this
+  system (§34).
+- **Compatibility impact:** content meaning and evaluation scope are unchanged.
+- **Migration consideration:** updated now across public HTML and Markdown.
+
+### 2026-08-17 streamline the AI Evaluation method sentence
+
+- **Problem:** `without influencing matches` repeated the rule-based boundary
+  already established by the heading and closing sentence of the introduction.
+- **Rationale:** remove the repetition while retaining the explicit statement
+  that the setup cannot change listing data, match decisions or Telegram cards.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this
+  system (§34).
+- **Compatibility impact:** method, AI boundary and evaluation scope are unchanged.
+- **Migration consideration:** updated now across public HTML and Markdown.
+
+### 2026-08-17 remove the AI QA scorecard label
+
+- **Problem:** the all-caps AI QA label repeated the evaluation context without
+  helping the reader reach the test question.
+- **Rationale:** remove the label and let the question lead. Keep `synthetic`
+  in the first method sentence so the result retains its visible scope qualifier.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`,
+  `CASE_STUDY.md`, and this system (§§13, 27 and 34).
+- **Compatibility impact:** the scorecard heading uses the main content width;
+  the frozen 600-case evidence, its result and its limits are unchanged.
+- **Migration consideration:** updated now across public HTML and Markdown.
+
+### 2026-08-17 remove the AI QA decision callout
+
+- **Problem:** the prominent `Passed the synthetic benchmark` callout repeated
+  the four metric cards immediately below it.
+- **Rationale:** let the individual results and their predeclared targets carry
+  the evidence, rather than adding a summary decision panel.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this
+  system (§§13, 27 and 34).
+- **Compatibility impact:** no standalone pass/fail callout appears above the
+  metrics; all metric counts, targets and evidence limits remain visible.
+- **Migration consideration:** updated now across public HTML and Markdown.
+
+### 2026-08-17 make the AI Evaluation heading describe the full boundary
+
+- **Problem:** the prior heading named parser quality and rule-based matching,
+  but did not explain the distinct roles of AI and code.
+- **Rationale:** name the complete chain in reader order: AI provides source
+  evidence, code checks parser output, and fixed rules decide matches. Remove
+  the duplicate rule-based statement from the paragraph below it.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this
+  system (§34).
+- **Compatibility impact:** the AI boundary is clearer; evaluation method and
+  product behavior are unchanged.
+- **Migration consideration:** updated now across public HTML and Markdown.
+
+### 2026-08-17 describe the AI experiment as controlled discrepancy checking
+
+- **Problem:** the previous copy implied that FlatFeed had parsed live listing
+  sources and that the evaluation checked that parser's output. In fact, the
+  final evaluation paired generated listing text with structured values that
+  simulate parser output, then planted one value conflict in half the cases.
+- **Rationale:** name the controlled mechanism directly: AI quotes generated
+  listing text, code compares those quotes with structured values, and the test
+  measures planted text–data conflicts rather than live ingestion or
+  production-parser accuracy.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`,
+  `scripts/check_eval_numbers.py`, and this system (§§13, 22, 27 and 34).
+- **Compatibility impact:** public AI evidence no longer calls simulated values
+  FlatFeed's parsed values or calls the controlled benchmark parser quality.
+- **Migration consideration:** updated now across public HTML and Markdown.
+  The frozen 600-case data, metrics, limitation and runtime boundary are
+  unchanged.
+
+### 2026-08-17 order Decisions as AI boundary, synthetic scope, then matching trade-off
+
+- **Problem:** the prior three-card order placed the fail-closed matching
+  trade-off before the synthetic-data scope decision, despite the intended
+  reader sequence being explicitly AI boundary → synthetic-data scope →
+  matching trade-off.
+- **Rationale:** preserve the bounded AI decision as the section lead, then
+  establish why generated listings are used before ending with the deterministic
+  matching trade-off. This is the author-selected reading order.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this file
+  (§§22 and 34).
+- **Compatibility impact:** the prior A/B/C and 1/2/3 ordering of the synthetic
+  scope and fail-closed decisions no longer conforms. Card content and product
+  boundaries are unchanged.
+- **Migration consideration:** reordered now across public HTML and Markdown.
+  No product behavior, evaluation result or source-access claim changed.
+
+### 2026-08-17 make source-access due diligence visible in Decisions
+
+- **Problem:** the synthetic-data card explained what the prototype could and
+  could not test, but did not make clear that generated listings were also a
+  deliberate choice while access to and reuse of provider data remain
+  unvalidated.
+- **Rationale:** name `source access and reuse terms` rather than make a legal
+  claim. The phrase communicates the product decision to avoid using provider
+  data prematurely, while leaving open the factual paths of permission, a feed,
+  an API or an agreement.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this
+  file (§§22 and 34).
+- **Compatibility impact:** the card must not imply that synthetic data was
+  selected only for convenience, or that permission for provider data is
+  impossible or already resolved.
+- **Migration consideration:** updated now across public HTML and Markdown.
+  Source scope, evaluation evidence and the requirement for permitted live
+  sources remain unchanged.
+
+### 2026-08-17 distinguish synthetic mechanics from real-world validation
+
+- **Problem:** the third Decisions card said the generated-listing prototype
+  tested the workflow before source coverage. Without a permitted live source,
+  that wording could imply an end-to-end test of collection, freshness or
+  renter value that has not occurred.
+- **Rationale:** state exactly what generated listings can validate — filter
+  setup, normalization, matching and Telegram delivery — and name what they
+  cannot validate: source coverage, listing freshness and renter value. Those
+  require permitted live sources and a real-user pilot.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this file
+  (§§22 and 34).
+- **Compatibility impact:** describing the synthetic prototype as testing the
+  live-source workflow or market value no longer conforms.
+- **Migration consideration:** corrected now across public HTML and Markdown.
+  Implemented mechanics, source scope and evaluation evidence are unchanged.
+
+### 2026-08-17 balance Decisions across AI, reliability and user workflow
+
+- **Problem:** the three Decisions cards were all framed as technical or
+  delivery constraints. They underplayed the product choice to test a saved
+  filter and normalized Telegram results, while the AI card foregrounded
+  prompt iteration rather than the user-facing boundary.
+- **Rationale:** make the section's three choices legible as a balanced product
+  strategy: deterministic user-facing matching with a separate AI
+  parser-quality check; fail-closed matching when critical data is unknown; and
+  validating the saved-filter workflow before live-source coverage. The source
+  access limit remains explicit in the final card and Next, while the detailed
+  synthetic experiment remains in AI Evaluation.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this
+  file (§§22 and 34).
+- **Compatibility impact:** the earlier `Give AI a narrow, checkable task`,
+  `Do not match a listing when required data is missing`, and `Do not promise
+  coverage before source access is clear` card copy no longer conforms. The
+  deterministic-matching, no-live-coverage and AI-runtime boundaries are
+  unchanged.
+- **Migration consideration:** rewritten now across public HTML and Markdown.
+  The Decisions headline now names the artifact as a prototype, consistent with
+  the no-live-rollout context.
+
+### 2026-08-17 lead Decisions with the bounded AI choice
+
+- **Problem:** the decision that explains FlatFeed's distinct AI boundary was
+  third in the three-card sequence, after matching and source-coverage limits.
+- **Rationale:** lead with the most differentiating product decision — AI checks
+  parser evidence while deterministic code compares values — then present the
+  matching and coverage constraints it supports. This preserves the exact
+  boundaries and claims while improving the section's scan order.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this file
+  (§§22 and 34).
+- **Compatibility impact:** the former A/B/C and 1/2/3 order for the three
+  Decisions cards no longer conforms; card copy and the user/offline boundary
+  remain unchanged.
+- **Migration consideration:** reordered now across public HTML and Markdown.
+  No product behavior, evaluation result or source-coverage claim changed.
+
+### 2026-08-17 name the AI parser-quality review in Product status
+
+- **Problem:** the Product status named the Telegram prototype, generated test
+  listings and rule-based matching, but omitted the separate AI review used to
+  check parser quality.
+- **Rationale:** add the compact label `AI parser-quality review` to the same
+  status line. It makes the product's bounded AI use visible without implying
+  that AI decides user-facing matches.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and this
+  file (§§22 and 34).
+- **Compatibility impact:** a Product status that describes deterministic
+  matching but omits the AI parser-quality review is incomplete.
+- **Migration consideration:** updated now across the public HTML and Markdown
+  case-study surfaces. Matching, source coverage and AI-runtime boundaries are
+  unchanged.
+
+### 2026-08-17 hide section dividers beneath the sticky header on desktop anchor navigation
+
+- **Problem:** clicking a desktop section-navigation link stopped with the
+  section divider visibly separated below the sticky header, making the target
+  feel misaligned with the page shell.
+- **Rationale:** let the divider pass beneath the opaque blurred header while
+  preserving the existing 2.75rem section inset, so the destination's kicker
+  and heading remain readable immediately below the shell. Narrow layouts keep
+  their 1rem scroll padding because their header is not sticky.
+- **Affected surfaces:** `docs/styles.css`, the stylesheet cache keys in
+  `docs/case-study.html` and `docs/demo-listing.html`, and the anchor-navigation
+  rule in §14 of this file.
+- **Compatibility impact:** a desktop `3rem` root scroll offset that leaves a
+  visible gap between the header and a targeted section divider no longer
+  conforms.
+- **Migration consideration:** updated now for the shared case-study stylesheet.
+  Section order, link destinations, content and mobile header behavior are
+  unchanged.
+
+### 2026-08-17 keep narrow section navigation inside the page spine
+
+- **Problem:** at a narrow mobile viewport, the first-row brand subtitle plus
+  Repository action forced the header grid wider than the page spine, carrying
+  the two-column section navigation with it.
+- **Rationale:** retain the required FlatFeed brand and Repository action, but
+  hide the supplementary `Product case study` subtitle below 40rem. This keeps
+  every section link reachable within the viewport without changing its label,
+  destination or two-column layout.
+- **Affected surfaces:** `docs/styles.css` and this file (§§6.3, 14 and 34).
+- **Compatibility impact:** the brand subtitle is no longer required to remain
+  visible below 40rem; the brand name, action and all section links remain
+  visible.
+- **Migration consideration:** fixed now in the shared case-study header. No
+  product copy, section order or desktop header behavior changed.
+
+### 2026-08-17 remove the duplicated Product introduction
+
+- **Problem:** the Product introduction restated the same four criteria,
+  normalization, rule-based matching and Telegram-card outcome that the status
+  line and four workflow steps immediately below already show.
+- **Rationale:** let the heading establish the product proposition, then move
+  directly to status and the workflow. The first step now owns the Kaltmiete
+  explanation, so the reader still sees the domain-term gloss at the point of
+  use.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and the
+  Product element rule in §§3, 22 and 34 of this file.
+- **Compatibility impact:** a prose paragraph between the Product heading and
+  status line no longer conforms.
+- **Migration consideration:** removed now across both public case-study
+  surfaces. Product behavior, source coverage, evidence and terminology are
+  unchanged.
+
+### 2026-08-17 repeat the Kaltmiete tooltip in the setup workflow
+
+- **Problem:** the `Save one filter` step named Kaltmiete without an English
+  gloss. A reader scanning the workflow independently could miss the meaning
+  of the matching field.
+- **Rationale:** reuse the existing accessible tooltip, with the same
+  `Base rent, excluding operating and heating costs.` explanation, rather than
+  introducing a second term treatment.
+- **Affected surfaces:** `docs/case-study.html` and the Kaltmiete-tooltip rules
+  in §§3, 22 and 34 of this file.
+- **Compatibility impact:** an unglossed Kaltmiete in the `Save one filter`
+  workflow step no longer conforms.
+- **Migration consideration:** updated now in the rendered case study.
+  Product behavior, evidence and terminology are unchanged.
+
+### 2026-08-17 make the Product workflow name its Telegram-card outcome
+
+- **Problem:** the first step did not name the four saved fields, the status
+  line added a redundant `Product:` label, and the final workflow step focused
+  on one-time delivery without naming the user-visible Telegram card.
+- **Rationale:** name WBS type, district, maximum Kaltmiete and rooms in the
+  setup step; let the status facts stand without a label; and make the final
+  step state the actual outcome — a match returned in Telegram.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and the
+  Product element rule in §§22 and 34 of this file.
+- **Compatibility impact:** `Set the four matching criteria once`, `Product:`,
+  and `Return each new match once` no longer conform in the public Product
+  workflow.
+- **Migration consideration:** updated now across both public case-study
+  surfaces. Product behavior, source coverage, evidence and implementation
+  status are unchanged.
+
+### 2026-08-17 keep disabled-mode detail out of the Product workflow
+
+- **Problem:** the fourth workflow step added that background delivery is
+  switched off in the demo. This implementation-state detail interrupted the
+  user-facing explanation after its complete delivery behavior was already
+  clear.
+- **Rationale:** retain the implemented behavior — users can request matches,
+  and background delivery records successful sends to prevent duplicates — but
+  do not repeat its demo-mode configuration in the Product workflow. The
+  synthetic source and no-live-provider boundary remain explicit elsewhere.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and the
+  Product element rule in §§22 and 34 of this file.
+- **Compatibility impact:** the sentence `It is built but switched off in this
+  demo.` no longer belongs in the public Product workflow.
+- **Migration consideration:** removed now from both public case-study
+  surfaces. Product behavior, source coverage, evidence and implementation
+  status are unchanged.
+
+### 2026-08-17 explain why housing-provider sites require direct monitoring
+
+- **Problem:** the Problem lede said only that housing providers publish on
+  their own websites. It did not explain that these sites are a primary source
+  of WBS listings, may publish before real-estate portals, and do not consistently
+  provide alerts.
+- **Rationale:** state the observed search context directly: some providers
+  offer only email alerts and others offer none, so users still need to monitor
+  provider websites alongside portals. Keep the wording conditional and retain
+  the explicit no-live-aggregation boundary elsewhere on the page.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and the
+  10-second-scan mechanics in §§22 and 34 of this file.
+- **Compatibility impact:** Problem copy that mentions provider websites
+  without explaining their timing and notification gap no longer carries the
+  complete product context.
+- **Migration consideration:** updated now across the rendered case study and
+  its Markdown counterpart. Product behavior, source coverage, evidence and
+  implementation status are unchanged.
+
+### 2026-08-14 keep the Problem hero focused on the user problem
+
+- **Problem:** the `Project ownership` panel sat in the Problem hero after the
+  problem explanation. It interrupted the Problem → Product → Decisions
+  narrative and repeated information that the Decisions section already states.
+- **Rationale:** a fast reader should first understand the user's repeated
+  search and the implemented prototype. Ownership remains important, but its
+  natural place is Decisions, where the concrete choices substantiate it.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and the
+  case-study structure rules in §§6.3, 14 and 22 of this file.
+- **Compatibility impact:** the hero no longer contains an ownership panel.
+  Decisions remains the page's direct statement that the project was
+  self-directed and that the candidate made the product and evaluation
+  decisions.
+- **Migration consideration:** removed now from both public case-study
+  surfaces. Product scope, evidence labels and ownership claims are unchanged.
+
+### 2026-08-14 place status with the section it describes
+
+- **Problem:** Product and Evaluation status lines appeared below the Problem
+  lede, mixing implementation and experiment evidence into the user-problem
+  section.
+- **Rationale:** place the product-status line at the start of Product, before
+  the workflow and screenshots. Place the AI method at the start of AI
+  Evaluation, while retaining the synthetic 600-listing label with the
+  scorecard to avoid repeating the same evidence.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md`, and the
+  case-study structure rules in §§6.3, 14 and 22 of this file.
+- **Compatibility impact:** the Problem hero carries no implementation or
+  evaluation status line. The facts and their evidence labels are unchanged.
+- **Migration consideration:** moved now on both public case-study surfaces;
+  no product behavior, evaluation result or scope changed.
 
 ### 2026-08-14 use plain professional language across the case study
 
