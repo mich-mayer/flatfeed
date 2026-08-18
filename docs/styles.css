@@ -40,7 +40,9 @@
 
 html {
   font-size: clamp(1rem, 0.96rem + 0.12vw, 1.0625rem);
-  scroll-padding-top: 3rem;
+  /* Anchor dividers scroll beneath the sticky header; the section content's
+     own top padding keeps its heading readable below the shell. */
+  scroll-padding-top: 0;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -166,8 +168,7 @@ img {
 }
 
 /* --accent-wash needs the darker ink for AA contrast at label size. */
-.role-note .preview-label,
-.qa-outcome .preview-label {
+.role-note .preview-label {
   color: var(--ink-2);
 }
 
@@ -290,7 +291,7 @@ img {
 .case-hero h1 {
   max-width: 60rem;
   margin-top: 1.5rem;
-  font: 600 clamp(2.5rem, 4.4vw, 4.15rem)/1.02 var(--font-display);
+  font: 600 clamp(2.25rem, 4.4vw, 4rem)/1.02 var(--font-display);
   letter-spacing: -0.04em;
 }
 
@@ -483,7 +484,7 @@ img {
   display: block;
   max-width: 24rem;
   margin-top: 1rem;
-  font: 600 clamp(1.75rem, 3vw, 2.25rem)/1.08 var(--font-display);
+  font: 600 clamp(1.5rem, 3vw, 2.25rem)/1.08 var(--font-display);
   letter-spacing: -0.03em;
 }
 
@@ -574,10 +575,8 @@ img {
 
 /* Supporting prose — one size and one line height across the page. */
 .section-heading > p:not(.kicker),
-.role-note--large > p:last-child,
 .qa-scorecard__heading > div > p,
 .qa-subheading > div > p,
-.qa-outcome > p:last-child,
 .product-carousel__slide figcaption p,
 .case-sibling > p:last-child {
   color: var(--ink-2);
@@ -593,7 +592,6 @@ img {
 .qa-cost__calculation p:last-child,
 .qa-scorecard__metrics dd p,
 .product-journey li p,
-.role-note > p:last-child,
 .reliability-boundary section > p:last-child,
 .evidence-card li,
 .reliability-boundary li {
@@ -676,15 +674,16 @@ img {
   grid-column: 1 / -1;
 }
 
-.section-heading h2 {
+.section-heading h2,
+.ai-evaluation-intro h2 {
   max-width: 48rem;
-  font: 600 clamp(2rem, 4vw, 3.5rem)/1.05 var(--font-display);
+  font: 600 clamp(1.75rem, 4vw, 3rem)/1.06 var(--font-display);
   letter-spacing: -0.035em;
 }
 
 .section-heading--statement h2 {
   grid-column: 1 / -1;
-  max-width: 68rem;
+  max-width: 48rem;
 }
 
 .section-heading > p:not(.kicker) {
@@ -741,6 +740,16 @@ img {
   margin-top: 0.75rem;
 }
 
+@supports (grid-template-rows: subgrid) {
+  .workflow li,
+  .decision-list article {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+}
+
 .role-note {
   display: grid;
   grid-template-columns: var(--label-col) 1fr;
@@ -754,12 +763,40 @@ img {
   background: var(--accent-wash);
 }
 
-.role-note > p:last-child {
+.role-note__body,
+.role-note__scope {
   max-width: var(--measure-prose);
+}
+
+.role-note__body {
+  color: var(--ink);
+  font-size: 0.9375rem;
+  line-height: 1.55;
 }
 
 .role-note--large {
   margin-top: var(--space-block);
+}
+
+.role-note--stacked {
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.qa-scorecard > .role-note--stacked {
+  margin-inline: calc(-1 * var(--pad-box) - 1px);
+}
+
+.decision-ownership {
+  margin-top: var(--space-heading-block);
+}
+
+.role-note > .role-note__scope {
+  margin-top: 0.25rem;
+  color: var(--ink-3);
+  font: 500 0.6875rem/1.4 var(--font-mono);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 
 .case-details {
@@ -884,36 +921,12 @@ img {
 }
 
 .qa-scorecard__heading {
-  display: grid;
-  grid-template-columns: var(--label-col) 1fr;
-  gap: var(--pad-box);
-  align-items: start;
+  display: block;
 }
 
 .qa-scorecard__heading > div > p {
   max-width: var(--measure-prose);
   margin-top: 0.75rem;
-}
-
-.qa-outcome {
-  display: grid;
-  grid-template-columns: var(--label-col) 1fr;
-  gap: var(--pad-box);
-  margin-top: var(--space-panel);
-  padding: var(--pad-box);
-  /* 2px accent bar instead of a 1px hairline: pull the inline padding back by
-     that 1px so every panel shares one inner spine. */
-  padding-left: calc(var(--pad-box) - 1px);
-  border-left: 2px solid var(--accent);
-  background: var(--accent-wash);
-}
-
-.qa-outcome > p:last-child {
-  max-width: var(--measure-prose);
-}
-
-.qa-outcome strong {
-  color: var(--ink);
 }
 
 .qa-selection {
@@ -1314,14 +1327,12 @@ img {
   }
 
   .qa-scorecard__heading,
-  .qa-outcome,
   .qa-subheading,
   .qa-scorecard__metrics {
     grid-template-columns: 1fr;
   }
 
   .qa-scorecard__heading,
-  .qa-outcome,
   .qa-subheading {
     gap: 0.75rem;
   }
@@ -1374,12 +1385,14 @@ img {
     --pad-box: 1.25rem;
   }
 
-  .case-top .btn {
-    padding-inline: 0.7rem;
+  /* Keep the two required first-row actions within the narrow page spine;
+     the case-study subtitle remains available at larger header widths. */
+  .brand-sub {
+    display: none;
   }
 
-  .case-hero h1 {
-    font-size: clamp(2.25rem, 11vw, 3.25rem);
+  .case-top .btn {
+    padding-inline: 0.7rem;
   }
 
   .case-meta {
@@ -1460,7 +1473,7 @@ img {
   background: var(--wash);
 }
 
-/* Same accent-bar idiom as .role-note, .qa-outcome and .qa-stop. */
+/* Same accent-bar idiom as .role-note and .qa-stop. */
 .product-journey__panel--with {
   /* 2px accent bar instead of a 1px hairline: pull the inline padding back by
      that 1px so every panel shares one inner spine. */
@@ -1541,6 +1554,18 @@ img {
 
 .reliability-boundary section > p:last-child {
   margin-top: 0.75rem;
+}
+
+.ai-evaluation-intro {
+  max-width: var(--measure-prose);
+  margin-top: var(--space-heading-block);
+}
+
+.ai-evaluation-intro > p {
+  margin-top: 1rem;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  line-height: 1.65;
 }
 
 @media (max-width: 56rem) {

@@ -5,30 +5,22 @@
 WBS (Wohnberechtigungsschein) is a certificate used to qualify for subsidized
 housing in Berlin.
 
-Several property portals let users save searches and receive alerts, but each
-alert covers only its own platform. Housing providers also publish apartments
-on their own websites. Users therefore repeat the same WBS, district, rent and
-room search across several places and compare different listing formats.
-FlatFeed tests a simpler flow: save those criteria once and review matching
-listings in Telegram.
-
-**Product:** Working Telegram prototype · Generated test listings · Rule-based
-matching
-
-**Evaluation:** AI extracts source evidence; code checks it · Tested offline on
-600 synthetic listings
-
-**Project ownership:** I defined the problem and scope, chose how matching
-works, decided where AI should and should not be used and set the evaluation
-targets.
+Several real-estate portals let users save searches and receive alerts, but each
+alert covers only its own platform. Meanwhile, housing providers are a primary source of
+WBS listings and may publish them on their own websites before they reach
+real-estate portals. Some providers offer only email alerts; others offer none.
+Users therefore repeat the same search across several places and compare
+different listing formats. FlatFeed tests a simpler flow: save your criteria
+once and review matching listings in Telegram.
 
 ## 1. Problem
 
-Several property portals offer saved-search alerts, but each alert covers only
-listings on that platform. Housing providers also publish apartments on their
-own websites. Users therefore repeat the same eligibility, district, rent and
-room criteria across several places and compare different listing formats
-before they can respond. The need is based on first-hand and observed
+Several real-estate portals offer saved-search alerts, but each alert covers only
+listings on that platform. Meanwhile, housing providers are a primary source of WBS
+listings and may publish them on their own websites before they reach property
+portals. Some providers offer only email alerts; others offer none. Users
+therefore repeat searches across several places and compare different listing
+formats before they can respond. The need is based on first-hand and observed
 experience; the prototype does not claim a measured market prevalence or user
 outcome.
 
@@ -36,20 +28,19 @@ outcome.
 
 ### Users can save one filter and review matching listings in Telegram.
 
-Users save WBS type, district, maximum Kaltmiete and rooms. Kaltmiete is the
-base rent, excluding operating and heating costs. FlatFeed puts every listing
-into the same format, checks it against the saved filter with fixed rules and
-returns matches in a Telegram card.
+Working Telegram prototype · Generated test listings · Rule-based matching · AI parser-quality review
 
-1. **Save one filter.** Set the four matching criteria once.
-2. **Put listings into one format.** One import flow turns every listing into
-   the same set of fields. The demo uses one synthetic source adapter and
-   includes no live provider adapters.
+1. **Save one filter.** Set WBS type, district, maximum Kaltmiete (base rent,
+   excluding operating and heating costs) and rooms once.
+2. **Turn listing text into structured fields.** The parser extracts WBS,
+   district, rent, rooms and the details shown on each card. Every matching rule
+   and Telegram result depends on these fields. The demo uses one synthetic
+   source adapter and includes no live provider adapters.
 3. **Match with rules.** Code compares each listing with the saved criteria. If
    required rent or room data is missing, the listing does not match.
-4. **Return each new match once.** Users can request matches when they want.
-   Background delivery can send new matches and record each successful send to
-   prevent duplicates. It is built but switched off in this demo.
+4. **Return matches in Telegram.** Users can request matches when they
+   want. FlatFeed returns each match in a Telegram card. Background delivery
+   can send new matches and record each successful send to prevent duplicates.
 
 Seven captured Telegram screens document the implemented journey:
 
@@ -67,49 +58,51 @@ synthetic.
 
 ## 3. Decisions
 
-### I made three decisions to keep the product focused and testable.
+### Three decisions kept the prototype focused and testable.
 
-This was a self-directed portfolio project, not a live rollout. I made the
-product and evaluation decisions and implemented the prototype with Claude Code
-and Codex as coding collaborators.
+**My role**
 
-1. **Do not match a listing when required data is missing.** If rent or room
-   count is missing, the listing does not match a filter that requires it. This
-   reduces wrong matches but may hide a suitable listing. Real data is needed
-   to judge the trade-off.
-2. **Do not promise coverage before source access is clear.** The demo uses
-   generated listings through one synthetic source adapter. I have not validated
-   access to provider websites or the terms for using their listings, so the
-   prototype does not claim to cover live listings.
-3. **Give AI a narrow, checkable task.** AI alone sometimes missed conflicts
-   between a listing and the parsed data. Adding more prompt rules improved one
-   field but made others worse. I therefore asked AI only to quote the source
-   and let code compare the values.
+I defined the WBS user problem and product scope; chose which fields determine
+a match and how missing data is handled; set the AI boundary; and designed the
+evaluation plan and acceptance criteria. I then implemented the Telegram
+prototype with Claude Code and Codex as coding collaborators.
 
-**User path:** Saved filter → Rule-based matching → Telegram result
+Self-directed portfolio project · Not a live rollout
 
-**Offline evaluation path:** Listing text → AI returns an exact quote or `null`
-→ Code checks the quote and compares values → Result marked for offline review
-
-The tested setup ran offline. It cannot change listing data, decide matches or
-affect the Telegram product.
+1. **Use AI to audit the parser—not to decide matches.** Deterministic rules
+   still depend on correct input data. I tested whether AI could act as an
+   independent parser check: it returned exact source evidence for each
+   requested field, while code compared that evidence with simulated parser
+   output. Differences were marked for review; AI never changed listing data or
+   match decisions.
+2. **Use synthetic data to test mechanics.** I chose generated listings to
+   test filter setup, normalization, matching and Telegram delivery without
+   using provider data until source access and reuse terms are clear. This tests
+   product mechanics, but not source coverage, listing freshness or renter
+   value; those require permitted live sources and a real-user pilot.
+3. **Fail closed when critical data is missing.** If rent or room count required
+   by a filter is unknown, the listing does not match. This reduces unsupported
+   matches but may hide a suitable apartment, so the trade-off still needs
+   real-world validation.
 
 ## 4. AI Evaluation
 
-### The product works with generated listings. A separate AI quality check passed its 600-listing synthetic test.
+### Correct matching starts with correct data.
 
-The seven Telegram screens above show the working product. A separate offline
-test asked whether AI and code could find deliberately planted errors in data
-extracted from listings.
+FlatFeed’s rules depend on the fields produced by the parser. A wrong WBS, rent
+or room value can hide a suitable listing or show one that does not match the
+saved filter. I tested AI as an independent check: it returned exact source
+evidence for each field, and code compared that evidence with simulated parser
+output. The benchmark used generated listings, ran offline and never changed
+Telegram results.
 
-**AI QA evaluation · synthetic data · 600 listings**
+### Can AI and code detect field-level data conflicts?
 
-I fixed the final dataset before the run: 300 clean listings and 300 with one
-planted parser error. The model saw only raw listing text. It did not see the
-expected answers, FlatFeed's parsed values or labels identifying each test
-case. The test ran once, with no retries, tuning or rescoring afterward.
-
-**Passed the synthetic benchmark. Every predeclared prototype target passed.**
+I froze the final synthetic dataset before the run: 300 text–data pairs that
+agreed and 300 with one deliberately altered structured value. The model saw
+only the generated listing text. It did not see the structured values or labels
+identifying each test case. Code then compared the model’s quoted evidence with
+those values. The test ran once, with no retries, tuning or rescoring afterward.
 
 | Metric | Result | Prototype target |
 |---|---:|---:|
@@ -121,11 +114,15 @@ case. The test ran once, with no retries, tuning or rescoring afterward.
 I set these acceptance criteria before the final run. They apply to this
 prototype, not to the industry as a whole.
 
+**Evidence boundary**
+
 One clean listing produced an unusable quote. Code rejected it because the
 quote was not present in the listing, so it created no unnecessary review flag.
 This demonstrates feasibility on controlled synthetic data—not live-source
 accuracy, production performance or user impact. The tested setup ran offline
 and is not integrated into the product.
+
+Controlled synthetic evaluation · Offline · Not integrated into the product
 
 ### Evaluation method and field-level results
 
@@ -184,8 +181,14 @@ the resulting alerts are timely and useful.
 - **Irrelevant or unavailable listings:** What share of alerts are irrelevant
   or already unavailable?
 
-Before using AI quality checks on real listings, reviewers should inspect every
-flagged case and a random sample of listings with no flag.
+### Data-quality gate for live listings
+
+Before relying on parsed data from permitted sources, reviewers should verify
+WBS, district, rent, rooms and card fields on a random sample of listings.
+Every AI flag and a random sample of unflagged listings should be reviewed to
+measure both detected errors and missed errors.
+
+Before live-source reliance · Human review required
 
 Current prototype limits:
 
@@ -202,9 +205,10 @@ Current prototype limits:
 
 ### A working product, clear decisions and evidence for the next step.
 
-I turned a repeated housing search into a working Telegram prototype. I used
-rules to decide which listings match, kept AI in a separate data-quality check
-and defined what must be validated before testing with real listings.
+I built a rule-based Telegram product and tested AI as an independent
+parser-quality control. Rules decide matches; AI supplies field-level evidence
+for data review. Real-source accuracy and user value remain the next validation
+step.
 
 ## Another case
 

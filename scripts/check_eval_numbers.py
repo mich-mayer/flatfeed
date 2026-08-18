@@ -2,8 +2,8 @@
 
 The README keeps the authored deterministic regression-case count. The landing
 and Markdown case study expose only the final fresh 600-listing synthetic
-result: four aggregate metrics, seven field results, the final decision, and
-one bounded AI API cost scenario.
+result: four aggregate metrics, seven field results, a visible synthetic-data
+qualifier, and one bounded AI API cost scenario.
 
 Usage: .venv/bin/python -m scripts.check_eval_numbers
 Exit code 0 when every public occurrence matches the canonical artifacts.
@@ -35,12 +35,11 @@ FREEZE_PATH = (
     / "runs"
     / "extraction-v1-final-600-configuration-freeze.json"
 )
-PUBLIC_EVIDENCE_LABEL = "AI QA evaluation · synthetic data · 600 listings"
+PUBLIC_SYNTHETIC_QUALIFIER = "final synthetic dataset"
 ANNUAL_CHECK_SCENARIO = 15_000
 OFFICIAL_RELETTING_PROXY = 12_398
 PLANNING_BUFFER = 1.25
 FINAL_EVIDENCE_BOUNDARY_PARTS = (
-    "Every predeclared prototype target passed",
     "This demonstrates feasibility on controlled synthetic data",
     "not integrated into the product",
 )
@@ -244,13 +243,9 @@ def main() -> int:
 
     for path in SCORECARD_TARGETS:
         text = path.read_text(encoding="utf-8")
-        if PUBLIC_EVIDENCE_LABEL not in text:
+        if PUBLIC_SYNTHETIC_QUALIFIER not in text:
             errors.append(
-                f"{path.relative_to(PROJECT_ROOT)}: evidence label is missing"
-            )
-        if "passed the synthetic benchmark" not in text.lower():
-            errors.append(
-                f"{path.relative_to(PROJECT_ROOT)}: final pass decision is missing"
+                f"{path.relative_to(PROJECT_ROOT)}: synthetic qualifier is missing"
             )
         if not any(marker in text.lower() for marker in RUNTIME_BOUNDARY_MARKERS):
             errors.append(
@@ -304,8 +299,8 @@ def main() -> int:
     print(
         "Eval number sync check passed — the README regression count is "
         f"{expected_count}, and both case-study surfaces match the final "
-        "extraction-v1 600-case result, field results, decision, and cost "
-        "scenario."
+        "extraction-v1 600-case result, field results, evidence boundary, and "
+        "cost scenario."
     )
     return 0
 
