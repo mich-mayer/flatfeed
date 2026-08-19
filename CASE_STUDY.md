@@ -73,8 +73,8 @@ Self-directed portfolio project · Not a live rollout
    still depend on correct input data. I tested whether AI could act as an
    independent parser check: it returned exact source evidence for each
    requested field, while code compared that evidence with simulated parser
-   output. Differences were marked for review; AI never changed listing data or
-   match decisions.
+   output. Differences were marked for configured-admin review; AI never
+   changed listing data or match decisions.
 2. **Use synthetic data to test mechanics.** I chose generated listings to
    test filter setup, normalization, matching and Telegram delivery without
    using provider data until source access and reuse terms are clear. This tests
@@ -89,20 +89,34 @@ Self-directed portfolio project · Not a live rollout
 
 ### Correct matching starts with correct data.
 
-FlatFeed’s rules depend on the fields produced by the parser. A wrong WBS, rent
-or room value can hide a suitable listing or show one that does not match the
-saved filter. I tested AI as an independent check: it returned exact source
-evidence for each field, and code compared that evidence with simulated parser
-output. The benchmark used generated listings, ran offline and never changed
-Telegram results.
+FlatFeed filters listings using four values produced by the parser: WBS,
+district, Kaltmiete and rooms. One wrong value can hide a suitable listing or
+show one that does not match the saved filter. In a separate offline test, AI
+read the same generated listing text and returned exact source quotes; code
+compared that evidence with structured values that simulated parser output. The
+setup never changed listings, matches or Telegram cards.
 
-### Can AI and code detect field-level data conflicts?
+### How the check catches one wrong value.
 
-I froze the final synthetic dataset before the run: 300 text–data pairs that
-agreed and 300 with one deliberately altered structured value. The model saw
-only the generated listing text. It did not see the structured values or labels
-identifying each test case. Code then compared the model’s quoted evidence with
-those values. The test ran once, with no retries, tuning or rescoring afterward.
+| Source | Values |
+| --- | --- |
+| **Listing text** | *Charlottenburg-Wilmersdorf · 2 Zimmer · 512,40 € · WBS 100–140.* |
+| **Parser output** | `WBS 140` · `Charlottenburg-Wilmersdorf` · `€512.40` · `2` |
+| **AI evidence** | `WBS 100–140` · `Charlottenburg-Wilmersdorf` · `€512.40` · `2` |
+
+**Mismatch detected.** The simulated parser missed WBS 100 and could hide a
+suitable listing. **Admin review required.** AI only flags the difference; a
+configured admin checks the original listing and decides whether the parser is
+wrong before anything changes.
+
+### Can this check catch data conflicts before they affect matching?
+
+I froze the final synthetic dataset before the run: 600 generated listing pairs.
+In 300, every structured value agreed with the listing text. In another 300, one
+value was deliberately changed to simulate a parser error. AI saw only the
+original listing text and returned source evidence; code compared that evidence
+with the structured values. The test ran once, with no retries, tuning or
+rescoring afterward.
 
 | Metric | Result | Prototype target |
 |---|---:|---:|
@@ -127,10 +141,11 @@ Controlled synthetic evaluation · Offline · Not integrated into the product
 ### Evaluation method and field-level results
 
 The final setup used `gpt-5.6-terra` with high reasoning effort and a strict
-response format (Structured Outputs). For each field, the model returned an
-exact quote from the listing or `null`. Code rejected invalid output, compared
-the quoted evidence with FlatFeed's parsed value and marked any difference for
-offline review.
+response format (Structured Outputs). For every evaluated listing value, the
+model returned an exact quote or `null`. Code verified that each quote appeared
+in the source text, compared the evidence with simulated parser output and
+marked any difference for offline review. AI could not change listing data,
+matching results or Telegram cards.
 
 The only unusable result contained a quote that was not in the listing. The
 case was not retried. No planted parser error was missed.
@@ -172,8 +187,9 @@ Evidence:
 
 ### The next evidence should come from real alerts, not another model benchmark.
 
-The next step is to confirm which sources permit this use and then test whether
-the resulting alerts are timely and useful.
+The next step is to confirm which sources permit this use, then test whether
+alerts are timely and useful and whether human review leads to reliable parser
+improvements.
 
 - **Source coverage:** How many listings are available from permitted sources?
 - **Time to alert:** How long after publication does an alert arrive?
@@ -183,12 +199,13 @@ the resulting alerts are timely and useful.
 
 ### Data-quality gate for live listings
 
-Before relying on parsed data from permitted sources, reviewers should verify
-WBS, district, rent, rooms and card fields on a random sample of listings.
-Every AI flag and a random sample of unflagged listings should be reviewed to
-measure both detected errors and missed errors.
+Only configured admins review AI flags; users never see them. Admins compare
+each flag and a sample with no alert against the original listing and parsed
+values. Confirmed parser errors become test cases and parser fixes; false AI
+alerts improve the next QA version. Nothing changes listings or matching
+automatically.
 
-Before live-source reliance · Human review required
+Before live-source reliance · Admin review required
 
 Current prototype limits:
 
@@ -203,12 +220,11 @@ Current prototype limits:
 
 ## What this demonstrates
 
-### A working product, clear decisions and evidence for the next step.
+### A working apartment-search workflow, with rules making the match.
 
-I built a rule-based Telegram product and tested AI as an independent
-parser-quality control. Rules decide matches; AI supplies field-level evidence
-for data review. Real-source accuracy and user value remain the next validation
-step.
+I built and tested the saved-filter Telegram flow, kept matching deterministic,
+and limited AI to flagging parser risks for admin review. Real-source accuracy
+and user value remain the next validation step.
 
 ## Another case
 
