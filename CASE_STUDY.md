@@ -28,7 +28,7 @@ outcome.
 
 ### Users can save one filter and review matching listings in Telegram.
 
-Working Telegram prototype · Generated test listings · Rule-based matching · AI parser-quality review
+Working Telegram prototype · Generated test listings · Rule-based matching · Admin AI data-quality check
 
 1. **Save one filter.** Set WBS type, district, maximum Kaltmiete (base rent,
    excluding operating and heating costs) and rooms once.
@@ -91,10 +91,22 @@ Self-directed portfolio project · Not a live rollout
 
 FlatFeed filters listings using four values produced by the parser: WBS,
 district, Kaltmiete and rooms. One wrong value can hide a suitable listing or
-show one that does not match the saved filter. In a separate offline test, AI
-read the same generated listing text and returned exact source quotes; code
-compared that evidence with structured values that simulated parser output. The
-setup never changed listings, matches or Telegram cards.
+show one that does not match the saved filter. So the product runs an
+independent check on those four values: for every new listing, AI returns exact
+quotes from the source text, code compares them with the parsed values, and any
+difference goes to a configured admin. Matching stays rule-based — the check
+reports, it does not decide.
+
+### How the check runs in the product
+
+The check is part of ingestion, not a script beside it. Each new active listing
+is reviewed once per prompt version and stored with its evidence. Deterministic
+guardrails run after the model, a daily cost cap and a risk threshold decide
+whether a difference becomes an admin alert, and each alert is resolved as
+parser error, parser correct or unsure. The feature ships switched off, so the
+demo itself makes no model calls.
+
+Built into ingestion · Admin-only · Off by default
 
 ### How the check catches one wrong value.
 
@@ -104,19 +116,20 @@ setup never changed listings, matches or Telegram cards.
 | **Parser output** | `WBS 140` · `Charlottenburg-Wilmersdorf` · `€512.40` · `2` |
 | **AI evidence** | `WBS 100–140` · `Charlottenburg-Wilmersdorf` · `€512.40` · `2` |
 
-**Mismatch detected.** The simulated parser missed WBS 100 and could hide a
-suitable listing. **Admin review required.** AI only flags the difference; a
-configured admin checks the original listing and decides whether the parser is
-wrong before anything changes.
+**Mismatch detected.** The parser missed WBS 100 and could hide a suitable
+listing. **Admin review required.** AI flags the difference and stops there; a
+configured admin compares the original listing and marks the parser right or
+wrong. Only that decision feeds a parser fix — nothing changes on the model's
+word alone.
 
 ### Can this check catch data conflicts before they affect matching?
 
-I froze the final synthetic dataset before the run: 600 generated listing pairs.
-In 300, every structured value agreed with the listing text. In another 300, one
-value was deliberately changed to simulate a parser error. AI saw only the
-original listing text and returned source evidence; code compared that evidence
-with the structured values. The test ran once, with no retries, tuning or
-rescoring afterward.
+Before switching this on against live data, I measured it with the real model.
+I froze the final synthetic dataset first: 600 generated listing pairs — 300
+where every parsed value agreed with the listing text, and 300 where one value was deliberately
+changed to simulate a parser error. The model saw only the listing text and
+returned source evidence; code compared that evidence with the parsed values.
+The run happened once, with no retries, tuning or rescoring afterward.
 
 | Metric | Result | Prototype target |
 |---|---:|---:|
@@ -136,7 +149,7 @@ This demonstrates feasibility on controlled synthetic data—not live-source
 accuracy, production performance or user impact. The tested setup ran offline
 and is not integrated into the product.
 
-Controlled synthetic evaluation · Offline · Not integrated into the product
+Controlled synthetic evaluation · Offline · Evaluation harness, not the runtime path
 
 ### Evaluation method and field-level results
 
@@ -199,11 +212,11 @@ improvements.
 
 ### Data-quality gate for live listings
 
-Only configured admins review AI flags; users never see them. Admins compare
-each flag and a sample with no alert against the original listing and parsed
-values. Confirmed parser errors become test cases and parser fixes; false AI
-alerts improve the next QA version. Nothing changes listings or matching
-automatically.
+The review loop is built: only configured admins see flags, users never do, and
+every flag is resolved as parser error, parser correct or unsure. That loop is
+the gate before FlatFeed relies on live sources — confirmed parser errors become
+test cases and parser fixes, false alerts tune the next prompt version, and no
+review changes listings or matching automatically.
 
 Before live-source reliance · Admin review required
 
@@ -213,9 +226,13 @@ Current prototype limits:
   adapters.
 - On-demand matching works. Automatic background delivery with duplicate
   prevention is built but switched off in the demo.
-- An optional AI quality check for administrators is built but switched off.
-  The model setup reported above was tested separately offline and is connected
-  to neither that path nor the Telegram product.
+- The admin AI check ships switched off and defaults to a mock provider, so
+  this demo makes no model calls.
+- The results above come from an offline evaluation harness on generated
+  listings and simulated parser output, not from the product's runtime path on
+  live data.
+- Accuracy against real listings and real parser output, and the admin review
+  loop at production volume, are not yet measured.
 - Live-source performance and user impact have not been measured.
 
 ## What this demonstrates
@@ -223,8 +240,9 @@ Current prototype limits:
 ### A working apartment-search workflow, with rules making the match.
 
 I built and tested the saved-filter Telegram flow, kept matching deterministic,
-and limited AI to flagging parser risks for admin review. Real-source accuracy
-and user value remain the next validation step.
+and built an AI data-quality check that flags parser risks for admin review
+without touching a single match. Real-source accuracy and user value remain the
+next validation step.
 
 ## Another case
 
