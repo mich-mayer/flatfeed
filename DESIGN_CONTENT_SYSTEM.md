@@ -314,7 +314,7 @@ Rules:
 The status card shows whether a filter exists and, when configured, lists WBS, District, Max Kaltmiete, and Rooms in that order. It offers `Show matches`, `Edit filter`, `Reset filter`, and `Delete my data`. The setup wizard asks one field at a time and persists only after all four answers are complete.
 
 ### 6.3 Case-study page shell — ADOPT
-Skip link → compact sticky top bar (above 56rem, FlatFeed brand with `Product case study` subtitle, the centered five-item nav Problem · Product · Decisions · AI Evaluation · Next, and one proportionally compact Repository action share one row) → text-led Problem hero (plain-language proposition and first-use WBS tooltip) → **hiring-first five-section case study**: 01 Problem · 02 Product · 03 Decisions · 04 AI Evaluation · 05 Next → dark `What this demonstrates` summary → sibling case cross-link. The sibling cross-link is the final page block; there is no separate footer.
+Skip link → compact sticky top bar (above 56rem, FlatFeed brand with `Product case study` subtitle, the centered five-item nav Problem · Product · Decisions · AI Evaluation · Next, and one proportionally compact Repository action share one row) → text-led Problem hero (plain-language proposition and first-use WBS tooltip) → **hiring-first five-section case study**: 01 Problem · 02 Product · 03 Decisions · 04 AI Evaluation · 05 Next → dark concluding summary → sibling case cross-link. The sibling cross-link is the final page block; there is no separate footer.
 
 The page MUST answer in order: what user problem the product simplifies, what was built, what the candidate owned and decided, how the bounded AI check was evaluated, and what should be tested next. Product combines the solution, four-stage workflow and seven-screen Telegram proof. Decisions combines the three consequential trade-offs. AI Evaluation opens with a concise prose boundary between rule-based matching and the separate offline parser-quality check, then keeps the aggregate results and one unusable result visible; field-level results, configuration and cost assumptions sit in closed-by-default details so they do not interrupt the hiring scan. Dashboard mockups, mock-cost, legal analysis, scripted-demo history and historical iteration tables do not belong in the main public narrative. At ≤56rem the header is not sticky and the nav moves to a second row as a two-column grid; the brand and Repository action remain in the first row without creating an implicit third column.
 
@@ -639,9 +639,9 @@ Element rules:
 - **Product carousel:** seven real Telegram captures document setup through result in the author-supplied order. The hero remains text-only. The carousel does not auto-advance; previous/next buttons, arrow keys, and touch swipe expose the sequence. On desktop the capture and its bounded caption form one centered two-column block, with the heading aligned over the caption and a compact joined pair of arrow buttons immediately below the commentary, aligned to its left edge. Every capture sits in the same fixed-ratio frame with `object-fit: contain`, and every caption uses the same reserved height, sized for the longest approved slide copy. Together these keep the buttons fixed while screens change without cropping screenshots or allowing copy to overlap the controls. The buttons share one internal border so they read as a single navigator rather than two floating actions. Do not show a second visual `Screen N of 7` label because the caption already shows `NN / 07`; retain a visually hidden live region for assistive technology. On mobile, commentary remains adjacent in reading order, retains the shared reserved height, and controls follow it with the same left alignment. Carousel-level copy describes the product sequence without repeating demo setup. Each slide uses a step number, short title, and one orienting sentence. Photo credit remains adjacent to the relevant image in a smaller 11px utility style with 1.5 line height and readable `--ink-3` contrast. No dashboard, mock metrics, fabricated runtime data or browser imitation.
 - **Product:** combine the solution and implementation proof. Begin with a compact product-status line, then the four-stage implemented flow—save, put listings into one format, match with rules, return matches in Telegram—and the seven-screen carousel. The `Save one filter` step gives the first accessible Kaltmiete tooltip. Qualify the architecture with the one present synthetic source adapter. Explain the user-visible action before technical architecture. Do not repeat the workflow in comparison or capability cards.
 - **Decisions:** use a full-width heading, then a full-width `My role` note before the three decision cards. The note names direct ownership, coding collaborators and the absence of a live rollout without competing with the heading. Show three choices in reader language: use AI to audit the parser rather than decide matches, use synthetic data to test product mechanics while source access and reuse terms remain unvalidated, and fail closed when critical data is missing. Scripted-demo history does not belong in the linear case.
-- **AI Evaluation:** begin after the `04 AI Evaluation` kicker with one heading and one prose paragraph that distinguish rule-based Telegram matching from the synthetic review experiment. State that AI extracts quotes from generated listing text, code compares them with structured values that simulate parser output, and the setup cannot change listings, matches or cards. Then move directly to the question of planted conflicts between listing text and structured data. Describe the frozen set as 300 agreeing pairs and 300 with one deliberately altered structured value; retain its synthetic qualifier, no-retry/no-tuning setup, 599/600 limitation and no-runtime-integration boundary at visible depth. Present that boundary as a full-width stacked `role-note`, matching `My role` and the Next data-quality gate, then place field-level results, final configuration, unusable-case detail and cost scenario in closed details. These values are controlled evaluation evidence, never user or production outcomes. No score from an earlier model iteration appears.
-- **Next:** show the four next product metrics, the human-review requirement and controlled prototype limits. Configuration detail belongs in a closed block. Do not imply a committed user study, live-source pilot or production rollout.
-- **Conclusion:** explicitly synthesize the hiring signal under `What this demonstrates` in concrete terms: a working Telegram prototype, rules deciding user-facing matches, AI kept in a separate data-quality check, and the validation required before testing with real listings. The final summary has no button; product behavior is demonstrated through screenshots.
+- **AI Evaluation:** begin after the `04 AI Evaluation` kicker with one heading and one prose paragraph that distinguish rule-based Telegram matching from the synthetic review experiment. State that AI extracts quotes from generated listing text, code compares them with structured values that simulate parser output, and the setup cannot change listings, matches or cards. Follow with one compact three-row worked example under a field-neutral heading: the first row identifies the synthetic German `Listing text` and contains all four matching values, followed by aligned `Parser output` and `AI evidence` rows that show values only. Treat every source label as a bordered table cell and keep all three rows equal in height at each viewport. Highlight the differing value, explain the resulting risk to a user and state the admin-review step at the same visible depth: AI points out the conflict, while only a configured admin checks the original listing and decides whether the parser is wrong before any data changes. Users never see or act on AI flags. The example may use a WBS range without implying that WBS is the only field that can be wrong. Then move to the question of planted conflicts between listing text and structured data. Describe the frozen set as 300 agreeing pairs and 300 with one deliberately altered structured value; retain its synthetic qualifier, no-retry/no-tuning setup, 599/600 limitation and no-runtime-integration boundary at visible depth. Present that boundary as a full-width stacked `role-note`, matching `My role` and the Next data-quality gate, then place field-level results, final configuration, unusable-case detail and cost scenario in closed details. These values are controlled evaluation evidence, never user or production outcomes. No score from an earlier model iteration appears.
+- **Next:** show the four next product metrics, the admin-review requirement and controlled prototype limits. The introductory copy and data-quality gate explain the planned feedback loop at a general level: only configured admins review AI flags, users never see them, reviewed parser errors become test cases and parser fixes, false AI alerts improve the next QA version, and no review changes listings or matching automatically. Configuration detail belongs in a closed block. Do not imply a committed user study, live-source pilot or production rollout.
+- **Conclusion:** explicitly synthesize the hiring signal in a dark concluding summary: a working apartment-search workflow, rules making user-facing matches, AI limited to flagging parser risks for admin review, and the validation required before testing with real listings. Do not add a kicker above its headline. The final summary has no button; product behavior is demonstrated through screenshots.
 
 ---
 
@@ -878,6 +878,89 @@ Any change to this system (new rule, changed rule, new component/message class, 
 5. **Migration consideration** — fix now, fix-when-touched (add to §29), or explicitly grandfather.
 
 Update this file in the same change. External references inform; project needs decide. Keep tests, the eval, and `git diff --check` green.
+
+### 2026-08-18 show the AI check through one compact source comparison
+
+- **Problem:** the AI Evaluation introduction explained source evidence and
+  deterministic comparison in prose, but did not let a general reader see what
+  the model and simulated parser output were being compared on. The initial
+  example separated the listing text from the comparison, used a service-style
+  synthetic-example label and named WBS in the heading, which made the source
+  less obvious and the risk look field-specific.
+- **Rationale:** use a compact three-row comparison whose first row is labelled
+  `Listing text` and contains one German synthetic listing with WBS, district,
+  Kaltmiete and rooms. Two identically ordered value-only rows show `Parser
+  output` and `AI evidence`, so the differing WBS range stays easy to compare
+  while the field-neutral heading makes clear that any parsed value may be
+  wrong. Each source label is a bordered cell and the three rows share the
+  height required by the longest row, so the source reads as part of the same
+  table rather than as a separate quote. The result also makes the operating
+  boundary explicit: AI flags a difference, while a person reviews the source
+  and decides whether the parser is wrong before any data changes. The
+  surrounding copy preserves the experiment's actual boundary:
+  structured values simulate parser output, AI returns source evidence, code
+  compares them, and nothing can change product output.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`,
+  `CASE_STUDY.md`, and this file (§§22 and 34), plus the shared stylesheet cache
+  key in `docs/demo-listing.html`.
+- **Compatibility impact:** an AI Evaluation introduction made only of prose,
+  a listing quote visually detached from the comparison, a field-specific
+  example heading, or comparison rows that repeat field names beside every
+  value no longer conforms. The frozen dataset, metrics, field results, model
+  configuration and product runtime remain unchanged.
+- **Migration consideration:** updated now across the public HTML and Markdown
+  case studies. Verify the comparison at desktop and mobile widths, ensure the
+  values remain aligned without overflow, and exercise the existing closed
+  evaluation details after the change.
+
+### 2026-08-18 connect human review to controlled parser improvement
+
+- **Problem:** the worked example stated that a person decides whether the
+  parser is wrong, but Next did not explain how that decision improves the
+  product after review.
+- **Rationale:** keep the feedback loop in Next rather than adding another
+  component to AI Evaluation. At a general, planned-workflow level, explain
+  that only configured admins review AI flags, confirmed parser errors become
+  test cases and parser fixes, false AI alerts improve the next QA version,
+  and no review directly changes listing data or matching.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md` and this file
+  (§§22 and 34).
+- **Compatibility impact:** a case study that suggests users see or act on AI
+  flags, or a Next review gate that omits the controlled use of review
+  decisions, no longer conforms. The prototype's non-mutating AI boundary,
+  synthetic evidence and runtime scope remain unchanged.
+- **Migration consideration:** update the HTML and Markdown case studies
+  together; validate that the longer gate remains readable at desktop and
+  mobile widths.
+
+### 2026-08-18 remove the conclusion kicker
+
+- **Problem:** the dark concluding summary repeated `What this demonstrates`
+  as a visual kicker before a headline that already stated the takeaway.
+- **Rationale:** remove the redundant kicker and let the headline and summary
+  copy carry the conclusion directly.
+- **Affected surfaces:** `docs/case-study.html`, `docs/styles.css`, the shared
+  stylesheet cache key in `docs/demo-listing.html`, and this file (§§6, 22 and
+  34).
+- **Compatibility impact:** the dark conclusion must not render a kicker above
+  its headline. Its content, position and sibling case link remain unchanged.
+- **Migration consideration:** verify the conclusion at desktop and mobile
+  widths after removing the label.
+
+### 2026-08-18 make the conclusion name the hiring signal
+
+- **Problem:** the conclusion headline used broad phrases such as `clear
+  decisions` and `evidence for the next step`, which did not tell a hiring
+  manager what FlatFeed demonstrated.
+- **Rationale:** name the concrete product and boundary in the headline and
+  copy: an apartment-search workflow, deterministic matching, and AI limited to admin
+  review of parser risks. Retain the honest next validation step.
+- **Affected surfaces:** `docs/case-study.html`, `CASE_STUDY.md` and this file
+  (§§22 and 34).
+- **Compatibility impact:** the conclusion must state the concrete workflow
+  and rule/AI boundary rather than rely on generic portfolio language.
+- **Migration consideration:** verify readable wrapping and the unchanged dark
+  conclusion layout at desktop and mobile widths.
 
 ### 2026-08-18 recalibrate the vertical rhythm's two largest steps
 
