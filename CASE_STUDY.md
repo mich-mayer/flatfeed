@@ -96,7 +96,7 @@ quotes from the source text, code compares them with the parsed values, and any
 difference goes to a configured admin. Rules decide matches. AI only flags
 differences for review.
 
-### How the check catches one wrong value.
+### How the check catches a wrong value.
 
 | Source | Values |
 | --- | --- |
