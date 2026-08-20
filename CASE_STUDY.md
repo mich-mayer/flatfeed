@@ -111,9 +111,9 @@ error, parser correct or unsure. Nothing changes on the model's word alone.
 
 ### How well can the check flag parser errors?
 
-To test the check on synthetic data, I created a frozen dataset of 600 generated
-listing pairs: 300 where every parsed value agreed with the listing text, and
-300 where one value was deliberately changed to simulate a parser error. The
+To test the check on synthetic data, I froze the final synthetic dataset at 600
+generated listing pairs: 300 where every parsed value agreed with the listing
+text, and 300 where one value was deliberately changed to simulate a parser error. The
 model saw only the listing text and returned source evidence; code compared that
 evidence with the parsed values. I ran the evaluation once, with no retries,
 tuning or rescoring afterward.
