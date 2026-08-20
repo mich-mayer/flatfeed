@@ -26,7 +26,7 @@ outcome.
 
 ## 2. Product
 
-### A four-step flow turns saved criteria into Telegram matches.
+### FlatFeed brings the fragmented WBS search together in one place.
 
 Working Telegram prototype · Generated test listings · Rule-based matching · Admin AI data-quality check
 
