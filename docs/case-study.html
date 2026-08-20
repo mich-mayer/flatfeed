@@ -59,13 +59,13 @@
         </section>
 
         <section class="case-section" id="product">
-          <header class="section-heading">
+          <header class="section-heading section-heading--statement">
             <p class="kicker"><span>02</span>Product</p>
             <h2>FlatFeed brings the fragmented WBS search together in one place.</h2>
           </header>
 
           <div class="case-status" aria-label="Product status">
-            <p>Working Telegram prototype · Generated test listings · Rule-based matching · Admin AI data-quality check</p>
+            <p>Working Telegram prototype · Generated test listings · Rule-based matching · Bounded AI QA evaluation</p>
           </div>
 
           <ol class="workflow workflow--four" aria-label="Implemented FlatFeed workflow">
@@ -76,8 +76,8 @@
             </li>
             <li>
               <span>02</span>
-              <h3>Turn listing text into structured fields</h3>
-              <p>The parser extracts WBS, district, rent, rooms and the details shown on each card. Every matching rule and Telegram result depends on these fields.</p>
+              <h3>Normalize each source into one listing format</h3>
+              <p>Each permitted source would map into the same listing format. Structured feeds can supply fields directly; text-based or incomplete sources require extraction. This prototype implements the text-based path.</p>
             </li>
             <li>
               <span>03</span>
@@ -243,6 +243,15 @@
             </div>
           </section>
 
+          <details class="case-details">
+            <summary>See the current prototype limits</summary>
+            <div class="prototype-limits">
+              <p>The prototype currently uses generated listing text rather than live provider data. It implements one possible ingestion path: deterministic extraction into a common listing format with an admin-only AI quality check.</p>
+              <p>Production ingestion depends on the permitted channel, format and field guarantees available from each provider. Complete structured feeds could map directly into FlatFeed; text-based or incomplete sources may still require extraction and review.</p>
+              <p>Automatic delivery and the runtime AI check are built but disabled in this prototype. The AI-check results come from an offline evaluation on synthetic data, not real providers or users.</p>
+            </div>
+          </details>
+
         </section>
 
         <section class="case-section" id="decisions">
@@ -254,14 +263,13 @@
           <aside class="role-note role-note--stacked decision-ownership" aria-label="Project ownership">
             <p class="preview-label">My role</p>
             <p class="role-note__body">I defined the WBS user problem and product scope; chose which fields determine a match and how missing data is handled; set the AI boundary; and designed the evaluation plan and acceptance criteria. I then implemented the Telegram prototype with Claude Code and Codex as coding collaborators.</p>
-            <p class="role-note__scope">Self-directed portfolio project · Not a live rollout</p>
           </aside>
 
           <div class="decision-list decision-list--three">
             <article>
               <p class="decision-number">A</p>
-              <h3>Use AI to audit the parser - not to decide matches</h3>
-              <p>Deterministic rules still depend on correct input data. I tested whether AI could act as an independent parser check: it returned exact source evidence for each requested field, while code compared that evidence with simulated parser output. Differences were marked for configured-admin review; AI never changed listing data or match decisions.</p>
+              <h3>Evaluate AI as a conditional quality check</h3>
+              <p>For this self-directed portfolio project, I deliberately tested one plausible text-based ingestion path to demonstrate how I scope, evaluate and constrain AI. The model checks parser evidence but never changes listings or decides matches. If a provider supplies complete, reliable structured fields, its adapter should map them directly; the parser and AI check are used only where extraction is actually needed.</p>
             </article>
             <article>
               <p class="decision-number">B</p>
@@ -283,8 +291,8 @@
           </header>
 
           <div class="ai-evaluation-intro">
-            <h2>Correct matching starts with<br>correct data.</h2>
-            <p>FlatFeed filters listings using four values produced by the parser: WBS, district, Kaltmiete and rooms. One wrong value can hide a suitable listing or show one that does not match the saved filter. So the product runs an independent check on those four values: for every new listing, AI returns exact quotes from the source text, code compares them with the parsed values, and any difference goes to a configured admin. Rules decide matches. AI only flags differences for review.</p>
+            <h2>For text-based sources, correct matching starts with correct extraction.</h2>
+            <p>This evaluation covers the prototype’s text-based ingestion path. AI independently checks the fields extracted by the parser and flags differences for admin review; rules still decide every match. A provider feed with complete, reliable structured fields could bypass this path.</p>
           </div>
 
           <section class="qa-example" aria-labelledby="qa-example-title">
@@ -371,27 +379,14 @@
             </dl>
 
             <details class="case-details">
-              <summary>See the evaluation method and results by field</summary>
+              <summary>See results by field</summary>
             <div class="qa-field-results">
-              <div class="qa-findings qa-findings--inside-details">
-                <article>
-                  <p class="preview-label">How the final check worked</p>
-                  <h4>AI found the evidence. Code checked the values.</h4>
-                  <p>The final setup used gpt-5.6-Terra with high reasoning effort and a strict response format (Structured Outputs). For every evaluated listing value, the model returned an exact quote or <code>null</code>. Code verified that each quote appeared in the source text, compared the evidence with simulated parser output and marked any difference for offline review. AI could not change listing data, matching results or Telegram cards.</p>
-                </article>
-                <article>
-                  <p class="preview-label">The unusable result</p>
-                  <h4>Code rejected one quote that was not in the listing.</h4>
-                  <p>The case was not retried. No planted parser error was missed.</p>
-                </article>
-              </div>
-              <div class="qa-subheading">
-                <p class="preview-label">Results by listing field</p>
+              <div class="qa-subheading qa-subheading--full">
                 <div>
                   <h4>The checker met its target for every listing field.</h4>
                   <p>
-                    An overall score can hide a weak spot. This breakdown shows results for every
-                    field used in matching or displayed on the Telegram card.
+                    An overall score can hide a weak spot. This breakdown shows how the check
+                    performed on each listing field.
                   </p>
                 </div>
               </div>
@@ -401,7 +396,7 @@
                   <thead>
                     <tr>
                       <th scope="col">Listing data</th>
-                      <th scope="col">Used for</th>
+                      <th scope="col">Used in</th>
                       <th scope="col">Errors found</th>
                       <th scope="col">Target</th>
                       <th scope="col">Result</th>
@@ -410,49 +405,49 @@
                   <tbody>
                     <tr>
                       <th scope="row">WBS</th>
-                      <td>Matching</td>
+                      <td>Matching + Telegram card</td>
                       <td>75/75 · 100.0%</td>
                       <td>At least 74/75</td>
                       <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">District</th>
-                      <td>Matching</td>
+                      <td>Matching + Telegram card</td>
                       <td>30/30 · 100.0%</td>
                       <td>30/30</td>
                       <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">Kaltmiete</th>
-                      <td>Matching</td>
+                      <td>Matching + Telegram card</td>
                       <td>60/60 · 100.0%</td>
                       <td>At least 59/60</td>
                       <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">Rooms</th>
-                      <td>Matching</td>
+                      <td>Matching + Telegram card</td>
                       <td>50/50 · 100.0%</td>
                       <td>At least 49/50</td>
                       <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">Address / postal code</th>
-                      <td>Listing card</td>
+                      <td>Telegram card</td>
                       <td>40/40 · 100.0%</td>
                       <td>At least 39/40</td>
                       <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">Floor</th>
-                      <td>Listing card</td>
+                      <td>Telegram card</td>
                       <td>25/25 · 100.0%</td>
                       <td>25/25</td>
                       <td>Target met</td>
                     </tr>
                     <tr>
                       <th scope="row">Warmmiete</th>
-                      <td>Listing card</td>
+                      <td>Telegram card</td>
                       <td>20/20 · 100.0%</td>
                       <td>20/20</td>
                       <td>Target met</td>
@@ -464,15 +459,14 @@
             </details>
 
             <details class="case-details">
-              <summary>See the setup, cost assumptions and evidence links</summary>
+              <summary>See cost estimate and evidence</summary>
             <section class="qa-cost" aria-labelledby="qa-cost-title">
-              <div class="qa-subheading">
-                <p class="preview-label">Estimated cost · AI API calls only</p>
+              <div class="qa-subheading qa-subheading--full">
                 <div>
                   <h4 id="qa-cost-title">What could AI checks cost at Berlin scale?</h4>
                   <p>
                     Berlin reported 12,398 apartment re-lettings by six state-owned housing
-                    companies in 2024, excluding Berlinovo. This is not the number of online ads.
+                    companies in 2024, excluding Berlinovo.
                     Because no public source gives a combined count of unique listings, I used
                     15,000 checks per year as a rounded planning scenario.
                     <a href="https://www.berlin.de/sen/stadt/presse/pressemeldungen/pressemitteilung.1628093.php">View the Berlin source</a>.
@@ -515,59 +509,40 @@
         </section>
 
         <section class="case-section" id="next">
-          <header class="section-heading">
+          <header class="section-heading section-heading--statement">
             <p class="kicker"><span>05</span>Next</p>
-            <h2>The next evidence should come from real alerts, not another model benchmark.</h2>
-            <p>The next step is to confirm which sources permit this use, then test whether alerts are timely and useful and whether human review leads to reliable parser improvements.</p>
+            <h2>What should FlatFeed test with permitted sources?</h2>
           </header>
 
           <div class="decision-list decision-list--four next-metrics" aria-label="Next product metrics">
             <article>
               <p class="decision-number">A</p>
-              <h3>Source coverage</h3>
-              <p>How many listings are available from permitted sources?</p>
+              <h3>Source access and format</h3>
+              <p>Can FlatFeed secure a permitted data channel from each relevant provider and determine which fields it reliably supplies?</p>
             </article>
             <article>
               <p class="decision-number">B</p>
-              <h3>Time to alert</h3>
-              <p>How long after publication does an alert arrive?</p>
+              <h3>Fast delivery</h3>
+              <p>Can FlatFeed deliver new listings quickly after publication?</p>
             </article>
             <article>
               <p class="decision-number">C</p>
-              <h3>Alert follow-through</h3>
-              <p>What share of alerts do users open or act on?</p>
+              <h3>User value</h3>
+              <p>Are alerted listings still available and worth pursuing for users?</p>
             </article>
             <article>
               <p class="decision-number">D</p>
-              <h3>Irrelevant or unavailable listings</h3>
-              <p>What share of alerts are irrelevant or already unavailable?</p>
+              <h3>Conditional review loop</h3>
+              <p>If a source requires text extraction, can admin review turn parser errors into fixes and false alerts into better AI instructions?</p>
             </article>
           </div>
-
-          <aside class="role-note role-note--large role-note--stacked" aria-label="Data-quality gate for live listings">
-            <p class="preview-label">Data-quality gate for live listings</p>
-            <p class="role-note__body">The review loop is built: only configured admins see flags, users never do. It is the gate before FlatFeed relies on live sources: confirmed parser errors become test cases and parser fixes, false alerts tune the next prompt version, and no review changes listings or matching automatically.</p>
-            <p class="role-note__scope">Before live-source reliance · Admin review required</p>
-          </aside>
-
-          <details class="case-details">
-            <summary>See the current prototype limits</summary>
-            <div class="prototype-limits">
-              <p>The demo uses one synthetic source adapter and includes no live provider adapters.</p>
-              <p>On-demand matching works. Automatic background delivery with duplicate prevention is built but switched off in the demo.</p>
-              <p>The admin AI check ships switched off and defaults to a mock provider, so this demo makes no model calls.</p>
-              <p>The results above come from an offline evaluation harness on generated listings and simulated parser output, not from the product's runtime path on live data.</p>
-              <p>Accuracy against real listings and real parser output, and the admin review loop at production volume, are not yet measured.</p>
-              <p>Live-source performance and user impact have not been measured.</p>
-            </div>
-          </details>
 
         </section>
 
         <section class="case-cta">
           <div>
             <h2>A working apartment-search workflow, with rules making the match.</h2>
-            <p class="case-cta__copy">I built and tested the saved-filter Telegram flow, kept matching deterministic, and built an AI data-quality check that flags parser risks for admin review without touching a single match. Real-source accuracy and user value remain the next validation step.</p>
+            <p class="case-cta__copy">I built and tested the saved-filter Telegram flow and evaluated one plausible text-ingestion path with bounded AI QA. Matching remains rule-based; the production ingestion design should follow the access terms, format and field quality providers actually offer.</p>
           </div>
         </section>
 

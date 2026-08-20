@@ -593,7 +593,6 @@ img {
 .workflow p,
 .decision-list article > p:last-child,
 .qa-selection__steps p,
-.qa-findings article > h4 ~ p,
 .qa-cost__calculation p:last-child,
 .qa-scorecard__metrics dd p,
 .product-journey li p,
@@ -626,7 +625,6 @@ img {
 
 /* Sub-block heading, minor. */
 .qa-subheading h4,
-.qa-findings h4,
 .product-journey h2 {
   font: 600 clamp(1.15rem, 2vw, 1.5rem)/1.2 var(--font-display);
   letter-spacing: -0.02em;
@@ -635,7 +633,6 @@ img {
 /* Repeated equal-weight cells share one joined-hairline construction. */
 .evidence-grid,
 .decision-list,
-.qa-findings,
 .qa-selection__steps,
 .qa-scorecard__metrics,
 .qa-cost__calculation,
@@ -648,7 +645,6 @@ img {
 
 .evidence-card,
 .decision-list article,
-.qa-findings article,
 .qa-selection__steps li,
 .qa-scorecard__metrics > div,
 .qa-cost__calculation > div,
@@ -681,14 +677,20 @@ img {
 
 .section-heading h2,
 .ai-evaluation-intro h2 {
-  max-width: 48rem;
   font: 600 clamp(1.75rem, 4vw, 3rem)/1.06 var(--font-display);
   letter-spacing: -0.035em;
 }
 
+.section-heading h2 {
+  max-width: 60rem;
+}
+
+.ai-evaluation-intro h2 {
+  max-width: 48rem;
+}
+
 .section-heading--statement h2 {
   grid-column: 1 / -1;
-  max-width: 48rem;
 }
 
 .section-heading > p:not(.kicker) {
@@ -1102,6 +1104,10 @@ img {
   gap: var(--pad-box);
 }
 
+.qa-subheading--full {
+  grid-template-columns: 1fr;
+}
+
 .qa-subheading > div > p {
   max-width: var(--measure-prose);
 }
@@ -1131,7 +1137,7 @@ img {
 .qa-table td {
   padding: 0.75rem;
   border: 1px solid var(--line);
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .qa-table thead th {
@@ -1139,6 +1145,7 @@ img {
   color: var(--ink-2);
   font: 600 0.625rem/1.4 var(--font-mono);
   letter-spacing: 0.07em;
+  text-align: center;
   text-transform: uppercase;
 }
 
@@ -1152,28 +1159,7 @@ img {
   color: var(--ink-2);
   font-size: 0.8125rem;
   line-height: 1.5;
-}
-
-.qa-findings {
-  grid-template-columns: repeat(2, 1fr);
-  margin-top: var(--space-panel);
-}
-
-.qa-findings--inside-details {
-  margin-top: 0;
-  margin-bottom: var(--space-panel);
-}
-
-.qa-findings h4 {
-  margin-top: 0.75rem;
-}
-
-.qa-findings article > h4 ~ p {
-  margin-top: 0.75rem;
-}
-
-.qa-findings article > p + p {
-  margin-top: 0.75rem;
+  text-align: center;
 }
 
 .qa-stop {
@@ -1426,7 +1412,6 @@ img {
     min-height: 0;
   }
 
-  .qa-findings,
   .qa-selection__steps,
   .qa-cost__calculation {
     grid-template-columns: 1fr;

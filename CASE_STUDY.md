@@ -28,13 +28,14 @@ outcome.
 
 ### FlatFeed brings the fragmented WBS search together in one place.
 
-Working Telegram prototype · Generated test listings · Rule-based matching · Admin AI data-quality check
+Working Telegram prototype · Generated test listings · Rule-based matching · Bounded AI QA evaluation
 
 1. **Save one filter.** Set WBS type, district, maximum Kaltmiete (base rent,
    excluding operating and heating costs) and rooms once.
-2. **Turn listing text into structured fields.** The parser extracts WBS,
-   district, rent, rooms and the details shown on each card. Every matching rule
-   and Telegram result depends on these fields.
+2. **Normalize each source into one listing format.** Each permitted source
+   would map into the same listing format. Structured feeds can supply fields
+   directly; text-based or incomplete sources require extraction. This
+   prototype implements the text-based path.
 3. **Match with rules.** Code compares each listing with the saved criteria. If
    a required value is missing, the listing does not match.
 4. **Return matches in Telegram.** Users can request matches when they
@@ -55,6 +56,19 @@ The final screen uses a photo by Bodo Kubrak under CC0 1.0; the local copy was
 resized. The location is Schlangenbader Straße 91. Apartment details are
 synthetic.
 
+### Current prototype limits
+
+- The prototype currently uses generated listing text rather than live provider
+  data. It implements one possible ingestion path: deterministic extraction
+  into a common listing format with an admin-only AI quality check.
+- Production ingestion depends on the permitted channel, format and field
+  guarantees available from each provider. Complete structured feeds could map
+  directly into FlatFeed; text-based or incomplete sources may still require
+  extraction and review.
+- Automatic delivery and the runtime AI check are built but disabled in this
+  prototype. The AI-check results come from an offline evaluation on synthetic
+  data, not real providers or users.
+
 ## 3. Decisions
 
 ### Three decisions kept the prototype focused and testable.
@@ -66,14 +80,13 @@ a match and how missing data is handled; set the AI boundary; and designed the
 evaluation plan and acceptance criteria. I then implemented the Telegram
 prototype with Claude Code and Codex as coding collaborators.
 
-Self-directed portfolio project · Not a live rollout
-
-1. **Use AI to audit the parser - not to decide matches.** Deterministic rules
-   still depend on correct input data. I tested whether AI could act as an
-   independent parser check: it returned exact source evidence for each
-   requested field, while code compared that evidence with simulated parser
-   output. Differences were marked for configured-admin review; AI never
-   changed listing data or match decisions.
+1. **Evaluate AI as a conditional quality check.** For this self-directed
+   portfolio project, I deliberately tested one plausible text-based ingestion
+   path to demonstrate how I scope, evaluate and constrain AI. The model checks
+   parser evidence but never changes listings or decides matches. If a provider
+   supplies complete, reliable structured fields, its adapter should map them
+   directly; the parser and AI check are used only where extraction is actually
+   needed.
 2. **Use synthetic data to test mechanics.** I chose generated listings to
    test filter setup, normalization, matching and Telegram delivery without
    using provider data until source access and reuse terms are clear. This tests
@@ -86,15 +99,12 @@ Self-directed portfolio project · Not a live rollout
 
 ## 4. AI Evaluation
 
-### Correct matching starts with correct data.
+### For text-based sources, correct matching starts with correct extraction.
 
-FlatFeed filters listings using four values produced by the parser: WBS,
-district, Kaltmiete and rooms. One wrong value can hide a suitable listing or
-show one that does not match the saved filter. So the product runs an
-independent check on those four values: for every new listing, AI returns exact
-quotes from the source text, code compares them with the parsed values, and any
-difference goes to a configured admin. Rules decide matches. AI only flags
-differences for review.
+This evaluation covers the prototype's text-based ingestion path. AI
+independently checks the fields extracted by the parser and flags differences
+for admin review; rules still decide every match. A provider feed with complete,
+reliable structured fields could bypass this path.
 
 ### How the check catches a wrong value.
 
@@ -127,27 +137,17 @@ against the parser output. There were no retries or tuning after the run.
 | Correct field identified | 100.0% (300/300) | At least 98% (294/300) |
 | Usable results | 99.8% (599/600) | At least 99.5% (597/600) |
 
-### Evaluation method and field-level results
+### Field-level results
 
-The final setup used `gpt-5.6-terra` with high reasoning effort and a strict
-response format (Structured Outputs). For every evaluated listing value, the
-model returned an exact quote or `null`. Code verified that each quote appeared
-in the source text, compared the evidence with simulated parser output and
-marked any difference for offline review. AI could not change listing data,
-matching results or Telegram cards.
-
-The only unusable result contained a quote that was not in the listing. The
-case was not retried. No planted parser error was missed.
-
-| Listing data | Used for | Errors found | Prototype target |
+| Listing data | Used in | Errors found | Prototype target |
 |---|---|---:|---:|
-| WBS | Matching | 75/75 · 100.0% | At least 74/75 |
-| District | Matching | 30/30 · 100.0% | 30/30 |
-| Kaltmiete | Matching | 60/60 · 100.0% | At least 59/60 |
-| Rooms | Matching | 50/50 · 100.0% | At least 49/50 |
-| Address / postal code | Listing card | 40/40 · 100.0% | At least 39/40 |
-| Floor | Listing card | 25/25 · 100.0% | 25/25 |
-| Warmmiete | Listing card | 20/20 · 100.0% | 20/20 |
+| WBS | Matching + Telegram card | 75/75 · 100.0% | At least 74/75 |
+| District | Matching + Telegram card | 30/30 · 100.0% | 30/30 |
+| Kaltmiete | Matching + Telegram card | 60/60 · 100.0% | At least 59/60 |
+| Rooms | Matching + Telegram card | 50/50 · 100.0% | At least 49/50 |
+| Address / postal code | Telegram card | 40/40 · 100.0% | At least 39/40 |
+| Floor | Telegram card | 25/25 · 100.0% | 25/25 |
+| Warmmiete | Telegram card | 20/20 · 100.0% | 20/20 |
 
 ### Cost assumptions
 
@@ -159,7 +159,7 @@ be about `$35` per year (`$2.94` per month). A 25% planning buffer produces
 
 The 15,000-check figure is a planning scenario, not a forecast. Berlin reported
 12,398 apartment re-lettings by six state-owned housing companies in 2024,
-excluding Berlinovo. This is not the number of online ads.
+excluding Berlinovo.
 
 The estimate covers AI API calls only. It excludes source access, hosting,
 monitoring, duplicate listings, price changes, differences in real-listing
@@ -174,50 +174,26 @@ Evidence:
 
 ## 5. Next
 
-### The next evidence should come from real alerts, not another model benchmark.
+### What should FlatFeed test with permitted sources?
 
-The next step is to confirm which sources permit this use, then test whether
-alerts are timely and useful and whether human review leads to reliable parser
-improvements.
-
-- **Source coverage:** How many listings are available from permitted sources?
-- **Time to alert:** How long after publication does an alert arrive?
-- **Alert follow-through:** What share of alerts do users open or act on?
-- **Irrelevant or unavailable listings:** What share of alerts are irrelevant
-  or already unavailable?
-
-### Data-quality gate for live listings
-
-The review loop is built: only configured admins see flags, users never do. It
-is the gate before FlatFeed relies on live sources: confirmed parser errors
-become test cases and parser fixes, false alerts tune the next prompt version,
-and no review changes listings or matching automatically.
-
-Before live-source reliance · Admin review required
-
-Current prototype limits:
-
-- The demo uses one synthetic source adapter and includes no live provider
-  adapters.
-- On-demand matching works. Automatic background delivery with duplicate
-  prevention is built but switched off in the demo.
-- The admin AI check ships switched off and defaults to a mock provider, so
-  this demo makes no model calls.
-- The results above come from an offline evaluation harness on generated
-  listings and simulated parser output, not from the product's runtime path on
-  live data.
-- Accuracy against real listings and real parser output, and the admin review
-  loop at production volume, are not yet measured.
-- Live-source performance and user impact have not been measured.
+- **Source access and format:** Can FlatFeed secure a permitted data channel
+  from each relevant provider and determine which fields it reliably supplies?
+- **Fast delivery:** Can FlatFeed deliver new listings quickly after
+  publication?
+- **User value:** Are alerted listings still available and worth pursuing for
+  users?
+- **Conditional review loop:** If a source requires text extraction, can admin
+  review turn parser errors into fixes and false alerts into better AI
+  instructions?
 
 ## What this demonstrates
 
 ### A working apartment-search workflow, with rules making the match.
 
-I built and tested the saved-filter Telegram flow, kept matching deterministic,
-and built an AI data-quality check that flags parser risks for admin review
-without touching a single match. Real-source accuracy and user value remain the
-next validation step.
+I built and tested the saved-filter Telegram flow and evaluated one plausible
+text-ingestion path with bounded AI QA. Matching remains rule-based; the
+production ingestion design should follow the access terms, format and field
+quality providers actually offer.
 
 ## Another case
 
