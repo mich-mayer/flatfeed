@@ -48,8 +48,8 @@
             <p class="kicker"><span>01</span>Problem</p>
             <h1 id="case-title">Berlin <span class="term" data-term><button class="term__trigger" type="button" aria-describedby="term-wbs" aria-expanded="false">WBS</button><span class="term__tooltip" id="term-wbs" role="tooltip">Wohnberechtigungsschein: a certificate used to qualify for subsidized housing in Berlin.</span></span> apartment seekers repeat the same search across multiple websites.</h1>
             <p class="case-lede">
-              Several real-estate portals let users save searches and receive alerts, but each alert
-              covers only its own platform. Meanwhile, housing providers are a primary source of WBS listings
+              Saved-search alerts on real-estate portals only cover listings published on their own platforms.
+              Meanwhile, housing providers are a primary source of WBS listings
               and may publish them on their own websites before they reach real-estate portals. Some
               providers offer only email alerts; others offer none. Users therefore repeat the same
               search across several places and compare different listing formats. FlatFeed tests a
@@ -61,7 +61,7 @@
         <section class="case-section" id="product">
           <header class="section-heading">
             <p class="kicker"><span>02</span>Product</p>
-            <h2>Users can save one filter and review matching listings in Telegram.</h2>
+            <h2>A four-step flow turns saved criteria into Telegram matches.</h2>
           </header>
 
           <div class="case-status" aria-label="Product status">
@@ -77,12 +77,12 @@
             <li>
               <span>02</span>
               <h3>Turn listing text into structured fields</h3>
-              <p>The parser extracts WBS, district, rent, rooms and the details shown on each card. Every matching rule and Telegram result depends on these fields. The demo uses one synthetic source adapter and includes no live provider adapters.</p>
+              <p>The parser extracts WBS, district, rent, rooms and the details shown on each card. Every matching rule and Telegram result depends on these fields.</p>
             </li>
             <li>
               <span>03</span>
               <h3>Match with rules</h3>
-              <p>Code compares each listing with the saved criteria. If required rent or room data is missing, the listing does not match.</p>
+              <p>Code compares each listing with the saved criteria. If a required value is missing, the listing does not match.</p>
             </li>
             <li>
               <span>04</span>
@@ -260,7 +260,7 @@
           <div class="decision-list decision-list--three">
             <article>
               <p class="decision-number">A</p>
-              <h3>Use AI to audit the parser—not to decide matches</h3>
+              <h3>Use AI to audit the parser - not to decide matches</h3>
               <p>Deterministic rules still depend on correct input data. I tested whether AI could act as an independent parser check: it returned exact source evidence for each requested field, while code compared that evidence with simulated parser output. Differences were marked for configured-admin review; AI never changed listing data or match decisions.</p>
             </article>
             <article>
@@ -288,8 +288,8 @@
           </div>
 
           <aside class="role-note role-note--large role-note--stacked" aria-label="How the AI data-quality check runs in the product">
-            <p class="preview-label">How the check runs in the product</p>
-            <p class="role-note__body">The check is part of ingestion, not a script beside it. Each new active listing is reviewed once per prompt version and stored with its evidence. Deterministic guardrails run after the model, a daily cost cap and a risk threshold decide whether a difference becomes an admin alert, and each alert is resolved as parser error, parser correct or unsure. The feature ships switched off, so the demo itself makes no model calls.</p>
+            <p class="preview-label">How the AI check runs in the product</p>
+            <p class="role-note__body">When a new listing enters FlatFeed, AI finds the relevant values in the source text and saves the supporting evidence. Code compares them with the parser output. If they differ, an admin reviews the evidence and marks the parser result as wrong, correct or unclear.</p>
             <p class="role-note__scope">Built into ingestion · Admin-only · Off by default</p>
           </aside>
 

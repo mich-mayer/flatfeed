@@ -5,8 +5,8 @@
 WBS (Wohnberechtigungsschein) is a certificate used to qualify for subsidized
 housing in Berlin.
 
-Several real-estate portals let users save searches and receive alerts, but each
-alert covers only its own platform. Meanwhile, housing providers are a primary source of
+Saved-search alerts on real-estate portals only cover listings published on their
+own platforms. Meanwhile, housing providers are a primary source of
 WBS listings and may publish them on their own websites before they reach
 real-estate portals. Some providers offer only email alerts; others offer none.
 Users therefore repeat the same search across several places and compare
@@ -15,8 +15,8 @@ once and review matching listings in Telegram.
 
 ## 1. Problem
 
-Several real-estate portals offer saved-search alerts, but each alert covers only
-listings on that platform. Meanwhile, housing providers are a primary source of WBS
+Saved-search alerts on real-estate portals only cover listings published on their
+own platforms. Meanwhile, housing providers are a primary source of WBS
 listings and may publish them on their own websites before they reach property
 portals. Some providers offer only email alerts; others offer none. Users
 therefore repeat searches across several places and compare different listing
@@ -26,7 +26,7 @@ outcome.
 
 ## 2. Product
 
-### Users can save one filter and review matching listings in Telegram.
+### A four-step flow turns saved criteria into Telegram matches.
 
 Working Telegram prototype · Generated test listings · Rule-based matching · Admin AI data-quality check
 
@@ -34,10 +34,9 @@ Working Telegram prototype · Generated test listings · Rule-based matching · 
    excluding operating and heating costs) and rooms once.
 2. **Turn listing text into structured fields.** The parser extracts WBS,
    district, rent, rooms and the details shown on each card. Every matching rule
-   and Telegram result depends on these fields. The demo uses one synthetic
-   source adapter and includes no live provider adapters.
+   and Telegram result depends on these fields.
 3. **Match with rules.** Code compares each listing with the saved criteria. If
-   required rent or room data is missing, the listing does not match.
+   a required value is missing, the listing does not match.
 4. **Return matches in Telegram.** Users can request matches when they
    want. FlatFeed returns each match in a Telegram card. Background delivery
    can send new matches and record each successful send to prevent duplicates.
@@ -69,7 +68,7 @@ prototype with Claude Code and Codex as coding collaborators.
 
 Self-directed portfolio project · Not a live rollout
 
-1. **Use AI to audit the parser—not to decide matches.** Deterministic rules
+1. **Use AI to audit the parser - not to decide matches.** Deterministic rules
    still depend on correct input data. I tested whether AI could act as an
    independent parser check: it returned exact source evidence for each
    requested field, while code compared that evidence with simulated parser
@@ -97,14 +96,12 @@ quotes from the source text, code compares them with the parsed values, and any
 difference goes to a configured admin. Matching stays rule-based — the check
 reports, it does not decide.
 
-### How the check runs in the product
+### How the AI check runs in the product
 
-The check is part of ingestion, not a script beside it. Each new active listing
-is reviewed once per prompt version and stored with its evidence. Deterministic
-guardrails run after the model, a daily cost cap and a risk threshold decide
-whether a difference becomes an admin alert, and each alert is resolved as
-parser error, parser correct or unsure. The feature ships switched off, so the
-demo itself makes no model calls.
+When a new listing enters FlatFeed, AI finds the relevant values in the source
+text and saves the supporting evidence. Code compares them with the parser
+output. If they differ, an admin reviews the evidence and marks the parser
+result as wrong, correct or unclear.
 
 Built into ingestion · Admin-only · Off by default
 
