@@ -109,7 +109,7 @@ listing. **Admin review required.** AI flags the difference and stops there. A
 configured admin compares the original listing and marks the finding as parser
 error, parser correct or unsure. Nothing changes on the model's word alone.
 
-### Can the check flag parser errors for admin review?
+### How well can the check flag parser errors?
 
 Before switching this on against live data, I measured it with the real model.
 I froze the final synthetic dataset first: 600 generated listing pairs — 300
