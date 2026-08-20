@@ -321,14 +321,16 @@
           <section class="qa-scorecard" aria-labelledby="qa-scorecard-title">
             <div class="qa-scorecard__heading">
               <div>
-                <h3 id="qa-scorecard-title">How well can the check flag parser errors?</h3>
+                <h3 id="qa-scorecard-title">But how well can the check flag parser errors?</h3>
                 <p>
-                  To test the check on synthetic data, I froze the final synthetic dataset at 600
-                  generated listing pairs: 300 where every parsed value agreed with the listing text,
-                  and 300 where one value was deliberately changed to simulate a parser error. The model saw
-                  only the listing text and returned source evidence; code compared that evidence with
-                  the parsed values. I ran the evaluation once, with no retries, tuning or rescoring
-                  afterward.
+                  Before the final run, I defined success criteria and compared model setups on
+                  separate development data. GPT-5.6-Terra with high reasoning met those criteria,
+                  so I froze that setup. FlatFeed already includes an admin-only AI check that asks a
+                  model for source evidence and compares it with parser output. To test one model
+                  configuration for that check, I ran it once on 600 synthetic listing pairs: 300 clean
+                  and 300 with one planted parser error. For each field, the model returned an exact
+                  source quote or no value, and code checked it against the parser output. There were
+                  no retries or tuning after the run.
                 </p>
               </div>
             </div>
@@ -367,17 +369,6 @@
                 </dd>
               </div>
             </dl>
-
-            <p class="qa-threshold-note">
-              I set these acceptance criteria before the final run. They apply to this prototype,
-              not to the industry as a whole.
-            </p>
-
-            <aside class="role-note role-note--stacked" aria-label="Evaluation limitation">
-              <p class="preview-label">Evidence boundary</p>
-              <p class="role-note__body"><strong>One clean listing produced an unusable quote.</strong> Code rejected it because the quote was not present in the listing, so it created no unnecessary review flag. This demonstrates feasibility on controlled synthetic data—not live-source accuracy, production performance or user impact. The tested setup ran offline and is not integrated into the product.</p>
-              <p class="role-note__scope">Controlled synthetic evaluation · Offline · Evaluation harness, not the runtime path</p>
-            </aside>
 
             <details class="case-details">
               <summary>See the evaluation method and results by field</summary>

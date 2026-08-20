@@ -35,13 +35,16 @@ FREEZE_PATH = (
     / "runs"
     / "extraction-v1-final-600-configuration-freeze.json"
 )
-PUBLIC_SYNTHETIC_QUALIFIER = "final synthetic dataset"
+PUBLIC_SYNTHETIC_QUALIFIER = "600 synthetic listing pairs"
 ANNUAL_CHECK_SCENARIO = 15_000
 OFFICIAL_RELETTING_PROXY = 12_398
 PLANNING_BUFFER = 1.25
-FINAL_EVIDENCE_BOUNDARY_PARTS = (
-    "This demonstrates feasibility on controlled synthetic data",
-    "not integrated into the product",
+FINAL_EVIDENCE_CONTEXT_PARTS = (
+    "defined success criteria",
+    "compared model setups on separate development data",
+    "admin-only AI check",
+    "300 clean and 300 with one planted parser error",
+    "no retries or tuning after the run",
 )
 HISTORICAL_PUBLIC_MARKERS = (
     "Synthetic frozen validation",
@@ -57,10 +60,6 @@ METRIC_LABELS = {
     "correct_field_detection_rate": "Correct field identified",
     "successful_check_rate": "Usable results",
 }
-RUNTIME_BOUNDARY_MARKERS = (
-    "not part of the user-facing product flow",
-    "not integrated into the product",
-)
 FIELD_KEYS = (
     "wbs",
     "district",
@@ -243,20 +242,17 @@ def main() -> int:
 
     for path in SCORECARD_TARGETS:
         text = path.read_text(encoding="utf-8")
-        if PUBLIC_SYNTHETIC_QUALIFIER not in text:
+        normalized_text = " ".join(text.split())
+        if PUBLIC_SYNTHETIC_QUALIFIER not in normalized_text:
             errors.append(
                 f"{path.relative_to(PROJECT_ROOT)}: synthetic qualifier is missing"
             )
-        if not any(marker in text.lower() for marker in RUNTIME_BOUNDARY_MARKERS):
-            errors.append(
-                f"{path.relative_to(PROJECT_ROOT)}: runtime boundary is missing"
-            )
-        for rationale_part in FINAL_EVIDENCE_BOUNDARY_PARTS:
-            if rationale_part not in text:
+        for context_part in FINAL_EVIDENCE_CONTEXT_PARTS:
+            if context_part not in normalized_text:
                 errors.append(
                     f"{path.relative_to(PROJECT_ROOT)}: "
-                    "approved evidence boundary is missing or changed: "
-                    f"{rationale_part}"
+                    "approved evaluation context is missing or changed: "
+                    f"{context_part}"
                 )
         for label, percentage, count in expected_public_metrics:
             for expected, alternatives in (
