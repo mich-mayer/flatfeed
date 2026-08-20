@@ -93,17 +93,8 @@ district, Kaltmiete and rooms. One wrong value can hide a suitable listing or
 show one that does not match the saved filter. So the product runs an
 independent check on those four values: for every new listing, AI returns exact
 quotes from the source text, code compares them with the parsed values, and any
-difference goes to a configured admin. Matching stays rule-based — the check
-reports, it does not decide.
-
-### How the AI check runs in the product
-
-When a new listing enters FlatFeed, AI finds the relevant values in the source
-text and saves the supporting evidence. Code compares them with the parser
-output. If they differ, an admin reviews the evidence and marks the parser
-result as wrong, correct or unclear.
-
-Built into ingestion · Admin-only · Off by default
+difference goes to a configured admin. Rules decide matches. AI only flags
+differences for review.
 
 ### How the check catches one wrong value.
 

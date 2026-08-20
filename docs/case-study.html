@@ -284,14 +284,8 @@
 
           <div class="ai-evaluation-intro">
             <h2>Correct matching starts with<br>correct data.</h2>
-            <p>FlatFeed filters listings using four values produced by the parser: WBS, district, Kaltmiete and rooms. One wrong value can hide a suitable listing or show one that does not match the saved filter. So the product runs an independent check on those four values: for every new listing, AI returns exact quotes from the source text, code compares them with the parsed values, and any difference goes to a configured admin. Matching stays rule-based — the check reports, it does not decide.</p>
+            <p>FlatFeed filters listings using four values produced by the parser: WBS, district, Kaltmiete and rooms. One wrong value can hide a suitable listing or show one that does not match the saved filter. So the product runs an independent check on those four values: for every new listing, AI returns exact quotes from the source text, code compares them with the parsed values, and any difference goes to a configured admin. Rules decide matches. AI only flags differences for review.</p>
           </div>
-
-          <aside class="role-note role-note--large role-note--stacked" aria-label="How the AI data-quality check runs in the product">
-            <p class="preview-label">How the AI check runs in the product</p>
-            <p class="role-note__body">When a new listing enters FlatFeed, AI finds the relevant values in the source text and saves the supporting evidence. Code compares them with the parser output. If they differ, an admin reviews the evidence and marks the parser result as wrong, correct or unclear.</p>
-            <p class="role-note__scope">Built into ingestion · Admin-only · Off by default</p>
-          </aside>
 
           <section class="qa-example" aria-labelledby="qa-example-title">
             <h3 id="qa-example-title">How the check catches one wrong value.</h3>
