@@ -109,14 +109,16 @@ listing. **Admin review required.** AI flags the difference and stops there. A
 configured admin compares the original listing and marks the finding as parser
 error, parser correct or unsure. Nothing changes on the model's word alone.
 
-### How well can the check flag parser errors?
+### But how well can the check flag parser errors?
 
-To test the check on synthetic data, I froze the final synthetic dataset at 600
-generated listing pairs: 300 where every parsed value agreed with the listing
-text, and 300 where one value was deliberately changed to simulate a parser error. The
-model saw only the listing text and returned source evidence; code compared that
-evidence with the parsed values. I ran the evaluation once, with no retries,
-tuning or rescoring afterward.
+Before the final run, I defined success criteria and compared model setups on
+separate development data. `gpt-5.6-terra` with high reasoning met those
+criteria, so I froze that setup. FlatFeed already includes an admin-only AI
+check that asks a model for source evidence and compares it with parser output.
+To test one model configuration for that check, I ran it once on 600 synthetic
+listing pairs: 300 clean and 300 with one planted parser error. For each field,
+the model returned an exact source quote or no value, and code checked it
+against the parser output. There were no retries or tuning after the run.
 
 | Metric | Result | Prototype target |
 |---|---:|---:|
@@ -124,19 +126,6 @@ tuning or rescoring afterward.
 | Unnecessary review flags | 0.0% (0/300) | At most 1% (3/300) |
 | Correct field identified | 100.0% (300/300) | At least 98% (294/300) |
 | Usable results | 99.8% (599/600) | At least 99.5% (597/600) |
-
-I set these acceptance criteria before the final run. They apply to this
-prototype, not to the industry as a whole.
-
-**Evidence boundary**
-
-One clean listing produced an unusable quote. Code rejected it because the
-quote was not present in the listing, so it created no unnecessary review flag.
-This demonstrates feasibility on controlled synthetic data—not live-source
-accuracy, production performance or user impact. The tested setup ran offline
-and is not integrated into the product.
-
-Controlled synthetic evaluation · Offline · Evaluation harness, not the runtime path
 
 ### Evaluation method and field-level results
 

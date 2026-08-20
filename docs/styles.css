@@ -788,10 +788,6 @@ img {
   gap: 0.75rem;
 }
 
-.qa-scorecard > .role-note--stacked {
-  margin-inline: calc(-1 * var(--pad-box) - 1px);
-}
-
 .decision-ownership {
   margin-top: var(--space-heading-block);
 }
@@ -1091,13 +1087,6 @@ img {
 .qa-scorecard__metrics b {
   color: var(--ink);
   font-weight: 600;
-}
-
-.qa-threshold-note {
-  max-width: var(--measure-prose);
-  margin-top: var(--space-caption);
-  color: var(--ink-3);
-  font: 400 0.71875rem/1.6 var(--font-mono);
 }
 
 .qa-field-results,
