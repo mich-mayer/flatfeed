@@ -105,10 +105,9 @@ differences for review.
 | **AI evidence** | `WBS 100–140` · `Charlottenburg-Wilmersdorf` · `€512.40` · `2` |
 
 **Mismatch detected.** The parser missed WBS 100 and could hide a suitable
-listing. **Admin review required.** AI flags the difference and stops there; a
-configured admin compares the original listing and marks the parser right or
-wrong. Only that decision feeds a parser fix — nothing changes on the model's
-word alone.
+listing. **Admin review required.** AI flags the difference and stops there. A
+configured admin compares the original listing and marks the finding as parser
+error, parser correct or unsure. Nothing changes on the model's word alone.
 
 ### Can this check catch data conflicts before they affect matching?
 
@@ -200,11 +199,10 @@ improvements.
 
 ### Data-quality gate for live listings
 
-The review loop is built: only configured admins see flags, users never do, and
-every flag is resolved as parser error, parser correct or unsure. That loop is
-the gate before FlatFeed relies on live sources — confirmed parser errors become
-test cases and parser fixes, false alerts tune the next prompt version, and no
-review changes listings or matching automatically.
+The review loop is built: only configured admins see flags, users never do. It
+is the gate before FlatFeed relies on live sources: confirmed parser errors
+become test cases and parser fixes, false alerts tune the next prompt version,
+and no review changes listings or matching automatically.
 
 Before live-source reliance · Admin review required
 
