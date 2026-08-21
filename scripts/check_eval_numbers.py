@@ -40,8 +40,9 @@ ANNUAL_CHECK_SCENARIO = 15_000
 OFFICIAL_RELETTING_PROXY = 12_398
 PLANNING_BUFFER = 1.25
 FINAL_EVIDENCE_CONTEXT_PARTS = (
-    "defined success criteria",
+    "defined the metric targets",
     "compared model setups on separate development data",
+    "froze the setup before running it once on the locked 600-listing evaluation",
     "admin-only AI check",
     "300 clean and 300 with one planted parser error",
     "no retries or tuning after the run",

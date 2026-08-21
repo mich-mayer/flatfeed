@@ -87,7 +87,7 @@
             <li>
               <span>04</span>
               <h3>Return matches in Telegram</h3>
-              <p>Users can request matches when they want. FlatFeed returns each match in a Telegram card. Background delivery can send new matches and record each successful send to prevent duplicates.</p>
+              <p>Users can request matches when they want. FlatFeed returns each match in a Telegram card. After a user saves a filter, FlatFeed automatically sends each new match in Telegram and records each successful send to prevent duplicates.</p>
             </li>
           </ol>
 
@@ -247,8 +247,8 @@
             <summary>See the current prototype limits</summary>
             <div class="prototype-limits">
               <p>The prototype currently uses generated listing text rather than live provider data. It implements one possible ingestion path: deterministic extraction into a common listing format with an admin-only AI quality check.</p>
-              <p>Production ingestion depends on the permitted channel, format and field guarantees available from each provider. Complete structured feeds could map directly into FlatFeed; text-based or incomplete sources may still require extraction and review.</p>
-              <p>Automatic delivery and the runtime AI check are built but disabled in this prototype. The AI-check results come from an offline evaluation on synthetic data, not real providers or users.</p>
+              <p>How listings reach FlatFeed in production depends on the access method, data format and information each provider supplies. Complete structured feeds can be added directly; text-based or incomplete sources may still need extraction and review.</p>
+              <p>Automatic delivery and the runtime AI check are built but disabled in this prototype. The AI-check results come from an offline evaluation using synthetic listing data, not listing data from real providers.</p>
             </div>
           </details>
 
@@ -278,7 +278,7 @@
             </article>
             <article>
               <p class="decision-number">C</p>
-              <h3>Fail closed when critical data is missing</h3>
+              <h3>Do not match listings when required details are missing</h3>
               <p>If rent or room count required by a filter is unknown, the listing does not match. This reduces unsupported matches but may hide a suitable apartment, so the trade-off still needs real-world validation.</p>
             </article>
           </div>
@@ -331,9 +331,10 @@
               <div>
                 <h3 id="qa-scorecard-title">But how well can the check flag parser errors?</h3>
                 <p>
-                  Before the final run, I defined success criteria and compared model setups on
-                  separate development data. GPT-5.6-Terra with high reasoning met those criteria,
-                  so I froze that setup. FlatFeed already includes an admin-only AI check that asks a
+                  Before testing any model setups, I defined the metric targets. I then compared model
+                  setups on separate development data. GPT-5.6-Terra with high reasoning met those
+                  targets, so I froze the setup before running it once on the locked 600-listing
+                  evaluation. FlatFeed already includes an admin-only AI check that asks a
                   model for source evidence and compares it with parser output. To test one model
                   configuration for that check, I ran it once on 600 synthetic listing pairs: 300 clean
                   and 300 with one planted parser error. For each field, the model returned an exact
@@ -518,12 +519,12 @@
             <article>
               <p class="decision-number">A</p>
               <h3>Source access and format</h3>
-              <p>Can FlatFeed secure a permitted data channel from each relevant provider and determine which fields it reliably supplies?</p>
+              <p>Can FlatFeed secure a permitted data channel from each relevant provider and confirm what format the data comes in?</p>
             </article>
             <article>
               <p class="decision-number">B</p>
               <h3>Fast delivery</h3>
-              <p>Can FlatFeed deliver new listings quickly after publication?</p>
+              <p>How quickly do new listings reach FlatFeed after providers publish them?</p>
             </article>
             <article>
               <p class="decision-number">C</p>
@@ -533,7 +534,7 @@
             <article>
               <p class="decision-number">D</p>
               <h3>Conditional review loop</h3>
-              <p>If a source requires text extraction, can admin review turn parser errors into fixes and false alerts into better AI instructions?</p>
+              <p>If a source requires text extraction, can admin review help fix parser errors and improve the AI check when an alert is wrong?</p>
             </article>
           </div>
 
@@ -542,7 +543,7 @@
         <section class="case-cta">
           <div>
             <h2>A working apartment-search workflow, with rules making the match.</h2>
-            <p class="case-cta__copy">I built and tested the saved-filter Telegram flow and evaluated one plausible text-ingestion path with bounded AI QA. Matching remains rule-based; the production ingestion design should follow the access terms, format and field quality providers actually offer.</p>
+            <p class="case-cta__copy">I built and tested the saved-filter Telegram flow and evaluated one plausible way to process text-based listings with bounded AI QA. Matching remains rule-based; how listings enter FlatFeed in production should depend on the access terms, formats and data quality providers actually offer.</p>
           </div>
         </section>
 
