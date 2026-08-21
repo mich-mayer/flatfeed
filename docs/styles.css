@@ -290,7 +290,7 @@ img {
 }
 
 .hero-copy {
-  max-width: 62rem;
+  max-width: 60rem;
 }
 
 .case-hero h1 {
@@ -314,6 +314,10 @@ img {
   color: var(--accent-deep);
   font: 600 0.6875rem/1.6 var(--font-mono);
   letter-spacing: 0.03em;
+}
+
+#product .case-status {
+  margin-top: 1.5rem;
 }
 
 .case-status p + p {
@@ -413,7 +417,7 @@ img {
 }
 
 .product-carousel {
-  --product-carousel-media-width: clamp(14rem, calc(70.4svh - 4.225rem), 20rem);
+  --product-carousel-media-width: clamp(14rem, calc(70.4svh - 4.225rem), 24rem);
   --product-carousel-copy-width: 25rem;
   /* Reserved so the controls sit at one fixed offset on every slide. Measured
      against the longest approved slide copy in this column; `min-height` keeps
@@ -686,7 +690,7 @@ img {
 }
 
 .ai-evaluation-intro h2 {
-  max-width: 48rem;
+  max-width: 60rem;
 }
 
 .section-heading--statement h2 {
@@ -736,7 +740,7 @@ img {
 }
 
 .decision-list--four {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .decision-list--three {
@@ -744,6 +748,7 @@ img {
 }
 
 .decision-list article > p:last-child {
+  max-width: 60ch;
   margin-top: 0.75rem;
 }
 
@@ -940,7 +945,7 @@ img {
   display: grid;
   grid-auto-rows: 1fr;
   gap: 1px;
-  max-width: var(--measure-prose);
+  max-width: none;
   margin-top: var(--space-panel);
   border: 1px solid var(--line);
   background: var(--line);
@@ -1225,7 +1230,6 @@ img {
 
 .case-cta h2 {
   max-width: var(--measure-heading);
-  margin-top: 1.5rem;
   font: 600 clamp(1.75rem, 3.5vw, 2.75rem)/1.08 var(--font-display);
   letter-spacing: -0.03em;
 }
@@ -1286,6 +1290,11 @@ img {
     grid-template-columns: repeat(3, 1fr);
   }
 
+  .workflow--four,
+  .decision-list--four {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
 }
 
 @media (max-width: 56rem) {
@@ -1304,7 +1313,7 @@ img {
     display: grid;
     grid-column: 1 / -1;
     grid-row: 2;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.25rem 1rem;
     padding: 0.45rem 0;
     overflow: visible;
@@ -1329,7 +1338,7 @@ img {
        attribution overflow the reserved caption height. The slide becomes the
        vertical stack here instead, and the reserve is recalibrated for that
        column so the controls still sit at one fixed offset on every slide. */
-    --product-carousel-caption-height: 16.5rem;
+    --product-carousel-caption-height: 12.5rem;
     margin-top: var(--space-block);
     padding-top: var(--space-subrule);
   }
@@ -1422,6 +1431,11 @@ img {
     padding: var(--space-panel) calc(var(--pad-box) + 1px);
   }
 
+  .case-lede,
+  .ai-evaluation-intro > p {
+    max-width: min(var(--measure-prose), 72ch);
+  }
+
 }
 
 @media (min-width: 40.01rem) and (max-height: 40rem) {
@@ -1485,25 +1499,13 @@ img {
   }
 
   .case-cta {
-    padding: var(--pad-box) calc(var(--pad-box) + 1px);
+    padding: var(--space-panel) calc(var(--pad-box) + 1px);
   }
 
-}
-
-/* Narrow phones: the caption column keeps shrinking, so the seventh slide's
-   attribution wraps further and the 16.5rem reserve would let the controls move
-   between slides. Each step is measured against the longest approved slide copy
-   at that width — see §5.4. */
-@media (max-width: 23rem) {
-  .product-carousel {
-    --product-carousel-caption-height: 18.5rem;
+  .case-top nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
 
-@media (max-width: 21.5rem) {
-  .product-carousel {
-    --product-carousel-caption-height: 20rem;
-  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1622,11 +1624,12 @@ img {
 }
 
 .ai-evaluation-intro {
-  max-width: var(--measure-prose);
-  margin-top: var(--space-heading-block);
+  max-width: 60rem;
+  margin-top: 1.5rem;
 }
 
 .ai-evaluation-intro > p {
+  max-width: var(--measure-prose);
   margin-top: 1rem;
   color: var(--ink-2);
   font-size: 0.9375rem;
