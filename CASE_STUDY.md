@@ -39,8 +39,9 @@ Working Telegram prototype · Generated test listings · Rule-based matching · 
 3. **Match with rules.** Code compares each listing with the saved criteria. If
    a required value is missing, the listing does not match.
 4. **Return matches in Telegram.** Users can request matches when they
-   want. FlatFeed returns each match in a Telegram card. Background delivery
-   can send new matches and record each successful send to prevent duplicates.
+   want. FlatFeed returns each match in a Telegram card. After a user saves a
+   filter, FlatFeed automatically sends each new match in Telegram and records
+   each successful send to prevent duplicates.
 
 Seven captured Telegram screens document the implemented journey:
 
@@ -61,13 +62,13 @@ synthetic.
 - The prototype currently uses generated listing text rather than live provider
   data. It implements one possible ingestion path: deterministic extraction
   into a common listing format with an admin-only AI quality check.
-- Production ingestion depends on the permitted channel, format and field
-  guarantees available from each provider. Complete structured feeds could map
-  directly into FlatFeed; text-based or incomplete sources may still require
-  extraction and review.
+- How listings reach FlatFeed in production depends on the access method, data
+  format and information each provider supplies. Complete structured feeds can
+  be added directly; text-based or incomplete sources may still need extraction
+  and review.
 - Automatic delivery and the runtime AI check are built but disabled in this
-  prototype. The AI-check results come from an offline evaluation on synthetic
-  data, not real providers or users.
+  prototype. The AI-check results come from an offline evaluation using
+  synthetic listing data, not listing data from real providers.
 
 ## 3. Decisions
 
@@ -92,10 +93,10 @@ prototype with Claude Code and Codex as coding collaborators.
    using provider data until source access and reuse terms are clear. This tests
    product mechanics, but not source coverage, listing freshness or renter
    value; those require permitted live sources and a real-user pilot.
-3. **Fail closed when critical data is missing.** If rent or room count required
-   by a filter is unknown, the listing does not match. This reduces unsupported
-   matches but may hide a suitable apartment, so the trade-off still needs
-   real-world validation.
+3. **Do not match listings when required details are missing.** If rent or room
+   count required by a filter is unknown, the listing does not match. This
+   reduces unsupported matches but may hide a suitable apartment, so the
+   trade-off still needs real-world validation.
 
 ## 4. AI Evaluation
 
@@ -121,10 +122,11 @@ error, parser correct or unsure. Nothing changes on the model's word alone.
 
 ### But how well can the check flag parser errors?
 
-Before the final run, I defined success criteria and compared model setups on
-separate development data. `gpt-5.6-terra` with high reasoning met those
-criteria, so I froze that setup. FlatFeed already includes an admin-only AI
-check that asks a model for source evidence and compares it with parser output.
+Before testing any model setups, I defined the metric targets. I then compared
+model setups on separate development data. `gpt-5.6-terra` with high reasoning
+met those targets, so I froze the setup before running it once on the locked
+600-listing evaluation. FlatFeed already includes an admin-only AI check that
+asks a model for source evidence and compares it with parser output.
 To test one model configuration for that check, I ran it once on 600 synthetic
 listing pairs: 300 clean and 300 with one planted parser error. For each field,
 the model returned an exact source quote or no value, and code checked it
@@ -177,23 +179,22 @@ Evidence:
 ### What should FlatFeed test with permitted sources?
 
 - **Source access and format:** Can FlatFeed secure a permitted data channel
-  from each relevant provider and determine which fields it reliably supplies?
-- **Fast delivery:** Can FlatFeed deliver new listings quickly after
-  publication?
+  from each relevant provider and confirm what format the data comes in?
+- **Fast delivery:** How quickly do new listings reach FlatFeed after providers
+  publish them?
 - **User value:** Are alerted listings still available and worth pursuing for
   users?
 - **Conditional review loop:** If a source requires text extraction, can admin
-  review turn parser errors into fixes and false alerts into better AI
-  instructions?
+  review help fix parser errors and improve the AI check when an alert is wrong?
 
 ## What this demonstrates
 
 ### A working apartment-search workflow, with rules making the match.
 
 I built and tested the saved-filter Telegram flow and evaluated one plausible
-text-ingestion path with bounded AI QA. Matching remains rule-based; the
-production ingestion design should follow the access terms, format and field
-quality providers actually offer.
+way to process text-based listings with bounded AI QA. Matching remains
+rule-based; how listings enter FlatFeed in production should depend on the
+access terms, formats and data quality providers actually offer.
 
 ## Another case
 
