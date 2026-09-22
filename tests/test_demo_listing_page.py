@@ -13,7 +13,7 @@ class DemoListingPageTests(unittest.TestCase):
 
         self.assertIn("Read the case study", html)
         self.assertIn("product decisions, evaluation results", html)
-        self.assertNotIn("t.me/FlatFeedBot", html)
+        self.assertNotIn("t.me/", html)
         self.assertNotIn("Try the guided tour", html)
 
 

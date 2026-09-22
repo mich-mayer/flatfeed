@@ -43,7 +43,10 @@ FINAL_EVIDENCE_CONTEXT_PARTS = (
     "defined the metric targets",
     "compared model setups on separate development data",
     "froze the setup before running it once on the locked 600-listing evaluation",
-    "admin-only AI check",
+    "The model received only raw listing text",
+    "code compared the quotes with the parser output",
+    "This evaluated configuration is not integrated into the Telegram runtime",
+    "runtime AI check uses a different contract",
     "300 clean and 300 with one planted parser error",
     "no retries or tuning after the run",
 )
