@@ -14,6 +14,13 @@ the base rent, excluding operating and heating costs.
 · [Read the final synthetic evaluation](eval/runs/extraction-v1-final-600/report.md)
 · [Run locally](#run-locally)
 
+## My contribution
+
+I defined the user problem, product scope, matching rules, missing-data policy,
+AI boundary and evaluation criteria. I built the prototype with Claude Code and
+Codex as coding collaborators. The [case study](CASE_STUDY.md#my-role) explains
+the product decisions and their evidence.
+
 ## What is implemented
 
 - One saved filter: WBS type, district, maximum Kaltmiete, and rooms.
@@ -30,12 +37,7 @@ monitoring are exercised through one synthetic adapter. No live housing-company
 adapters or scraping are included. The card's `Open listing` action opens a
 [synthetic disclosure page](https://mich-mayer.github.io/flatfeed/demo-listing.html).
 
-## Product decisions and contribution
-
-The [case study's My role section](CASE_STUDY.md#my-role) records the author's
-work on the user problem, product scope, matching rules, missing-data policy,
-AI boundary and evaluation criteria. The Telegram prototype was implemented
-with Claude Code and Codex as coding collaborators.
+## Key product decisions
 
 The key decisions were to test mechanics with generated listings, use rules for
 user-facing matches, and evaluate AI only as a conditional quality check for
@@ -67,7 +69,7 @@ available as clearly identified history.
 
 | Location | Purpose |
 |---|---|
-| [docs/](docs/) | Case-study site sources and project documentation; only allowlisted site files are deployed |
+| [docs/](docs/) | Case-study site sources, [product architecture](docs/PRODUCT.md) and [prototype status](docs/STATUS.md); only allowlisted site files are deployed |
 | [flatfeed/](flatfeed/) | Parser, matching, database, ingestion, transit estimates and optional runtime QA |
 | [main.py](main.py) | Telegram saved-filter flow and conditional background delivery |
 | [synthetic/](synthetic/) | Generated prototype listings and hidden regression truth |
@@ -147,10 +149,11 @@ The showcase photo depicts Schlangenbader Straße 91; apartment availability and
 terms remain synthetic. The repository's [MIT license](LICENSE) covers project
 code; third-party data and photos retain their respective terms.
 
-## Contributing and project context
+## Product documentation
 
-Read [AGENTS.md](AGENTS.md) or [CLAUDE.md](CLAUDE.md), then the
-[design and content system](DESIGN_CONTENT_SYSTEM.md),
-[product context](docs/PROJECT_CONTEXT.md), [current status](docs/CURRENT_STATUS.md)
-and [working rules](docs/agent-workflow.md). These documents define the product
-boundaries and verification requirements for changes.
+- [Product architecture and behavior](docs/PRODUCT.md): filters, parsing,
+  matching, data storage, reliability and the two separate AI QA contracts.
+- [Prototype status and limitations](docs/STATUS.md): implemented scope,
+  accepted evaluation evidence and what remains unvalidated.
+- [Evaluation guide](eval/README.md): protocols, frozen results and earlier
+  experiments.
