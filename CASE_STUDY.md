@@ -33,9 +33,10 @@ Working Telegram prototype · Generated test listings · Rule-based matching · 
    prototype implements the text-based path.
 3. **Match with rules.** Code compares each listing with the saved criteria. If
    a required value is missing, the listing does not match.
-4. **Return matches in Telegram.** Users can request matches on demand.
-   Automatic delivery is implemented and sends each new match once when
-   enabled; it is disabled in this prototype.
+4. **Return matches in Telegram.** Users can request matches when they
+   want. FlatFeed returns each match in a Telegram card. After a user saves a
+   filter, FlatFeed automatically sends each new match in Telegram and records
+   each successful send to prevent duplicates.
 
 Seven captured Telegram screens document the implemented journey:
 
@@ -60,9 +61,9 @@ synthetic.
   format and information each provider supplies. Complete structured feeds can
   be added directly; text-based or incomplete sources may still need extraction
   and review.
-- Automatic delivery and the optional admin-only runtime AI check are built
-  but disabled in this prototype. The reported results apply to the separate
-  offline extraction-v1 evaluation on synthetic data, not to the runtime QA path.
+- Automatic delivery and the runtime AI check are built but disabled in this
+  prototype. The AI-check results come from an offline evaluation using
+  synthetic listing data, not listing data from real providers.
 
 ## 3. Decisions
 
@@ -96,10 +97,10 @@ prototype with Claude Code and Codex as coding collaborators.
 
 ### For text-based sources, correct matching starts with correct extraction.
 
-This separate offline evaluation tests a quality check for text-based listings.
-The model extracts source quotes; code compares them with the parser output and
-produces review flags. Rules still decide every match. A provider feed with
-complete, reliable structured fields could bypass this path.
+This evaluation covers the prototype's text-based ingestion path. AI
+independently checks the fields extracted by the parser and flags differences
+for admin review; rules still decide every match. A provider feed with complete,
+reliable structured fields could bypass this path.
 
 ### How the check catches a wrong value.
 
@@ -111,24 +112,22 @@ Illustrative planted-error example.
 | **Parser output** | `WBS 140` · `Charlottenburg-Wilmersdorf` · `€512.40` · `2` |
 | **AI evidence** | `WBS 100–140` · `Charlottenburg-Wilmersdorf` · `€512.40` · `2` |
 
-**Mismatch detected.** The simulated parser output omits WBS 100 and could hide
-a suitable listing. Code flags the difference for review. In an integrated
-review workflow, an admin would compare the original listing and mark the
-finding as parser error, parser correct or unsure. No listing or matching rule
-changes automatically.
+**Mismatch detected.** The parser missed WBS 100 and could hide a suitable
+listing. **Admin review required.** AI flags the difference and stops there. A
+configured admin compares the original listing and marks the finding as parser
+error, parser correct or unsure. Nothing changes on the model's word alone.
 
 ### But how well can the check flag parser errors?
 
 Before testing any model setups, I defined the metric targets. I then compared
 model setups on separate development data. `gpt-5.6-terra` with high reasoning
 met those targets, so I froze the setup before running it once on the locked
-600-listing evaluation. The separate offline check ran on 600 synthetic listing
-pairs: 300 clean and 300 with one planted parser error. The model received only
-raw listing text and returned an exact source quote or no value for each field;
-code compared the quotes with the parser output. There were no retries or
-tuning after the run. This evaluated configuration is not integrated into the
-Telegram runtime. The optional admin-only runtime AI check uses a different
-contract and is disabled by default.
+600-listing evaluation. FlatFeed already includes an admin-only AI check that
+asks a model for source evidence and compares it with parser output.
+To test one model configuration for that check, I ran it once on 600 synthetic
+listing pairs: 300 clean and 300 with one planted parser error. For each field,
+the model returned an exact source quote or no value, and code checked it
+against the parser output. There were no retries or tuning after the run.
 
 | Metric | Result | Prototype target |
 |---|---:|---:|
