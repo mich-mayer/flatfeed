@@ -192,10 +192,3 @@ I built and tested the saved-filter Telegram flow and evaluated one plausible
 way to process text-based listings with bounded AI QA. Matching remains
 rule-based; how listings enter FlatFeed in production should depend on the
 access terms, formats and data quality providers actually offer.
-
-## Another case
-
-Opsqora uses AI differently: AI groups support feedback while people decide
-what to build.
-
-[Read the case study →](https://mich-mayer.github.io/opsqora/case-study.html)

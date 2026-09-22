@@ -586,8 +586,7 @@ img {
 .section-heading > p:not(.kicker),
 .qa-scorecard__heading > div > p,
 .qa-subheading > div > p,
-.product-carousel__slide figcaption p,
-.case-sibling > p:last-child {
+.product-carousel__slide figcaption p {
   color: var(--ink-2);
   font-size: 0.9375rem;
   line-height: 1.65;
@@ -1240,24 +1239,6 @@ img {
   color: rgba(255, 255, 255, 0.75);
   font-size: 0.9375rem;
   line-height: 1.65;
-}
-
-.case-sibling {
-  padding: var(--space-block) 0;
-}
-
-.case-sibling > p:last-child {
-  max-width: var(--measure-prose);
-  margin-top: 0.75rem;
-}
-
-.case-sibling strong {
-  color: var(--ink);
-}
-
-.case-sibling a {
-  color: var(--accent-deep);
-  font-weight: 600;
 }
 
 .case-prose {
