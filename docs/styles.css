@@ -7,7 +7,6 @@
   --ink-2: #445254;
   --ink-3: #687576;
   --line: #dce4e1;
-  --brand: #6247ea;
   --accent: #08766e;
   --accent-deep: #055d57;
   --accent-wash: #e3f2ee;
@@ -259,29 +258,6 @@ img {
 
 .case-top nav a:hover {
   color: var(--accent-deep);
-}
-
-.top-actions {
-  display: flex;
-  grid-column: 3;
-  grid-row: 1;
-  align-items: center;
-  justify-self: end;
-  gap: 1rem;
-}
-
-.case-top .btn {
-  height: 1.625rem;
-  min-height: 1.625rem;
-  padding: 0 0.7rem;
-  border-color: var(--brand);
-  background: var(--brand);
-  font-size: 0.75rem;
-}
-
-.case-top .btn:hover {
-  border-color: color-mix(in srgb, var(--brand) 84%, var(--ink));
-  background: color-mix(in srgb, var(--brand) 84%, var(--ink));
 }
 
 .case-hero {
@@ -836,11 +812,6 @@ img {
   border-top: 0;
 }
 
-.case-details > .qa-evidence-links {
-  margin-top: 0;
-  padding-bottom: var(--space-panel);
-}
-
 .case-details > .prototype-limits {
   padding: var(--space-panel) 0;
 }
@@ -1285,7 +1256,7 @@ img {
 
   .case-top {
     position: static;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     padding-block: 0;
     padding-top: 0.35rem;
   }
@@ -1299,10 +1270,6 @@ img {
     padding: 0.45rem 0;
     overflow: visible;
     border-top: 1px solid var(--line);
-  }
-
-  .top-actions {
-    grid-column: 2;
   }
 
   .case-top nav a {
@@ -1450,14 +1417,9 @@ img {
     --pad-box: 1.25rem;
   }
 
-  /* Keep the two required first-row actions within the narrow page spine;
-     the case-study subtitle remains available at larger header widths. */
+  /* Keep the compact brand within the narrow page spine. */
   .brand-sub {
     display: none;
-  }
-
-  .case-top .btn {
-    padding-inline: 0.7rem;
   }
 
   .case-meta {

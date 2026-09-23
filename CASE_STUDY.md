@@ -168,7 +168,7 @@ Evidence:
 
 - [Evaluation plan](eval/AI_QA_EVAL_PLAN.md)
 - [Final 600-listing report](eval/runs/extraction-v1-final-600/report.md)
-- [Repository](https://github.com/mich-mayer/flatfeed)
+- [Source code](https://github.com/mich-mayer/flatfeed)
 - [Berlin volume reference](https://www.berlin.de/sen/stadt/presse/pressemeldungen/pressemitteilung.1628093.php)
 
 ## 5. Next
